@@ -710,9 +710,9 @@
     function convertURL(current) {
       let pathElems
       if (current.indexOf('http') === 0) {
-        let isGhpUrl = current.indexOf('github.io') > 0
-        // pathElems = current.split('/').slice(isGhpUrl ? 4 : 3)
-        pathElems = current.split('/').slice(3)
+        let sliceIdx = isGhpSite ? 1 : 0
+        sliceIdx += current.indexOf('github.io') > 0 ? 3 : 2
+        pathElems = current.split('/').slice(sliceIdx)
       } else if (current.indexOf('/') === 0) {
         pathElems = current.split('/').slice(0)
       } else {
