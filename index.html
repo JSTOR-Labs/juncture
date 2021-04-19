@@ -711,7 +711,8 @@
       let pathElems
       if (current.indexOf('http') === 0) {
         let isGhpUrl = current.indexOf('github.io') > 0
-        pathElems = current.split('/').slice(isGhpUrl ? 4 : 3)
+        // pathElems = current.split('/').slice(isGhpUrl ? 4 : 3)
+        pathElems = current.split('/').slice(3)
       } else if (current.indexOf('/') === 0) {
         pathElems = current.split('/').slice(1)
       } else {
