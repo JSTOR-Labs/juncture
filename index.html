@@ -218,8 +218,8 @@
               ? pathElems.length > 2 ? `/${pathElems.slice(pathElems[0] === repo ? 3 : 2).join('/')}/` : '/'
               : pathElems.length > 0 ? `/${pathElems.join('/')}/` : '/'
             */
-           console.log(`loadEssay: path=${path} pathname=${window.location.pathname}`)
-            path = path || '/'
+            console.log(`loadEssay: path=${path} pathname=${window.location.pathname}`)
+            path = path || window.location.pathname.slice(basePath.length)
             console.log(`loadEssay: baseUrl=${contentSource.baseUrl} basePath=${basePath} path=${path}`)
             let essayUrls = [`${contentSource.baseUrl}${path}README.md`,
                              `${contentSource.baseUrl}${path.slice(0,-1)}.md`]
