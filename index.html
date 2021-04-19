@@ -643,13 +643,18 @@
       return config
     }
 
+    const knownGhAccts = {'jstor-labs': 'main', 'rsnyder': 'main', 'kent-map': 'main'}
     // Determines if Github repo exists
     async function githubRepoInfo(acct, repo) {
-      console.log(`githubRepoInfo: acct=${acct} rep=${repo}`)
-      let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`)
-      if (resp.ok) {
-        resp = await resp.json()
-        return {acct, repo, ref: resp.default_branch}
+      console.log(`githubRepoInfo: acct=${acct} rep=${repo} isKnownAcct=${knownGhAccts[acct] !== undefined}`)
+      if (knownGhAccts[acct]) {
+        return {acct, repo, ref: knownGhAccts[acct]}
+      } else {
+        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`)
+        if (resp.ok) {
+          resp = await resp.json()
+          return {acct, repo, ref: resp.default_branch}
+        }
       }
     }
 
