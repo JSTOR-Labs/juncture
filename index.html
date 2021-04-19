@@ -464,7 +464,7 @@
           convertResourceUrls(root) {
             console.log('convertResourceUrls')
             root.querySelectorAll('img').forEach(img => {
-              if (img.src.indexOf(baseUrl) === 0) img.setAttribute('src', convertURL(img.src))
+              if (img.src.indexOf(baseUrl) !== 0) img.setAttribute('src', convertURL(img.src))
             })
             root.querySelectorAll('param').forEach(param => {
               ['url', 'banner'].forEach(attr => {
