@@ -714,7 +714,7 @@
         // pathElems = current.split('/').slice(isGhpUrl ? 4 : 3)
         pathElems = current.split('/').slice(3)
       } else if (current.indexOf('/') === 0) {
-        pathElems = current.split('/').slice(1)
+        pathElems = current.split('/').slice(0)
       } else {
         pathElems = current.split('/')
       }
