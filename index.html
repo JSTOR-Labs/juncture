@@ -128,6 +128,7 @@
         basePath = `${isGhpSite ? '/'+repo : ''}/${contentSource.acct}/${contentSource.repo}`
         console.log(`basePath=${basePath}`)
       }
+      console.log('contentSource', contentSource)
       return getSiteConfig()
     })
     .then(config => siteConfig = config)
@@ -180,7 +181,6 @@
         },
         mounted() {
           console.log('siteConfig', this.siteConfig)
-          console.log('contentSource', this.contentSource)
           window.onpopstate = (e) => this.loadEssay(e.state.file, true) 
           const resizeObserver = new ResizeObserver(entries => { 
             this.forceHorizontalLayout = window.matchMedia('only screen and (max-width: 1000px)').matches
@@ -464,14 +464,11 @@
           convertResourceUrls(root) {
             console.log('convertResourceUrls')
             root.querySelectorAll('img').forEach(img => {
-              if (img.src.indexOf(baseUrl) === 0)
-                img.setAttribute('src', `${contentSource.baseUrl}/${img.src.split('/').slice(3).join('/')}`)
+              if (img.src.indexOf(baseUrl) === 0) img.setAttribute('src', convertURL(img.src))
             })
             root.querySelectorAll('param').forEach(param => {
               ['url', 'banner'].forEach(attr => {
-                if (param.attributes[attr]) {
-                  param.setAttribute(attr, convertURL(param.attributes[attr].value, contentSource.baseUrl))
-                }
+                if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value))
               })
             })
           },
@@ -648,6 +645,7 @@
 
     // Determines if Github repo exists
     async function githubRepoInfo(acct, repo) {
+      console.log(`githubRepoInfo: acct=${acct} rep=${repo}`)
       let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`)
       if (resp.ok) {
         resp = await resp.json()
