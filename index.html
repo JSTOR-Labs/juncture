@@ -88,6 +88,7 @@
     }
 
     let siteConfig, baseUrl, acct, repo, ref, contentSource, basePath
+    let isGhpSite = false
     let componentsRoot = 'components'
     let componentPrefix = 've-'
     let availableViewers = new Set()
@@ -101,6 +102,7 @@
       basePath = window.location.pathname.slice(0,-1)
     } else {
       if (window.location.hostname.indexOf('github.io') > 0) {
+        isGhpSite = true
         [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2,4)
         ref = 'main'
         baseUrl = `https://raw.githubusercontent.com/${acct}/${repo}/${ref}`
@@ -123,7 +125,7 @@
                              ? `https://raw.githubusercontent.com/${sourceInfo.acct}/${sourceInfo.repo}/${qargs.ref || sourceInfo.ref}`
                              : window.location.origin }}
       if ((contentSource.acct && contentSource.acct !== acct) || (contentSource.repo && contentSource.repo !== repo)) {
-        basePath = `/${contentSource.acct}/${contentSource.repo}`
+        basePath = `${isGhpSite ? '/'+repo : ''}/${contentSource.acct}/${contentSource.repo}`
         console.log(`basePath=${basePath}`)
       }
       return getSiteConfig()
