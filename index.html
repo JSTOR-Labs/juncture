@@ -94,6 +94,7 @@
     let availableViewers = new Set()
     const knownGhAccts = {'jstor-labs': 'main', 'rsnyder': 'main', 'kent-map': 'main'}
 
+    console.log(`pathname=${window.location.pathname} href=${window.location.href}`)
     console.log(window.location)
     let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
     console.log('qargs', qargs)
@@ -710,9 +711,9 @@
     function convertURL(current) {
       let pathElems
       if (current.indexOf('http') === 0) {
-        let sliceIdx = isGhpSite ? 1 : 0
-        sliceIdx += current.indexOf('github.io') > 0 ? 3 : 2
-        pathElems = current.split('/').slice(sliceIdx)
+        let isGhpUrl = current.indexOf('github.io') > 0
+        // pathElems = current.split('/').slice(isGhpUrl ? 3 : 2)
+        pathElems = current.split('/').slice(3)
       } else if (current.indexOf('/') === 0) {
         pathElems = current.split('/').slice(0)
       } else {
