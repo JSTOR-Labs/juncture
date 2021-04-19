@@ -102,7 +102,7 @@
       basePath = window.location.pathname.slice(0,-1)
     } else {
       if (window.location.hostname.indexOf('github.io') > 0) {
-        isGhpSite = true
+        isGhpSite = true;
         [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2,4)
         ref = 'main'
         baseUrl = `https://raw.githubusercontent.com/${acct}/${repo}/${ref}`
