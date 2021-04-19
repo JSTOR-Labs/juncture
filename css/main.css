@@ -1,0 +1,225 @@
+body { padding: 0; margin:0; font-family: "Roboto",sans-serif;}
+
+#app {
+    display: grid;
+    width: 100%;
+    height: 100vh;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    /* grid-template-areas: "header" "essay" "viewer"; */
+}
+#app.vertical {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "header header" "essay viewer";
+}
+/* small screen layout */
+@media only screen and (max-width: 1000px) {
+  #app, #app.vertical {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas: "header" "essay" "viewer";
+  }
+  #essay > section {
+    padding-bottom: 25vh !important; /* Enables srolling all content through active paragraph region at top*/
+  }
+}
+
+/* row-start column-start row-end column-end */
+
+#header {
+    /* grid-area: header; */
+    grid-area: 1 / 1 / 2 / 3;
+    z-index: 2;
+}
+#essay {
+    /* grid-area: essay; */
+    grid-area: 1 / 1 / 3 / 2;
+    border: solid 1px blue;
+    padding: 12px;
+    overflow-y: scroll;
+    z-index: 1;
+    padding-top: 400px;
+}
+#essay > section:last-of-type {
+    padding-bottom: 80vh; /* Enables srolling all content through active paragraph region at top*/
+}
+#viewer {
+    /* grid-area: viewer; */
+    grid-area: 2 / 2 / 3 / 2;
+    border: solid 1px blue;
+    position: relative;
+}
+p {
+    padding-right: 18px;
+    background-color: #ddd;
+}
+.active {
+    background-color: #fff;
+    position: relative;
+}
+
+#tabs-bar {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 0;
+    gap: 3px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 24px;
+    text-align: center;
+    margin: 0;
+}
+
+#tabs-bar span {
+    margin: 0;
+    padding: 3px;
+    background-color: white;
+    line-height: 1em;
+  }
+
+  #tabs-bar span svg {
+    margin: 0;
+    background-color: white !important;
+    color: #444A1E !important;
+  }
+
+  #tabs-bar span.active-tab svg {
+    margin: 0;
+    background-color: #444A1E !important;
+    color: white !important;
+  }
+
+  #tabs-bar span.active-tab:hover {
+    margin: 0;
+    background-color: #1f220a !important;
+    color: white !important;
+  }
+  #tabs-bar span.active-tab:hover svg {
+    margin: 0;
+    background-color: #1f220a !important;
+    color: white !important;
+  }
+
+  #tabs-bar span:hover, span.active-tab {
+    color: white !important;
+    background-color: #444A1E !important;
+  }
+  #tabs-bar span:hover svg {
+    color: white !important;
+    background-color: #444A1E !important;
+  }
+
+  .active span.entity {
+    background-color: lightseagreen;
+    cursor: pointer;
+  }
+
+  .tippy-box {
+    max-width: unset !important;
+  }
+
+  .popup {
+    display: grid;
+    grid-template-columns: minmax(auto, 200px) auto;
+    grid-auto-rows: auto;
+    grid-column-gap: 12px;
+    grid-template-areas: 
+      "p-label       p-image"
+      "p-description p-image";
+    font-size: 1em;
+    padding: 6px;
+  }
+
+  .popup .label {
+    grid-area: p-label;
+    font-size: 1.4em;
+    font-weight: 500;
+    color: #333;
+    padding-bottom: 12px;
+  }
+
+  .popup .description {
+    grid-area: p-description;
+    padding-top: .3em;
+    line-height: 1.2em;
+  }
+
+  .popup .summary {
+    grid-area: p-summary;
+  }
+
+  .popup .image {
+    grid-area: p-image;
+    max-width: 200px;
+  }
+
+  section.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr) );
+    grid-auto-rows: 1fr;
+    grid-gap: 1.8rem;
+  }
+
+  section.cards > section {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+        "image"
+        "title"
+        "metadata"
+        "abstract"
+        "heading";
+    border-radius: 4px;
+    padding: .5rem;
+  }
+
+  section.cards > section a {
+    grid-area: title;
+    font-weight: bold;
+    font-size: 1.5rem;
+    line-height: 1;
+    margin-top: 1.3rem;
+    margin-bottom: 0.8rem;
+    text-decoration: underline;
+}
+
+section.cards > section img {
+    grid-area: image;
+    justify-self: stretch;
+    object-fit: cover;
+    max-height: 250px;
+    width: 100%;
+}
+/*
+section.cards > section div {
+grid-area: image;
+max-height: 250px;
+overflow: hidden;
+}
+section.cards > section div img {
+    border: 0;
+    max-width: 100%;
+    vertical-align: top;
+}
+*/
+
+section.cards > section ul {
+    grid-area: metadata;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+section.cards section div {
+    grid-area: abstract;
+    height: 100px;
+    overflow-y: scroll;
+}
+
+section.cards p {
+    background-color: unset;
+}

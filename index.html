@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="icon" href="images/favicon.svg">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+  <link href="https://unpkg.com/tippy.js@6/dist/tippy.css" rel="stylesheet"/>
+  <link href="https://unpkg.com/tippy.js@6/themes/light-border.css" rel="stylesheet"/>
+  <link href="css/main.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+
+  <div id="app" ref="app" :class="layouts.join(' ')">
+    <div id="header" ref="header">            
+      <component v-bind:is="'ve-header'" :active="true" :scroll-top="scrollTop"
+                 :site-config="siteConfig" :essay-config="essayConfig" @menu-item-clicked="loadEssay"
+      ></component>
+    </div>
+    <div id="tabs-bar" ref="tabsBar">
+      <span v-for="viewer in viewers" :key="`tab-${viewer.name}`" 
+            :class="{'active-tab': activeViewer && activeViewer.name === viewer.name}" 
+            :data-tab="viewer.name" 
+            @click="selectedViewer = viewer; viewerIsOpen = true">
+        <i v-if="viewerData[viewer.name]" :class="viewerData[viewer.name].icon"></i>
+      </span>
+    </div>
+    <div id="essay" ref="essay" v-html="html" @scroll="onScroll"></div>
+    <div id="viewer" :style="viewerStyle">
+      <i v-if="!isVerticalLayout" class="far fa-times-circle" style="position:absolute; top:0; right:0; z-index:500; font-size:26px;" @click="viewerIsOpen = !viewerIsOpen"></i>
+      <component v-for="viewer in viewers" :key="viewer.name" v-bind:is="viewer.name" 
+                 :items="viewer.items" 
+                 :entities="entities"
+                 :active="selectedViewer !== null && viewer.name === selectedViewer.name"
+                 @update-component-data="updateComponentData"
+      ></component>
+    </div>
+    <div style="display:none;">
+      <div ref="popup" class="popup" v-if="hoverEntity">
+        <div class="label" v-html="hoverEntity.label"></div>
+        <div v-if="hoverEntity.description" class="description" v-html="hoverEntity.description"></div>
+        <div v-if="hoverEntity.images" class="image"><img :src="hoverEntity.images[0]"></div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it-footnote/3.0.2/markdown-it-footnote.min.js" integrity="sha512-9VOGZLBYkfqGR+OigfgoF3RUvDJRvQ9BAVgOKYmrvXlX7k+yBm5iJCpZEMpqmg2b1Cld1fiy2p0nEbDAcz9Q4w==" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it-attrs@4.0.0/markdown-it-attrs.browser.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.0.6/markdown-it.min.js" integrity="sha512-7U8vY7c6UQpBNQOnBg3xKX502NAckvk70H1nWvh6W7izA489jEz+RCN3ntT1VMdXewaSKkOrEBegp/h6SPXrjw==" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/http-vue-loader@1.4.2/src/httpVueLoader.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/yamljs/0.3.0/yaml.min.js" integrity="sha512-f/K0Q5lZ1SrdNdjc2BO2I5kTx8E5Uw1EU3PhSUB9fYPohap5rPWEmQRCjtpDxNmQB4/+MMI/Cf+nvh1VSiwrTA==" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
+  <script src="https://blueimp.github.io/JavaScript-MD5/js/md5.min.js"></script>
+  <!-- This is used for deep linking of Single Page Apps when hosted with GitHub Pages -->
+  <script type="text/javascript">
+    (function(l) {
+      if (l.search) {
+        let q = {}
+        l.search.slice(1).split('&').forEach(function(v) {
+          let a = v.split('=')
+          q[a[0]] = a.slice(1).join('=').replace(/~and~/g, '&')
+        })
+        if (q.p !== undefined) {
+          window.history.replaceState(null, null, l.pathname.slice(0, -1) + (q.p || '') + (q.q ? ('?' + q.q) : '') + l.hash)
+        }
+      }
+    }(window.location))
+  </script>
+  <script>
+    let md = window.markdownit({
+      html:         true,
+      breaks:       true,
+      linkify:      true,
+      typographer:  false
+    })
+    .use(window.markdownitFootnote)
+    .use(markdownItAttrs)
+
+    async function getContentSource() {
+      let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
+      let _acct, _repo
+      if (pathElems.length >= 2) [_acct, _repo] = pathElems.slice(pathElems[0] === repo ? 1 : 0)
+      console.log(`repo=${repo} _acct=${_acct} _repo=${_repo}`)
+      return _acct && _repo ? githubRepoInfo(_acct, _repo) : Promise.resolve({acct, repo, ref})
+    }
+
+    let siteConfig, baseUrl, acct, repo, ref, contentSource, basePath
+    let componentsRoot = 'components'
+    let componentPrefix = 've-'
+    let availableViewers = new Set()
+
+    console.log(window.location)
+    let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
+    console.log('qargs', qargs)
+
+    if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') >= 0) {
+      baseUrl = window.location.origin
+      basePath = window.location.pathname.slice(0,-1)
+    } else {
+      if (window.location.hostname.indexOf('github.io') > 0) {
+        [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2,4)
+        ref = 'main'
+        baseUrl = `https://raw.githubusercontent.com/${acct}/${repo}/${ref}`
+        basePath = `/${repo}`
+      } else {
+        acct = 'rsnyder'
+        repo = 'juncture'
+        ref = 'main'
+        baseUrl = window.location.origin
+        basePath = ''
+      }
+    }
+    console.log(`acct=${acct} repo=${repo} ref=${ref} baseUrl=${baseUrl} basePath=${basePath}`)
+
+    getContentSource()
+    .then(sourceInfo => {
+      contentSource = { ...sourceInfo, 
+                        ...{ ref: qargs.ref || sourceInfo.ref,
+                             baseUrl: sourceInfo.acct
+                             ? `https://raw.githubusercontent.com/${sourceInfo.acct}/${sourceInfo.repo}/${qargs.ref || sourceInfo.ref}`
+                             : window.location.origin }}
+      if ((contentSource.acct && contentSource.acct !== acct) || (contentSource.repo && contentSource.repo !== repo)) {
+        basePath = `/${contentSource.acct}/${contentSource.repo}`
+        console.log(`basePath=${basePath}`)
+      }
+      return getSiteConfig()
+    })
+    .then(config => siteConfig = config)
+    .then(resp => getComponentsList(componentsRoot, acct, repo, ref))
+    .then(componentsList => {
+      componentsList.forEach(component => {
+        let httpComponent = httpVueLoader(`${baseUrl}/${componentsRoot}/${component}`)
+        let componentName = `${componentPrefix}${camelToKebab(component.split('.')[0])}`
+        availableViewers.add(componentName)
+        Vue.component(componentName, httpComponent)
+      })
+
+      let head = document.querySelector('head')
+      head.appendChild(makeLink(`${baseUrl}/images/favicon.svg`, 'icon'))
+      head.appendChild(makeLink(`${baseUrl}/css/main.css`))
+      head.appendChild(makeLink(`${baseUrl}/css/custom.css`))
+
+      new Vue({
+        el: '#app',
+        data: () => ({
+          qargs,
+          layouts: [],
+          siteConfig,
+          params: [],
+          html: null,
+          active: null,
+          paras: {},
+          entities: {},
+          availableViewers,
+          viewers: [],
+          selectedViewer: null,
+          viewerData: {},
+          scrollTop: 0,
+          forceHorizontalLayout: window.matchMedia('only screen and (max-width: 1000px)').matches,
+          viewerIsOpen: false,
+          hoverEntity: undefined
+        }),
+        computed: {
+          essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
+          activeViewer() { return this.viewers.find(viewer => this.selectedViewer && viewer.name === this.selectedViewer.name) },
+          viewerStyle() { return { 
+            height: this.viewerIsOpen
+              ? this.isVerticalLayout 
+                ? '100%'
+                : `calc(50vh - ${this.$refs.header.clientHeight/2}px)`
+              : 0 
+            } 
+          },
+          isVerticalLayout() { return !this.forceHorizontalLayout && this.layouts.indexOf('vertical') >= 0 }
+        },
+        mounted() {
+          console.log('siteConfig', this.siteConfig)
+          console.log('contentSource', this.contentSource)
+          window.onpopstate = (e) => this.loadEssay(e.state.file, true) 
+          const resizeObserver = new ResizeObserver(entries => { 
+            this.forceHorizontalLayout = window.matchMedia('only screen and (max-width: 1000px)').matches
+          })
+          resizeObserver.observe(this.$refs.app)
+          this.loadEssay()
+        },
+        methods: {
+
+          // Updates viewer data from events emitted when viewer components are loaded
+          updateComponentData(data) { this.viewerData = {...this.viewerData, ...data }},
+
+          // Sets active element based on essay window scroll position
+          onScroll: _.throttle(function (e) {
+            e.preventDefault()
+            e.stopPropagation()
+            this.scrollTop = e.target.scrollTop
+            let paras = [...e.target.querySelectorAll('p')]
+            let i
+            for (i = 0; i < paras.length; i++) {
+              if (e.target.scrollTop <= paras[i].offsetTop + paras[i].clientHeight - 200) break
+            }
+            if (i < paras.length) this.active = paras[i].dataset.id
+          }, 5),
+
+          // Loads essay Markdown file
+          async loadEssay(path, replace) {
+            /*
+            let pathElems = (path || window.location.pathname)
+              .split('?')[0]
+              .split('/').filter(elem => elem !== '')
+            path = this.contentSource 
+              ? pathElems.length > 2 ? `/${pathElems.slice(pathElems[0] === repo ? 3 : 2).join('/')}/` : '/'
+              : pathElems.length > 0 ? `/${pathElems.join('/')}/` : '/'
+            */
+            path = path || '/'
+            console.log(`loadEssay: baseUrl=${contentSource.baseUrl} basePath=${basePath} path=${path}`)
+            let essayUrls = [`${contentSource.baseUrl}${path}README.md`,
+                             `${contentSource.baseUrl}${path.slice(0,-1)}.md`]
+            let resp
+            for (let i = 0; i < essayUrls.length; i++) {
+              resp = await fetch(essayUrls[i])
+              console.log('loadEssay', essayUrls[i], resp.ok)
+              if (resp.ok) break
+            }
+            let markdown = await resp.text()
+
+            // let browserPath = pathElems.length > 0 ? `/${pathElems.join('/')}/` : '/'
+            let browserPath = `${basePath}${path}`
+            if (qargs.ref) browserPath += `?ref=${qargs.ref}`
+            console.log(`browserPath=${browserPath}`)
+            if (replace) {
+              history.replaceState({file: path || ''}, '', browserPath)
+            } else {
+              history.pushState({file: path || ''}, '', browserPath)
+            }
+
+            let essayElem = this.markdownToElem(markdown)
+            this.convertResourceUrls(essayElem)
+            this.html = this.doCustomFormatting(essayElem)
+            this.$nextTick(() => {
+              let paras = [...document.getElementById('essay').querySelectorAll('p')]
+              this.getEntityData([...this.findEntities()]).then(entities => {
+                this.entities = entities
+                this.tagEntities()
+                this.addPopups()
+                this.convertLinks(this.$refs.essay)
+                this.active = paras.length > 0 ? paras[0].dataset.id : null
+              })
+              this.params = Array.from(document.getElementById('essay').querySelectorAll('param'))
+                .map(param => { return { 
+                  ...{ elem: param },
+                  ...Object.fromEntries(Array.from(param.attributes).map(attr => [attr.nodeName, attr.value])) 
+                }})
+                .map(param => {
+                  let viewerTag = Object.keys(param).find(attr => !attr.value && this.availableViewers.has(attr))
+                  if (viewerTag) param.viewer = viewerTag
+                  return param
+                })
+              this.paras = this.paramsForParagraphs()
+            })
+
+          },
+
+          doCustomFormatting(elem) {
+            Array.from(elem.querySelectorAll('section.cards'))
+              .forEach(cardsSection => {
+              Array.from(cardsSection.querySelectorAll('section')).forEach(card => {
+                ['img', 'a', 'ul'].forEach(selector => card.appendChild(card.querySelector(selector)))
+                let paras = []
+                Array.from(card.querySelectorAll('p')).forEach(p => {
+                  if (p.textContent.trim() === '') {
+                    card.removeChild(p)
+                  } else {
+                    paras.push(p)
+                  }
+                })
+                if (paras.length > 0) {
+                  let parasDiv = document.createElement('div')
+                  card.appendChild(parasDiv)
+                  paras.forEach(para => parasDiv.appendChild(para))
+                }
+              })
+            })
+            return elem.innerHTML
+          },
+
+          // Adds tippy popups to tagged entity text
+          addPopups() {
+            tippy('.entity', {
+              allowHTML: true,
+              interactive: true,
+              delay: [null, null],
+              placement: 'right',
+              theme: 'light-border',
+              onShow: async (instance) => {
+                // let entity = await this.getEntity(instance.reference.dataset.qid, this.lang)
+                this.hoverEntity = this.entities[instance.reference.dataset.eid]
+                this.$nextTick(() => instance.setContent(this.$refs.popup.outerHTML))
+              },
+              onHide: () => {  }
+            })
+          },
+
+          // Finds all entity references in param tags
+          findEntities() {
+            return new Set(Array.from(this.$refs.essay.querySelectorAll('param'))
+                           .filter(el => el.attributes.eid)
+                           .map(el => el.attributes.eid.value))
+          },
+
+          // Finds all param tags in elements between top-level app element and element in para arg
+          paramsInScope(para) {
+            let paramTags = []
+            let scope = []
+            let el = para
+            while (el && el.id !== 'app') {
+              scope.push(el)
+              el = el.parentElement
+            }
+            scope.forEach(elemInScope => {
+              paramTags = [
+                ...paramTags,
+                ...this.params
+                  .filter(param => param.elem.parentElement === elemInScope)
+                  .filter(param => 
+                    !param.elem.previousElementSibling ||
+                    (param.elem.previousElementSibling.tagName[0] === 'H' ||
+                    param.elem.previousElementSibling.tagName === 'PARAM' ||
+                    param.elem.previousElementSibling.tagName === 'P' && param.elem.previousElementSibling === para
+                    )
+                  )
+              ]
+            })
+            return paramTags
+          },
+  
+          // Creates an object mapping paragraph data-id to all params found in para scope
+          paramsForParagraphs() {
+            return Object.fromEntries(
+              Array.from(this.$refs.essay.querySelectorAll('p'))
+              .map(para => [para.dataset.id, this.paramsInScope(para)]))
+          },
+
+          // Gets labels, aliases, images and geo coords for referenced Wikdata entities
+          async getEntityData(eids) {
+            let values = eids.map(eid => `(<http://www.wikidata.org/entity/${eid}>)`).join(' ')
+            let query = `SELECT ?item ?label ?aliases ?description ?images ?coords WHERE {
+                           VALUES (?item) { ${values} }
+                           ?item rdfs:label ?label . FILTER(LANG(?label) = 'en')
+                           OPTIONAL { ?item schema:description ?description . FILTER(LANG(?description) = 'en') }
+                           OPTIONAL { ?item skos:altLabel ?aliases . FILTER(LANG(?aliases) = 'en') }
+                           OPTIONAL { ?item wdt:P18 ?images . }
+                           OPTIONAL { ?item wdt:P625 ?coords . }
+                         }`
+            let resp = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}`, {
+              method: 'GET',
+              headers: { Accept: 'application/sparql-results+json', 'User-agent': 'Juncture web client' }
+            })
+            resp = await resp.json()
+            let entities = {}
+            resp.results.bindings.forEach(rec => {
+              let eid = rec.item.value.split('/').pop()
+              if (!entities[eid]) entities[eid] = {
+                eid, 
+                label: rec.label.value, 
+                aliases: [],
+                description: rec.description && rec.description.value,
+                images: [], 
+                coords: rec.coords && rec.coords.value.replace(/Point\(/,'').replace(/\)/,'').split(' ').reverse().join(','),
+              }
+              if (rec.aliases && entities[eid].aliases.indexOf(rec.aliases.value) < 0) entities[eid].aliases.push(rec.aliases.value)
+              if (rec.images && entities[eid].images.indexOf(rec.images.value) < 0) entities[eid].images.push(this.commonsImageUrl(rec.images.value, 160))
+            })
+            return entities
+          },
+
+          // Convert essay Markdown into HTML.  Markdown headings are used to infer content heirarchy
+          markdownToElem(markdown) {
+            let essay = document.createElement('div')
+            //let tmp = document.createElement('div')
+            //tmp.innerHTML = md.render(markdown)
+            let tmp = new DOMParser().parseFromString(md.render(markdown), 'text/html').children[0].children[1]
+            let current = essay
+    
+            Array.from(tmp.children).forEach(el => {
+              if (el.tagName[0] === 'H') {
+                let sectionLevel = parseInt(el.tagName.slice(1))
+                current = document.createElement('section')
+                let sectionClasses = Array.from(el.classList)
+                if (sectionClasses.length > 0) {
+                  current.classList.add(...sectionClasses)
+                  el.classList.remove(...sectionClasses)
+                  if (!el.innerHTML) {
+                    // el = null
+                    el.style.display = 'none'
+                  }
+                }
+                let headings = [...essay.querySelectorAll(`H${sectionLevel-1}`)]
+                let parent = sectionLevel === 1 || headings.length === 0 ? essay : headings.pop().parentElement
+                parent.appendChild(current)
+                let parentDataID = parent.dataset.id || ''
+                let sectionSeq = parent.querySelectorAll(`H${sectionLevel}`).length + 1
+                let currentDataID = parentDataID ? `${parentDataID}.${sectionSeq}` : sectionSeq
+                current.setAttribute('data-id', currentDataID)
+              } else if (el.tagName === 'P') {
+                if (el.innerHTML.indexOf('ve-button.png') >= 0) {
+                  el = null
+                } else {
+                  let paraSeq = Array.from(current.querySelectorAll('P')).filter(para => para.parentElement === current).length + 1
+                  el.setAttribute('data-id', `${current.dataset.id}.${paraSeq}`)
+                }
+              }
+              if (el) {
+                if (el.dataset.id) current.setAttribute('title', el.dataset.id)
+                current.innerHTML += el.outerHTML
+              }
+            })
+            return essay
+          },
+   
+          // Converts link tags to elements with click listeners enabling intra-app navigation without
+          //   page loading
+          convertLinks(root) {
+            console.log('convertLinks')
+            root.querySelectorAll('a').forEach(link => {
+              if ((!link.href && link.dataset.target) || link.href.indexOf(window.location.host) > 0) {
+                // If internal link
+                let target = link.dataset.target
+                if (!target) { 
+                  const parsedUrl = parseUrl(link.href)
+                  let pathElems = parsedUrl.pathname.split('/').filter(elem => elem !== '')
+                  /*if (contentSource && pathElems[0] !== contentSource.acct) {
+                    pathElems = [...[contentSource.acct, contentSource.repo], ...pathElems]
+                  }*/
+                  // console.log(link.href, parsedUrl.pathname, pathElems)
+                  target = parsedUrl.hash === '' ? `/${pathElems.join('/')}/` : parsedUrl.hash.split('?')[0]
+                }
+                link.removeAttribute('href')
+                link.setAttribute('data-target', target)
+
+                // Add click handler for internal links
+                link.addEventListener('click', (e) => {
+                  let target = e.target
+                  while (!target.dataset.target && target.parentElement) { target = target.parentElement }
+                  let path = target.dataset.target
+                  if (path[0] === '#') {
+                    document.querySelector(path).scrollIntoView({ block:'start' })
+                  } else {
+                    this.loadEssay(path)
+                  }
+                })
+              } else {
+                // If external link, add external link icon to text and force opening in new tab
+                link.innerHTML += '<sup><i class="fa fa-external-link-square-alt" style="margin-left:3px;margin-right:2px;font-size:0.7em;color:#219653;"></i></sup>'
+                link.setAttribute('target', '_blank')
+              }
+            })
+          },
+
+          convertResourceUrls(root) {
+            console.log('convertResourceUrls')
+            root.querySelectorAll('img').forEach(img => {
+              if (img.src.indexOf(baseUrl) === 0)
+                img.setAttribute('src', `${contentSource.baseUrl}/${img.src.split('/').slice(3).join('/')}`)
+            })
+            root.querySelectorAll('param').forEach(param => {
+              ['url', 'banner'].forEach(attr => {
+                if (param.attributes[attr]) {
+                  param.setAttribute(attr, convertURL(param.attributes[attr].value, contentSource.baseUrl))
+                }
+              })
+            })
+          },
+
+          // Finds words/phrases in content paragraphs that match labels or aliases for entities in scope
+          //  Matched text is wrapped with a span tag for reacting to hover and click actions
+          tagEntities() {
+            Array.from(this.$refs.essay.querySelectorAll('p')).forEach(para => {
+              let paraHTML = para.innerHTML
+              this.paramsInScope(para).filter(param => param['ve-entity'] !== undefined && param.eid !== undefined).map(param => param.eid).forEach(eid => {
+                let entity = this.entities[eid]
+                if (entity) {
+                  let toMatch = [...[entity.label], ...entity.aliases]
+                  for (let i = 0; i < toMatch.length; i++) {
+                    let re = new RegExp(`(${toMatch[i]})`)
+                    if (toMatch[i], re.test(paraHTML)) {
+                      paraHTML = paraHTML.replace(re, `<span class="entity" data-eid="${eid}">$1</span>`)
+                      break
+                    }
+                  }
+                }
+              })
+              para.innerHTML = paraHTML
+            })
+            Array.from(this.$refs.essay.querySelectorAll('span.entity'))
+              .forEach(el => el.addEventListener('click', (e) => {
+                console.log('entity selected', e.target.dataset.eid)
+              })
+            )
+          },
+
+          commonsImageUrl(url, width) {
+            // Converts Wikimedia commons File URL to an image link
+            //   If a width is provided a thumbnail is returned
+            let mwImg = url.indexOf('Special:FilePath') > 0 ? url.split('/Special:FilePath/').pop() :  url.split('/File:').pop()
+            mwImg = decodeURIComponent(mwImg).replace(/ /g,'_')
+            const ImgMD5 = md5(mwImg)
+            const extension = mwImg.slice(mwImg.length-4)
+            let imgUrl = `https://upload.wikimedia.org/wikipedia/commons/${width ? 'thumb/' : ''}`
+            imgUrl += `${ImgMD5.slice(0,1)}/${ImgMD5.slice(0,2)}/${mwImg}`
+            if (width) imgUrl += `/${width}px-${mwImg}`
+            if (extension === '.svg') imgUrl += '.png'
+            if (extension === '.tif') imgUrl += '.jpg'
+            return imgUrl
+          }
+        },
+
+        watch: {
+
+          // Set app classes using essay config (ve-config) attributes, if present
+          essayConfig (config) {
+            this.layouts = []
+            this.viewerIsOpen = false
+            if (config) {
+              if (config.layout) this.layouts = config.layout.split(',').map(layout => layout === 'vtl' ? 'vertical' : layout)
+              if (config.style) config.style.split(',').forEach(cls => this.$refs.app.classList.add(cls))
+            }
+          },
+
+          // Watcher that updates various data elements when the active paragraph changes
+          active(paraId, priorId) {
+            console.log(`active=${this.active}`)
+            let activePara = document.querySelector(`[data-id="${paraId}"]`)
+            if (activePara) {
+              if (this.$refs.tabsBar) activePara.appendChild(this.$refs.tabsBar)
+              activePara.classList.add('active')
+            }
+            let priorPara = document.querySelector(`[data-id="${priorId}"]`)
+            if (priorPara) priorPara.classList.remove('active')
+  
+            let viewers = []
+            let paramTagsForPara = this.paramsInScope(activePara)
+            paramTagsForPara
+              .filter(param => this.availableViewers.has(param.viewer))
+              .forEach(param => {
+                let viewerData = viewers.find(viewer => viewer.name === param.viewer)
+                if (!viewerData) {
+                  viewerData = {name: param.viewer, items: []}
+                  viewers.push(viewerData)
+                }
+                viewerData.items.push(param)
+              })
+            this.viewers = viewers
+            this.selectedViewer = this.viewerIsOpen && this.viewers.length > 0 ? this.viewers[0] : null
+          },
+
+          isVerticalLayout: {
+            handler: function () {
+              console.log(`isVerticalLayout=${this.isVerticalLayout}`)
+              this.selectedViewer = this.isVerticalLayout && this.viewers.length > 0 ? this.viewers[0] : this.selectedViewer
+              if (this.isVerticalLayout) this.viewerIsOpen = true
+            },
+            immediate: true
+          },
+
+          // logging watchers
+          params (params) { console.log('params', params) },
+          entities (entities) { console.log('entities', entities) },
+          paras (paras) { console.log('paras', paras) },
+          selectedViewer (selectedViewer) { console.log('selectedViewer', selectedViewer) },
+
+          forceHorizontalLayout: {
+            handler: function (forceHorizontalLayout) { console.log(`forceHorizontalLayout=${forceHorizontalLayout}`) },
+            immediate: true
+          },
+          viewers: {
+            handler: function (viewers) { if (viewers.length > 0) console.log('viewers', viewers) },
+            immediate: true
+          }
+
+        }
+      })
+    })
+
+    Vue.config.productionTip = false
+    Vue.config.devtools = true
+
+    // Vue components mixin that handles linking to external JS and CSS resources
+    Vue.mixin({
+      methods: {
+        loadDependencies(dependencies, i, callback) {
+          if (i === 0) {
+            // console.log('loadDependencies', this.$options.name, this.dependencies)
+            let componentData = {}
+            componentData[this.$options.name] = { label: this.label, icon: this.icon }
+            this.$emit('update-component-data', componentData)
+          }
+          if (dependencies.length > 0) {
+            this.load(dependencies[i], () => {
+              if (i < dependencies.length-1) {
+                this.loadDependencies(dependencies, i+1, callback) 
+              } else {
+                callback()
+              }
+            })
+          }
+        },
+        load(url, callback) {
+          let e
+          if (url.split('.').pop() === 'js') {
+            e = document.createElement('script')
+            e.src = url
+            e.type='text/javascript'
+          } else {
+            e = document.createElement('link')
+            e.href = url
+            e.rel='stylesheet'
+          }
+          e.addEventListener('load', callback)
+          document.getElementsByTagName('head')[0].appendChild(e)
+        }
+      }
+    })
+
+    // Various utility and helper methods
+    function camelToKebab(input) { return input.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}
+    function kebabToCamel(input) { return input.replace(/-([a-z])/g, function (g) {return g[1].toUpperCase()})}
+
+    // Gets site config
+    async function getSiteConfig() {
+      let config
+      let resp = await fetch(`${contentSource.baseUrl}/config.yaml`)
+      if (resp.ok) {
+        config = YAML.parse(await resp.text())
+      } else {
+        resp = await fetch(`${contentSource.baseUrl}/config.json`)
+        config = resp.ok ? await resp.json() : {}
+      }
+      ['banner'].forEach(attr => {
+        if (config[attr]) config[attr] = convertURL(config[attr])
+      })
+      return config
+    }
+
+    // Determines if Github repo exists
+    async function githubRepoInfo(acct, repo) {
+      let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`)
+      if (resp.ok) {
+        resp = await resp.json()
+        return {acct, repo, ref: resp.default_branch}
+      }
+    }
+
+    // Gets a list of available components
+    async function getComponentsList(root, acct, repo, ref) {
+      console.log(`getComponentsList: root=${root} acct=${acct} repo=${repo} ref=${ref}`)
+      if (acct) {
+        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/trees/${ref}`)
+        resp = await resp.json()
+        resp = await fetch(resp.tree.find(item => item.path === root).url)
+        resp = await resp.json()
+        return resp.tree.map(item => item.path)
+      } else { // localhost
+        let resp = await fetch(`/${root}`)
+        return (await resp.json()).files
+      }
+    }
+  
+    function parseUrl(href) {
+      const match = href.match(/^(https?):\/\/(([^:/?#]*)(?::([0-9]+))?)(\/?[^?#]*)(\?[^#]*|)(#.*|)$/)
+      return (match && {protocol: match[1], host: match[2], hostname: match[3], origin: `${match[1]}://${match[2]}`,
+              port: match[4], pathname: match[5] || '/', search: match[6], hash: match[7]}
+      )
+    }
+
+    function parseQueryString(queryString) {
+      queryString = queryString || window.location.search
+      const dictionary = {}
+      try {
+        if (queryString.indexOf('?') === 0) queryString = queryString.substr(1)
+        const parts = queryString.split('&')
+        for (let i = 0; i < parts.length; i++) {
+          const kvp = parts[i].split('=')
+          if (kvp[0] !== '') {
+            if (kvp.length === 2) {
+              dictionary[kvp[0]] = decodeURIComponent(kvp[1]).replace(/\+/g, ' ')
+            } else {
+              dictionary[kvp[0]] = 'true'
+            }
+          }
+        }
+      } catch (err) { console.log(err) }
+      return dictionary
+    }
+
+    function makeLink(href, rel) {
+      let link = document.createElement('link')
+      link.href = href
+      link.rel = rel || 'stylesheet'
+      return link
+    }
+
+    function convertURL(current) {
+      let pathElems
+      if (current.indexOf('http') === 0) {
+        let isGhpUrl = current.indexOf('github.io') > 0
+        pathElems = current.split('/').slice(isGhpUrl ? 4 : 3)
+      } else if (current.indexOf('/') === 0) {
+        pathElems = current.split('/').slice(1)
+      } else {
+        pathElems = current.split('/')
+      }
+      let replacement = `${contentSource.baseUrl}/${pathElems.join('/')}`
+      console.log(`convertURL: current=${current} contentSource.baseUrl=${contentSource.baseUrl} replacement=${replacement}`)
+      return replacement
+    }
+  </script>
+
+</body>
+</html>
