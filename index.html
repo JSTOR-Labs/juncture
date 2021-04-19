@@ -92,6 +92,7 @@
     let componentsRoot = 'components'
     let componentPrefix = 've-'
     let availableViewers = new Set()
+    const knownGhAccts = {'jstor-labs': 'main', 'rsnyder': 'main', 'kent-map': 'main'}
 
     console.log(window.location)
     let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
@@ -643,7 +644,6 @@
       return config
     }
 
-    const knownGhAccts = {'jstor-labs': 'main', 'rsnyder': 'main', 'kent-map': 'main'}
     // Determines if Github repo exists
     async function githubRepoInfo(acct, repo) {
       console.log(`githubRepoInfo: acct=${acct} rep=${repo} isKnownAcct=${knownGhAccts[acct] !== undefined}`)
