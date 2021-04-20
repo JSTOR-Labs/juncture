@@ -134,13 +134,16 @@
       return getSiteConfig()
     })
     .then(config => siteConfig = config)
-    .then(resp => getComponentsList(componentsRoot, acct, repo, ref))
+    .then(resp => getMergedComponentsList(componentsRoot, acct, repo, ref, contentSource))
     .then(componentsList => {
-      componentsList.forEach(component => {
-        let httpComponent = httpVueLoader(`${baseUrl}/${componentsRoot}/${component}`)
-        let componentName = `${componentPrefix}${camelToKebab(component.split('.')[0])}`
-        availableViewers.add(componentName)
-        Vue.component(componentName, httpComponent)
+      componentsList.forEach(componentUrl => {
+        let httpComponent = httpVueLoader(componentUrl)
+        let componentName = `${componentPrefix}${camelToKebab(componentUrl.split('/').pop().split('.')[0])}`
+        if (!availableViewers.has(componentName)) {
+          console.log(componentName, componentUrl)
+          availableViewers.add(componentName)
+          Vue.component(componentName, httpComponent)
+        }
       })
 
       let head = document.querySelector('head')
@@ -210,17 +213,8 @@
 
           // Loads essay Markdown file
           async loadEssay(path, replace) {
-            /*
-            let pathElems = (path || window.location.pathname)
-              .split('?')[0]
-              .split('/').filter(elem => elem !== '')
-            path = this.contentSource 
-              ? pathElems.length > 2 ? `/${pathElems.slice(pathElems[0] === repo ? 3 : 2).join('/')}/` : '/'
-              : pathElems.length > 0 ? `/${pathElems.join('/')}/` : '/'
-            */
-            console.log(`loadEssay: path=${path} pathname=${window.location.pathname}`)
             path = path || window.location.pathname.slice(basePath.length) || '/'
-            console.log(`loadEssay: baseUrl=${contentSource.baseUrl} basePath=${basePath} path=${path}`)
+            console.log(`loadEssay: contentSource.baseUrl=${contentSource.baseUrl} basePath=${basePath} path=${path}`)
             let essayUrls = [`${contentSource.baseUrl}${path}README.md`,
                              `${contentSource.baseUrl}${path.slice(0,-1)}.md`]
             let resp
@@ -231,7 +225,6 @@
             }
             let markdown = await resp.text()
 
-            // let browserPath = pathElems.length > 0 ? `/${pathElems.join('/')}/` : '/'
             let browserPath = `${basePath}${path}`
             if (qargs.ref) browserPath += `?ref=${qargs.ref}`
             console.log(`browserPath=${browserPath}`)
@@ -669,11 +662,24 @@
         resp = await resp.json()
         resp = await fetch(resp.tree.find(item => item.path === root).url)
         resp = await resp.json()
-        return resp.tree.map(item => item.path)
+        return resp.tree.map(item => `https://raw.githubusercontent.com/${acct}/${repo}/${ref}/${root}/${item.path}`)
       } else { // localhost
-        let resp = await fetch(`/${root}`)
-        return (await resp.json()).files
+        let resp = await fetch(`${baseUrl}/${root}`)
+        return (await resp.json()).files.map(fname => `${baseUrl}/${root}/${fname}`)
       }
+    }
+  
+    // Gets a list of available components
+    async function getMergedComponentsList(root, acct, repo, ref, contentSource) {
+      console.log(`getMergedComponentsList: root=${root} acct=${acct} repo=${repo} ref=${ref}`, contentSource)
+      let componentsList = await getComponentsList(root, acct, repo, ref)
+      console.log('componentsList', componentsList)
+      if (baseUrl !== contentSource.baseUrl) {
+        let extras = await getComponentsList(root, contentSource.acct, contentSource.repo, contentSource.ref)
+        console.log('extras', extras)
+        componentsList = [...extras, ...componentsList]
+      }
+      return componentsList
     }
   
     function parseUrl(href) {
