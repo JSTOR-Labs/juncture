@@ -714,7 +714,7 @@
       if (current.indexOf('http') === 0) {
         if (current.indexOf(baseUrl) === 0) {
           console.log('YES')
-        } else if (current.indexOf(`${contentSource.acct}.github.io/${contentSource.repo}`)) {
+        } else if (current.indexOf(`${contentSource.acct}.github.io/${contentSource.repo}`) === 0) {
           pathElems = current.split('/').slice(4)
         }
       } else if (current.indexOf('/') === 0) {
@@ -724,7 +724,7 @@
       }
       if (pathElems) {
         let replacement = `${contentSource.baseUrl}/${pathElems.join('/')}`
-        console.log(`convertURL: baseUrl=${baseUrl} current=${current} contentSource.baseUrl=${contentSource.baseUrl} replacement=${replacement}`)
+        console.log(`convertURL: origin=${window.location.origin} baseUrl=${baseUrl} current=${current} contentSource.baseUrl=${contentSource.baseUrl} replacement=${replacement}`)
         return replacement
       } else {
         return current
