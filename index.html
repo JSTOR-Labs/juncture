@@ -711,22 +711,18 @@
 
     function convertURL(current) {
       let pathElems
-      if (current.indexOf('http') == 0) {
+      if (current.indexOf('http') === 0) {
         if (current.indexOf(window.location.origin) === 0) {
-          pathElems = current.split('/').slice(3)
+          let pathElems = current.split('/').slice(3)
           if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
+          return `${contentSource.baseUrl}/${pathElems.join('/')}`
+        } else {
+          return current
         }
       } else if (current.indexOf('/') === 0) {
-        pathElems = current.split('/').slice(0)
+        return `${contentSource.baseUrl}${current}`
       } else {
-        pathElems = current.split('/')
-      }
-      if (pathElems) {
-        let replacement = `${contentSource.baseUrl}/${pathElems.join('/')}`
-        console.log(`convertURL: origin=${window.location.origin} baseUrl=${baseUrl} current=${current} contentSource.baseUrl=${contentSource.baseUrl} replacement=${replacement}`)
-        return replacement
-      } else {
-        return current
+        return `${contentSource.baseUrl}/${current}`
       }
     }
   </script>
