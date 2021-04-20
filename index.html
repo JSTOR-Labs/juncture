@@ -107,8 +107,7 @@
         isGhpSite = true;
         [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2,4)
         ref = 'main'
-        // baseUrl = `https://raw.githubusercontent.com/${acct}/${repo}/${ref}`
-        baseUrl = window.location.origin
+        baseUrl = `https://${acct}.github.io/${repo}`
         basePath = `/${repo}`
       } else {
         acct = 'rsnyder'
