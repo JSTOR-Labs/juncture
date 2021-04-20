@@ -712,17 +712,23 @@
     function convertURL(current) {
       let pathElems
       if (current.indexOf('http') === 0) {
-        let isGhpUrl = current.indexOf('github.io') > 0
-        // pathElems = current.split('/').slice(isGhpUrl ? 3 : 2)
-        pathElems = current.split('/').slice(4)
+        if (current.indexOf(baseUrl) === 0) {
+          console.log('YES')
+        } else if (current.indexOf(`${contentSource.acct}.github.io/${contentSource.repo}`)) {
+          pathElems = current.split('/').slice(4)
+        }
       } else if (current.indexOf('/') === 0) {
         pathElems = current.split('/').slice(0)
       } else {
         pathElems = current.split('/')
       }
-      let replacement = `${contentSource.baseUrl}/${pathElems.join('/')}`
-      console.log(`convertURL: current=${current} contentSource.baseUrl=${contentSource.baseUrl} replacement=${replacement}`)
-      return replacement
+      if (pathElems) {
+        let replacement = `${contentSource.baseUrl}/${pathElems.join('/')}`
+        console.log(`convertURL: baseUrl=${baseUrl} current=${current} contentSource.baseUrl=${contentSource.baseUrl} replacement=${replacement}`)
+        return replacement
+      } else {
+        return current
+      }
     }
   </script>
 
