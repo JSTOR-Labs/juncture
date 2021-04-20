@@ -261,6 +261,7 @@
                 .map(param => {
                   let viewerTag = Object.keys(param).find(attr => !attr.value && this.availableViewers.has(attr))
                   if (viewerTag) param.viewer = viewerTag
+                  else if (!Object.keys(param).find(attr => attr.indexOf('ve-') === 0)) param['ve-entity'] = ''
                   return param
                 })
               this.paras = this.paramsForParagraphs()
@@ -467,7 +468,7 @@
           convertResourceUrls(root) {
             console.log('convertResourceUrls')
             root.querySelectorAll('img').forEach(img => {
-              if (img.src.indexOf(baseUrl) !== 0) img.setAttribute('src', convertURL(img.src))
+              if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src))
             })
             root.querySelectorAll('param').forEach(param => {
               ['url', 'banner'].forEach(attr => {
@@ -710,7 +711,7 @@
     }
 
     function convertURL(current) {
-      let pathElems
+      // console.log(`convertURL: current=${current} contentSource=${contentSource.baseUrl}`)
       if (current.indexOf('http') === 0) {
         if (current.indexOf(window.location.origin) === 0) {
           let pathElems = current.split('/').slice(3)

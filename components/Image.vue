@@ -34,6 +34,7 @@ module.exports = {
       console.log(this.$options.name, this.items)
       this.osdElem = document.getElementById('osd')
       this.initViewer()
+      if (this.items) this.loadTileSources()
     },
     initViewer() {
       if (this.viewer) {
@@ -69,45 +70,47 @@ module.exports = {
           showNavigator: false
         }
         this.viewer = OpenSeadragon(options)
-        if (this.items) this.viewer.open([{ url: this.items[0].url, type: 'image', buildPyramid: true }])
+        // if (this.items) this.viewer.open([{ url: this.items[0].url, type: 'image', buildPyramid: true }])
 
       })
     },
-    loadTileSources() {
-      console.log('loadTileSources')
+    async loadTileSources() {
+      let manifestUrls = this.items.filter(item => item.manifest).map(item => item.manifest)
+      let manifests = {}
+      if (manifestUrls) {
+        await Promise.all(manifestUrls.map(manifestUrl => fetch(manifestUrl).then(resp => resp.json())))
+                     .then(manifestList => manifestList.forEach((manifest, idx) => manifests[manifestUrls[idx]] = manifest))
+      }
       let tileSources = []
-      let manifests = []
       this.items.forEach(item => {
         if (item.url) {
           tileSources.push({ tileSource: { url: items.url, type: 'image', buildPyramid: true }, opacity: 1 })
         } else if (item.manifest) {
-          tileSources.push({ tileSource: null, opacity: 1 })
-          manifests.push(item.manifest)
+          let manifest = manifests[item.manifest]
+          let tileSource = `${manifest.sequences[0].canvases[manifest.seq || 0].images[0].resource.service['@id']}/info.json`
+          tileSources.push({ tileSource, opacity: 1 })
         }
       })
-      if (manifests.length > 0) this.loadManifests(manifests)
       this.tileSources = tileSources
-    },
-    loadManifests(manifests) {
-      console.log('loadManifests', manifests)
     }
   },     
   watch: {
     items: {
       handler: function (items) {
-        this.loadTileSources()
-        console.log('OpenSeadragonViewer.watch.items', items)
-        this.viewer.open([{ url: items[0].url, type: 'image', buildPyramid: true }])
+        if (items) this.loadTileSources()
       },
       immediate: false
     },
     active: {
-      handler: function (isActive) { console.log(`${this.$options.name}.active=${isActive}`) },
+      handler: function (isActive) { console.log(`${this.$options.name}.isActive=${isActive}`) },
       immediate: true
     },
-    tileSources() {
-      console.log(`${this.$options.name}.tileSources=${this.tileSources.length}`)      
-      this.viewer.open(this.tileSources)
+    tileSources: {
+      handler: function () {
+        console.log(`${this.$options.name}.tileSources=${this.tileSources.length}`)      
+        if (this.viewer) this.viewer.open(this.tileSources)
+      },
+      immediate: true
     }
   }
 }
