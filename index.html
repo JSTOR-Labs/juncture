@@ -711,12 +711,8 @@
 
     function convertURL(current) {
       let pathElems
-      if (current.indexOf('http') === 0) {
-        if (current.indexOf(baseUrl) === 0) {
-          console.log('YES')
-        } else if (current.indexOf(`${contentSource.acct}.github.io/${contentSource.repo}`) === 0) {
-          pathElems = current.split('/').slice(4)
-        }
+      if (current.indexOf(window.location.origin) === 0) {
+        pathElems = current.split('/').slice(4)
       } else if (current.indexOf('/') === 0) {
         pathElems = current.split('/').slice(0)
       } else {
