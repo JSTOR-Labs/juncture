@@ -101,7 +101,7 @@
 
     if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') >= 0) {
       baseUrl = window.location.origin
-      basePath = window.location.pathname.slice(0,-1)
+      basePath = ''
     } else {
       if (window.location.hostname.indexOf('github.io') > 0) {
         isGhpSite = true;
@@ -128,8 +128,8 @@
                              : window.location.origin }}
       if ((contentSource.acct && contentSource.acct !== acct) || (contentSource.repo && contentSource.repo !== repo)) {
         basePath = `${isGhpSite ? '/'+repo : ''}/${contentSource.acct}/${contentSource.repo}`
-        console.log(`basePath=${basePath}`)
       }
+      console.log('basePath', basePath)
       console.log('contentSource', contentSource)
       return getSiteConfig()
     })
@@ -247,10 +247,16 @@
                 this.active = paras.length > 0 ? paras[0].dataset.id : null
               })
               this.params = Array.from(document.getElementById('essay').querySelectorAll('param'))
-                .map(param => { return { 
-                  ...{ elem: param },
-                  ...Object.fromEntries(Array.from(param.attributes).map(attr => [attr.nodeName, attr.value])) 
-                }})
+                .map(param => {
+                  let prior = param.previousElementSibling
+                  while (prior && prior.tagName !== 'P' && prior.tagName[0] !== 'H') {
+                    prior = prior.previousElementSibling
+                  }
+                  return { 
+                    ...{ elem: prior || this.$refs.essay },
+                    ...Object.fromEntries(Array.from(param.attributes).map(attr => [attr.nodeName, attr.value])) 
+                  }
+                })
                 .map(param => {
                   let viewerTag = Object.keys(param).find(attr => !attr.value && this.availableViewers.has(attr))
                   if (viewerTag) param.viewer = viewerTag
@@ -318,20 +324,9 @@
               scope.push(el)
               el = el.parentElement
             }
-            scope.forEach(elemInScope => {
-              paramTags = [
-                ...paramTags,
-                ...this.params
-                  .filter(param => param.elem.parentElement === elemInScope)
-                  .filter(param => 
-                    !param.elem.previousElementSibling ||
-                    (param.elem.previousElementSibling.tagName[0] === 'H' ||
-                    param.elem.previousElementSibling.tagName === 'PARAM' ||
-                    param.elem.previousElementSibling.tagName === 'P' && param.elem.previousElementSibling === para
-                    )
-                  )
-              ]
-            })
+            scope.forEach(elemInScope => 
+              paramTags = [...paramTags, ...this.params.filter(param => param.elem === elemInScope)]
+            )
             return paramTags
           },
   

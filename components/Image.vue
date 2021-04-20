@@ -84,7 +84,7 @@ module.exports = {
       let tileSources = []
       this.items.forEach(item => {
         if (item.url) {
-          tileSources.push({ tileSource: { url: items.url, type: 'image', buildPyramid: true }, opacity: 1 })
+          tileSources.push({ tileSource: { url: item.url, type: 'image', buildPyramid: true }, opacity: 1 })
         } else if (item.manifest) {
           let manifest = manifests[item.manifest]
           let tileSource = `${manifest.sequences[0].canvases[manifest.seq || 0].images[0].resource.service['@id']}/info.json`
