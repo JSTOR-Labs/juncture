@@ -711,7 +711,7 @@
 
     function convertURL(current) {
       let pathElems
-      if (current.indexOf(window.location.origin) === 0) {
+      if (current.indexOf('http') == 0 && current.indexOf(window.location.origin) === 0) {
         pathElems = current.split('/').slice(3)
       } else if (current.indexOf('/') === 0) {
         pathElems = current.split('/').slice(0)
