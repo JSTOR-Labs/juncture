@@ -72,11 +72,30 @@ module.exports = {
         if (this.items) this.viewer.open([{ url: this.items[0].url, type: 'image', buildPyramid: true }])
 
       })
+    },
+    loadTileSources() {
+      console.log('loadTileSources')
+      let tileSources = []
+      let manifests = []
+      this.items.forEach(item => {
+        if (item.url) {
+          tileSources.push({ tileSource: { url: items.url, type: 'image', buildPyramid: true }, opacity: 1 })
+        } else if (item.manifest) {
+          tileSources.push({ tileSource: null, opacity: 1 })
+          manifests.push(item.manifest)
+        }
+      })
+      if (manifests.length > 0) this.loadManifests(manifests)
+      this.tileSources = tileSources
+    },
+    loadManifests(manifests) {
+      console.log('loadManifests', manifests)
     }
   },     
   watch: {
     items: {
       handler: function (items) {
+        this.loadTileSources()
         console.log('OpenSeadragonViewer.watch.items', items)
         this.viewer.open([{ url: items[0].url, type: 'image', buildPyramid: true }])
       },
@@ -85,6 +104,10 @@ module.exports = {
     active: {
       handler: function (isActive) { console.log(`${this.$options.name}.active=${isActive}`) },
       immediate: true
+    },
+    tileSources() {
+      console.log(`${this.$options.name}.tileSources=${this.tileSources.length}`)      
+      this.viewer.open(this.tileSources)
     }
   }
 }
