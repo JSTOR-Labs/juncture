@@ -219,7 +219,7 @@
               : pathElems.length > 0 ? `/${pathElems.join('/')}/` : '/'
             */
             console.log(`loadEssay: path=${path} pathname=${window.location.pathname}`)
-            path = path || window.location.pathname.slice(basePath.length)
+            path = path || window.location.pathname.slice(basePath.length) || '/'
             console.log(`loadEssay: baseUrl=${contentSource.baseUrl} basePath=${basePath} path=${path}`)
             let essayUrls = [`${contentSource.baseUrl}${path}README.md`,
                              `${contentSource.baseUrl}${path.slice(0,-1)}.md`]
