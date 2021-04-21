@@ -16,7 +16,7 @@
               <i :class="`fas fa-${item.icon}`"></i>{{item.label}}
             </li>
           </template>
-          <li style="margin-top:10px;" @click="viewMarkdown">
+          <li @click="nav('viewMarkdown')">
             <i class="fas fa-file-code"></i>View page markdown
           </li>
         </ul>
@@ -58,27 +58,9 @@
     },
     mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
     methods: {
-      init() {
-        console.log(this.$options.name)
-      },
-      closeDrawer() {
-        document.querySelector('#menuToggle input').checked = false
-      },
       nav(item) {
-        this.closeDrawer()
+        document.querySelector('#menuToggle input').checked = false // close drawer
         this.$emit('menu-item-clicked', item)
-      },
-      viewMarkdown() {
-        this.closeDrawer()
-        this.$emit('view-markdown')
-      },
-      editMarkdown(editor) {
-        this.closeDrawer()
-        this.$emit('edit-markdown', editor)
-      },
-      gotoGithub() {
-        this.closeDrawer()
-        this.$emit('goto-github')
       }
     },
     watch: {
@@ -245,7 +227,13 @@
   #menu li {
     display: flex;
     padding: 0.5em 0;
-    font-size: 1.2em;
+    font-size: 1.1em;
+  }
+
+  #menu li i {
+    width: 20px;
+    margin-right: 10px;
+    text-align: center;
   }
 
   #menu li:hover {

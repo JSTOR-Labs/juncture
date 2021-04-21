@@ -1,3 +1,31 @@
-title: Juncture Site Template
+title: Juncture
+tagline: Your Visual Essays tool
 banner: https://picsum.photos/id/403/1000/400?blur=1
 favicon: /images/favicon.svg
+
+# When using a custom domain these fields must be updated to match
+# the account and repository name
+#acct: YOUR_GITHUB_USERNAME
+#repo: YOUR_GITHUB_REPOSITORY_NAME
+
+######################################################
+# Defines options shown in the header navigation menu
+######################################################
+nav:
+- label: About
+  icon: info
+  path: /about
+- label: Help
+  icon: question
+  path: /docs
+#- label: Contact Us
+#  icon: envelope
+#  path: "/contact-us"
+
+# If the /contact-us path is defined for the nav menu a contact form will be enabled
+# The following information is used in the display and processing of the contact form
+# A valid toEmail address is required. Other fields are optional
+#contactForm:
+#  toEmail:
+#  - name@example.org
+#  subject: My Juncture site feedback
