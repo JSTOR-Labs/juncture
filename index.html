@@ -15,7 +15,7 @@
   <div id="app" ref="app" :class="layouts.join(' ')">
     <div id="header" ref="header">            
       <component v-bind:is="'ve-header'" :active="true" :scroll-top="scrollTop"
-                 :site-config="siteConfig" :essay-config="essayConfig" @menu-item-clicked="loadEssay"
+                 :site-config="siteConfig" :essay-config="essayConfig" @menu-item-clicked="menuItemClicked"
       ></component>
     </div>
     <div id="tabs-bar" ref="tabsBar">
@@ -28,7 +28,7 @@
     </div>
     <div id="essay" ref="essay" v-html="html" @scroll="onScroll"></div>
     <div id="viewer" :style="viewerStyle">
-      <i v-if="!isVerticalLayout" class="far fa-times-circle" style="position:absolute; top:0; right:0; z-index:500; font-size:26px;" @click="viewerIsOpen = !viewerIsOpen"></i>
+      <i v-if="!isVerticalLayout && viewerIsOpen" class="far fa-times-circle" style="position:absolute; top:0; right:0; z-index:500; font-size:26px;" @click="viewerIsOpen = !viewerIsOpen"></i>
       <component v-for="viewer in viewers" :key="viewer.name" v-bind:is="viewer.name" 
                  :items="viewer.items" 
                  :entities="entities"
@@ -43,6 +43,16 @@
         <div v-if="hoverEntity.images" class="image"><img :src="hoverEntity.images[0]"></div>
       </div>
     </div>
+
+    <div ref="markdownViewer" id="markdown-viewer" style="display: none;">
+      <div style="padding:20px; width:50vw; height:50vh; overflow-y:scroll;">
+        <h3>Markdown</h3>
+        <div>
+          <pre v-highlightjs="markdown"><code class="markdown"></code></pre>
+        </div>
+      </div>
+    </div>
+
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it-footnote/3.0.2/markdown-it-footnote.min.js" integrity="sha512-9VOGZLBYkfqGR+OigfgoF3RUvDJRvQ9BAVgOKYmrvXlX7k+yBm5iJCpZEMpqmg2b1Cld1fiy2p0nEbDAcz9Q4w==" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/markdown-it-attrs@4.0.0/markdown-it-attrs.browser.js"></script>
@@ -54,6 +64,7 @@
   <script src="https://unpkg.com/@popperjs/core@2"></script>
   <script src="https://unpkg.com/tippy.js@6"></script>
   <script src="https://blueimp.github.io/JavaScript-MD5/js/md5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
   <!-- This is used for deep linking of Single Page Apps when hosted with GitHub Pages -->
   <script type="text/javascript">
     (function(l) {
@@ -70,10 +81,32 @@
     }(window.location))
   </script>
   <script>
+        Vue.directive('highlightjs', {
+      deep: true,
+      bind: function(el, binding) {
+        let targets = el.querySelectorAll('code')
+        targets.forEach((target) => {
+          if (binding.value) {
+            target.textContent = binding.value
+          }
+          hljs.highlightBlock(target)
+        })
+      },
+      componentUpdated: function(el, binding) {
+        let targets = el.querySelectorAll('code')
+        targets.forEach((target) => {
+          if (binding.value) {
+            target.textContent = binding.value
+            hljs.highlightBlock(target)
+          }
+        })
+      }
+    })
+
     let md = window.markdownit({
       html:         true,
       breaks:       true,
-      linkify:      true,
+      linkify:      false,
       typographer:  false
     })
     .use(window.markdownitFootnote)
@@ -158,6 +191,8 @@
           layouts: [],
           siteConfig,
           params: [],
+          markdown: null,
+          markdownViewer: null,
           html: null,
           active: null,
           paras: {},
@@ -192,6 +227,17 @@
           })
           resizeObserver.observe(this.$refs.app)
           this.loadEssay()
+          // Initialize Markdown source viewer
+          this.markdownViewer = tippy(this.$refs.header, {
+            trigger: 'manual', 
+            theme: 'light-border',
+            allowHTML: true,
+            interactive: true,
+            arrow: false,
+            placement: 'bottom-start',          
+            onShow: async (instance) => { instance.setContent(this.$refs.markdownViewer.innerHTML) }
+          })
+
         },
         methods: {
 
@@ -211,9 +257,18 @@
             if (i < paras.length) this.active = paras[i].dataset.id
           }, 5),
 
+          menuItemClicked(item) {
+            if (item === 'viewMarkdown') {
+              this.markdownViewer.show()
+            } else {
+              this.loadEssay(item)
+            }
+          },
+
           // Loads essay Markdown file
           async loadEssay(path, replace) {
             path = path || window.location.pathname.slice(basePath.length) || '/'
+            if (path.slice(-1) !== '/') path += '/'
             console.log(`loadEssay: contentSource.baseUrl=${contentSource.baseUrl} basePath=${basePath} path=${path}`)
             let essayUrls = [`${contentSource.baseUrl}${path}README.md`,
                              `${contentSource.baseUrl}${path.slice(0,-1)}.md`]
@@ -223,7 +278,7 @@
               console.log('loadEssay', essayUrls[i], resp.ok)
               if (resp.ok) break
             }
-            let markdown = await resp.text()
+            this.markdown = await resp.text()
 
             let browserPath = `${basePath}${path}`
             if (qargs.ref) browserPath += `?ref=${qargs.ref}`
@@ -234,7 +289,7 @@
               history.pushState({file: path || ''}, '', browserPath)
             }
 
-            let essayElem = this.markdownToElem(markdown)
+            let essayElem = this.markdownToElem(this.markdown)
             this.convertResourceUrls(essayElem)
             this.html = this.doCustomFormatting(essayElem)
             this.$nextTick(() => {
@@ -646,6 +701,7 @@
           resp = await resp.json()
           return {acct, repo, ref: resp.default_branch}
         }
+        return {}
       }
     }
 
