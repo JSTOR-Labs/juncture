@@ -1,0 +1,1805 @@
+{
+  "type": "FeatureCollection",
+  "properties": {
+    "label": "Top cities by population"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q51103",
+        "label": "Cali",
+        "description": "Capital of the Colombian department of Valle del Cauca",
+        "time": "1536",
+        "population": 2471474,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Cali-from-cristo-rey-2.jpg",
+        "geojson": "https://data.whosonfirst.org/421/169/145/421169145.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.51972,
+          3.44
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1490",
+        "label": "Tokyo",
+        "description": "Capital of Japan",
+        "time": "1603",
+        "population": 13942856,
+        "geojson": "https://data.whosonfirst.org/856/728/17/85672817.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.69222,
+          35.68972
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q334",
+        "label": "Singapore",
+        "description": "sovereign city-state in Southeast Asia",
+        "time": "1965",
+        "population": 5888926,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/1%20singapore%20city%20skyline%20dusk%20panorama%202011.jpg",
+        "geojson": "https://data.whosonfirst.org/856/326/05/85632605.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.8,
+          1.3
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q34647",
+        "label": "Johannesburg",
+        "description": "city in South Africa",
+        "time": "1886",
+        "population": 4434827,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Johannesburg%20CBD.jpg",
+        "geojson": "https://data.whosonfirst.org/101/925/753/101925753.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          28.04164,
+          -26.20436
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q16666",
+        "label": "Nanjing",
+        "description": "capital of Jiangsu province in Eastern China",
+        "time": "-000495",
+        "population": 6320000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Nanjing%20View.png",
+        "geojson": "https://data.whosonfirst.org/102/027/291/102027291.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          118.76667,
+          32.05
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1361",
+        "label": "Hyderabad",
+        "description": "city in Hyderabad district, Telangana, India",
+        "time": "1592",
+        "population": 9305000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Hyderabad%2002.jpg",
+        "geojson": "https://data.whosonfirst.org/102/030/059/102030059.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          78.46667,
+          17.36667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1355",
+        "label": "Bengaluru",
+        "description": "city in Karnataka, India",
+        "time": "1537",
+        "population": 11250000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/BangaloreMontage.png",
+        "geojson": "https://data.whosonfirst.org/102/030/819/102030819.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.59796,
+          12.96991
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q406",
+        "label": "Istanbul",
+        "description": "largest city in Turkey",
+        "time": "-000667",
+        "population": 14657434,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Istanbul2010.jpg",
+        "geojson": "https://data.whosonfirst.org/890/460/455/890460455.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          28.96028,
+          41.01
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q35997",
+        "label": "İzmir",
+        "description": "the third largest city by population in Turkey",
+        "time": "-003001",
+        "population": 4320519,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Izmir%20%2815383066346%29.jpg",
+        "geojson": "https://data.whosonfirst.org/890/461/083/890461083.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          27.13838,
+          38.41273
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1555",
+        "label": "Guatemala City",
+        "description": "capital and largest city of the Republic of Guatemala",
+        "time": "1776",
+        "population": 2450212,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Zona%2014%20Ciudad%20de%20Guatemala.jpg",
+        "geojson": "https://data.whosonfirst.org/421/169/087/421169087.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.52525,
+          14.60986
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q535534",
+        "label": "Hohhot",
+        "description": "prefecture-level city in China",
+        "time": "1580",
+        "population": 2635000,
+        "geojson": "https://data.whosonfirst.org/102/027/913/102027913.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.66293,
+          40.81507
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1352",
+        "label": "Chennai",
+        "description": "capital city of the Indian state of Tamil Nadu",
+        "time": "1639",
+        "population": 10265000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/MylaporeKapaleeshwararTemple.jpg",
+        "geojson": "https://data.whosonfirst.org/102/029/537/102029537.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.27,
+          13.09
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1538",
+        "label": "Pune",
+        "description": "city in Maharashtra, India",
+        "time": "1436",
+        "population": 5945000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Pune%20India.jpg",
+        "geojson": "https://data.whosonfirst.org/102/028/965/102028965.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.85529,
+          18.51957
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1640079",
+        "label": "Hyderabad",
+        "description": "city in Sindh, Pakistan",
+        "time": "1768",
+        "population": 3429471,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Rural%20Urban.jpg",
+        "geojson": "https://data.whosonfirst.org/421/168/813/421168813.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          68.36833,
+          25.37917
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q43463",
+        "label": "Fortaleza",
+        "description": "city in Northeastern Brazil, state capital of Ceará",
+        "time": "1726",
+        "population": 2452185,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Praia%20do%20Mucuripe.jpg",
+        "geojson": "https://data.whosonfirst.org/101/944/733/101944733.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -38.5275,
+          -3.7275
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q11725",
+        "label": "Chongqing",
+        "description": "municipality of China",
+        "time": "1929",
+        "population": 7990000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Chongqing%20montage%20newest%202013.png",
+        "geojson": "https://data.whosonfirst.org/856/697/25/85669725.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.50694,
+          29.55
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q30002",
+        "label": "Chengdu",
+        "description": "the capital of Sichuan Province, China",
+        "time": "-000311",
+        "population": 11050000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Chengdu%20montage.png",
+        "geojson": "https://data.whosonfirst.org/102/027/703/102027703.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.06667,
+          30.66361
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q173985",
+        "label": "Faisalabad",
+        "description": "City of the Punjab Province",
+        "time": "1895",
+        "population": 3203846,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Gumti.jpg",
+        "geojson": "https://data.whosonfirst.org/421/181/503/421181503.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.079,
+          31.418
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q87",
+        "label": "Alexandria",
+        "description": "second largest city in Egypt",
+        "time": "-000331",
+        "population": 4870000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Alexandria%20-%20Egypt.jpg",
+        "geojson": "https://data.whosonfirst.org/890/429/453/890429453.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          29.91667,
+          31.2
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q8678",
+        "label": "Rio de Janeiro",
+        "description": "city of the state of Rio de Janeiro, Brazil",
+        "time": "1565",
+        "population": 6520266,
+        "geojson": "https://data.whosonfirst.org/101/953/261/101953261.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -43.19639,
+          -22.90833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q38283",
+        "label": "Yokohama",
+        "description": "Designated city in Kantō, Japan",
+        "time": "1889",
+        "population": 3748781,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Yokohama%20MinatoMirai21.jpg",
+        "geojson": "https://data.whosonfirst.org/102/031/239/102031239.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.63333,
+          35.43333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q57756",
+        "label": "Lianyungang",
+        "description": "prefecture-level city in Jiangsu, China",
+        "time": "1935",
+        "population": 4790000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/%E8%A5%BF%E8%BF%9E%E5%B2%9B%E8%BF%9C%E7%9C%BA.JPG",
+        "geojson": "https://data.whosonfirst.org/102/026/995/102026995.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.1801,
+          34.59057
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q570884",
+        "label": "Tongliao",
+        "description": "prefecture-level city in Inner Mongolia, China",
+        "time": "1999",
+        "population": 3094600,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/%E5%93%B2%E9%87%8C%E6%9C%A8%E5%A4%A7%E6%A1%A5%20-%20Zhelimu%20Bridge%20-%202011.07%20-%20panoramio%20%281%29.jpg",
+        "geojson": "https://data.whosonfirst.org/102/027/867/102027867.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          122.26398,
+          43.61723
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q126995",
+        "label": "Weinan",
+        "description": "prefecture-level city in Shaanxi, China",
+        "time": "1995",
+        "population": 5300000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/WeiNan.JPG",
+        "geojson": "https://data.whosonfirst.org/102/027/085/102027085.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          109.46838,
+          34.49962
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q34820",
+        "label": "Santo Domingo",
+        "description": "capital of the Dominican Republic",
+        "time": "1496",
+        "population": 2581827,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/SantoDomingoedit.JPG",
+        "geojson": "https://data.whosonfirst.org/421/188/297/421188297.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -69.89333,
+          18.47639
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q515573",
+        "label": "Hanzhong",
+        "description": "prefecture-level city in Shaanxi, China",
+        "time": "1996",
+        "population": 3700000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/%E6%B1%89%E4%B8%AD%E5%8C%97%E9%83%A8%E5%A4%9C%E6%99%AF%20HDR.jpg",
+        "geojson": "https://data.whosonfirst.org/102/027/567/102027567.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.02598,
+          33.07938
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q68695",
+        "label": "Quanzhou",
+        "description": "prefecture-level city in Fujian, China",
+        "time": "0260",
+        "population": 6480000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/%E6%B3%89%E5%B7%9E%E4%B9%8B%E7%9C%BC%E4%B8%8A%E4%B8%9C%E5%8C%97%E5%90%91%E6%99%8B%E6%B1%9F%E5%A4%A7%E6%A1%A5%E5%8C%97%E4%BA%92%E9%80%9A.jpg",
+        "geojson": "https://data.whosonfirst.org/102/027/215/102027215.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          118.58583,
+          24.91389
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q20934",
+        "label": "Incheon",
+        "description": "city in South Korea",
+        "time": "1883",
+        "population": 2913024,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Incheon%20Cityscape.jpg",
+        "geojson": "https://data.whosonfirst.org/856/731/77/85673177.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          126.64861,
+          37.46389
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q427097",
+        "label": "Meishan",
+        "description": "prefecture-level city in Sichuan, China",
+        "time": "2000",
+        "population": 3020000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/%E7%9C%89%E5%B1%B1%E6%8A%A5%E6%81%A9%E5%AF%BA%E7%85%A7%E7%89%87.JPG",
+        "geojson": "https://data.whosonfirst.org/102/027/319/102027319.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.83806,
+          30.05746
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q59173",
+        "label": "Huizhou",
+        "description": "prefecture-level city in Guangdong, China",
+        "time": "1988",
+        "population": 3875000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Huizhou002.jpg",
+        "geojson": "https://data.whosonfirst.org/102/027/507/102027507.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.41523,
+          23.11147
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q74881",
+        "label": "Dalian",
+        "description": "sub-provincial city in Liaoning, China",
+        "time": "1904",
+        "population": 4480000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Dalian%20Skyline%20Enhanced.jpg",
+        "geojson": "https://data.whosonfirst.org/102/027/669/102027669.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.61,
+          38.91306
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1475",
+        "label": "Quezon City",
+        "description": "city of the Philippines in Metro Manila",
+        "time": "1939",
+        "population": 2936116,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Quezon%20City%20Montage.png",
+        "geojson": "https://data.whosonfirst.org/114/190/727/1/1141907271.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.03333,
+          14.63333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q84",
+        "label": "London",
+        "description": "capital and largest city of the United Kingdom",
+        "time": "0047",
+        "population": 8908081,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/London%20Montage%20L.jpg",
+        "geojson": "https://data.whosonfirst.org/101/750/367/101750367.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.1275,
+          51.50722
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q48278",
+        "label": "Medellín",
+        "description": "city in Colombia, capital of Colombian department Antioquia",
+        "time": "1675",
+        "population": 2529403,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Montage%20de%20Medell%C3%ADn%2C%20julio%20de%202017.jpg",
+        "geojson": "https://data.whosonfirst.org/421/186/691/421186691.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.57483,
+          6.24475
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q42956",
+        "label": "Harbin",
+        "description": "capital of Heilongjiang province, China",
+        "time": "1898",
+        "population": 5015000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Harbin%20Montage.JPG",
+        "geojson": "https://data.whosonfirst.org/102/027/921/102027921.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          126.63333,
+          45.75
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q60",
+        "label": "New York City",
+        "description": "largest city in the United States",
+        "time": "1624",
+        "population": 8398748,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/EmpireStateNewYokCity.jpg",
+        "geojson": "https://data.whosonfirst.org/859/775/39/85977539.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.94,
+          40.67
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q425996",
+        "label": "Deyang",
+        "description": "prefecture-level city in Sichuan, China",
+        "time": "1983",
+        "population": 3636000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Deyang%20skyline.jpg",
+        "geojson": "https://data.whosonfirst.org/102/027/643/102027643.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.39499,
+          31.12892
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q65",
+        "label": "Los Angeles",
+        "description": "county seat of Los Angeles County, California; second largest city in the United States by population",
+        "time": "1781",
+        "population": 3976322,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/LA.jpg",
+        "geojson": "https://data.whosonfirst.org/859/235/17/85923517.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.24368,
+          34.05223
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q304848",
+        "label": "Daqing",
+        "description": "prefecture-level city in Heilongjiang, China",
+        "time": "1959",
+        "population": 2904532,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Daqing%20Skyline%20cropped%2001.jpg",
+        "geojson": "https://data.whosonfirst.org/102/027/937/102027937.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          125.00798,
+          46.59791
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q3561",
+        "label": "Algiers",
+        "description": "capital city of Algeria",
+        "time": "0944",
+        "population": 3415811,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Argel%203.jpg",
+        "geojson": "https://data.whosonfirst.org/421/174/649/421174649.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.05861,
+          36.77639
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1861",
+        "label": "Bangkok",
+        "description": "capital of Thailand",
+        "time": "1782",
+        "population": 5696409,
+        "geojson": "https://data.whosonfirst.org/856/787/39/85678739.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.51667,
+          13.75
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q3616",
+        "label": "Tehran",
+        "description": "capital of Iran",
+        "time": "1794",
+        "population": 8846782,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/North%20of%20tehran.jpg",
+        "geojson": "https://data.whosonfirst.org/421/204/533/421204533.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          51.41667,
+          35.7
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q497341",
+        "label": "Xianyang",
+        "description": "prefecture-level city in Shaanxi, China",
+        "time": "1950",
+        "population": 5040000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/%E5%92%B8%E9%98%B3%E9%A9%AC%E4%BF%91%E5%B1%95%E8%A7%88%E9%A6%86.JPG",
+        "geojson": "https://data.whosonfirst.org/102/027/031/102027031.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.71667,
+          34.35
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q18808",
+        "label": "Pyongyang",
+        "description": "capital of North Korea",
+        "time": "-002333",
+        "population": 2863000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/0322%20Pyongyang%20Turm%20der%20Juche%20Idee%20Aussicht.jpg",
+        "geojson": "https://data.whosonfirst.org/856/766/11/85676611.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          125.73,
+          39.03
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q37995",
+        "label": "Yangon",
+        "description": "former capital of Myanmar (Burma) and the current capital of Yangon Region",
+        "time": "1028",
+        "population": 5430000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Panoramic%20view%20from%20Sakura%20Tower.jpg",
+        "geojson": "https://data.whosonfirst.org/421/173/357/421173357.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.15,
+          16.8
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q5838",
+        "label": "Kabul",
+        "description": "capital of Afghanistan",
+        "time": "1200",
+        "population": 3678034,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Kabul%20TV%20Hill%20view.jpg",
+        "geojson": "https://data.whosonfirst.org/421/168/799/421168799.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          69.16583,
+          34.53278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1486",
+        "label": "Buenos Aires",
+        "description": "capital city of Argentina",
+        "time": "1580",
+        "population": 3063728,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Buenos%20Aires%20-%20Puerto%20Madero.jpg",
+        "geojson": "https://data.whosonfirst.org/421/174/285/421174285.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.38194,
+          -34.59972
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q170688",
+        "label": "Santa Cruz de la Sierra",
+        "description": "capital of the Santa Cruz department in eastern Bolivia",
+        "time": "1561",
+        "population": 3151676,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Northern%20Skyline%20Santa%20Cruz.jpg",
+        "geojson": "https://data.whosonfirst.org/890/442/173/890442173.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -63.1975,
+          -17.78917
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q349985",
+        "label": "Suihua",
+        "description": "prefecture-level city in Heilongjiang, China",
+        "time": "2000",
+        "population": 5420000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/%E7%BB%A5%E5%8C%96%E5%B8%82%E4%BA%BA%E6%B0%91%E5%B9%BF%E5%9C%BA.jpg",
+        "geojson": "https://data.whosonfirst.org/890/513/701/890513701.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          126.98079,
+          46.6384
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q426644",
+        "label": "Suining",
+        "description": "prefecture-level city in Sichuan, China",
+        "time": "1985",
+        "population": 3556000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Suining%208022.jpg",
+        "geojson": "https://data.whosonfirst.org/890/513/755/890513755.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.57373,
+          30.50984
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q3130",
+        "label": "Sydney",
+        "description": "Capital city of New South Wales, Australia, and most populous city in Australia and Oceania",
+        "time": "1788",
+        "population": 4840600,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Sydney%20skyline%20at%20dusk%20-%20Dec%202008.jpg",
+        "geojson": "https://data.whosonfirst.org/857/710/99/85771099.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          151.2,
+          -33.86667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q708605",
+        "label": "Binhai New Area",
+        "description": "district of Tianjin, China",
+        "time": "2009",
+        "population": 2482065,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/TianjinBinhaimontage.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          117.71083,
+          39.00333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q3630",
+        "label": "Jakarta",
+        "description": "capital and province of Indonesia, on island of Java",
+        "time": "1527",
+        "population": 10348348,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Jakarta%20Pictures-4.jpg",
+        "geojson": "https://data.whosonfirst.org/856/720/01/85672001.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.84513,
+          -6.21462
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q514796",
+        "label": "Baoji",
+        "description": "prefecture-level city in Shaanxi, China",
+        "time": "1950",
+        "population": 3738700,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/View%20from%20Zhonghua%20Shigu%20Park%20%28%E4%B8%AD%E5%8D%8E%E7%9F%B3%E9%BC%93%E5%9B%AD%29%20on%20Baoji.jpg",
+        "geojson": "https://data.whosonfirst.org/114/190/864/1/1141908641.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.17507,
+          34.36094
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q125378",
+        "label": "Pudong",
+        "description": "district of Shanghai, China",
+        "time": "1993",
+        "population": 5187200,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/2012%20Pudong.jpg",
+        "geojson": "https://data.whosonfirst.org/102/027/253/102027253.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.53972,
+          31.22306
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q515712",
+        "label": "Yulin",
+        "description": "prefecture-level city in Shaanxi, China",
+        "time": "1969",
+        "population": 3328000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Yulin%20%28Shaanxi%29.jpg",
+        "geojson": "https://data.whosonfirst.org/102/026/939/102026939.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          109.73881,
+          38.26548
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q181557",
+        "label": "Kaohsiung",
+        "description": "A special municipality of Taiwan",
+        "time": "2010",
+        "population": 2773533,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Kaohsiung%20Tuntex%20Sky%20Tower%20Innen%20Bild%202%20%282%29.jpg",
+        "geojson": "https://data.whosonfirst.org/856/795/47/85679547.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.3,
+          22.61667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1156",
+        "label": "Mumbai",
+        "description": "capital city and district in Maharashtra, India",
+        "time": "1507",
+        "population": 15414288,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Mumbai%2003-2016%2010%20skyline%20of%20Lotus%20Colony.jpg",
+        "geojson": "https://data.whosonfirst.org/102/030/609/102030609.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.83333,
+          18.96667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1354",
+        "label": "Dhaka",
+        "description": "capital of Bangladesh",
+        "time": "1608",
+        "population": 16800000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Dhaka%20skyline1.jpg",
+        "geojson": "https://data.whosonfirst.org/421/181/477/421181477.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          90.39611,
+          23.71611
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q8646",
+        "label": "Hong Kong",
+        "description": "special administrative region of China",
+        "time": "1997",
+        "population": 7500700,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Hong%20Kong%20Night%20Skyline.jpg",
+        "geojson": "https://data.whosonfirst.org/856/324/83/85632483.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.15861,
+          22.27833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q74957",
+        "label": "Anshan",
+        "description": "prefecture-level city in Liaoning, China",
+        "time": "1937",
+        "population": 3645884,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/View%20of%20Anshan%20on%20Shengli%20Plaza.jpg",
+        "geojson": "https://data.whosonfirst.org/102/027/961/102027961.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          122.98945,
+          41.10662
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1070",
+        "label": "Ahmedabad",
+        "description": "city in the state of Gujarat, India",
+        "time": "1411",
+        "population": 7645000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Amdavad%20Aerial.jpg",
+        "geojson": "https://data.whosonfirst.org/102/031/017/102031017.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.58,
+          23.03
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q8684",
+        "label": "Seoul",
+        "description": "capital city of South Korea",
+        "time": "1394",
+        "population": 9806538,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Seul%20montaje.png",
+        "geojson": "https://data.whosonfirst.org/856/731/85/85673185.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127,
+          37.58333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q3141",
+        "label": "Melbourne",
+        "description": "capital city of Victoria, Australia",
+        "time": "1835",
+        "population": 4529500,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Melbourne%20montage%206.jpg",
+        "geojson": "https://data.whosonfirst.org/101/933/229/101933229.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.96139,
+          -37.82056
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q427367",
+        "label": "Guang'an",
+        "description": "prefecture-level city in Sichuan, China",
+        "time": "1993",
+        "population": 3723000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/%E5%B9%BF%E5%AE%89%E7%99%BD%E5%A1%94%E7%85%A7%E7%89%87.jpg",
+        "geojson": "https://data.whosonfirst.org/125/953/273/3/1259532733.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.63358,
+          30.46729
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1867",
+        "label": "Taipei",
+        "description": "capital of Taiwan",
+        "time": "1709",
+        "population": 2684567,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Taipei%2C%20Taiwan%20CBD%20Skyline.jpg",
+        "geojson": "https://data.whosonfirst.org/856/795/83/85679583.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.53194,
+          25.04778
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q29015",
+        "label": "Zigong",
+        "description": "prefecture-level city in Sichuan, China",
+        "time": "1939",
+        "population": 2800000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/ZigongDinoMuseum1.jpg",
+        "geojson": "https://data.whosonfirst.org/102/026/875/102026875.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.76451,
+          29.34984
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q174",
+        "label": "São Paulo",
+        "description": "Largest city in Brazil",
+        "time": "1554",
+        "population": 12106920,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Sao%20Paulo%20Skyline%20in%20Brazil.jpg",
+        "geojson": "https://data.whosonfirst.org/101/965/533/101965533.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.63395,
+          -23.55039
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1858",
+        "label": "Hanoi",
+        "description": "capital of Vietnam",
+        "time": "1010",
+        "population": 7785000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Hoan%20Kiem%20Lake%20with%20Thap%20Rua%20%28Tortise%20Tower%29%20%283695178852%29.jpg",
+        "geojson": "https://data.whosonfirst.org/856/806/53/85680653.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.84117,
+          21.0245
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q205922",
+        "label": "Qiqihar",
+        "description": "prefecture-level city in Heilongjiang, China",
+        "time": "1691",
+        "population": 5367003,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Qiqiharskyline4.JPG",
+        "geojson": "https://data.whosonfirst.org/102/027/881/102027881.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.95124,
+          47.33981
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q40738",
+        "label": "Bursa",
+        "description": "city in Turkey",
+        "time": "0202",
+        "population": 2901396,
+        "geojson": "https://data.whosonfirst.org/890/461/315/890461315.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          29.06667,
+          40.18333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q3838",
+        "label": "Kinshasa",
+        "description": "capital city of the Democratic Republic of the Congo",
+        "time": "1881",
+        "population": 11855000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Vue%20Kinshasa.jpg",
+        "geojson": "https://data.whosonfirst.org/421/166/913/421166913.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.31389,
+          -4.33167
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q121157",
+        "label": "Mashhad",
+        "description": "capital city of Razavi Khorasan Province, and second largest city in Iran",
+        "time": "0818",
+        "population": 3001184,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/ImamReza%28A%29.jpg",
+        "geojson": "https://data.whosonfirst.org/112/592/960/5/1125929605.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          59.60417,
+          36.30694
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q426130",
+        "label": "Mianyang",
+        "description": "prefecture-level city in Sichuan, China",
+        "time": "1985",
+        "population": 4945000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Central%20Mianyang.jpg",
+        "geojson": "https://data.whosonfirst.org/102/027/309/102027309.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.73847,
+          31.46688
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q172",
+        "label": "Toronto",
+        "description": "capital city of the province of Ontario, Canada",
+        "time": "1750",
+        "population": 2731571,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Toronto%20-%20ON%20-%20Toronto%20Skyline2.jpg",
+        "geojson": "https://data.whosonfirst.org/101/735/835/101735835.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.38667,
+          43.67028
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q3805",
+        "label": "Amman",
+        "description": "capital of Jordan",
+        "time": "-007251",
+        "population": 4007526,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Amman%20BW%200.JPG",
+        "geojson": "https://data.whosonfirst.org/421/200/421/421200421.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.93333,
+          31.95
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q3897",
+        "label": "Luanda",
+        "description": "capital of Angola",
+        "time": "1575",
+        "population": 2487444,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Luanda%20feb09%20ost01.jpg",
+        "geojson": "https://data.whosonfirst.org/421/167/031/421167031.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.23444,
+          -8.83833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q427265",
+        "label": "Yibin",
+        "description": "prefecture-level city in Sichuan, China",
+        "time": "1997",
+        "population": 4456000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Yibin%20birdview.jpg",
+        "geojson": "https://data.whosonfirst.org/102/026/965/102026965.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.63997,
+          28.75961
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q207030",
+        "label": "Ziyang",
+        "description": "prefecture-level city in Sichuan, China",
+        "time": "2000",
+        "population": 4217000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Ziyang.JPG",
+        "geojson": "https://data.whosonfirst.org/890/514/653/890514653.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.63974,
+          30.12562
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q425492",
+        "label": "Luzhou",
+        "description": "prefecture-level city in Sichuan, China",
+        "time": "1983",
+        "population": 4291000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/LuzhouStScene.JPG",
+        "geojson": "https://data.whosonfirst.org/102/027/337/102027337.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.44093,
+          28.89182
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q7473516",
+        "label": "Tokyo",
+        "description": "the 23 wards in the Eastern part of Tokyo prefecture, Japan that used to form a single city",
+        "time": "1868",
+        "population": 9272565,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Akiba%20denkigai.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.77444,
+          35.68389
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1899",
+        "label": "Kiev",
+        "description": "capital and the largest city of Ukraine",
+        "time": "0482",
+        "population": 2967000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Panorama%20of%20Kyiv%20from%20Saint%20Sophia%20Monastery.jpg",
+        "geojson": "https://data.whosonfirst.org/101/752/489/101752489.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.52361,
+          50.45
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q42800",
+        "label": "Belo Horizonte",
+        "description": "capital city of the state of Minas Gerais, Brazil",
+        "time": "1701",
+        "population": 2513451,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Belo%20Horizonte%2C%20Brasil%20horizon%20view.jpg",
+        "geojson": "https://data.whosonfirst.org/101/948/979/101948979.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -43.94778,
+          -19.89167
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q73119",
+        "label": "Xinzhou",
+        "description": "prefecture-level city in Shanxi, China",
+        "time": "2000",
+        "population": 3067501,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/%E4%BA%94%E5%8F%B0%E4%B9%8B%E6%99%A8.jpg",
+        "geojson": "https://data.whosonfirst.org/102/026/989/102026989.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.7233,
+          38.41778
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q852238",
+        "label": "Onitsha",
+        "description": "city",
+        "time": "1550",
+        "population": 7635000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Onitsha.jpg",
+        "geojson": "https://data.whosonfirst.org/890/429/919/890429919.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.78333,
+          6.16667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q427488",
+        "label": "Dazhou",
+        "description": "prefecture-level city in Sichuan, China",
+        "time": "1999",
+        "population": 5693000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/%E5%9B%9B%E5%B7%9D%20%E8%BE%BE%E5%B7%9E%E5%B8%82-%E5%BB%8A%E6%A1%A5%20-%20panoramio.jpg",
+        "geojson": "https://data.whosonfirst.org/102/027/657/102027657.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.49472,
+          31.2152
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q92161",
+        "label": "Changchun",
+        "description": "capital city of Jilin Province, China",
+        "time": "1889",
+        "population": 7674439,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Changchun%20Montage%202017.png",
+        "geojson": "https://data.whosonfirst.org/102/027/947/102027947.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          125.2,
+          43.9
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q220",
+        "label": "Rome",
+        "description": "capital and largest city of Italy",
+        "time": "-000753",
+        "population": 2872800,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Roma%20dall%27aereo.JPG",
+        "geojson": "https://data.whosonfirst.org/101/752/607/101752607.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          12.48278,
+          41.89306
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q8686",
+        "label": "Shanghai",
+        "description": "municipality of China",
+        "time": "0751",
+        "population": 23390000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Shanghai%2C%20China%20%2837199008984%29.jpg",
+        "geojson": "https://data.whosonfirst.org/856/698/31/85669831.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.46667,
+          31.16667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q58422",
+        "label": "Tangshan",
+        "description": "prefecture-level city in Hebei, China",
+        "time": "1938",
+        "population": 7100000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Font%20at%20Tangshan%2C%20Hebei%20-%20Mobile%20World.jpg",
+        "geojson": "https://data.whosonfirst.org/102/027/111/102027111.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          118.17417,
+          39.62917
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q1297",
+        "label": "Chicago",
+        "description": "city and county seat of Cook County, Illinois, United States",
+        "time": "1833",
+        "population": 2722389,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/2010-02-19%203000x2000%20chicago%20skyline.jpg",
+        "geojson": "https://data.whosonfirst.org/859/401/95/85940195.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.62778,
+          41.88194
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q2887",
+        "label": "Santiago",
+        "description": "capital city of Chile",
+        "time": "1541",
+        "population": 6257516,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Santiago%20en%20invierno.jpg",
+        "geojson": "https://data.whosonfirst.org/856/763/49/85676349.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -70.66667,
+          -33.45
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q612",
+        "label": "Dubai",
+        "description": "city in the United Arab Emirates",
+        "time": "1833",
+        "population": 2502715,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Dubai%20seen%20from%20USS%20Anzio%20%28CG%2068%29.jpg",
+        "geojson": "https://data.whosonfirst.org/421/174/961/421174961.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          55.30944,
+          25.26972
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q178945",
+        "label": "Bazhong",
+        "description": "prefecture-level city in Sichuan, China",
+        "time": "2000",
+        "population": 3134000,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/%E5%B7%B4%E4%B8%AD%20-%20panoramio.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.75586,
+          31.85764
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "wd:Q15174",
+        "label": "Shenzhen",
+        "description": "prefecture-level city in Guangdong, China",
+        "time": "1979",
+        "population": 11908400,
+        "image": "http://commons.wikimedia.org/wiki/Special:FilePath/Shenzhen%20Skyline%20from%20Nanshan.jpg",
+        "geojson": "https://data.whosonfirst.org/102/027/165/102027165.geojson"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.054,
+          22.535
+        ]
+      }
+    }
+  ]
+}

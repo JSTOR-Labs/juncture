@@ -27,7 +27,7 @@
       </span>
     </div>
     <div id="essay" ref="essay" v-html="html" @scroll="onScroll"></div>
-    <div id="viewer" :style="viewerStyle">
+    <div id="viewer" ref="viewer" :style="viewerStyle">
       <i v-if="!isVerticalLayout && viewerIsOpen" class="far fa-times-circle" style="position:absolute; top:0; right:0; z-index:500; font-size:26px;" @click="viewerIsOpen = !viewerIsOpen"></i>
       <component v-for="viewer in viewers" :key="viewer.name" v-bind:is="viewer.name" 
                  :items="viewer.items" 
@@ -65,6 +65,7 @@
   <script src="https://unpkg.com/tippy.js@6"></script>
   <script src="https://blueimp.github.io/JavaScript-MD5/js/md5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
+
   <!-- This is used for deep linking of Single Page Apps when hosted with GitHub Pages -->
   <script type="text/javascript">
     (function(l) {
@@ -105,9 +106,17 @@
 
     let md = window.markdownit({
       html:         true,
-      breaks:       true,
+      breaks:       false,
       linkify:      false,
-      typographer:  false
+      typographer:  false,
+      highlight: function (str, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          try {
+            return hljs.highlight(lang, str).value;
+        } catch (__) {}
+      }
+      return ''; // use external default escaping
+      }
     })
     .use(window.markdownitFootnote)
     .use(markdownItAttrs)
@@ -195,7 +204,7 @@
           markdownViewer: null,
           html: null,
           active: null,
-          paras: {},
+          segments: {},
           entities: {},
           availableViewers,
           viewers: [],
@@ -235,9 +244,14 @@
             interactive: true,
             arrow: false,
             placement: 'bottom-start',          
-            onShow: async (instance) => { instance.setContent(this.$refs.markdownViewer.innerHTML) }
+            onShow: async (instance) => { 
+              instance.setContent(this.$refs.markdownViewer.innerHTML) 
+              // this.$refs.app.classList.add('dimmed')
+            },
+            onHide: (instance) => { 
+              // this.$refs.app.classList.remove('dimmed')
+            },
           })
-
         },
         methods: {
 
@@ -249,12 +263,12 @@
             e.preventDefault()
             e.stopPropagation()
             this.scrollTop = e.target.scrollTop
-            let paras = [...e.target.querySelectorAll('p')]
+            let segments = [...e.target.querySelectorAll('.segment')]
             let i
-            for (i = 0; i < paras.length; i++) {
-              if (e.target.scrollTop <= paras[i].offsetTop + paras[i].clientHeight - 200) break
+            for (i = 0; i < segments.length; i++) {
+              if (e.target.scrollTop <= segments[i].offsetTop + segments[i].clientHeight - 200) break
             }
-            if (i < paras.length) this.active = paras[i].dataset.id
+            if (i < segments.length) this.active = segments[i].dataset.id
           }, 5),
 
           menuItemClicked(item) {
@@ -290,16 +304,16 @@
             }
 
             let essayElem = this.markdownToElem(this.markdown)
-            this.convertResourceUrls(essayElem)
+            this.convertResourceUrls(essayElem, path)
             this.html = this.doCustomFormatting(essayElem)
             this.$nextTick(() => {
-              let paras = [...document.getElementById('essay').querySelectorAll('p')]
+              let segments = [...document.getElementById('essay').querySelectorAll('.segment')]
               this.getEntityData([...this.findEntities()]).then(entities => {
                 this.entities = entities
                 this.tagEntities()
                 this.addPopups()
                 this.convertLinks(this.$refs.essay)
-                this.active = paras.length > 0 ? paras[0].dataset.id : null
+                this.active = segments.length > 0 ? segments[0].dataset.id : null
               })
               this.params = Array.from(document.getElementById('essay').querySelectorAll('param'))
                 .map(param => {
@@ -308,7 +322,7 @@
                     prior = prior.previousElementSibling
                   }
                   return { 
-                    ...{ elem: prior || this.$refs.essay },
+                    ...{ elem: prior ? prior.parentElement : this.$refs.essay },
                     ...Object.fromEntries(Array.from(param.attributes).map(attr => [attr.nodeName, attr.value])) 
                   }
                 })
@@ -318,7 +332,7 @@
                   else if (!Object.keys(param).find(attr => attr.indexOf('ve-') === 0)) param['ve-entity'] = ''
                   return param
                 })
-              this.paras = this.paramsForParagraphs()
+              this.segments = this.paramsForSegments()
             })
 
           },
@@ -328,18 +342,18 @@
               .forEach(cardsSection => {
               Array.from(cardsSection.querySelectorAll('section')).forEach(card => {
                 ['img', 'a', 'ul'].forEach(selector => card.appendChild(card.querySelector(selector)))
-                let paras = []
-                Array.from(card.querySelectorAll('p')).forEach(p => {
-                  if (p.textContent.trim() === '') {
-                    card.removeChild(p)
+                let segments = []
+                Array.from(card.querySelectorAll('.segment')).forEach(seg => {
+                  if (seg.textContent.trim() === '') {
+                    card.removeChild(seg)
                   } else {
-                    paras.push(p)
+                    segments.push(seg)
                   }
                 })
-                if (paras.length > 0) {
-                  let parasDiv = document.createElement('div')
-                  card.appendChild(parasDiv)
-                  paras.forEach(para => parasDiv.appendChild(para))
+                if (segments.length > 0) {
+                  let segsDiv = document.createElement('div')
+                  card.appendChild(segsDiv)
+                  segments.forEach(seg => segsDiv.appendChild(segments))
                 }
               })
             })
@@ -371,10 +385,10 @@
           },
 
           // Finds all param tags in elements between top-level app element and element in para arg
-          paramsInScope(para) {
+          paramsInScope(segment) {
             let paramTags = []
             let scope = []
-            let el = para
+            let el = segment
             while (el && el.id !== 'app') {
               scope.push(el)
               el = el.parentElement
@@ -386,10 +400,10 @@
           },
   
           // Creates an object mapping paragraph data-id to all params found in para scope
-          paramsForParagraphs() {
+          paramsForSegments() {
             return Object.fromEntries(
-              Array.from(this.$refs.essay.querySelectorAll('p'))
-              .map(para => [para.dataset.id, this.paramsInScope(para)]))
+              Array.from(this.$refs.essay.querySelectorAll('.segment'))
+              .map(segment => [segment.dataset.id, this.paramsInScope(segment)]))
           },
 
           // Gets labels, aliases, images and geo coords for referenced Wikdata entities
@@ -428,44 +442,54 @@
           // Convert essay Markdown into HTML.  Markdown headings are used to infer content heirarchy
           markdownToElem(markdown) {
             let essay = document.createElement('div')
-            //let tmp = document.createElement('div')
-            //tmp.innerHTML = md.render(markdown)
             let tmp = new DOMParser().parseFromString(md.render(markdown), 'text/html').children[0].children[1]
-            let current = essay
+            let currentSection = essay
+            let segments = []
+            let segment
     
             Array.from(tmp.children).forEach(el => {
-              if (el.tagName[0] === 'H') {
+              if (el.tagName[0] === 'H' && isNumeric(el.tagName.slice(1))) {
                 let sectionLevel = parseInt(el.tagName.slice(1))
-                current = document.createElement('section')
-                let sectionClasses = Array.from(el.classList)
-                if (sectionClasses.length > 0) {
-                  current.classList.add(...sectionClasses)
-                  el.classList.remove(...sectionClasses)
-                  if (!el.innerHTML) {
-                    // el = null
-                    el.style.display = 'none'
-                  }
+                if (segments) {
+                  segments.forEach(segment => currentSection.innerHTML += segment.outerHTML)
+                  segments = []
                 }
+                currentSection = document.createElement('section')
+                let sectionClasses = Array.from(el.classList)
+                currentSection.classList.add(...sectionClasses)
+                el.classList.remove(...sectionClasses)
+                if (el.innerHTML) currentSection.innerHTML += el.outerHTML
                 let headings = [...essay.querySelectorAll(`H${sectionLevel-1}`)]
                 let parent = sectionLevel === 1 || headings.length === 0 ? essay : headings.pop().parentElement
-                parent.appendChild(current)
+                parent.appendChild(currentSection)
                 let parentDataID = parent.dataset.id || ''
-                let sectionSeq = parent.querySelectorAll(`H${sectionLevel}`).length + 1
+                let sectionSeq = parent.querySelectorAll(`H${sectionLevel}`).length
                 let currentDataID = parentDataID ? `${parentDataID}.${sectionSeq}` : sectionSeq
-                current.setAttribute('data-id', currentDataID)
+                currentSection.setAttribute('data-id', currentDataID)
               } else if (el.tagName === 'P') {
                 if (el.innerHTML.indexOf('ve-button.png') >= 0) {
                   el = null
                 } else {
-                  let paraSeq = Array.from(current.querySelectorAll('P')).filter(para => para.parentElement === current).length + 1
-                  el.setAttribute('data-id', `${current.dataset.id}.${paraSeq}`)
+                  segment = document.createElement('div')
+                  segment.setAttribute('data-id', `${currentSection.dataset.id}.${segments.length + 1}`)
+                  segment.classList.add('segment')
+                  segment.innerHTML = el.outerHTML
+                  segments.push(segment)
+                }
+              } else if (el.tagName === 'SECTION' && el.className === 'footnotes') {
+                currentSection.innerHTML += el.outerHTML
+              } else {
+                if (segment) {
+                  segment.innerHTML += el.outerHTML
+                } else {
+                  essay.innerHTML += el.outerHTML
                 }
               }
-              if (el) {
-                if (el.dataset.id) current.setAttribute('title', el.dataset.id)
-                current.innerHTML += el.outerHTML
-              }
             })
+            if (segments) {
+              segments.forEach(segment => currentSection.innerHTML += segment.outerHTML)
+              segments = []
+            }
             return essay
           },
    
@@ -508,14 +532,17 @@
             })
           },
 
-          convertResourceUrls(root) {
+          convertResourceUrls(root, path) {
             console.log('convertResourceUrls')
             root.querySelectorAll('img').forEach(img => {
               if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src))
             })
             root.querySelectorAll('param').forEach(param => {
               ['url', 'banner'].forEach(attr => {
-                if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value))
+                if (param.attributes[attr]) {
+                  console.log(param)
+                  param.setAttribute(attr, convertURL(param.attributes[attr].value, path))
+                }
               })
             })
           },
@@ -523,7 +550,8 @@
           // Finds words/phrases in content paragraphs that match labels or aliases for entities in scope
           //  Matched text is wrapped with a span tag for reacting to hover and click actions
           tagEntities() {
-            Array.from(this.$refs.essay.querySelectorAll('p')).forEach(para => {
+            Array.from(this.$refs.essay.querySelectorAll('.segment')).forEach(para => {
+            // Array.from(this.$refs.essay.querySelectorAll('P')).forEach(para => {
               let paraHTML = para.innerHTML
               this.paramsInScope(para).filter(param => param['ve-entity'] !== undefined && param.eid !== undefined).map(param => param.eid).forEach(eid => {
                 let entity = this.entities[eid]
@@ -614,7 +642,7 @@
           // logging watchers
           params (params) { console.log('params', params) },
           entities (entities) { console.log('entities', entities) },
-          paras (paras) { console.log('paras', paras) },
+          segments (segments) { console.log('segments', segments) },
           selectedViewer (selectedViewer) { console.log('selectedViewer', selectedViewer) },
 
           forceHorizontalLayout: {
@@ -673,6 +701,7 @@
     // Various utility and helper methods
     function camelToKebab(input) { return input.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}
     function kebabToCamel(input) { return input.replace(/-([a-z])/g, function (g) {return g[1].toUpperCase()})}
+    function isNumeric(arg){ return !isNaN(arg) }
 
     // Gets site config
     async function getSiteConfig() {
@@ -724,10 +753,8 @@
     async function getMergedComponentsList(root, acct, repo, ref, contentSource) {
       console.log(`getMergedComponentsList: root=${root} acct=${acct} repo=${repo} ref=${ref}`, contentSource)
       let componentsList = await getComponentsList(root, acct, repo, ref)
-      console.log('componentsList', componentsList)
       if (baseUrl !== contentSource.baseUrl) {
         let extras = await getComponentsList(root, contentSource.acct, contentSource.repo, contentSource.ref)
-        console.log('extras', extras)
         componentsList = [...extras, ...componentsList]
       }
       return componentsList
@@ -767,11 +794,12 @@
       return link
     }
 
-    function convertURL(current) {
-      // console.log(`convertURL: current=${current} contentSource=${contentSource.baseUrl}`)
+    function convertURL(current, path) {
+      console.log(`convertURL: current=${current} origin=${window.location.origin} basePath=${basePath} path=${path} contentSource=${contentSource.baseUrl}`)
       if (current.indexOf('http') === 0) {
         if (current.indexOf(window.location.origin) === 0) {
           let pathElems = current.split('/').slice(3)
+          console.log(pathElems)
           if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
           return `${contentSource.baseUrl}/${pathElems.join('/')}`
         } else {
@@ -780,7 +808,7 @@
       } else if (current.indexOf('/') === 0) {
         return `${contentSource.baseUrl}${current}`
       } else {
-        return `${contentSource.baseUrl}/${current}`
+        return `${contentSource.baseUrl}${basePath}${path}${current}`
       }
     }
   </script>

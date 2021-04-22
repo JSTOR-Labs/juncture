@@ -2,11 +2,22 @@
 
 In addition to converting single text files into visual narratives, Juncture can also be used to create rich web sites consisting of multiple visual essays with navigation, site info pages (_About_, _Contact us_, etc), email contact form, logo, and other simple customizations.  The creation of a custom visual essay site involves a couple of easy steps than can be accomplished in just a few minutes using a predefined site template (this repository). 
 
+```markdown
+# Heading
+
+The only prerequisite for using Juncture is access to a Github account.  Github is a site commonly used for managing files on the web.  Github has many advanced features for managing and tracking multiple versions of files and is popular with individuals and teams developing open source software.  While the version management capabilities in Github are quite useful and can be used with visual essays, in the typical case it is only used as simple file hosting service, similar to how Dropbox or Google Drive might be used for managing documents and photographs.
+<param ve-entity eid="Q25400" title="Asteraceae"> 
+<param ve-entity eid="Q30765614" title="floret" aliases="florets"> 
+<param ve-graphic img="https://upload.wikimedia.org/wikipedia/commons/a/ad/SunflowerModel.svg" title="Illustration of Helmut Vogel's (1979) model for the pattern of disk florets arranged in a sunflower head, Doron, cmglee, 2007, Wikimedia Commons, CC BY-SA 3.0">
+```
+
 # Getting started with Juncture
 
 ## Create a free Github account
 
 The only prerequisite for using Juncture is access to a Github account.  Github is a site commonly used for managing files on the web.  Github has many advanced features for managing and tracking multiple versions of files and is popular with individuals and teams developing open source software.  While the version management capabilities in Github are quite useful and can be used with visual essays, in the typical case it is only used as simple file hosting service, similar to how Dropbox or Google Drive might be used for managing documents and photographs.
+- List item1
+- List item 2
 
 If you don't yet have a Github account a free one can be created at [https://github.com](https://github.com).
 

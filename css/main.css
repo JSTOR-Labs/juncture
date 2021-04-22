@@ -33,7 +33,8 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif;}
     padding: 12px;
     overflow-y: scroll;
     z-index: 1;
-    padding-top: 400px;
+    padding-top: 420px;
+    background-color: #f8f8f8;
 }
 #essay > section:last-of-type {
     padding-bottom: 80vh; /* Enables srolling all content through active paragraph region at top*/
@@ -45,9 +46,25 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif;}
 p {
     padding-right: 18px;
 }
-.active {
-    background-color: #fff;
-    position: relative;
+
+div.segment {
+  padding: 8px 24px 8px 16px;
+  line-height: 1.6;
+}
+
+div.segment p {
+  padding: 0;
+  margin: 0;
+}
+
+div.segment.active {
+  background-color: #ffffff;
+  box-shadow: 0 0 3px 1px rgb(0 0 0 / 25%);
+  position: relative;
+  cursor: default;
+  border: 1px solid #9e9e9e;
+  border-radius: 8px;
+  padding: 7px 23px 7px 15px;
 }
 
 #tabs-bar {
@@ -237,3 +254,37 @@ section.cards p {
 .hljs-strong{font-weight:bold}
 .hljs-attr{color:blue}
 .hljs-name{color:green}
+
+.dimmed {
+  position: relative;
+}
+
+.dimmed:after {
+  content: " ";
+  z-index: 1;
+  display: block;
+  position: absolute;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.segment pre {
+  white-space: pre-wrap;       /* Since CSS 2.1 */
+  white-space: -o-pre-wrap;    /* Opera */
+  margin-left: 18px;
+  padding: 0 12px;
+  border-left: 4px solid #ccc;
+}
+
+p code {
+  background-color: #eee;
+  padding: 3px;
+}
+
+.segment.active pre {
+  background-color: lemonchiffon;
+  font-weight: bold;
+}
