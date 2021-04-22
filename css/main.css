@@ -11,16 +11,6 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif;}
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto 1fr;
 }
-/* small screen layout */
-@media only screen and (max-width: 1000px) {
-  #app, #app.vertical {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
-  }
-  #essay > section {
-    padding-bottom: 25vh !important; /* Enables srolling all content through active paragraph region at top*/
-  }
-}
 
 /* row-start column-start row-end column-end */
 
@@ -43,6 +33,28 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif;}
     grid-area: 2 / 2 / 3 / 2;
     position: relative;
 }
+
+/* small screen layout */
+@media only screen and (max-width: 1000px) {
+  #app, #app.vertical {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  #header {
+    grid-area: 1 / 1 / 2 / 2;
+  }
+  #essay {
+    grid-area: 1 / 1 / 3 / 2;
+  }
+  #viewer {
+    grid-area: 3 / 1 / 4 / 2;
+  }
+  #essay > section:last-of-type {
+    padding-bottom: 50vh !important; /* Enables srolling all content through active paragraph region at top*/
+  }
+}
+
+
 p {
     padding-right: 18px;
 }
