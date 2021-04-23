@@ -62,7 +62,7 @@ div.segment.active {
   }
   #essay {
     grid-area: 1 / 1 / 3 / 2;
-    padding: 420px 0 0 0;
+    padding: 420px 9px 9px 9px;
   }
   div.segment.active {
     background-color: #ffffff;
