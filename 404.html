@@ -25,14 +25,20 @@
       // Otherwise, leave segmentCount as 0.
       var segmentCount = 0;
 
+      console.log('404', window.location)
+      console.log(`404: referrer=${document.referrer || ''}`)
+
       var l = window.location;
+      /*
       l.replace(
         l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
         l.pathname.split('/').slice(0, 1 + segmentCount).join('/') + '/?p=/' +
         l.pathname.slice(1).split('/').slice(segmentCount).join('/').replace(/&/g, '~and~') +
         (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
         l.hash
-      );
+      )
+      */
+
     </script>
   </head>
   <body>
