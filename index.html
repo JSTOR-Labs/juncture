@@ -162,6 +162,7 @@
 
     getContentSource()
     .then(sourceInfo => {
+      console.log('sourceInfo', sourceInfo)
       contentSource = { ...sourceInfo, 
                         ...{ ref: qargs.ref || sourceInfo.ref,
                              baseUrl: sourceInfo.acct
@@ -292,6 +293,7 @@
             let essayUrls = [this.contentUrl(`${path}README.md`), this.contentUrl(`${path.slice(0,-1)}.md`)]
             let resp
             for (let i = 0; i < essayUrls.length; i++) {
+              console.log(essayUrls[i])
               resp = await fetch(essayUrls[i])
               if (resp.ok) break
             }
