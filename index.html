@@ -816,7 +816,7 @@
       } else if (current.indexOf('/') === 0) {
         return `${contentSource.baseUrl}${current}`
       } else {
-        return `${contentSource.baseUrl}${basePath}${path}${current}`
+        return `${contentSource.baseUrl}${basePath}${path || ''}${current}`
       }
     }
   </script>
