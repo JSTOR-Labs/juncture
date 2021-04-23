@@ -163,6 +163,7 @@
     getContentSource()
     .then(sourceInfo => {
       console.log('sourceInfo', sourceInfo)
+      if (!sourceInfo) sourceInfo = {acct, repo, ref}
       contentSource = { ...sourceInfo, 
                         ...{ ref: qargs.ref || sourceInfo.ref,
                              baseUrl: sourceInfo.acct
@@ -738,7 +739,6 @@
           resp = await resp.json()
           return {acct, repo, ref: resp.default_branch}
         }
-        return {}
       }
     }
 
