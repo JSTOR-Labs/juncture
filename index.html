@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="icon" href="images/favicon.svg">
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
   <link href="https://unpkg.com/tippy.js@6/dist/tippy.css" rel="stylesheet"/>
   <link href="https://unpkg.com/tippy.js@6/themes/light-border.css" rel="stylesheet"/>
-  <link href="css/main.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 </head>
 <body>
@@ -155,7 +153,8 @@
         acct = 'jstor-labs'
         repo = 'juncture'
         ref = 'main'
-        baseUrl = window.location.origin
+        // baseUrl = window.location.origin
+        baseUrl = `https://gitcdn.link/repo/${acct}/${repo}/${ref}`
         basePath = ''
       }
     }
@@ -163,10 +162,12 @@
 
     getContentSource()
     .then(sourceInfo => {
+      console.log('sourceInfo', sourceInfo)
+      if (!sourceInfo) sourceInfo = {acct, repo, ref}
       contentSource = { ...sourceInfo, 
                         ...{ ref: qargs.ref || sourceInfo.ref,
                              baseUrl: sourceInfo.acct
-                             ? `https://raw.githubusercontent.com/${sourceInfo.acct}/${sourceInfo.repo}/${qargs.ref || sourceInfo.ref}`
+                             ? `https://gitcdn.link/repo/${sourceInfo.acct}/${sourceInfo.repo}/${qargs.ref || sourceInfo.ref}`
                              : window.location.origin }}
       if ((contentSource.acct && contentSource.acct !== acct) || (contentSource.repo && contentSource.repo !== repo)) {
         basePath = `${isGhpSite ? '/'+repo : ''}/${contentSource.acct}/${contentSource.repo}`
@@ -189,7 +190,7 @@
       })
 
       let head = document.querySelector('head')
-      head.appendChild(makeLink(`${baseUrl}/images/favicon.svg`, 'icon'))
+      head.appendChild(makeLink(siteConfig.favicon || `${baseUrl}/images/favicon.svg`, 'icon'))
       head.appendChild(makeLink(`${baseUrl}/css/main.css`))
       head.appendChild(makeLink(`${baseUrl}/css/custom.css`))
 
@@ -279,24 +280,33 @@
             }
           },
 
+          contentUrl(path) {
+            return contentSource.acct
+              ? `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
+              : `${window.location.origin}${path}`
+          },
+
           // Loads essay Markdown file
           async loadEssay(path, replace) {
             path = path || window.location.pathname.slice(basePath.length) || '/'
             if (path.slice(-1) !== '/') path += '/'
             console.log(`loadEssay: contentSource.baseUrl=${contentSource.baseUrl} basePath=${basePath} path=${path}`)
-            let essayUrls = [`${contentSource.baseUrl}${path}README.md`,
-                             `${contentSource.baseUrl}${path.slice(0,-1)}.md`]
+            let essayUrls = [this.contentUrl(`${path}README.md`), this.contentUrl(`${path.slice(0,-1)}.md`)]
             let resp
             for (let i = 0; i < essayUrls.length; i++) {
+              console.log(essayUrls[i])
               resp = await fetch(essayUrls[i])
-              console.log('loadEssay', essayUrls[i], resp.ok)
               if (resp.ok) break
             }
-            this.markdown = await resp.text()
+            if (resp.url.indexOf('https://api.github.com') === 0) {
+              resp = await resp.json()
+              this.markdown = atob(resp.content)
+            } else {
+              this.markdown = await resp.text()
+            }
 
             let browserPath = `${basePath}${path}`
             if (qargs.ref) browserPath += `?ref=${qargs.ref}`
-            console.log(`browserPath=${browserPath}`)
             if (replace) {
               history.replaceState({file: path || ''}, '', browserPath)
             } else {
@@ -338,10 +348,12 @@
           },
 
           doCustomFormatting(elem) {
-            Array.from(elem.querySelectorAll('section.cards'))
-              .forEach(cardsSection => {
+            Array.from(elem.querySelectorAll('section.cards')).forEach(cardsSection => {
               Array.from(cardsSection.querySelectorAll('section')).forEach(card => {
-                ['img', 'a', 'ul'].forEach(selector => card.appendChild(card.querySelector(selector)))
+                ['img', 'a', 'ul'].forEach(selector => {
+                  let el = card.querySelector(selector)
+                  card.appendChild(el)
+                })
                 let segments = []
                 Array.from(card.querySelectorAll('.segment')).forEach(seg => {
                   if (seg.textContent.trim() === '') {
@@ -454,11 +466,12 @@
                   segments.forEach(segment => currentSection.innerHTML += segment.outerHTML)
                   segments = []
                 }
-                currentSection = document.createElement('section')
+                currentSection = new DOMParser().parseFromString('<section></section>', 'text/html').children[0].children[1].children[0]
                 let sectionClasses = Array.from(el.classList)
                 currentSection.classList.add(...sectionClasses)
                 el.classList.remove(...sectionClasses)
-                if (el.innerHTML) currentSection.innerHTML += el.outerHTML
+                if (!el.innerHTML) el.style.display = 'none'
+                currentSection.innerHTML += el.outerHTML
                 let headings = [...essay.querySelectorAll(`H${sectionLevel-1}`)]
                 let parent = sectionLevel === 1 || headings.length === 0 ? essay : headings.pop().parentElement
                 parent.appendChild(currentSection)
@@ -470,7 +483,7 @@
                 if (el.innerHTML.indexOf('ve-button.png') >= 0) {
                   el = null
                 } else {
-                  segment = document.createElement('div')
+                  segment = new DOMParser().parseFromString('<div></div>', 'text/html').children[0].children[1].children[0]
                   segment.setAttribute('data-id', `${currentSection.dataset.id}.${segments.length + 1}`)
                   segment.classList.add('segment')
                   segment.innerHTML = el.outerHTML
@@ -539,10 +552,7 @@
             })
             root.querySelectorAll('param').forEach(param => {
               ['url', 'banner'].forEach(attr => {
-                if (param.attributes[attr]) {
-                  console.log(param)
-                  param.setAttribute(attr, convertURL(param.attributes[attr].value, path))
-                }
+                if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value))
               })
             })
           },
@@ -551,7 +561,6 @@
           //  Matched text is wrapped with a span tag for reacting to hover and click actions
           tagEntities() {
             Array.from(this.$refs.essay.querySelectorAll('.segment')).forEach(para => {
-            // Array.from(this.$refs.essay.querySelectorAll('P')).forEach(para => {
               let paraHTML = para.innerHTML
               this.paramsInScope(para).filter(param => param['ve-entity'] !== undefined && param.eid !== undefined).map(param => param.eid).forEach(eid => {
                 let entity = this.entities[eid]
@@ -713,7 +722,7 @@
         resp = await fetch(`${contentSource.baseUrl}/config.json`)
         config = resp.ok ? await resp.json() : {}
       }
-      ['banner'].forEach(attr => {
+      ['banner', 'favicon'].forEach(attr => {
         if (config[attr]) config[attr] = convertURL(config[attr])
       })
       return config
@@ -730,7 +739,6 @@
           resp = await resp.json()
           return {acct, repo, ref: resp.default_branch}
         }
-        return {}
       }
     }
 
@@ -795,11 +803,11 @@
     }
 
     function convertURL(current, path) {
-      console.log(`convertURL: current=${current} origin=${window.location.origin} basePath=${basePath} path=${path} contentSource=${contentSource.baseUrl}`)
+      // console.log(`convertURL: current=${current} origin=${window.location.origin} basePath=${basePath} path=${path} contentSource=${contentSource.baseUrl}`)
       if (current.indexOf('http') === 0) {
         if (current.indexOf(window.location.origin) === 0) {
           let pathElems = current.split('/').slice(3)
-          console.log(pathElems)
+          // console.log(pathElems)
           if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
           return `${contentSource.baseUrl}/${pathElems.join('/')}`
         } else {
@@ -808,7 +816,8 @@
       } else if (current.indexOf('/') === 0) {
         return `${contentSource.baseUrl}${current}`
       } else {
-        return `${contentSource.baseUrl}${basePath}${path}${current}`
+        console.log(`convertURL: basePath=${basePath} path=${path} pathname=${window.location.pathname}`)
+        return `${contentSource.baseUrl}${basePath}${path || window.location.pathname}${current}`
       }
     }
   </script>
