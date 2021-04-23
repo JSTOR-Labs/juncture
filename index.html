@@ -140,25 +140,26 @@
     console.log('qargs', qargs)
 
     if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') >= 0) {
-      baseUrl = window.location.origin
+      assetsBaseUrl = window.location.origin
       basePath = ''
     } else {
       if (window.location.hostname.indexOf('github.io') > 0) {
         isGhpSite = true;
         [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2,4)
         ref = 'main'
-        baseUrl = `https://${acct}.github.io/${repo}`
+        // assetsBaseUrl = `https://${acct}.github.io/${repo}`
+        assetsBaseUrl = `https://gitcdn.link/repo/${acct}/${repo}/${ref}`
         basePath = `/${repo}`
       } else {
         acct = 'jstor-labs'
         repo = 'juncture'
         ref = 'main'
         // baseUrl = window.location.origin
-        baseUrl = `https://gitcdn.link/repo/${acct}/${repo}/${ref}`
+        assetsBaseUrl = `https://gitcdn.link/repo/${acct}/${repo}/${ref}`
         basePath = ''
       }
     }
-    console.log(`acct=${acct} repo=${repo} ref=${ref} baseUrl=${baseUrl} basePath=${basePath} isGhpSite=${isGhpSite}`)
+    console.log(`acct=${acct} repo=${repo} ref=${ref} assetsBaseUrl=${assetsBaseUrl} basePath=${basePath} isGhpSite=${isGhpSite}`)
 
     getContentSource()
     .then(sourceInfo => {
@@ -190,9 +191,9 @@
       })
 
       let head = document.querySelector('head')
-      head.appendChild(makeLink(siteConfig.favicon || `${baseUrl}/images/favicon.svg`, 'icon'))
-      head.appendChild(makeLink(`${baseUrl}/css/main.css`))
-      head.appendChild(makeLink(`${baseUrl}/css/custom.css`))
+      head.appendChild(makeLink(siteConfig.favicon || `${assetsBaseUrl}/images/favicon.svg`, 'icon'))
+      head.appendChild(makeLink(`${assetsBaseUrl}/css/main.css`))
+      head.appendChild(makeLink(`${assetsBaseUrl}/css/custom.css`))
 
       new Vue({
         el: '#app',
@@ -752,8 +753,8 @@
         resp = await resp.json()
         return resp.tree.map(item => `https://raw.githubusercontent.com/${acct}/${repo}/${ref}/${root}/${item.path}`)
       } else { // localhost
-        let resp = await fetch(`${baseUrl}/${root}`)
-        return (await resp.json()).files.map(fname => `${baseUrl}/${root}/${fname}`)
+        let resp = await fetch(`${assetsBaseUrl}/${root}`)
+        return (await resp.json()).files.map(fname => `${assetsBaseUrl}/${root}/${fname}`)
       }
     }
   
@@ -761,7 +762,7 @@
     async function getMergedComponentsList(root, acct, repo, ref, contentSource) {
       console.log(`getMergedComponentsList: root=${root} acct=${acct} repo=${repo} ref=${ref}`, contentSource)
       let componentsList = await getComponentsList(root, acct, repo, ref)
-      if (baseUrl !== contentSource.baseUrl) {
+      if (assetsBaseUrl !== contentSource.baseUrl) {
         let extras = await getComponentsList(root, contentSource.acct, contentSource.repo, contentSource.ref)
         componentsList = [...extras, ...componentsList]
       }
@@ -803,22 +804,22 @@
     }
 
     function convertURL(current, path) {
-      // console.log(`convertURL: current=${current} origin=${window.location.origin} basePath=${basePath} path=${path} contentSource=${contentSource.baseUrl}`)
+      let pathElems = []
       if (current.indexOf('http') === 0) {
         if (current.indexOf(window.location.origin) === 0) {
           let pathElems = current.split('/').slice(3)
-          // console.log(pathElems)
-          if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
-          return `${contentSource.baseUrl}/${pathElems.join('/')}`
         } else {
           return current
         }
       } else if (current.indexOf('/') === 0) {
-        return `${contentSource.baseUrl}${current}`
+        pathElems = current.split('/').filter(elem => elem !== '')
       } else {
-        console.log(`convertURL: basePath=${basePath} path=${path} pathname=${window.location.pathname}`)
-        return `${contentSource.baseUrl}${basePath}${path || window.location.pathname}${current}`
+        pathElems = `${path || window.location.pathname}/${current}`.split('/').filter(elem => elem !== '')
       }
+      if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
+      converted = `${assetsBaseUrl}/${pathElems.join('/')}`
+      console.log(`convertURL: current=${current} converted=${converted} path=${path} pathname=${window.location.pathname} assetsBaseUrl=${assetsBaseUrl} pathElems=${pathElems}`)
+      return converted
     }
   </script>
 
