@@ -803,7 +803,6 @@
     }
 
     function convertURL(current, path) {
-      path = path || '/'
       // console.log(`convertURL: current=${current} origin=${window.location.origin} basePath=${basePath} path=${path} contentSource=${contentSource.baseUrl}`)
       if (current.indexOf('http') === 0) {
         if (current.indexOf(window.location.origin) === 0) {
@@ -817,6 +816,7 @@
       } else if (current.indexOf('/') === 0) {
         return `${contentSource.baseUrl}${current}`
       } else {
+        console.log(`convertURL: basePath=${basePath} path=${path}`)
         return `${contentSource.baseUrl}${basePath}${path}${current}`
       }
     }
