@@ -279,9 +279,9 @@
           },
 
           contentUrl(path) {
-            return sourceInfo.acct
-              ? `${window.location.origin}${path}`
-              : `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
+            return contentSource.acct
+              ? `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
+              : `${window.location.origin}${path}`
           },
 
           // Loads essay Markdown file
@@ -291,14 +291,20 @@
             console.log(`loadEssay: contentSource.baseUrl=${contentSource.baseUrl} basePath=${basePath} path=${path}`)
             //let essayUrls = [`${contentSource.baseUrl}${path}README.md`,
             //                 `${contentSource.baseUrl}${path.slice(0,-1)}.md`]
-            let essayUrls = [this.contentUrl(path), this.contentUrl(`${path}README.md`)]
+            let essayUrls = [this.contentUrl(`${path}README.md`), this.contentUrl(`${path.slice(0,-1)}.md`)]
+            console.log(essayUrls)
             let resp
             for (let i = 0; i < essayUrls.length; i++) {
               resp = await fetch(essayUrls[i])
-              console.log('loadEssay', essayUrls[i], resp.ok)
+              console.log('loadEssay', essayUrls[i], resp)
               if (resp.ok) break
             }
-            this.markdown = await resp.text()
+            if (resp.url.indexOf('https://api.github.com') === 0) {
+              resp = await resp.json()
+              this.markdown = atob(resp.content)
+            } else {
+              this.markdown = await resp.text()
+            }
 
             let browserPath = `${basePath}${path}`
             if (qargs.ref) browserPath += `?ref=${qargs.ref}`
@@ -344,10 +350,15 @@
           },
 
           doCustomFormatting(elem) {
-            Array.from(elem.querySelectorAll('section.cards'))
-              .forEach(cardsSection => {
+            console.log('doCustomFormatting', elem)
+            Array.from(elem.querySelectorAll('section.cards')).forEach(cardsSection => {
+              console.log(cardsSection)
               Array.from(cardsSection.querySelectorAll('section')).forEach(card => {
-                ['img', 'a', 'ul'].forEach(selector => card.appendChild(card.querySelector(selector)))
+                ['img', 'a', 'ul'].forEach(selector => {
+                  let el = card.querySelector(selector)
+                  console.log(el)
+                  card.appendChild(el)
+                })
                 let segments = []
                 Array.from(card.querySelectorAll('.segment')).forEach(seg => {
                   if (seg.textContent.trim() === '') {
@@ -460,11 +471,12 @@
                   segments.forEach(segment => currentSection.innerHTML += segment.outerHTML)
                   segments = []
                 }
-                currentSection = document.createElement('section')
+                currentSection = new DOMParser().parseFromString('<section></section>', 'text/html').children[0].children[1].children[0]
                 let sectionClasses = Array.from(el.classList)
                 currentSection.classList.add(...sectionClasses)
                 el.classList.remove(...sectionClasses)
-                if (el.innerHTML) currentSection.innerHTML += el.outerHTML
+                if (!el.innerHTML) el.style.display = 'none'
+                currentSection.innerHTML += el.outerHTML
                 let headings = [...essay.querySelectorAll(`H${sectionLevel-1}`)]
                 let parent = sectionLevel === 1 || headings.length === 0 ? essay : headings.pop().parentElement
                 parent.appendChild(currentSection)
@@ -476,7 +488,7 @@
                 if (el.innerHTML.indexOf('ve-button.png') >= 0) {
                   el = null
                 } else {
-                  segment = document.createElement('div')
+                  segment = new DOMParser().parseFromString('<div></div>', 'text/html').children[0].children[1].children[0]
                   segment.setAttribute('data-id', `${currentSection.dataset.id}.${segments.length + 1}`)
                   segment.classList.add('segment')
                   segment.innerHTML = el.outerHTML
@@ -545,10 +557,7 @@
             })
             root.querySelectorAll('param').forEach(param => {
               ['url', 'banner'].forEach(attr => {
-                if (param.attributes[attr]) {
-                  console.log(param)
-                  param.setAttribute(attr, convertURL(param.attributes[attr].value, path))
-                }
+                if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value))
               })
             })
           },
@@ -557,7 +566,6 @@
           //  Matched text is wrapped with a span tag for reacting to hover and click actions
           tagEntities() {
             Array.from(this.$refs.essay.querySelectorAll('.segment')).forEach(para => {
-            // Array.from(this.$refs.essay.querySelectorAll('P')).forEach(para => {
               let paraHTML = para.innerHTML
               this.paramsInScope(para).filter(param => param['ve-entity'] !== undefined && param.eid !== undefined).map(param => param.eid).forEach(eid => {
                 let entity = this.entities[eid]
@@ -801,11 +809,11 @@
     }
 
     function convertURL(current, path) {
-      console.log(`convertURL: current=${current} origin=${window.location.origin} basePath=${basePath} path=${path} contentSource=${contentSource.baseUrl}`)
+      // console.log(`convertURL: current=${current} origin=${window.location.origin} basePath=${basePath} path=${path} contentSource=${contentSource.baseUrl}`)
       if (current.indexOf('http') === 0) {
         if (current.indexOf(window.location.origin) === 0) {
           let pathElems = current.split('/').slice(3)
-          console.log(pathElems)
+          // console.log(pathElems)
           if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
           return `${contentSource.baseUrl}/${pathElems.join('/')}`
         } else {
