@@ -188,7 +188,7 @@
       })
 
       let head = document.querySelector('head')
-      head.appendChild(makeLink(`${baseUrl}/images/favicon.svg`, 'icon'))
+      head.appendChild(makeLink(siteConfig.favicon || `${baseUrl}/images/favicon.svg`, 'icon'))
       head.appendChild(makeLink(`${baseUrl}/css/main.css`))
       head.appendChild(makeLink(`${baseUrl}/css/custom.css`))
 
