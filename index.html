@@ -289,14 +289,10 @@
             path = path || window.location.pathname.slice(basePath.length) || '/'
             if (path.slice(-1) !== '/') path += '/'
             console.log(`loadEssay: contentSource.baseUrl=${contentSource.baseUrl} basePath=${basePath} path=${path}`)
-            //let essayUrls = [`${contentSource.baseUrl}${path}README.md`,
-            //                 `${contentSource.baseUrl}${path.slice(0,-1)}.md`]
             let essayUrls = [this.contentUrl(`${path}README.md`), this.contentUrl(`${path.slice(0,-1)}.md`)]
-            console.log(essayUrls)
             let resp
             for (let i = 0; i < essayUrls.length; i++) {
               resp = await fetch(essayUrls[i])
-              console.log('loadEssay', essayUrls[i], resp)
               if (resp.ok) break
             }
             if (resp.url.indexOf('https://api.github.com') === 0) {
@@ -308,7 +304,6 @@
 
             let browserPath = `${basePath}${path}`
             if (qargs.ref) browserPath += `?ref=${qargs.ref}`
-            console.log(`browserPath=${browserPath}`)
             if (replace) {
               history.replaceState({file: path || ''}, '', browserPath)
             } else {
@@ -350,13 +345,10 @@
           },
 
           doCustomFormatting(elem) {
-            console.log('doCustomFormatting', elem)
             Array.from(elem.querySelectorAll('section.cards')).forEach(cardsSection => {
-              console.log(cardsSection)
               Array.from(cardsSection.querySelectorAll('section')).forEach(card => {
                 ['img', 'a', 'ul'].forEach(selector => {
                   let el = card.querySelector(selector)
-                  console.log(el)
                   card.appendChild(el)
                 })
                 let segments = []
