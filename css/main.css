@@ -25,6 +25,8 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif;}
     z-index: 1;
     padding-top: 420px;
     background-color: #f8f8f8;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 #essay > section:last-of-type {
     padding-bottom: 80vh; /* Enables srolling all content through active paragraph region at top*/
@@ -32,6 +34,21 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif;}
 #viewer {
     grid-area: 2 / 2 / 3 / 2;
     position: relative;
+}
+
+div.segment {
+  padding: 8px 24px 8px 16px;
+  line-height: 1.6;
+}
+
+div.segment.active {
+  background-color: #ffffff;
+  box-shadow: 0 0 3px 1px rgb(0 0 0 / 25%);
+  position: relative;
+  cursor: default;
+  border: 1px solid #9e9e9e;
+  border-radius: 8px;
+  padding: 7px 23px 7px 15px;
 }
 
 /* small screen layout */
@@ -45,6 +62,14 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif;}
   }
   #essay {
     grid-area: 1 / 1 / 3 / 2;
+    padding: 420px 0 0 0;
+  }
+  div.segment.active {
+    background-color: #ffffff;
+    box-shadow: unset;
+    border: unset;
+    border-radius: 0;
+    padding: 8px 24px 8px 16px;
   }
   #viewer {
     grid-area: 3 / 1 / 4 / 2;
@@ -59,25 +84,12 @@ p {
     padding-right: 18px;
 }
 
-div.segment {
-  padding: 8px 24px 8px 16px;
-  line-height: 1.6;
-}
 
 div.segment p {
   padding: 0;
   margin: 0;
 }
 
-div.segment.active {
-  background-color: #ffffff;
-  box-shadow: 0 0 3px 1px rgb(0 0 0 / 25%);
-  position: relative;
-  cursor: default;
-  border: 1px solid #9e9e9e;
-  border-radius: 8px;
-  padding: 7px 23px 7px 15px;
-}
 
 #tabs-bar {
     display: flex;
@@ -284,11 +296,13 @@ section.cards p {
 }
 
 .segment pre {
-  white-space: pre-wrap;       /* Since CSS 2.1 */
-  white-space: -o-pre-wrap;    /* Opera */
   margin-left: 18px;
   padding: 0 12px;
   border-left: 4px solid #ccc;
+  overflow-wrap: break-word ;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  white-space: -o-pre-wrap;
 }
 
 p code {
