@@ -278,13 +278,20 @@
             }
           },
 
+          contentUrl(path) {
+            return sourceInfo.acct
+              ? `${window.location.origin}${path}`
+              : `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
+          },
+
           // Loads essay Markdown file
           async loadEssay(path, replace) {
             path = path || window.location.pathname.slice(basePath.length) || '/'
             if (path.slice(-1) !== '/') path += '/'
             console.log(`loadEssay: contentSource.baseUrl=${contentSource.baseUrl} basePath=${basePath} path=${path}`)
-            let essayUrls = [`${contentSource.baseUrl}${path}README.md`,
-                             `${contentSource.baseUrl}${path.slice(0,-1)}.md`]
+            //let essayUrls = [`${contentSource.baseUrl}${path}README.md`,
+            //                 `${contentSource.baseUrl}${path.slice(0,-1)}.md`]
+            let essayUrls = [this.contentUrl(path), this.contentUrl(`${path}README.md`)]
             let resp
             for (let i = 0; i < essayUrls.length; i++) {
               resp = await fetch(essayUrls[i])
