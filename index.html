@@ -156,7 +156,6 @@
         repo = 'juncture'
         ref = 'main'
         // baseUrl = window.location.origin
-        // baseUrl = `https://raw.githubusercontent.com/${acct}/${repo}/${ref}`
         baseUrl = `https://gitcdn.link/repo/${acct}/${repo}/${ref}`
         basePath = ''
       }
@@ -168,7 +167,7 @@
       contentSource = { ...sourceInfo, 
                         ...{ ref: qargs.ref || sourceInfo.ref,
                              baseUrl: sourceInfo.acct
-                             ? `https://raw.githubusercontent.com/${sourceInfo.acct}/${sourceInfo.repo}/${qargs.ref || sourceInfo.ref}`
+                             ? `https://gitcdn.link/repo/${sourceInfo.acct}/${sourceInfo.repo}/${qargs.ref || sourceInfo.ref}`
                              : window.location.origin }}
       if ((contentSource.acct && contentSource.acct !== acct) || (contentSource.repo && contentSource.repo !== repo)) {
         basePath = `${isGhpSite ? '/'+repo : ''}/${contentSource.acct}/${contentSource.repo}`
