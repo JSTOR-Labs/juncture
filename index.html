@@ -816,8 +816,8 @@
       } else if (current.indexOf('/') === 0) {
         return `${contentSource.baseUrl}${current}`
       } else {
-        console.log(`convertURL: basePath=${basePath} path=${path}`)
-        return `${contentSource.baseUrl}${basePath}${path}${current}`
+        console.log(`convertURL: basePath=${basePath} path=${path} pathname=${window.location.pathname}`)
+        return `${contentSource.baseUrl}${basePath}${path || window.location.pathname}${current}`
       }
     }
   </script>
