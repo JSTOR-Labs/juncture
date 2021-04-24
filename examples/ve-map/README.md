@@ -9,16 +9,6 @@
 ## Introduction
 
 This sample essay provides examples showing how maps can be incorporated into an essay.  Various features are used in the examples.
-<param ve-image 
-       url="Babylonian_Map_of_the_World,_700-500_BC.jpg"
-       title="Babylonian Map of the World, 700-500 BC"
-       description="Babylonian Map of the World, 700-500 BC Mesopotamia 1500-539 BC Gallery, British Museum, London, England, UK. Complete indexed photo collection at WorldHistoryPics.com."
-       author="Gary Todd"
-       attribution="Wikimedia commons"
-       license="https://creativecommons.org/publicdomain/zero/1.0/">
-
-## The simplest possible map
-
 The most basic map tag is `<param ve-map>`.  Inserting this tag into an essay will result in a map at the default location and zoom level using the standard base map.  The map center defaults to `25` (latitude) and `0` (longitude).  The zoom level defaults to `2.5`.  The standard base map is `OpenStreetMap`. 
 <param ve-map>
 
@@ -70,7 +60,12 @@ The default behavior is to display location labels only when the mouse hovers ov
 <param ve-entity eid="Q220">
 <param ve-map center="Q220" zoom="10" show-labels marker-type="circle" radius="8">
 
-## Displaying GeoJSON shapes instead of markers 
+```markdown
+<param ve-entity eid="Q220">
+<param ve-map center="Q220" zoom="10" show-labels marker-type="circle" radius="8">
+```
+
+## Displaying GeoJSON shapes instead of markers {#geojson}
 
 Many location entities in Wikidata can automatically be associated with a GeoJSON
 region in addition to the latitude and longitude coordinates.  Adding the `prefer-geojson` attribute to the `ve-map` tag will result in the GeoJSON shape being
@@ -78,10 +73,26 @@ used for Rome on the map instead of a marker.
 <param ve-entity eid="Q220">
 <param ve-map center="Q220" zoom="10" prefer-geojson>
 
+```markdown
+<param ve-entity eid="Q220">
+<param ve-map center="Q220" zoom="10" prefer-geojson>
+```
+
 ## Using custom GeoJSON map layer 
 
-One or more external GeoJSON files can be used as map layers.  Each file
-is specified in a separate `ve-map-layer` tag with a `url` attribute containing the location of the file.  In this example markers are displayed for the 100 largest cities in the world based on population data obtained from Wikidata.
+One or more external GeoJSON files can be used as map layers.  Each file is specified in a separate `ve-map-layer` tag.  
+The tag includes a `geojson` attribute identifying it as a GeoJson layer with a `url` attribute identifying the location of 
+the GeoJSON file.  In this example markers are displayed for the 100 largest cities in the world based on population data obtained from Wikidata.
+<param ve-map zoom="2">
+<param ve-map-layer geojson title="Worlds most populated cities" url="cities.json">
+
+```markdown
+<param ve-map zoom="2">
+<param ve-map-layer geojson title="Worlds most populated cities" url="cities.json">
+```
+
+By default, points in a GeoJSON layer are displayed as standard markers.  In some cases alternate syling may be desired, especially in
+cases where may points are displayed.  In this example the same GeoJSON layer is used but the marker styling is customized in the `ve-map` tag.
 <param ve-map
        zoom="2"
        marker-type="circle"
@@ -89,9 +100,20 @@ is specified in a separate `ve-map-layer` tag with a `url` attribute containing 
        stroke-width="0"
        fill="blue" 
        fill-opacity="1">
-<param ve-map-layer title="Worlds most populated cities" url="cities.json">
+<param ve-map-layer geojson title="Worlds most populated cities" url="cities.json">
 
-## Controlling visibility of map data using time
+```markdown
+<param ve-map
+       zoom="2"
+       marker-type="circle"
+       radius="4" 
+       stroke-width="0"
+       fill="blue" 
+       fill-opacity="1">
+<param ve-map-layer geojson title="Worlds most populated cities" url="cities.json">
+```
+
+## Controlling visibility of map data using time {#time-dimension}
 
 ### Using external GeoJSON map layer with time dimension 
 
@@ -106,15 +128,37 @@ For GeoJSON data that is time tagged a time dimension extension is available for
        date-format="YYYY"
        auto-play="true"
        auto-fit="false"
-       fps="4">
-<param ve-map-layer 
-       title="Worlds most populated cities"
+       fps="4"
        marker-type="circle"
        radius="4" 
        stroke-width="0"
        fill="blue" 
-       fill-opacity="1"
+       fill-opacity="1">
+<param ve-map-layer geojson 
+       title="Worlds most populated cities"
        url="cities.json">
+
+```markdown
+<param ve-map 
+       zoom="2"
+       time-dimension
+       time-interval="-008000/"
+       duration="P10000Y"
+       basemap="Esri_WorldGrayCanvas"
+       max-zoom="4"
+       date-format="YYYY"
+       auto-play="true"
+       auto-fit="false"
+       fps="4"
+       marker-type="circle"
+       radius="4" 
+       stroke-width="0"
+       fill="blue" 
+       fill-opacity="1">
+<param ve-map-layer geojson
+       title="Worlds most populated cities"
+       url="cities.json">
+```
 
 ### US States Entry
 
@@ -129,17 +173,38 @@ For GeoJSON data that is time tagged a time dimension extension is available for
        max-zoom="4"
        date-format="YYYY"
        fps="4">
-<param ve-map-layer title="US States" url="us-states.json">
-<param ve-map-layer title="Great Lakes Fruit Belt" url="great-lakes-fruit-belt.json">
+<param ve-map-layer geojson title="US States" url="us-states.json">
 
-## Using a georeferenced image overlay
+```markdown
+<param ve-map 
+       center="39.833333, -98.583333"
+       zoom="4"
+       time-dimension
+       time-interval="1780/"
+       duration="P500Y"
+       basemap="Esri_WorldGrayCanvas"
+       max-zoom="4"
+       date-format="YYYY"
+       fps="4">
+<param ve-map-layer geojson title="US States" url="us-states.json">
+```
+
+## Using a georeferenced image overlay {#mapwarper}
 
 This map of the county of Kent in the UK uses the standard OSM basemap overlaid with a georeferenced topographic survey map from 1860.
-
 <param ve-map center="51.254, 0.876" zoom="10">
 <param ve-map-layer mapwarper active mapwarper-id="44832" title="Kent Topo Survey 1860">
 
+```markdown
+<param ve-map center="51.254, 0.876" zoom="10">
+<param ve-map-layer mapwarper active mapwarper-id="44832" title="Kent Topo Survey 1860">
+```
+
 ## Map with flyto actions in essay text
 
-`flyto` actions can be used in the essay text to trigger an update in the map viewer.  The action is triggered by a user mouse click or hover interaction with text that is "wrapped" with an HTML `span` tag defining the action.  This paragraph used a map of <span data-mouseover-map-flyto="43,12.3,6">Italy</span> and includes actions causing the map to flyto <span data-click-map-flyto="41.893,12.483,10" data-mouseover-map-flyto="41.893,12.483,11">Rome</span> or <span data-mouseover-map-flyto="45.440, 12.332, 13">Venice</span> when the mouse hovers over the text.
+`flyto` actions can be used in the essay text to trigger an update in the map viewer.  The action is triggered by a user mouse click or hover interaction with text that is "wrapped" with an HTML `span` tag defining the action.  This paragraph used a map of <span data-mouseover-map-flyto="43,12.3,6">Italy</span> and includes actions causing the map to flyto <span class="flyto" data-click-map-flyto="41.893,12.483,10" data-mouseover-map-flyto="41.893,12.483,11">Rome</span> or <span data-mouseover-map-flyto="45.440, 12.332, 13">Venice</span> when the mouse hovers over the text.
 <param ve-map center="43,12.3" zoom="6">
+
+```markdown
+<param ve-map center="43,12.3" zoom="6">
+```

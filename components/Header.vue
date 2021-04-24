@@ -47,7 +47,7 @@
     }),    
     computed: {
       containerStyle() { return { 
-        height: this.active ? `${400 - this.scrollTop}px` : '0',
+        height: this.active ? `${this.scrollTop < 400 ? 400 - this.scrollTop : 0}px` : '0',
         backgroundColor: 'white',
         backgroundImage: `url(${this.essayConfig.banner || this.siteConfig.banner || defaultBanner})`
       } },
@@ -70,6 +70,12 @@
       },
       essayConfig: {
         handler: function (config) { console.log(`${this.$options.name}.essayConfig`, config) },
+        immediate: true
+      },
+      scrollTop: {
+        handler: function (scrollTop) { 
+          // console.log(`${this.$options.name}.scrollTop`, scrollTop) 
+        },
         immediate: true
       }
     }

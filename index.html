@@ -28,7 +28,8 @@
     <div id="viewer" ref="viewer" :style="viewerStyle">
       <i v-if="!isVerticalLayout && viewerIsOpen" class="far fa-times-circle" style="position:absolute; top:0; right:0; z-index:500; font-size:26px;" @click="viewerIsOpen = !viewerIsOpen"></i>
       <component v-for="viewer in viewers" :key="viewer.name" v-bind:is="viewer.name" 
-                 :items="viewer.items" 
+                 :items="viewer.items"
+                 :all-items="viewer.allItems"
                  :entities="entities"
                  :active="selectedViewer !== null && viewer.name === selectedViewer.name"
                  @update-component-data="updateComponentData"
@@ -198,6 +199,7 @@
       new Vue({
         el: '#app',
         data: () => ({
+          anchor: null,
           qargs,
           layouts: [],
           siteConfig,
@@ -215,7 +217,9 @@
           scrollTop: 0,
           forceHorizontalLayout: window.matchMedia('only screen and (max-width: 1000px)').matches,
           viewerIsOpen: false,
-          hoverEntity: undefined
+          hoverEntity: undefined,
+          hoverItem: undefined,
+          selectedItem: undefined,
         }),
         computed: {
           essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
@@ -231,6 +235,7 @@
           isVerticalLayout() { return !this.forceHorizontalLayout && this.layouts.indexOf('vertical') >= 0 }
         },
         mounted() {
+          this.anchor = window.location.href.indexOf('#') >= 0 ? window.location.href.split('#').pop() : null
           console.log('siteConfig', this.siteConfig)
           window.onpopstate = (e) => this.loadEssay(e.state.file, true) 
           const resizeObserver = new ResizeObserver(entries => { 
@@ -265,12 +270,6 @@
             e.preventDefault()
             e.stopPropagation()
             this.scrollTop = e.target.scrollTop
-            let segments = [...e.target.querySelectorAll('.segment')]
-            let i
-            for (i = 0; i < segments.length; i++) {
-              if (e.target.scrollTop <= segments[i].offsetTop + segments[i].clientHeight - 200) break
-            }
-            if (i < segments.length) this.active = segments[i].dataset.id
           }, 5),
 
           menuItemClicked(item) {
@@ -288,7 +287,7 @@
           },
 
           // Loads essay Markdown file
-          async loadEssay(path, replace) {
+          async loadEssay(path, replace, anchor) {
             path = path || window.location.pathname.slice(basePath.length) || '/'
             if (path.slice(-1) !== '/') path += '/'
             console.log(`loadEssay: contentSource.baseUrl=${contentSource.baseUrl} basePath=${basePath} path=${path}`)
@@ -306,7 +305,7 @@
               this.markdown = await resp.text()
             }
 
-            let browserPath = `${basePath}${path}`
+            let browserPath = `${basePath}${path}${this.anchor ? '#'+this.anchor : ''}`
             if (qargs.ref) browserPath += `?ref=${qargs.ref}`
             if (replace) {
               history.replaceState({file: path || ''}, '', browserPath)
@@ -324,7 +323,17 @@
                 this.tagEntities()
                 this.addPopups()
                 this.convertLinks(this.$refs.essay)
-                this.active = segments.length > 0 ? segments[0].dataset.id : null
+                  if (this.anchor) {
+                  let anchorElem = document.getElementById(this.anchor)
+                  if (anchorElem) {
+                    // anchorElem.scrollIntoView({block:'start'})
+                    this.scrollTop = anchorElem.offsetTop
+                    this.$refs.essay.scrollTop = this.scrollTop - 100
+                  }
+                  this.anchor = null
+                } else {
+                  this.active = segments.length > 0 ? segments[0].dataset.id : null
+                }
               })
               this.params = Array.from(document.getElementById('essay').querySelectorAll('param'))
                 .map(param => {
@@ -334,7 +343,8 @@
                   }
                   return { 
                     ...{ elem: prior ? prior.parentElement : this.$refs.essay },
-                    ...Object.fromEntries(Array.from(param.attributes).map(attr => [attr.nodeName, attr.value])) 
+                    ...Object.fromEntries(Array.from(param.attributes).map(attr => 
+                      [attr.nodeName, attr.value === '' || attr.value === 'true' ? true : attr.value === 'false' ? false : attr.value] )) 
                   }
                 })
                 .map(param => {
@@ -419,16 +429,26 @@
               .map(segment => [segment.dataset.id, this.paramsInScope(segment)]))
           },
 
+          // Creates a GeoJSON file URL from a Who's on First ID 
+          whosOnFirstUrl(wof) {
+            let wofParts = []
+            for (let i = 0; i < wof.length; i += 3) {
+              wofParts.push(wof.slice(i,i+3))
+            }
+            return `https://data.whosonfirst.org/${wofParts.join('/')}/${wof}.geojson`
+          },
+
           // Gets labels, aliases, images and geo coords for referenced Wikdata entities
           async getEntityData(eids) {
             let values = eids.map(eid => `(<http://www.wikidata.org/entity/${eid}>)`).join(' ')
-            let query = `SELECT ?item ?label ?aliases ?description ?images ?coords WHERE {
+            let query = `SELECT ?item ?label ?aliases ?description ?images ?coords ?whosOnFirst WHERE {
                            VALUES (?item) { ${values} }
                            ?item rdfs:label ?label . FILTER(LANG(?label) = 'en')
                            OPTIONAL { ?item schema:description ?description . FILTER(LANG(?description) = 'en') }
                            OPTIONAL { ?item skos:altLabel ?aliases . FILTER(LANG(?aliases) = 'en') }
                            OPTIONAL { ?item wdt:P18 ?images . }
                            OPTIONAL { ?item wdt:P625 ?coords . }
+                           OPTIONAL { ?item wdt:P6766 ?whosOnFirst . }
                          }`
             let resp = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}`, {
               method: 'GET',
@@ -443,8 +463,10 @@
                 label: rec.label.value, 
                 aliases: [],
                 description: rec.description && rec.description.value,
+                geojson: rec.whosOnFirst && rec.whosOnFirst.value && this.whosOnFirstUrl(rec.whosOnFirst.value),
                 images: [], 
-                coords: rec.coords && rec.coords.value.replace(/Point\(/,'').replace(/\)/,'').split(' ').reverse().join(','),
+                coords: rec.coords && rec.coords.value.replace(/Point\(/,'').replace(/\)/,'').split(' ').reverse().map(coord => parseFloat(coord)),
+                foundIn: new Set(),
               }
               if (rec.aliases && entities[eid].aliases.indexOf(rec.aliases.value) < 0) entities[eid].aliases.push(rec.aliases.value)
               if (rec.images && entities[eid].images.indexOf(rec.images.value) < 0) entities[eid].images.push(this.commonsImageUrl(rec.images.value, 160))
@@ -561,22 +583,23 @@
           // Finds words/phrases in content paragraphs that match labels or aliases for entities in scope
           //  Matched text is wrapped with a span tag for reacting to hover and click actions
           tagEntities() {
-            Array.from(this.$refs.essay.querySelectorAll('.segment')).forEach(para => {
-              let paraHTML = para.innerHTML
-              this.paramsInScope(para).filter(param => param['ve-entity'] !== undefined && param.eid !== undefined).map(param => param.eid).forEach(eid => {
+            Array.from(this.$refs.essay.querySelectorAll('.segment')).forEach(segment => {
+              let segmentHTML = segment.innerHTML
+              this.paramsInScope(segment).filter(param => param['ve-entity'] !== undefined && param.eid !== undefined).map(param => param.eid).forEach(eid => {
                 let entity = this.entities[eid]
                 if (entity) {
                   let toMatch = [...[entity.label], ...entity.aliases]
                   for (let i = 0; i < toMatch.length; i++) {
                     let re = new RegExp(`(${toMatch[i]})`)
-                    if (toMatch[i], re.test(paraHTML)) {
-                      paraHTML = paraHTML.replace(re, `<span class="entity" data-eid="${eid}">$1</span>`)
+                    if (toMatch[i], re.test(segmentHTML)) {
+                      segmentHTML = segmentHTML.replace(re, `<span class="entity inferred" data-eid="${eid}">$1</span>`)
+                      entity.foundIn.add(segment.dataset.id)
                       break
                     }
                   }
                 }
               })
-              para.innerHTML = paraHTML
+              segment.innerHTML = segmentHTML
             })
             Array.from(this.$refs.essay.querySelectorAll('span.entity'))
               .forEach(el => el.addEventListener('click', (e) => {
@@ -598,10 +621,59 @@
             if (extension === '.svg') imgUrl += '.png'
             if (extension === '.tif') imgUrl += '.jpg'
             return imgUrl
+          },
+
+          addItemEventHandlers(elem) {
+            // const elem = document.getElementById(elemId)
+            // console.log(`addItemEventHandlers: elemId=${elemId}`, elem)
+            if (elem) {
+              // document.getElementById(elemId)
+              elem.querySelectorAll('.inferred').forEach((entity) => {
+                entity.addEventListener('click', this.itemClickHandler)
+                entity.addEventListener('mouseover', this.setHoverItem)
+                entity.addEventListener('mouseout', this.setHoverItem)
+              })
+            }
+          },
+          removeItemEventHandlers(elem) {
+            // console.log(`removeItemEventHandlers: elemId=${elemId}`)
+            // const elem = document.getElementById(elem)
+            if (elem) {
+              // document.getElementById(elemId)
+              elem.querySelectorAll('.active .inferred').forEach((entity) => {
+                entity.removeEventListener('click', this.itemClickHandler)
+                entity.removeEventListener('mouseover', this.setHoverItem)
+                entity.removeEventListener('mouseout', this.setHoverItem)
+              })
+            }
+          },
+
+          setHoverItem(e) {
+            // this.$emit('set-hover-item', e.type === 'mouseover' ? e.target.dataset.eid : null)
+            this.hoverItem = e.type === 'mouseover' ? e.target.dataset.eid : null
+          },
+          itemClickHandler(e) {
+            e.stopPropagation()
+            // this.$emit('set-selected-item', e.target.attributes['data-eid'].value)
+            // this.selectedItem = e.target.dataset.eid 
           }
+
         },
 
         watch: {
+
+          scrollTop: {
+            handler: function (scrollTop) { 
+              let target = this.$refs.essay
+              let segments = [...target.querySelectorAll('.segment')]
+              let i
+              for (i = 0; i < segments.length; i++) {
+                if (target.scrollTop <= segments[i].offsetTop + segments[i].clientHeight - 200) break
+              }
+              if (i < segments.length) this.active = segments[i].dataset.id         
+            },
+            immediate: false
+          },
 
           // Set app classes using essay config (ve-config) attributes, if present
           essayConfig (config) {
@@ -620,18 +692,21 @@
             if (activePara) {
               if (this.$refs.tabsBar) activePara.appendChild(this.$refs.tabsBar)
               activePara.classList.add('active')
+              this.addItemEventHandlers(activePara)
             }
             let priorPara = document.querySelector(`[data-id="${priorId}"]`)
-            if (priorPara) priorPara.classList.remove('active')
-  
+            if (priorPara) {
+              priorPara.classList.remove('active')
+              this.removeItemEventHandlers(priorPara)
+            }
             let viewers = []
-            let paramTagsForPara = this.paramsInScope(activePara)
-            paramTagsForPara
+            let allItems = this.paramsInScope(activePara)
+            allItems
               .filter(param => this.availableViewers.has(param.viewer))
               .forEach(param => {
                 let viewerData = viewers.find(viewer => viewer.name === param.viewer)
                 if (!viewerData) {
-                  viewerData = {name: param.viewer, items: []}
+                  viewerData = {name: param.viewer, allItems, items: []}
                   viewers.push(viewerData)
                 }
                 viewerData.items.push(param)
@@ -654,6 +729,8 @@
           entities (entities) { console.log('entities', entities) },
           segments (segments) { console.log('segments', segments) },
           selectedViewer (selectedViewer) { console.log('selectedViewer', selectedViewer) },
+          selectedItem (eid) { console.log(`selectedItem=${eid}`) },
+          hoverItem (eid) { console.log(`hoverItem=${eid}`) },
 
           forceHorizontalLayout: {
             handler: function (forceHorizontalLayout) { console.log(`forceHorizontalLayout=${forceHorizontalLayout}`) },

@@ -73,8 +73,9 @@ module.exports = {
     name: "ve-map",
     props: {
         items: { type: Array, default: () => ([]) },
+        allItems: { type: Array, default: () => ([]) },
         entities: { type: Object, default: () => ({}) },
-        itemsInActiveElements: { type: Array, default: () => ([]) },
+
         actions: { type: Array, default: () => ([]) },
         actionSources: { type: Array, default: () => ([]) },
         width: Number,
@@ -102,26 +103,45 @@ module.exports = {
     computed: {
         item() { return this.items.length > 0 ? this.items[0] : {} },
         mapDef() { return this.item.layers ? this.item : {...this.item, ...{layers: []}} },
-        showLabels() { return this.mapDef['show-labels'] && this.mapDef['show-labels'] !== 'false' },
-        preferGeoJSON() { return this.mapDef['prefer-geojson'] && this.mapDef['prefer-geojson'] !== 'false' },
+        showLabels() { return this.mapDef['show-labels'] },
+        preferGeoJSON() { return this.mapDef['prefer-geojson'] },
         isSelected() { return this.selected === 'mapViewer' },
         data() { return this.mapDef.data },
         basemap() { return this.mapDef.basemap || defaults.basemap },
-        center() { 
-        let coordsStr = this.entities[this.mapDef.center] ? this.entities[this.mapDef.center].coords : this.mapDef.center
-        return coordsStr ? coordsStr.split(',').map(coord => parseFloat(coord)) : defaults.center 
+        center() { return this.mapDef.center
+            ? this.entities[this.mapDef.center] 
+                ? this.entities[this.mapDef.center].coords 
+                : Array.isArray(this.mapDef.center)
+                    ? this.mapDef.center
+                    : this.mapDef.center.split(',').map(coordStr => parseFloat(coordStr))
+            : defaults.center },
+        itemsWithCoords() { return this.allItems
+            .filter(item => item.coords || (item.eid && this.entities[item.eid] && this.entities[item.eid].coords))
+            .map(item => item['ve-entity'] ? {...item, ...this.entities[item.eid]} : item )
         },
-        // center() { return this.mapDef.center || defaults.center },
+        itemsWithCoordsNoGeojson() { return this.itemsWithCoords
+            .filter(item => !item.geojson && (!item.eid || !this.entities[item.eid] || !this.entities[item.eid].geojson))
+            .map(item => item['ve-entity'] ? {...item, ...this.entities[item.eid]} : item )
+        },
+        itemsWithGeojson() { return this.allItems
+            .filter(item => item.geojson || (item['ve-map-layer'] && item.geojson) || (item.eid && this.entities[item.eid] && this.entities[item.eid].geojson))
+            .map(item => item['ve-entity'] ? {...item, ...this.entities[item.eid]} : item )
+        },
+        itemsWithGeojsonNoCoords() { return this.itemsWithGeojson
+            .filter(item => !item.coords && (!item.eid || !this.entities[item.eid] || !this.entities[item.eid].coords))
+            .map(item => item['ve-entity'] ? {...item, ...this.entities[item.eid]} : item )
+        },
+        itemsWithMapwarperLayer() { return this.allItems.filter(item => item.mapwarper)},
         zoom() { return this.mapDef.zoom || defaults.zoom },
         maxZoom() { return this.mapDef['max-zoom'] || defaults.maxZoom },
-        timeDimension() { return this.mapDef['time-dimension'] === 'true' || defaults.timeDimension },
-        autoPlay() { return this.mapDef['auto-play'] === 'true' || defaults.autoPlay },
-        loop() { return this.mapDef.loop === 'true' || defaults.loop },
+        timeDimension() { return this.mapDef['time-dimension'] || defaults.timeDimension },
+        autoPlay() { return this.mapDef['auto-play'] || defaults.autoPlay },
+        loop() { return this.mapDef.loop || defaults.loop },
         fps() { return this.mapDef.fps || defaults.fps },
         timeInterval() { return this.mapDef['time-interval'] || defaults.timeInterval },
         period() { return this.mapDef.period || defaults.period },
         duration() { return this.mapDef.duration || defaults.duration },
-        autoFit() { return this.mapDef['auto-fit'] === 'true' || defaults.autoFit },
+        autoFit() { return this.mapDef['auto-fit'] || defaults.autoFit },
         dateFormat() { return this.mapDef['date-format'] || defaults.dateFormat },
         mapStyle() {
             return {
@@ -138,13 +158,13 @@ module.exports = {
             }
         },
         title() { return this.mapDef['title_formatted'] ? this.mapDef['title_formatted'] : this.mapDef['title'] }
-  },
-  mounted() {
+    },
+    mounted() {
         this.loadDependencies(dependencies, 0, this.init)
-  },
-  methods: {
+    },
+    methods: {
         init() {
-            console.log(this.$options.name, this.mapDef)
+            console.log(this.$options.name, this.mapDef, this.allItems)
             this.createMap()
             this.syncLayers()
         },
@@ -240,7 +260,7 @@ module.exports = {
         },
         syncTileLayers() {
             const mapDefs = {}
-            this.mapDef.layers.filter(layerDef => layerDef.type === 'mapwarper').forEach(layerDef => mapDefs[layerDef['mapwarper-id']] = layerDef)
+            this.itemsWithMapwarperLayer.forEach(layerDef => mapDefs[layerDef['mapwarper-id']] = layerDef)
             
             const next = []
             if (this.tileLayers.length > 0 && this.tileLayers[0].id === this.basemap) {
@@ -289,46 +309,25 @@ module.exports = {
             this.tileLayers = next
         },
         syncGeoJSONLayers() {
+            console.log('syncGeoJSONLayers')
             for (let [label, layer] of Object.entries(this.geoJSONLayers)) {  // eslint-disable-line no-unused-vars
                 this.map.removeLayer(layer)
             }
             this.geoJSONLayers = {}
-            // this.geoJSONLayers.forEach(layer => this.map.removeLayer(layer.layer))
             Object.values(this.popups).forEach(popup => this.map.closePopup(popup))
             if (this.mapDef.data) {
                 this.getGeoJSON(this.mapDef.data)
                 .then(geoJSON => this.addGeoJSONLayer(geoJSON))
             } else {
-                if (this.mapDef.layers) {
-                    const geoJSONLayerDefs = this.mapDef.layers
-                        .filter(layerDef => layerDef.geojson || layerDef.url)
-                        // .map(layerDef => layerDef.geojson || layerDef.url)
-                    geoJSONLayerDefs.forEach(layerDef => {
-                        this.getGeoJSON(layerDef.geojson || layerDef.url)
-                        .then(geoJSON => this.addGeoJSONLayer(geoJSON,layerDef))
-                    })
-                }
-                const itemsWithCoords = this.itemsInActiveElements
-                    .filter(item => item.coords !== undefined && !(item.geojson && this.preferGeoJSON))
+                const itemsWithCoords = this.preferGeoJSON ? this.itemsWithCoordsNoGeojson : this.itemsWithCoords
                 if (itemsWithCoords.length > 0) {
                     this.addGeoJSONLayer(this.itemsWithCoordsToGeoJSON(itemsWithCoords))
                 }
-                this.itemsInActiveElements
-                    .filter(item => !item.coords && item.geojson !== undefined)
-                    .forEach(item => {
-                        this.getGeoJSON(item.geojson)
-                        .then(geoJSON => {
-                            if (!geoJSON.properties) geoJSON.properties = {}
-                            geoJSON.properties.id = item.id || item.qid || item.eid
-                            geoJSON.properties.label = item.label
-                            this.addGeoJSONLayer(geoJSON)
-                        })
-                    })
-                if (this.preferGeoJSON) {
-                    this.itemsInActiveElements
-                    .filter(item => item.geojson)
-                    .forEach(item => {
-                        this.getGeoJSON(item.geojson)
+                const itemsWithGeojson = this.preferGeoJSON ? this.itemsWithGeojson : this.itemsWithGeojsonNoCoords
+                console.log('itemsWithGeojson', itemsWithGeojson)
+                if (itemsWithGeojson.length > 0) {
+                    this.itemsWithGeojson.forEach(item => {
+                        this.getGeoJSON(item.geojson && typeof item.geojson === 'string' ? item.geojson :  item.url)
                         .then(geoJSON => {
                             if (!geoJSON.properties) geoJSON.properties = {}
                             geoJSON.properties.id = item.id || item.qid || item.eid
@@ -540,7 +539,7 @@ module.exports = {
                 geoJSON.features.push({
                     type: 'Feature',
                     properties: item,
-                    geometry: { type: 'Point', coordinates: [item.coords[0][1], item.coords[0][0]] }
+                    geometry: { type: 'Point', coordinates: [...item.coords].reverse() }
                 })
             })
             return geoJSON
@@ -657,9 +656,9 @@ module.exports = {
             },
             immediate: true
         },
-        itemsInActiveElements: {
-            handler: function (items) {
-                console.log('itemsInActiveElements', items)
+        allItems: {
+            handler: function () {
+                console.log('allItems', this.allItems)
             },
             immediate: true
         },

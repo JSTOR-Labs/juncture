@@ -314,3 +314,7 @@ p code {
   background-color: lemonchiffon;
   font-weight: bold;
 }
+
+.active .flyto, .active .zoomto {
+  background-color: yellowgreen;
+}
