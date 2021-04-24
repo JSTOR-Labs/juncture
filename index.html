@@ -32,6 +32,7 @@
                  :all-items="viewer.allItems"
                  :entities="entities"
                  :active="selectedViewer !== null && viewer.name === selectedViewer.name"
+                 :actions="actions"
                  @update-component-data="updateComponentData"
       ></component>
     </div>
@@ -220,6 +221,7 @@
           hoverEntity: undefined,
           hoverItem: undefined,
           selectedItem: undefined,
+          actions: {}
         }),
         computed: {
           essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
@@ -636,7 +638,7 @@
             }
           },
           removeItemEventHandlers(elem) {
-            // console.log(`removeItemEventHandlers: elemId=${elemId}`)
+            // console.log(`removeItemEventHandlers: elemId=${elem}`)
             // const elem = document.getElementById(elem)
             if (elem) {
               // document.getElementById(elemId)
@@ -656,8 +658,65 @@
             e.stopPropagation()
             // this.$emit('set-selected-item', e.target.attributes['data-eid'].value)
             // this.selectedItem = e.target.dataset.eid 
-          }
+          },
 
+          getInteractionAttrs(elem) {
+            const eventAttrs = []
+            Array.from(elem.querySelectorAll(`span`)).forEach(span => {
+              Array.from(span.attributes)
+                .filter(attr => attr.name.indexOf('data-') === 0 && attr.name.split('-').length === 4)
+                .map(attr => attr.name.split('-').slice(1,2)[0])
+                .forEach(event => eventAttrs.push({elem: span, event}))
+              })
+            console.log(eventAttrs)
+            return eventAttrs
+          },
+
+          addInteractionHandlers(elem) {
+            this.getInteractionAttrs(elem)
+            .forEach(eventAttr => {
+              eventAttr.elem.addEventListener(eventAttr.event, this.interactionHander)
+              eventAttr.elem.classList.add('essay-interaction')
+            })
+          },
+  
+          removeInteractionHandlers(elem) {
+            console.log(`removeInteractionHandlers: elemId=${elem}`)
+            Array.from(elem.querySelectorAll('.essay-interaction')).forEach(span => {
+              Array.from(span.attributes)
+                .filter(attr => attr.name.indexOf('data-') === 0 && attr.name.split('-').length === 4)
+                .map(attr => attr.name.split('-').slice(1,2)[0])
+                .forEach(event => span.removeEventListener(event, this.interactionHander))
+              span.classList.remove('essay-interaction')
+            })
+          },
+
+          interactionHander(e) {
+            e.stopPropagation()
+            const eventActions = {}
+            Array.from(e.target.attributes)
+              .filter(attr => attr.name.indexOf(`data-`) === 0 && attr.name.split('-').length === 4)
+              .map(attr => {
+                const attrParts = attr.name.split('-').slice(1)
+                const event = attrParts[0]
+                const target = attrParts.slice(1,-1).join('-')
+                const action = attrParts.slice(-1)[0]
+                return { elem: e.target, event, target, action, value: attr.value } 
+              })
+              .filter(action => action.event === e.type)
+              .forEach(action => {
+                if (!eventActions[action.target]) eventActions[action.target] = []
+                eventActions[action.target].push(action)
+              })
+            console.log('eventActions', eventActions)
+            const actions = { ...this.actions }
+            Object.keys(eventActions).forEach(target => {
+              actions[`ve-${target}`] = eventActions[target]
+            })
+            console.log('setActions', actions)
+            this.actions = actions
+          }
+    
         },
 
         watch: {
@@ -665,12 +724,15 @@
           scrollTop: {
             handler: function (scrollTop) { 
               let target = this.$refs.essay
-              let segments = [...target.querySelectorAll('.segment')]
+              let segments = Array.from(target.querySelectorAll('.segment'))
               let i
               for (i = 0; i < segments.length; i++) {
                 if (target.scrollTop <= segments[i].offsetTop + segments[i].clientHeight - 200) break
               }
-              if (i < segments.length) this.active = segments[i].dataset.id         
+              if (i < segments.length && this.active !== segments[i].dataset.id ) {
+                console.log(this.active, segments[i].dataset.id)
+                this.active = segments[i].dataset.id
+              }
             },
             immediate: false
           },
@@ -693,11 +755,13 @@
               if (this.$refs.tabsBar) activePara.appendChild(this.$refs.tabsBar)
               activePara.classList.add('active')
               this.addItemEventHandlers(activePara)
+              this.addInteractionHandlers(activePara)
             }
             let priorPara = document.querySelector(`[data-id="${priorId}"]`)
             if (priorPara) {
               priorPara.classList.remove('active')
               this.removeItemEventHandlers(priorPara)
+              this.removeInteractionHandlers(priorPara)
             }
             let viewers = []
             let allItems = this.paramsInScope(activePara)

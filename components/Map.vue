@@ -76,7 +76,9 @@ module.exports = {
         allItems: { type: Array, default: () => ([]) },
         entities: { type: Object, default: () => ({}) },
 
-        actions: { type: Array, default: () => ([]) },
+        // actions: { type: Array, default: () => ([]) },
+        actions: { type: Object, default: () => ({}) },
+
         actionSources: { type: Array, default: () => ([]) },
         width: Number,
         height: Number,
@@ -644,8 +646,9 @@ module.exports = {
             immediate: true
         },
         actions: {
-            handler: function () {
-                this.actions.forEach(action => this.handleEssayAction(action))
+            handler: function (actions) {
+                console.log(`actions`, actions)
+                if (actions[this.$options.name]) actions[this.$options.name].forEach(action => this.handleEssayAction(action))
             },
             immediate: true
         },
