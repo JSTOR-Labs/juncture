@@ -141,7 +141,7 @@
     const referrerUrl = document.referrer
     if (referrerUrl) {
       console.log(`referrer=${referrerUrl}`)
-      const referrer = utils.parseUrl(referrerUrl)
+      const referrer = parseUrl(referrerUrl)
       console.log(referrer)
       if (referrer.host === 'github.com') {
         const referrerPath = referrer.pathname.slice(1).split('/')
