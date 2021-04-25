@@ -131,6 +131,7 @@
       return _acct && _repo ? githubRepoInfo(_acct, _repo) : Promise.resolve({acct, repo, ref})
     }
 
+    let unscopedToken = 'Z2hwX05lcnV2RUYzRmx6M3o5YnFjQWZuOGpJQnJMR3lEMTNmYjYyVw=='
     let siteConfig, baseUrl, acct, repo, ref, contentSource, basePath
     let isGhpSite = false
     let componentsRoot = 'components'
@@ -170,8 +171,8 @@
         isGhpSite = true;
         [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2,4)
         ref = 'main'
-        // assetsBaseUrl = `https://${acct}.github.io/${repo}`
-        assetsBaseUrl = `https://gitcdn.link/repo/${acct}/${repo}/${ref}`
+        assetsBaseUrl = `https://${acct}.github.io/${repo}`
+        // assetsBaseUrl = `https://gitcdn.link/repo/${acct}/${repo}/${ref}`
         basePath = `/${repo}`
       } else {
         acct = 'jstor-labs'
@@ -304,10 +305,19 @@
             }
           },
 
-          contentUrl(path) {
-            return contentSource.acct
-              ? `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
-              : `${window.location.origin}${path}`
+          async getMarkdown(path) {
+            if (contentSource.acct) {
+              let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`, {
+                                      headers: { Authorization: `Token ${atob(unscopedToken)}` } })
+              if (resp.ok) {
+                resp = await resp.json()
+                return atob(resp.content)
+              }
+            } else {
+              let resp = await fetch(`${window.location.origin}${path}`)
+              if (resp.ok) return await resp.text()
+            }
+            return null
           },
 
           // Loads essay Markdown file
@@ -315,18 +325,13 @@
             path = path || window.location.pathname.slice(basePath.length) || '/'
             if (path.slice(-1) !== '/') path += '/'
             console.log(`loadEssay: contentSource.baseUrl=${contentSource.baseUrl} basePath=${basePath} path=${path}`)
-            let essayUrls = [this.contentUrl(`${path}README.md`), this.contentUrl(`${path.slice(0,-1)}.md`)]
-            let resp
-            for (let i = 0; i < essayUrls.length; i++) {
-              console.log(essayUrls[i])
-              resp = await fetch(essayUrls[i])
-              if (resp.ok) break
-            }
-            if (resp.url.indexOf('https://api.github.com') === 0) {
-              resp = await resp.json()
-              this.markdown = atob(resp.content)
-            } else {
-              this.markdown = await resp.text()
+            let pathsToTry = [`${path}README.md`, `${path.slice(0,-1)}.md`]
+            for (let i = 0; i < pathsToTry.length; i++) {
+              let markdown = await this.getMarkdown(pathsToTry[i])
+              if (markdown) {
+                this.markdown = markdown
+                break
+              }
             }
 
             let browserPath = `${basePath}${path}${this.anchor ? '#'+this.anchor : ''}`
@@ -899,7 +904,7 @@
       if (knownGhAccts[acct]) {
         return {acct, repo, ref: knownGhAccts[acct]}
       } else {
-        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`)
+        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`, {headers: {Authorization: `Token ${atob(unscopedToken)}`}})
         if (resp.ok) {
           resp = await resp.json()
           return {acct, repo, ref: resp.default_branch}
@@ -911,7 +916,7 @@
     async function getComponentsList(root, acct, repo, ref) {
       console.log(`getComponentsList: root=${root} acct=${acct} repo=${repo} ref=${ref}`)
       if (acct) {
-        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/trees/${ref}`)
+        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/trees/${ref}`, {headers: {Authorization: `Token ${atob(unscopedToken)}`}})
         resp = await resp.json()
         resp = await fetch(resp.tree.find(item => item.path === root).url)
         resp = await resp.json()
