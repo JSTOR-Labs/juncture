@@ -1,3 +1,5 @@
+<a href="https://juncture-digital.org"><img src="https://gitcdn.link/jstor-labs/juncture/main/images/ve-button.png"></a>
+
 # What is Juncture?
 
 [Juncture](https://essays.juncture-digital.org) is a free service for easily turning a simple text file into an engaging `visual essay`.  A visual essay is an interactive web page that enriches a text narrative with visual elements to provide depth and context.  Juncture does not require special tooling or technical expertise.  It uses the free Github site for hosting and managing the visual essay text files.

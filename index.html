@@ -33,7 +33,9 @@
                  :entities="entities"
                  :active="selectedViewer !== null && viewer.name === selectedViewer.name"
                  :actions="actions"
+                 :hover-item="hoverItem"
                  @update-component-data="updateComponentData"
+                 @set-hover-item="hoverItem = $event"
       ></component>
     </div>
     <div style="display:none;">
@@ -135,6 +137,25 @@
     let componentPrefix = 've-'
     let availableViewers = new Set()
     const knownGhAccts = {'jstor-labs': 'main', 'rsnyder': 'main', 'kent-map': 'main'}
+
+    const referrerUrl = document.referrer
+    if (referrerUrl) {
+      console.log(`referrer=${referrerUrl}`)
+      const referrer = utils.parseUrl(referrerUrl)
+      console.log(referrer)
+      if (referrer.host === 'github.com') {
+        const referrerPath = referrer.pathname.slice(1).split('/')
+        const ghAcct = referrerPath[0]
+        const ghRepo = referrerPath[1]
+        const ghBranch = referrerPath.length > 2 ? referrerPath[3] : 'main'
+        const pathStart = 4
+        const pathEnd = referrerPath[referrerPath.length-1] === 'README.md' ? referrerPath.length-1 : referrerPath.length
+        const ghPath = referrerPath.slice(pathStart, pathEnd).join('/').replace(/\.md$/, '')
+        const redirect = `${loc.origin}/${ghAcct}/${ghRepo}/${ghPath}${ghBranch === 'master' || ghBranch === 'main' ? '' : '?ref=' + ghBranch}`
+        console.log(`redirect=${redirect}`)
+        window.location = redirect
+      }
+    }
 
     console.log(`pathname=${window.location.pathname} href=${window.location.href}`)
     console.log(window.location)
@@ -390,6 +411,7 @@
             tippy('.entity', {
               allowHTML: true,
               interactive: true,
+              appendTo: document.body,
               delay: [null, null],
               placement: 'right',
               theme: 'light-border',
@@ -794,7 +816,7 @@
           segments (segments) { console.log('segments', segments) },
           selectedViewer (selectedViewer) { console.log('selectedViewer', selectedViewer) },
           selectedItem (eid) { console.log(`selectedItem=${eid}`) },
-          hoverItem (eid) { console.log(`hoverItem=${eid}`) },
+          hoverItem (eid) { console.log(`index.hoverItem=${eid}`) },
 
           forceHorizontalLayout: {
             handler: function (forceHorizontalLayout) { console.log(`forceHorizontalLayout=${forceHorizontalLayout}`) },

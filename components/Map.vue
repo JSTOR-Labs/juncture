@@ -202,7 +202,7 @@ module.exports = {
                                     ? e.layer.getBounds().getCenter()
                                     : e.layer.getLatLng()
                                 const labelOffset = e.layer.feature.properties['marker-type'] === 'circle' ? -6 : -30
-                                this.addPopup(e.layer.feature.properties.qid || e.layer.feature.properties.id, e.layer.feature.properties.label, latLng, labelOffset)
+                                this.addPopup(e.layer.feature.properties.eid || e.layer.feature.properties.id, e.layer.feature.properties.label, latLng, labelOffset)
                             }
                             this.features.push(e.layer.feature)
                             this.layersUpdated()
@@ -564,6 +564,7 @@ module.exports = {
             }
         },
         addEventHandlers(layer) {
+            console.log('addEventHandlers', layer)
             layer.on('click', this.setSelectedItem )
             layer.on('mouseover', this.setHoverItem )
             layer.on('mouseout', this.setHoverItem )
@@ -581,8 +582,9 @@ module.exports = {
         }, 100),
         setHoverItem(e) {
             const itemID = e.type === 'mouseover'
-                ? e.target.feature.properties.id || e.target.feature.properties.qid || e.target.feature.properties.eid
+                ? e.target.feature.properties.eid || e.target.feature.properties.id
                 : null
+            console.log('setHoverItem', itemID)
             this.$emit('set-hover-item', itemID)
         },
         setSelectedItem(e) {
@@ -667,7 +669,7 @@ module.exports = {
         },
         hoverItem: {
             handler: function (itemID, prior) {
-                // if (itemID) console.log(`${this.$options.name}.watch.hoverItem=${itemID}`)
+                if (itemID) console.log(`${this.$options.name}.watch.hoverItem=${itemID}`)
                 if (this.showLabels) {
                     if (prior) {
                         let popup = document.querySelector(`h1[data-eid="${prior}"]`)
@@ -686,6 +688,7 @@ module.exports = {
                         }
                     }
                 } else {
+                    console.log(itemID, this.popups)
                     if (prior && this.popups[prior]) this.map.closePopup(this.popups[prior])
                     if (itemID && this.popups[itemID]) this.map.openPopup(this.popups[itemID])
                 }
