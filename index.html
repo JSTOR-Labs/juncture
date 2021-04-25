@@ -217,6 +217,7 @@
       head.appendChild(makeLink(siteConfig.favicon || `${assetsBaseUrl}/images/favicon.svg`, 'icon'))
       head.appendChild(makeLink(`${assetsBaseUrl}/css/main.css`))
       head.appendChild(makeLink(`${assetsBaseUrl}/css/custom.css`))
+      document.title = siteConfig.title || 'Juncture'
 
       new Vue({
         el: '#app',
