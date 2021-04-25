@@ -151,7 +151,7 @@
         const pathStart = 4
         const pathEnd = referrerPath[referrerPath.length-1] === 'README.md' ? referrerPath.length-1 : referrerPath.length
         const ghPath = referrerPath.slice(pathStart, pathEnd).join('/').replace(/\.md$/, '')
-        const redirect = `${loc.origin}/${ghAcct}/${ghRepo}/${ghPath}${ghBranch === 'master' || ghBranch === 'main' ? '' : '?ref=' + ghBranch}`
+        const redirect = `${window.location.origin}/${ghAcct}/${ghRepo}/${ghPath}${ghBranch === 'master' || ghBranch === 'main' ? '' : '?ref=' + ghBranch}`
         console.log(`redirect=${redirect}`)
         window.location = redirect
       }
