@@ -17,7 +17,7 @@ const dependencies = [
 ]
 
 module.exports = {
-    name: 'D3PlusRingNetwork',
+    name: 've-d3plus-ring-network',
     props: {
       items: Array,
       width: Number,
