@@ -250,9 +250,11 @@ module.exports = {
         },
         removeTimeDimension() {
             if (this.map.timeDimension) {
-                this.map.removeControl(this.controls.timeDimension)
+                if (this.controls) {
+                    this.map.removeControl(this.controls.timeDimension)
+                    this.controls.timeDimension = undefined
+                }
                 this.map.timeDimension = undefined
-                this.controls.timeDimension = undefined
             }
         },
         syncLayers() {

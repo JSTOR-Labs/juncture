@@ -131,7 +131,9 @@
       return _acct && _repo ? githubRepoInfo(_acct, _repo) : Promise.resolve({acct, repo, ref})
     }
 
-    let siteConfig, baseUrl, acct, repo, ref, contentSource, basePath
+    let unscopedToken = 'Z2hwX05lcnV2RUYzRmx6M3o5YnFjQWZuOGpJQnJMR3lEMTNmYjYyVw=='
+    let siteConfig, baseUrl, acct, repo, ref, basePath, assetsBaseUrl
+    let contentSource = { acct: null, repo: null, ref: null, baseUrl: null}
     let isGhpSite = false
     let componentsRoot = 'components'
     let componentPrefix = 've-'
@@ -142,14 +144,13 @@
     if (referrerUrl) {
       console.log(`referrer=${referrerUrl}`)
       const referrer = parseUrl(referrerUrl)
-      console.log(referrer)
       if (referrer.host === 'github.com') {
         const referrerPath = referrer.pathname.slice(1).split('/')
         const ghAcct = referrerPath[0]
         const ghRepo = referrerPath[1]
         const ghBranch = referrerPath.length > 2 ? referrerPath[3] : 'main'
         const pathStart = 4
-        const pathEnd = referrerPath[referrerPath.length-1] === 'README.md' ? referrerPath.length-1 : referrerPath.length
+        const pathEnd = referrerPath[referrerPath.length-1] === 'README.md' || referrerPath[referrerPath.length-1] === 'index.md' ? referrerPath.length-1 : referrerPath.length
         const ghPath = referrerPath.slice(pathStart, pathEnd).join('/').replace(/\.md$/, '')
         const redirect = `${window.location.origin}/${ghAcct}/${ghRepo}/${ghPath}${ghBranch === 'master' || ghBranch === 'main' ? '' : '?ref=' + ghBranch}`
         console.log(`redirect=${redirect}`)
@@ -162,23 +163,31 @@
     let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
     console.log('qargs', qargs)
 
-    if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') >= 0) {
-      assetsBaseUrl = window.location.origin
-      basePath = ''
+    if (window.location.host === 'localhost:8080' || window.location.hostname.indexOf('gitpod') >= 0) {
+      baseUrl = window.location.origin
+      let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
+      if (pathElems.length > 0) {
+        repo = pathElems[0]
+        isGhpSite = true
+        basePath = `/${repo}`
+      } else {
+        basePath = ''
+      }
+    } else if (window.location.host === 'localhost:8088') {
+      baseUrl = window.location.origin
     } else {
       if (window.location.hostname.indexOf('github.io') > 0) {
         isGhpSite = true;
         [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2,4)
-        ref = 'main'
-        // assetsBaseUrl = `https://${acct}.github.io/${repo}`
-        assetsBaseUrl = `https://gitcdn.link/repo/${acct}/${repo}/${ref}`
+        ref = undefined
+        baseUrl = `https://${acct}.github.io`
         basePath = `/${repo}`
-      } else {
+      } else if (window.location.hostname === 'juncture-digital.org') {
         acct = 'jstor-labs'
         repo = 'juncture'
         ref = 'main'
-        // baseUrl = window.location.origin
         assetsBaseUrl = `https://gitcdn.link/repo/${acct}/${repo}/${ref}`
+        baseUrl = `https://gitcdn.link/repo/${acct}/${repo}/${ref}`
         basePath = ''
       }
     }
@@ -200,7 +209,10 @@
       console.log('contentSource', contentSource)
       return getSiteConfig()
     })
-    .then(config => siteConfig = config)
+    .then(config => {
+      siteConfig = config
+      ref = siteConfig.ref || ref
+    })
     .then(resp => getMergedComponentsList(componentsRoot, acct, repo, ref, contentSource))
     .then(componentsList => {
       componentsList.forEach(componentUrl => {
@@ -214,9 +226,9 @@
       })
 
       let head = document.querySelector('head')
-      head.appendChild(makeLink(siteConfig.favicon || `${assetsBaseUrl}/images/favicon.svg`, 'icon'))
-      head.appendChild(makeLink(`${assetsBaseUrl}/css/main.css`))
-      head.appendChild(makeLink(`${assetsBaseUrl}/css/custom.css`))
+      head.appendChild(makeLink(siteConfig.favicon || `${baseUrl}${basePath}/images/favicon.svg`, 'icon'))
+      head.appendChild(makeLink(`${baseUrl}${isGhpSite ? basePath : ''}/css/main.css`))
+      head.appendChild(makeLink(`${baseUrl}${basePath}/css/custom.css`))
       document.title = siteConfig.title || 'Juncture'
 
       new Vue({
@@ -228,6 +240,7 @@
           siteConfig,
           params: [],
           markdown: null,
+          mdPathIsDir: false,
           markdownViewer: null,
           html: null,
           active: null,
@@ -304,10 +317,20 @@
             }
           },
 
-          contentUrl(path) {
-            return contentSource.acct
-              ? `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
-              : `${window.location.origin}${path}`
+          async getMarkdown(path) {
+            console.log(acct, repo, ref, baseUrl, basePath, contentSource)
+            if (contentSource.acct) {
+              let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref || ref}`, {
+                                      headers: { Authorization: `Token ${atob(unscopedToken)}` } })
+              if (resp.ok) {
+                resp = await resp.json()
+                return atob(resp.content)
+              }
+            } else {
+              let resp = await fetch(`${baseUrl}${basePath}${path}`)
+              if (resp.ok) return await resp.text()
+            }
+            return null
           },
 
           // Loads essay Markdown file
@@ -315,18 +338,14 @@
             path = path || window.location.pathname.slice(basePath.length) || '/'
             if (path.slice(-1) !== '/') path += '/'
             console.log(`loadEssay: contentSource.baseUrl=${contentSource.baseUrl} basePath=${basePath} path=${path}`)
-            let essayUrls = [this.contentUrl(`${path}README.md`), this.contentUrl(`${path.slice(0,-1)}.md`)]
-            let resp
-            for (let i = 0; i < essayUrls.length; i++) {
-              console.log(essayUrls[i])
-              resp = await fetch(essayUrls[i])
-              if (resp.ok) break
-            }
-            if (resp.url.indexOf('https://api.github.com') === 0) {
-              resp = await resp.json()
-              this.markdown = atob(resp.content)
-            } else {
-              this.markdown = await resp.text()
+            let pathsToTry = [`${path}README.md`, `${path.slice(0,-1)}.md`, `${path}index.md`]
+            for (let i = 0; i < pathsToTry.length; i++) {
+              let markdown = await this.getMarkdown(pathsToTry[i])
+              if (markdown) {
+                this.markdown = markdown
+                this.mdPathIsDir = i !== 1
+                break
+              }
             }
 
             let browserPath = `${basePath}${path}${this.anchor ? '#'+this.anchor : ''}`
@@ -347,7 +366,7 @@
                 this.tagEntities()
                 this.addPopups()
                 this.convertLinks(this.$refs.essay)
-                  if (this.anchor) {
+                if (this.anchor) {
                   let anchorElem = document.getElementById(this.anchor)
                   if (anchorElem) {
                     // anchorElem.scrollIntoView({block:'start'})
@@ -357,6 +376,7 @@
                   this.anchor = null
                 } else {
                   this.active = segments.length > 0 ? segments[0].dataset.id : null
+                  this.$refs.essay.scrollTop = 0
                 }
               })
               this.params = Array.from(document.getElementById('essay').querySelectorAll('param'))
@@ -387,7 +407,7 @@
               Array.from(cardsSection.querySelectorAll('section')).forEach(card => {
                 ['img', 'a', 'ul'].forEach(selector => {
                   let el = card.querySelector(selector)
-                  card.appendChild(el)
+                  if (el) card.appendChild(el)
                 })
                 let segments = []
                 Array.from(card.querySelectorAll('.segment')).forEach(seg => {
@@ -400,7 +420,7 @@
                 if (segments.length > 0) {
                   let segsDiv = document.createElement('div')
                   card.appendChild(segsDiv)
-                  segments.forEach(seg => segsDiv.appendChild(segments))
+                  segments.forEach(seg => segsDiv.appendChild(seg))
                 }
               })
             })
@@ -565,6 +585,8 @@
                 if (!target) { 
                   const parsedUrl = parseUrl(link.href)
                   let pathElems = parsedUrl.pathname.split('/').filter(elem => elem !== '')
+                  if (isGhpSite && pathElems[0] === repo) pathElems = pathElems.slice(1)
+                  // console.log(pathElems)
                   /*if (contentSource && pathElems[0] !== contentSource.acct) {
                     pathElems = [...[contentSource.acct, contentSource.repo], ...pathElems]
                   }*/
@@ -600,7 +622,7 @@
             })
             root.querySelectorAll('param').forEach(param => {
               ['url', 'banner'].forEach(attr => {
-                if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value))
+                if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value, window.location.pathname, this.mdPathIsDir))
               })
             })
           },
@@ -879,13 +901,31 @@
 
     // Gets site config
     async function getSiteConfig() {
-      let config
-      let resp = await fetch(`${contentSource.baseUrl}/config.yaml`)
-      if (resp.ok) {
-        config = YAML.parse(await resp.text())
+      let config = {}
+      console.log('getSiteConfig', contentSource)
+      if (isGhpSite) {
+        let resp = await fetch(`${baseUrl}${basePath}/config.yaml`)
+        if (resp.ok) {
+          config = YAML.parse(await resp.text())
+        } else {
+          resp = await fetch(`${baseUrl}${basePath}/config.json`)
+          config = resp.ok ? await resp.json() : {}
+        }
       } else {
-        resp = await fetch(`${contentSource.baseUrl}/config.json`)
-        config = resp.ok ? await resp.json() : {}
+        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${contentSource.ref || ref}`, {
+                                      headers: { Authorization: `Token ${atob(unscopedToken)}` } })
+        if (resp.ok) {
+          resp = await resp.json()
+          config = YAML.parse(atob(resp.content))
+        } else {
+          resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.json?ref=${contentSource.ref || ref}`, {
+                                      headers: { Authorization: `Token ${atob(unscopedToken)}` } })
+          if (resp.ok) {
+            resp = await resp.json()
+            // console.log(resp)
+            config = JSON.parse(atob(resp.content))
+          }
+        }
       }
       ['banner', 'favicon'].forEach(attr => {
         if (config[attr]) config[attr] = convertURL(config[attr])
@@ -899,7 +939,7 @@
       if (knownGhAccts[acct]) {
         return {acct, repo, ref: knownGhAccts[acct]}
       } else {
-        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`)
+        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`, {headers: {Authorization: `Token ${atob(unscopedToken)}`}})
         if (resp.ok) {
           resp = await resp.json()
           return {acct, repo, ref: resp.default_branch}
@@ -910,26 +950,27 @@
     // Gets a list of available components
     async function getComponentsList(root, acct, repo, ref) {
       console.log(`getComponentsList: root=${root} acct=${acct} repo=${repo} ref=${ref}`)
-      if (acct) {
-        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/trees/${ref}`)
+      if (window.location.hostname === 'localhost') {
+        let resp = await fetch(`${baseUrl}${isGhpSite ? basePath : ''}/${root}`)
+        return (await resp.json()).files.map(fname => `${baseUrl}${isGhpSite ? basePath : ''}/${root}/${fname}`)
+      } else {
+        ref = ref || 'main'
+        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/trees/${ref}`, {headers: {Authorization: `Token ${atob(unscopedToken)}`}})
         resp = await resp.json()
         resp = await fetch(resp.tree.find(item => item.path === root).url)
         resp = await resp.json()
         return resp.tree.map(item => `https://raw.githubusercontent.com/${acct}/${repo}/${ref}/${root}/${item.path}`)
-      } else { // localhost
-        let resp = await fetch(`${assetsBaseUrl}/${root}`)
-        return (await resp.json()).files.map(fname => `${assetsBaseUrl}/${root}/${fname}`)
       }
     }
   
     // Gets a list of available components
     async function getMergedComponentsList(root, acct, repo, ref, contentSource) {
-      console.log(`getMergedComponentsList: root=${root} acct=${acct} repo=${repo} ref=${ref}`, contentSource)
       let componentsList = await getComponentsList(root, acct, repo, ref)
-      if (assetsBaseUrl !== contentSource.baseUrl) {
+      if (acct !== contentSource.acct && repo !== contentSource.repo) {
         let extras = await getComponentsList(root, contentSource.acct, contentSource.repo, contentSource.ref)
         componentsList = [...extras, ...componentsList]
       }
+      console.log(`getMergedComponentsList: root=${root} acct=${acct} repo=${repo} ref=${ref}`, contentSource, componentsList)
       return componentsList
     }
   
@@ -967,22 +1008,27 @@
       return link
     }
 
-    function convertURL(current, path) {
+    function convertURL(current, path, pathIsDir) {
       let pathElems = []
       if (current.indexOf('http') === 0) {
         if (current.indexOf(window.location.origin) === 0) {
-          let pathElems = current.split('/').slice(3)
+          pathElems = current.split('/').slice(3)
         } else {
           return current
         }
       } else if (current.indexOf('/') === 0) {
         pathElems = current.split('/').filter(elem => elem !== '')
       } else {
-        pathElems = `${path || window.location.pathname}/${current}`.split('/').filter(elem => elem !== '')
+        pathElems = (path || window.location.pathname).split('/').filter(elem => elem !== '')
+        if (!pathIsDir) pathElems = pathElems.slice(0, -1)
+        pathElems = [...pathElems, ...current.split('/').filter(elem => elem !== '')]
+        // pathElems = `${path || window.location.pathname}/${current}`.split('/').filter(elem => elem !== '')
       }
       if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
-      converted = `${assetsBaseUrl}/${pathElems.join('/')}`
-      console.log(`convertURL: current=${current} converted=${converted} path=${path} pathname=${window.location.pathname} assetsBaseUrl=${assetsBaseUrl} pathElems=${pathElems}`)
+      console.log(pathElems)
+      // converted = `${baseUrl}${basePath}/${pathElems.join('/')}`
+      converted = `${contentSource.baseUrl}/${pathElems.join('/')}`
+      console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathname=${window.location.pathname} assetsBaseUrl=${assetsBaseUrl} pathElems=${pathElems}`)
       return converted
     }
   </script>

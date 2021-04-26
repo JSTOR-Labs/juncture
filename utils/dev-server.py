@@ -17,35 +17,60 @@ app = Flask(__name__)
 root = BASEDIR
 port = 8080
 
+'''
 @app.route('/', methods=['GET'])
 def main(path=None):
+    logger.info(f'{BASEDIR}/index.html')
     with open(os.path.join(BASEDIR, 'index.html'), 'r') as fp:
         return fp.read(), 200
+'''
 
+@app.route('/', methods=['GET'])
 @app.route('/<path:path>', methods=['GET'])
-def assets(path=None):
-    path_elems = path.split('/')
+def assets(path=''):
+    path_elems = [elem for elem in path.split('/') if elem]
+    logger.info(path_elems)
 
-    if path == 'components':
-        _, _, files = next(os.walk(f'{BASEDIR}/{path}'))
-        return {'files': files}, 200, {'Content-type': 'application/json'}
-
-    elif path_elems[0] in ('css', 'js', 'components'):
-        return send_from_directory(f'{BASEDIR}/{"/".join(path_elems[:-1])}', path_elems[-1], as_attachment=False), 200 
-    
-    else:
-        content_path = f'{root}/{path}'
-        logger.debug(f'{content_path} {os.path.isfile(content_path)}')
-        
-        if os.path.exists(content_path) and os.path.isfile(content_path):
-            return send_from_directory(f'{root}/{"/".join(path_elems[:-1])}', path_elems[-1], as_attachment=False), 200 
-    
-        elif content_path.endswith('.md') or path in ('config.json', 'config.yaml') or path_elems[0] in ('images,'):
-            return 'Not found', 404
-        
+    if len(path_elems) > 0 and len(path_elems) <= 2 and path_elems[-1] == 'components':
+        components_root = f'{root}/{"/".join([elem for elem in path_elems[:path_elems.index("components")+1]])}'
+        logger.info(components_root)
+        if os.path.exists(components_root) and os.path.isdir(components_root):
+            _, _, files = next(os.walk(components_root))
+            return {'files': files}, 200, {'Content-type': 'application/json'}
         else:
-            with open(os.path.join(BASEDIR, 'index.html'), 'r') as fp:
-                return fp.read(), 200
+            # return 'Not found', 404
+            return {'files': []}, 200, {'Content-type': 'application/json'}
+
+    for idx in range(2):
+        if len(path_elems) > idx and path_elems[idx] in ('css', 'js', 'components'):
+            content_path = f'{root}/{"/".join([elem for elem in path_elems[:idx+2]])}'
+            logger.info(content_path)
+            return send_from_directory(f'{root}/{"/".join(path_elems[:idx+1])}', path_elems[idx+1], as_attachment=False), 200 
+    
+    content_path = f'{root}/{"/".join(path_elems)}'
+    logger.info(f'{content_path} {os.path.isfile(content_path)}')
+    
+    if os.path.exists(content_path) and os.path.isfile(content_path):
+        return send_from_directory(f'{root}/{"/".join(path_elems[:-1])}', path_elems[-1], as_attachment=False), 200 
+
+    #elif content_path.endswith('.md') or path in ('config.json', 'config.yaml') or path_elems[0] in ('images,'):
+    #    return 'Not found', 404
+    
+    if os.path.exists(content_path) and os.path.isdir(content_path) or os.path.exists(f'{content_path}.md'):
+        content_path = f'{root}{"/" + path_elems[0] if len(path_elems) > 0 else ""}/index.html'
+        logger.info(content_path)
+        with open(content_path, 'r') as fp:
+            return fp.read(), 200
+    
+    content_path = f'{root}/index.html'
+    if os.path.exists(content_path):
+        logger.info(content_path)
+        with open(content_path, 'r') as fp:
+            return fp.read(), 200
+
+    logger.info(content_path)
+
+    return 'Not found', 404
 
 def usage():
     print(f'{sys.argv[0]} [hl:r:p:]')
