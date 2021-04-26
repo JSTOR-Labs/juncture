@@ -965,7 +965,7 @@
   
     // Gets a list of available components
     async function getMergedComponentsList(root, acct, repo, ref, contentSource) {
-      let componentsList = await getComponentsList(root, acct, repo, ref)
+      let componentsList = await getComponentsList(root, acct, repo, 'main')
       if (acct !== contentSource.acct && repo !== contentSource.repo) {
         let extras = await getComponentsList(root, contentSource.acct, contentSource.repo, contentSource.ref)
         componentsList = [...extras, ...componentsList]
