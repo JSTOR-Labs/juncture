@@ -324,11 +324,11 @@
                                       headers: { Authorization: `Token ${atob(unscopedToken)}` } })
               if (resp.ok) {
                 resp = await resp.json()
-                return atob(resp.content)
+                return decodeURIComponent(escape(atob(resp.content)))
               }
             } else {
               let resp = await fetch(`${baseUrl}${basePath}${path}`)
-              if (resp.ok) return await resp.text()
+              if (resp.ok) return await decodeURIComponent(escape(resp.text()))
             }
             return null
           },
