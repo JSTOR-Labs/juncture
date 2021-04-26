@@ -15,7 +15,7 @@ const dependencies = [
 ]
 
 module.exports = {
-    name: 'D3PlusNetwork',
+    name: 've-d3plus-network',
     props: {
       items: Array,
       width: Number,
