@@ -35,6 +35,6 @@ This ring network diagram uses the D3Plus library. Rings are a way to view netwo
 ## Vis.js Network
 This network diagram is rendered using the Vis.js library, a dynamic, browser based visualization JavaScript library. Examples of network graphs created in Vis.js can be seen at [https://visjs.github.io/vis-network/examples/](https://visjs.github.io/vis-network/examples/). The documentation for networks can be viewed at [https://visjs.github.io/vis-network/docs/network/](https://visjs.github.io/vis-network/docs/network/). The `ve-vis-network` tag is used to generate this graph and currently supports comma separated (CSV) or tab separated (TSV) delimited text files as input data. The `url` attribute is required to point to the data file. An optional `title` attribute can be defined to give the network graph a title. 
 ```html
-<param ve-vis-network title="Heliconia imbricata and hummingbird mutualistic interactions" url="https://raw.githubusercontent.com/JSTOR-Labs/plant-humanities/main/graphs/heliconia-v3.tsv">
+<param ve-vis-network title="Anna Maria Luisa de Medici's Network" url="https://jstor-labs.github.io/plant-humanities/graphs/peony_medici.tsv">
 ```
-<param ve-vis-network title="Heliconia imbricata and hummingbird mutualistic interactions" url="https://raw.githubusercontent.com/JSTOR-Labs/plant-humanities/main/graphs/heliconia-v3.tsv">
+<param ve-vis-network title="Anna Maria Luisa de Medici's Network" url="https://jstor-labs.github.io/plant-humanities/graphs/peony_medici.tsv">
