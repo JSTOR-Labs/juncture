@@ -211,7 +211,13 @@
     })
     .then(config => {
       siteConfig = config
+      acct = siteConfig.acct || acct
+      repo = siteConfig.repo || repo
       ref = siteConfig.ref || ref
+      basePath = ''
+      contentSource.acct = acct
+      contentSource.repo = repo
+      contentSource.ref = ref
     })
     .then(resp => getMergedComponentsList(componentsRoot, acct, repo, ref, contentSource))
     .then(componentsList => {
@@ -911,7 +917,7 @@
           resp = await fetch(`${baseUrl}${basePath}/config.json`)
           config = resp.ok ? await resp.json() : {}
         }
-      } else {
+      } else if (contentSource.acct) {
         let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${contentSource.ref || ref}`, {
                                       headers: { Authorization: `Token ${atob(unscopedToken)}` } })
         if (resp.ok) {
@@ -926,6 +932,9 @@
             config = JSON.parse(atob(resp.content))
           }
         }
+      } else {
+        let resp = await fetch('/config.yaml')
+        if (resp.ok) config = YAML.parse(await resp.text())
       }
       ['banner', 'favicon'].forEach(attr => {
         if (config[attr]) config[attr] = convertURL(config[attr])
@@ -966,10 +975,10 @@
     // Gets a list of available components
     async function getMergedComponentsList(root, acct, repo, ref, contentSource) {
       let componentsList = await getComponentsList(root, acct, repo, 'main')
-      if (acct !== contentSource.acct && repo !== contentSource.repo) {
+      // if (acct !== contentSource.acct && repo !== contentSource.repo) {
         let extras = await getComponentsList(root, contentSource.acct, contentSource.repo, contentSource.ref)
         componentsList = [...extras, ...componentsList]
-      }
+      //}
       console.log(`getMergedComponentsList: root=${root} acct=${acct} repo=${repo} ref=${ref}`, contentSource, componentsList)
       return componentsList
     }
