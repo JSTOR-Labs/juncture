@@ -18,14 +18,18 @@
 
 <script>
 
+const label = 'Video Viewer'
+const icon = 'fa-video'
 const dependencies = []
 
 module.exports = {
-  name: 'VideoPlayer',
+  name: 've-video',
   props: {
     items: { type: Array, default: () => ([]) }
   },
   data: () => ({
+    label,
+    icon,
     playerVars: {
       ytppauseoverlay: 0,
       modestbranding: 1,
