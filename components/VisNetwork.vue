@@ -9,7 +9,8 @@
 
 <script>
 /* global vis, L */
-
+const label = "Network Viewer"
+const icon = "fa-chart-network"
 const dependencies = [
   "https://unpkg.com/vis-network/styles/vis-network.min.css",
   "https://unpkg.com/vis-data@latest/peer/umd/vis-data.min.js",
@@ -29,6 +30,8 @@ module.exports = {
     selectedItemID: String,
   },
   data: () => ({
+    label,
+    icon,
     activeWindow: undefined,
     popups: {},
     active: new Set(),
@@ -269,42 +272,6 @@ module.exports = {
     },
     addPositions(){
 
-    }
-    //adding function for now
-    delimitedStringToObjArray(delimitedData, delimiter) {
-      delimiter = delimiter || `\t`;
-      const objArray = [];
-      const lines = delimitedData.split("\n").filter(line => line.trim() !== "");
-      if (lines.length > 1) {
-        const keys = lines[0].split(delimiter).map(key => key.trim());
-        lines.slice(1).forEach(line => {
-          let obj = {};
-          line
-            .split(delimiter)
-            .map(value => value.trim())
-            .forEach((value, i) => {
-              let rawKey = keys[i].split(".");
-              let key = rawKey[0];
-              let prop = rawKey.length === 2 ? rawKey[1] : "id";
-              if (!obj[key]) obj[key] = {};
-              if (value || prop === "id") {
-                obj[key][prop] = value;
-              }
-            });
-          objArray.push(obj);
-        });
-        let assignedId = 0;
-        let labels = {};
-        objArray.forEach(obj => {
-          Object.values(obj).forEach(child => {
-            if (child.id === "" && child.label) {
-              if (!labels[child.label]) labels[child.label] = ++assignedId;
-              child.id = labels[child.label];
-            }
-          });
-        });
-      }
-      return objArray;
     }
   },
   watch: {

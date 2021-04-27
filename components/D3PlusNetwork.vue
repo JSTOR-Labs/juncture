@@ -7,7 +7,8 @@
 /* global d3plus */
 
 // Uses https://d3plus.org/
-
+const label = 'Network Viewer'
+const icon = 'fa-chart-network'
 const dependencies = [
     'https://d3plus.org/js/d3.min.js',
     'https://d3plus.org/js/d3plus.min.js',
@@ -21,6 +22,11 @@ module.exports = {
       width: Number,
       height: Number
     },
+    data: () => ({
+    label,
+    icon,
+    dependencies,
+    }),
     computed: {
       containerStyle() { return { width: `${this.width}px`, height: `${this.height}px`, overflowY: 'auto !important', marginLeft: '24px' } },
       item() { return this.items.length > 0 ? this.items[0] : {} }
