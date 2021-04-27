@@ -84,7 +84,27 @@
     }(window.location))
   </script>
   <script>
-        Vue.directive('highlightjs', {
+    console.log(window.location)
+
+    const referrerUrl = document.referrer
+    if (referrerUrl) {
+      console.log(`referrer=${referrerUrl}`)
+      const referrer = parseUrl(referrerUrl)
+      if (referrer.host === 'github.com') {
+        const referrerPath = referrer.pathname.slice(1).split('/')
+        const ghAcct = referrerPath[0]
+        const ghRepo = referrerPath[1]
+        const ghBranch = referrerPath.length > 2 ? referrerPath[3] : 'main'
+        const pathStart = 4
+        const pathEnd = referrerPath[referrerPath.length-1] === 'README.md' || referrerPath[referrerPath.length-1] === 'index.md' ? referrerPath.length-1 : referrerPath.length
+        const ghPath = referrerPath.slice(pathStart, pathEnd).join('/').replace(/\.md$/, '')
+        const redirect = `${window.location.origin}/${ghAcct}/${ghRepo}/${ghPath}${ghBranch === 'master' || ghBranch === 'main' ? '' : '?ref=' + ghBranch}`
+        console.log(`redirect=${redirect}`)
+        window.location = redirect
+      }
+    }
+    
+    Vue.directive('highlightjs', {
       deep: true,
       bind: function(el, binding) {
         let targets = el.querySelectorAll('code')
@@ -124,102 +144,66 @@
     .use(markdownItAttrs)
 
     async function getContentSource() {
-      let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
-      let _acct, _repo
-      if (pathElems.length >= 2) [_acct, _repo] = pathElems.slice(pathElems[0] === repo ? 1 : 0)
-      console.log(`repo=${repo} _acct=${_acct} _repo=${_repo}`)
-      return _acct && _repo ? githubRepoInfo(_acct, _repo) : Promise.resolve({acct, repo, ref})
+      let contentSource
+      // For local dev in GHP mode
+      if (window.location.host === 'localhost:8080' || window.location.hostname.indexOf('gitpod') >= 0) {
+        let repo = window.location.pathname.split('/').filter(elem => elem !== '')[0]
+        contentSource = {acct: null, repo, ref: null, baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true}
+
+      // For local dev in custom domain mode
+      } else if (window.location.host === 'localhost:8088') {
+        contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: window.location.origin, basePath: '', isGhpSite: false}
+        let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
+        if (pathElems.length >= 2) {
+          let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
+          if (ghRepoInfo) contentSource = {...contentSource, ...ghRepoInfo}
+        }
+
+      } else {
+        // GHP deploy mode
+        if (window.location.hostname.indexOf('github.io') > 0) {
+          [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2, 4)
+          contentSource = {acct, repo, ref: null, baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true}
+
+        // juncture-digital.org
+        } else if (window.location.hostname === 'juncture-digital.org') {
+          contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${ref}`, basePath: '', isGhpSite: false}
+          let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
+          if (pathElems.length >= 2) {
+            let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
+            if (ghRepoInfo) contentSource = {...contentSource, ...ghRepoInfo}
+          }
+
+        // Deployed in a non juncture-digital.org custom domain
+        } else {
+          contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, basePath: '', isGhpSite: false}
+
+        }
+      }
+      return contentSource
     }
 
+    let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
+    
     let unscopedToken = 'Z2hwX05lcnV2RUYzRmx6M3o5YnFjQWZuOGpJQnJMR3lEMTNmYjYyVw=='
-    let siteConfig, baseUrl, acct, repo, ref, basePath, assetsBaseUrl
-    let contentSource = { acct: null, repo: null, ref: null, baseUrl: null}
-    let isGhpSite = false
-    let componentsRoot = 'components'
-    let componentPrefix = 've-'
-    let availableViewers = new Set()
+
+    let siteConfig, contentSource
+    
+    const componentsRoot = 'components'
+    const componentPrefix = 've-'
+    const availableViewers = new Set()
     const knownGhAccts = {'jstor-labs': 'main', 'rsnyder': 'main', 'kent-map': 'main'}
 
-    const referrerUrl = document.referrer
-    if (referrerUrl) {
-      console.log(`referrer=${referrerUrl}`)
-      const referrer = parseUrl(referrerUrl)
-      if (referrer.host === 'github.com') {
-        const referrerPath = referrer.pathname.slice(1).split('/')
-        const ghAcct = referrerPath[0]
-        const ghRepo = referrerPath[1]
-        const ghBranch = referrerPath.length > 2 ? referrerPath[3] : 'main'
-        const pathStart = 4
-        const pathEnd = referrerPath[referrerPath.length-1] === 'README.md' || referrerPath[referrerPath.length-1] === 'index.md' ? referrerPath.length-1 : referrerPath.length
-        const ghPath = referrerPath.slice(pathStart, pathEnd).join('/').replace(/\.md$/, '')
-        const redirect = `${window.location.origin}/${ghAcct}/${ghRepo}/${ghPath}${ghBranch === 'master' || ghBranch === 'main' ? '' : '?ref=' + ghBranch}`
-        console.log(`redirect=${redirect}`)
-        window.location = redirect
-      }
-    }
-
-    console.log(`pathname=${window.location.pathname} href=${window.location.href}`)
-    console.log(window.location)
-    let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
-    console.log('qargs', qargs)
-
-    if (window.location.host === 'localhost:8080' || window.location.hostname.indexOf('gitpod') >= 0) {
-      baseUrl = window.location.origin
-      let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
-      if (pathElems.length > 0) {
-        repo = pathElems[0]
-        isGhpSite = true
-        basePath = `/${repo}`
-      } else {
-        basePath = ''
-      }
-    } else if (window.location.host === 'localhost:8088') {
-      baseUrl = window.location.origin
-    } else {
-      if (window.location.hostname.indexOf('github.io') > 0) {
-        isGhpSite = true;
-        [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2,4)
-        ref = undefined
-        baseUrl = `https://${acct}.github.io`
-        basePath = `/${repo}`
-      } else if (window.location.hostname === 'juncture-digital.org') {
-        acct = 'jstor-labs'
-        repo = 'juncture'
-        ref = 'main'
-        assetsBaseUrl = `https://gitcdn.link/repo/${acct}/${repo}/${ref}`
-        baseUrl = `https://gitcdn.link/repo/${acct}/${repo}/${ref}`
-        basePath = ''
-      } else {
-        baseUrl = window.location.origin
-        basePath = ''
-      }
-    }
-    console.log(`acct=${acct} repo=${repo} ref=${ref} assetsBaseUrl=${assetsBaseUrl} basePath=${basePath} isGhpSite=${isGhpSite}`)
-
     getContentSource()
-    .then(sourceInfo => {
-      console.log('sourceInfo', sourceInfo)
-      if (!sourceInfo) sourceInfo = {acct, repo, ref}
-      contentSource = { ...sourceInfo, 
-                        ...{ ref: qargs.ref || sourceInfo.ref,
-                             baseUrl: sourceInfo.acct
-                             ? `https://gitcdn.link/repo/${sourceInfo.acct}/${sourceInfo.repo}/${qargs.ref || sourceInfo.ref}`
-                             : window.location.origin }}
-      if ((contentSource.acct && contentSource.acct !== acct) || (contentSource.repo && contentSource.repo !== repo)) {
-        basePath = `${isGhpSite ? '/'+repo : ''}/${contentSource.acct}/${contentSource.repo}`
-      }
-      console.log('basePath', basePath)
-      console.log('contentSource', contentSource)
+    .then(cs => {
+      contentSource = cs
+      console.log('afterGetContentSource', contentSource)
       return getSiteConfig()
     })
-    .then(config => {
-      siteConfig = config
-      acct = siteConfig.acct || acct
-      repo = siteConfig.repo || repo
-      ref = siteConfig.ref || ref
-      contentSource.acct = acct
-      contentSource.repo = repo
-      contentSource.ref = ref
+    .then(sc => {
+      siteConfig = sc || {}
+      contentSource = {...contentSource, ...{acct: sc.acct || contentSource.acct, repo: sc.repo || contentSource.repo, ref: sc.ref || contentSource.ref}}
+      console.log('afterGetSiteConfig', siteConfig, contentSource)
     })
     .then(resp => getMergedComponentsList(componentsRoot, acct, repo, ref, contentSource))
     .then(componentsList => {
@@ -227,17 +211,15 @@
         let httpComponent = httpVueLoader(componentUrl)
         let componentName = `${componentPrefix}${camelToKebab(componentUrl.split('/').pop().split('.')[0])}`
         if (!availableViewers.has(componentName)) {
-          console.log(componentName, componentUrl)
           availableViewers.add(componentName)
           Vue.component(componentName, httpComponent)
         }
       })
 
-      console.log(`baseUrl=${baseUrl} basePath=${basePath}`)
       let head = document.querySelector('head')
-      head.appendChild(makeLink(siteConfig.favicon || `${baseUrl}${basePath || ''}/images/favicon.svg`, 'icon'))
-      head.appendChild(makeLink(`${baseUrl}${isGhpSite ? basePath ? basePath : '' : ''}/css/main.css`))
-      head.appendChild(makeLink(`${baseUrl}${basePath ? basePath : ''}/css/custom.css`))
+      head.appendChild(makeLink(siteConfig.favicon || `${contentSource.baseUrl}${contentSource.basePath}/images/favicon.svg`, 'icon'))
+      head.appendChild(makeLink(`${window.location.origin}/css/main.css`))
+      head.appendChild(makeLink(`${contentSource.baseUrl}${contentSource.basePath}/css/custom.css`))
       document.title = siteConfig.title || 'Juncture'
 
       new Vue({
@@ -247,6 +229,7 @@
           qargs,
           layouts: [],
           siteConfig,
+          contentSource,
           params: [],
           markdown: null,
           mdPathIsDir: false,
@@ -329,8 +312,9 @@
           async getMarkdown(path) {
             console.log(acct, repo, ref, baseUrl, basePath, contentSource)
             if (contentSource.acct) {
-              let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref || ref}`, {
-                                      headers: { Authorization: `Token ${atob(unscopedToken)}` } })
+              let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref || ref}`
+              console.log('getMarkdown', url)
+              let resp = await fetch(url, { headers: { Authorization: `Token ${atob(unscopedToken)}` } })
               if (resp.ok) {
                 resp = await resp.json()
                 return decodeURIComponent(escape(atob(resp.content)))
@@ -947,13 +931,12 @@
     // Gets site config
     async function getSiteConfig() {
       let config = {}
-      console.log('getSiteConfig', contentSource)
-      if (isGhpSite) {
-        let resp = await fetch(`${baseUrl}${basePath}/config.yaml`)
+      if (contentSource.isGhpSite) {
+        let resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
         if (resp.ok) {
           config = YAML.parse(await resp.text())
         } else {
-          resp = await fetch(`${baseUrl}${basePath}/config.json`)
+          resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.json`)
           config = resp.ok ? await resp.json() : {}
         }
       } else if (contentSource.acct) {
