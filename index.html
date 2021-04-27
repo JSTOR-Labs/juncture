@@ -367,7 +367,7 @@
             } else {
               history.pushState({file: path || ''}, '', browserPath)
             }
-
+            this.active = null
             let essayElem = this.markdownToElem(this.markdown)
             this.convertResourceUrls(essayElem, path)
             this.html = this.doCustomFormatting(essayElem)
@@ -387,8 +387,9 @@
                   }
                   this.anchor = null
                 } else {
-                  this.active = segments.length > 0 ? segments[0].dataset.id : null
                   this.$refs.essay.scrollTop = 0
+                  this.active = segments.length > 0 ? segments[0].dataset.id : null
+                  console.log(`scrollTop: active-${this.active}`)
                 }
               })
               this.params = Array.from(document.getElementById('essay').querySelectorAll('param'))
@@ -971,7 +972,7 @@
           }
         }
       } else {
-        let resp = await fetch('/config.yaml')
+        let resp = await fetch(`${window.location.origin}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
       }
       ['banner', 'favicon'].forEach(attr => {
