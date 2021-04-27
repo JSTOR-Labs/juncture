@@ -8,6 +8,8 @@
 
 // Uses https://d3plus.org/
 
+const label = 'Network Viewer'
+const icon = 'fa-chart-network'
 const dependencies = [
     // 'https://fonts.googleapis.com/css?family=Roboto',
     // 'https://d3plus.org/css/styles.css?v=3',
@@ -23,6 +25,11 @@ module.exports = {
       width: Number,
       height: Number
     },
+    data: () => ({
+    label,
+    icon,
+    dependencies,
+    }),
     computed: {
       containerStyle() { return { 
           width: `${this.width}px`,
