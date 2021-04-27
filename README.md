@@ -4,7 +4,9 @@
 
 [Juncture](https://essays.juncture-digital.org) is a free service for easily turning a simple text file into an engaging `visual essay`.  A visual essay is an interactive web page that enriches a text narrative with visual elements to provide depth and context.  Juncture does not require special tooling or technical expertise.  It uses the free Github site for hosting and managing the visual essay text files.
 
-In addition to converting single text files into visual narratives, Juncture can also be used to create rich web sites consisting of multiple visual essays with navigation, site info pages (_About_, _Contact us_, etc), email contact form, logo, and other simple customizations.  The creation of a custom visual essay site involves a couple of easy steps than can be accomplished in just a few minutes using a predefined site template (this repository). 
+In addition to converting single text files into visual narratives, Juncture can also be used to create rich web sites consisting of multiple visual essays with navigation, site info pages (_About_, _Contact us_, etc), email contact form, logo, and other simple customizations.  The creation of a custom visual essay site involves a couple of easy steps than can be accomplished in just a few minutes using a predefined site template (this repository).
+
+Some example essays can be seen [here](examples)
 
 # Getting started with Juncture
 
