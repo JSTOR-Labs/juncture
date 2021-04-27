@@ -189,6 +189,9 @@
         assetsBaseUrl = `https://gitcdn.link/repo/${acct}/${repo}/${ref}`
         baseUrl = `https://gitcdn.link/repo/${acct}/${repo}/${ref}`
         basePath = ''
+      } else {
+        baseUrl = window.location.origin
+        basePath = ''
       }
     }
     console.log(`acct=${acct} repo=${repo} ref=${ref} assetsBaseUrl=${assetsBaseUrl} basePath=${basePath} isGhpSite=${isGhpSite}`)
@@ -231,10 +234,11 @@
         }
       })
 
+      console.log(`baseUrl=${baseUrl} basePath=${basePath}`)
       let head = document.querySelector('head')
-      head.appendChild(makeLink(siteConfig.favicon || `${baseUrl}${basePath}/images/favicon.svg`, 'icon'))
-      head.appendChild(makeLink(`${baseUrl}${isGhpSite ? basePath : ''}/css/main.css`))
-      head.appendChild(makeLink(`${baseUrl}${basePath}/css/custom.css`))
+      head.appendChild(makeLink(siteConfig.favicon || `${baseUrl}${basePath || ''}/images/favicon.svg`, 'icon'))
+      head.appendChild(makeLink(`${baseUrl}${isGhpSite ? basePath ? basePath : '' : ''}/css/main.css`))
+      head.appendChild(makeLink(`${baseUrl}${basePath ? basePath : ''}/css/custom.css`))
       document.title = siteConfig.title || 'Juncture'
 
       new Vue({
