@@ -33,8 +33,8 @@ def assets(path=''):
 
     if len(path_elems) > 0 and len(path_elems) <= 2 and path_elems[-1] == 'components':
         components_root = f'{root}/{"/".join([elem for elem in path_elems[:path_elems.index("components")+1]])}'
-        logger.info(components_root)
         if os.path.exists(components_root) and os.path.isdir(components_root):
+            logger.info(components_root)
             _, _, files = next(os.walk(components_root))
             return {'files': files}, 200, {'Content-type': 'application/json'}
         else:
@@ -48,15 +48,22 @@ def assets(path=''):
             return send_from_directory(f'{root}/{"/".join(path_elems[:idx+1])}', path_elems[idx+1], as_attachment=False), 200 
     
     content_path = f'{root}/{"/".join(path_elems)}'
-    logger.info(f'{content_path} {os.path.isfile(content_path)}')
     
     if os.path.exists(content_path) and os.path.isfile(content_path):
+        logger.info(f'{content_path} {os.path.isfile(content_path)}')
         return send_from_directory(f'{root}/{"/".join(path_elems[:-1])}', path_elems[-1], as_attachment=False), 200 
 
     #elif content_path.endswith('.md') or path in ('config.json', 'config.yaml') or path_elems[0] in ('images,'):
     #    return 'Not found', 404
     
-    if os.path.exists(content_path) and os.path.isdir(content_path) or os.path.exists(f'{content_path}.md'):
+    if os.path.exists(content_path) and os.path.isdir(content_path):
+        content_path = f'{root}{"/" + path_elems[0] if len(path_elems) > 0 else ""}/index.html'
+        if os.path.exists(content_path):
+            logger.info(content_path)
+            with open(content_path, 'r') as fp:
+                return fp.read(), 200
+
+    elif os.path.exists(f'{content_path}.md'):
         content_path = f'{root}{"/" + path_elems[0] if len(path_elems) > 0 else ""}/index.html'
         logger.info(content_path)
         with open(content_path, 'r') as fp:
@@ -67,8 +74,6 @@ def assets(path=''):
         logger.info(content_path)
         with open(content_path, 'r') as fp:
             return fp.read(), 200
-
-    logger.info(content_path)
 
     return 'Not found', 404
 
