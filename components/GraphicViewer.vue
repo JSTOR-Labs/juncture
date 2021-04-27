@@ -13,6 +13,8 @@
 </template>
 
 <script>
+const label = 'Graphic Viewer'
+const icon = 'fa-table'
 
 module.exports = {
     name: 'graphicViewer',
@@ -25,6 +27,8 @@ module.exports = {
     data: () => ({
         svg: undefined,
         image: undefined,
+        label,
+        icon
     }),
     
     computed: {
