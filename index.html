@@ -209,7 +209,7 @@
         basePath = `${isGhpSite ? '/'+repo : ''}/${contentSource.acct}/${contentSource.repo}`
       }
       console.log('basePath', basePath)
-      console.log('contentSource', contentSource)
+      console.log(`contentSource.acct=${contentSource.acct} contentSource.repo=${contentSource.repo} contentSource.ref=${contentSource.ref}`)
       return getSiteConfig()
     })
     .then(config => {
@@ -220,6 +220,7 @@
       contentSource.acct = acct
       contentSource.repo = repo
       contentSource.ref = ref
+      console.log(`contentSource.acct=${contentSource.acct} contentSource.repo=${contentSource.repo} contentSource.ref=${contentSource.ref}`)
     })
     .then(resp => getMergedComponentsList(componentsRoot, acct, repo, ref, contentSource))
     .then(componentsList => {
@@ -329,8 +330,9 @@
           async getMarkdown(path) {
             console.log(acct, repo, ref, baseUrl, basePath, contentSource)
             if (contentSource.acct) {
-              let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref || ref}`, {
-                                      headers: { Authorization: `Token ${atob(unscopedToken)}` } })
+              let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref || ref}`
+              console.log('getMarkdown', url)
+              let resp = await fetch(url, { headers: { Authorization: `Token ${atob(unscopedToken)}` } })
               if (resp.ok) {
                 resp = await resp.json()
                 return decodeURIComponent(escape(atob(resp.content)))
