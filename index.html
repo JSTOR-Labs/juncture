@@ -337,7 +337,10 @@
               }
             } else {
               let resp = await fetch(`${baseUrl}${basePath}${path}`)
-              if (resp.ok) return await decodeURIComponent(escape(resp.text()))
+              if (resp.ok) {
+                resp = await resp.text()
+                return await decodeURIComponent(escape(resp))
+              }
             }
             return null
           },
