@@ -99,7 +99,6 @@
         const pathEnd = referrerPath[referrerPath.length-1] === 'README.md' || referrerPath[referrerPath.length-1] === 'index.md' ? referrerPath.length-1 : referrerPath.length
         const ghPath = referrerPath.slice(pathStart, pathEnd).join('/').replace(/\.md$/, '')
         const redirect = `${window.location.origin}/${ghAcct}/${ghRepo}/${ghPath}${ghBranch === 'master' || ghBranch === 'main' ? '' : '?ref=' + ghBranch}`
-        console.log(`redirect=${redirect}`)
         window.location = redirect
       }
     }
@@ -148,11 +147,11 @@
       // For local dev in GHP mode
       if (window.location.host === 'localhost:8080' || window.location.hostname.indexOf('gitpod') >= 0) {
         let repo = window.location.pathname.split('/').filter(elem => elem !== '')[0]
-        contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, assetsBaseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true}
+        contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true}
 
       // For local dev in custom domain mode
       } else if (window.location.host === 'localhost:8088') {
-        contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, assetsBaseUrl: window.location.origin, basePath: '', isGhpSite: false}
+        contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, basePath: '', isGhpSite: false}
         let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
         if (pathElems.length >= 2) {
           let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
@@ -163,11 +162,11 @@
         // GHP deploy mode
         if (window.location.hostname.indexOf('github.io') > 0) {
           [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2, 4)
-          contentSource = {acct, repo, ref: null, baseUrl: window.location.origin, assetsBaseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true}
+          contentSource = {acct, repo, ref: null, baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true}
 
         // juncture-digital.org
         } else if (window.location.hostname === 'juncture-digital.org') {
-          contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${ref}`, assetsBaseUrl: window.location.origin, basePath: '', isGhpSite: false}
+          contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: 'https://gitcdn.link/repo/jstor-labs/juncture/main', basePath: '', isGhpSite: false}
           let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
           if (pathElems.length >= 2) {
             let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
@@ -176,7 +175,7 @@
 
         // Deployed in a non juncture-digital.org custom domain
         } else {
-          contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, assetsBaseUrl: window.location.origin, basePath: '', isGhpSite: false}
+          contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, basePath: '', isGhpSite: false}
         }
       }
       contentSource.ref = qargs.ref || contentSource.ref
@@ -187,7 +186,7 @@
     
     let unscopedToken = 'Z2hwX05lcnV2RUYzRmx6M3o5YnFjQWZuOGpJQnJMR3lEMTNmYjYyVw=='
 
-    let siteConfig, contentSource
+    let siteConfig, contentSource, componentsList
     
     const componentsRoot = 'components'
     const componentPrefix = 've-'
@@ -195,19 +194,17 @@
     const knownGhAccts = {'jstor-labs': 'main', 'rsnyder': 'main', 'kent-map': 'main'}
 
     getContentSource()
-    .then(cs => {
-      contentSource = cs
-      console.log('afterGetContentSource', contentSource)
+    .then(sourceInfo => {
+      contentSource = sourceInfo
       return getSiteConfig()
     })
-    .then(sc => {
-      siteConfig = sc || {}
-      contentSource = {...contentSource, ...{acct: sc.acct || contentSource.acct, repo: sc.repo || contentSource.repo, ref: sc.ref || contentSource.ref}}
-      console.log('afterGetSiteConfig', siteConfig, contentSource)
+    .then(config => {
+      siteConfig = config
+      contentSource = {...contentSource, ...{acct: config.acct || contentSource.acct, repo: config.repo || contentSource.repo, ref: config.ref || contentSource.ref}}
     })
     .then(resp => getComponentsList())
-    .then(componentsList => {
-      console.log('componentsList', componentsList)
+    .then(clist => {
+      componentsList = clist
       componentsList.forEach(componentUrl => {
         let httpComponent = httpVueLoader(componentUrl)
         let componentName = `${componentPrefix}${camelToKebab(componentUrl.split('/').pop().split('.')[0])}`
@@ -218,10 +215,9 @@
       })
 
       let head = document.querySelector('head')
-      let assetsBase = contentSource.isGhpSite ? `${contentSource.baseUrl}${contentSource.basePath}` : window.location.origin
-      head.appendChild(makeLink(siteConfig.favicon || `${assetsBase}/images/favicon.svg`, 'icon'))
-      head.appendChild(makeLink(`${assetsBase}/css/main.css`))
-      head.appendChild(makeLink(`${contentSource.baseUrl}${contentSource.basePath}/css/custom.css`))
+      head.appendChild(makeLink(siteConfig.favicon || `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}/images/favicon.svg`, 'icon'))
+      head.appendChild(makeLink(`${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}/css/main.css`))
+      if (siteConfig.customCSS) head.appendChild(makeLink(siteConfig.customCSS))
       document.title = siteConfig.title || 'Juncture'
 
       new Vue({
@@ -232,6 +228,7 @@
           layouts: [],
           siteConfig,
           contentSource,
+          componentsList,
           params: [],
           markdown: null,
           mdPathIsDir: false,
@@ -267,7 +264,6 @@
         },
         mounted() {
           this.anchor = window.location.href.indexOf('#') >= 0 ? window.location.href.split('#').pop() : null
-          console.log('siteConfig', this.siteConfig)
           window.onpopstate = (e) => this.loadEssay(e.state.file, true) 
           const resizeObserver = new ResizeObserver(entries => { 
             this.forceHorizontalLayout = window.matchMedia('only screen and (max-width: 1000px)').matches
@@ -314,7 +310,6 @@
           async getMarkdown(path) {
             if (contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref || ref}`
-              console.log('getMarkdown', url)
               let resp = await fetch(url, { headers: { Authorization: `Token ${atob(unscopedToken)}` } })
               if (resp.ok) {
                 resp = await resp.json()
@@ -322,20 +317,14 @@
               }
             } else {
               let url = `${contentSource.baseUrl}${contentSource.basePath}${path}`
-              console.log(url)
               let resp = await fetch(url)
-              if (resp.ok) {
-                resp = await resp.text()
-                // return decodeURIComponent(escape(resp))
-                return resp
-              }
+              if (resp.ok) return await resp.text()
             }
             return null
           },
 
           // Loads essay Markdown file
           async loadEssay(path, replace, anchor) {
-            console.log(window.location.pathname)
             path = path || window.location.pathname.slice(contentSource.basePath.length) || '/'
             if (path.slice(-1) !== '/') path += '/'
             console.log(`loadEssay: basePath=${contentSource.basePath} path=${path}`)
@@ -370,7 +359,6 @@
                 if (this.anchor) {
                   let anchorElem = document.getElementById(this.anchor)
                   if (anchorElem) {
-                    // anchorElem.scrollIntoView({block:'start'})
                     this.scrollTop = anchorElem.offsetTop
                     this.$refs.essay.scrollTop = this.scrollTop - 100
                   }
@@ -378,7 +366,6 @@
                 } else {
                   this.$refs.essay.scrollTop = 0
                   this.active = segments.length > 0 ? segments[0].dataset.id : null
-                  console.log(`scrollTop: active-${this.active}`)
                 }
               })
               this.params = Array.from(document.getElementById('essay').querySelectorAll('param'))
@@ -576,10 +563,8 @@
             return essay
           },
    
-          // Converts link tags to elements with click listeners enabling intra-app navigation without
-          //   page loading
+          // Converts link tags to elements with click listeners enabling intra-app navigation without page loading
           convertLinks(root) {
-            console.log('convertLinks')
             root.querySelectorAll('a').forEach(link => {
               if ((!link.href && link.dataset.target) || link.href.indexOf(window.location.host) > 0) {
                 // If internal link
@@ -588,11 +573,6 @@
                   const parsedUrl = parseUrl(link.href)
                   let pathElems = parsedUrl.pathname.split('/').filter(elem => elem !== '')
                   if (contentSource.isGhpSite && pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
-                  // console.log(pathElems)
-                  /*if (contentSource && pathElems[0] !== contentSource.acct) {
-                    pathElems = [...[contentSource.acct, contentSource.repo], ...pathElems]
-                  }*/
-                  // console.log(link.href, parsedUrl.pathname, pathElems)
                   target = parsedUrl.hash === '' ? `/${pathElems.join('/')}/` : parsedUrl.hash.split('?')[0]
                 }
                 link.removeAttribute('href')
@@ -618,7 +598,6 @@
           },
 
           convertResourceUrls(root, path) {
-            console.log('convertResourceUrls')
             root.querySelectorAll('img').forEach(img => {
               if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src))
             })
@@ -630,7 +609,8 @@
           },
 
           // Finds words/phrases in content paragraphs that match labels or aliases for entities in scope
-          //  Matched text is wrapped with a span tag for reacting to hover and click actions
+          // Matched text is wrapped with a span tag for reacting to hover and click actions
+          // TODO: make this better!
           tagEntities() {
             Array.from(this.$refs.essay.querySelectorAll('.segment')).forEach(segment => {
               let segmentHTML = segment.innerHTML
@@ -659,7 +639,7 @@
 
           commonsImageUrl(url, width) {
             // Converts Wikimedia commons File URL to an image link
-            //   If a width is provided a thumbnail is returned
+            //  If a width is provided a thumbnail is returned
             let mwImg = url.indexOf('Special:FilePath') > 0 ? url.split('/Special:FilePath/').pop() :  url.split('/File:').pop()
             mwImg = decodeURIComponent(mwImg).replace(/ /g,'_')
             const ImgMD5 = md5(mwImg)
@@ -673,38 +653,26 @@
           },
 
           addItemEventHandlers(elem) {
-            // const elem = document.getElementById(elemId)
-            // console.log(`addItemEventHandlers: elemId=${elemId}`, elem)
-            if (elem) {
-              // document.getElementById(elemId)
-              elem.querySelectorAll('.inferred').forEach((entity) => {
-                entity.addEventListener('click', this.itemClickHandler)
-                entity.addEventListener('mouseover', this.setHoverItem)
-                entity.addEventListener('mouseout', this.setHoverItem)
-              })
-            }
+            elem.querySelectorAll('.inferred').forEach((entity) => {
+              entity.addEventListener('click', this.itemClickHandler)
+              entity.addEventListener('mouseover', this.setHoverItem)
+              entity.addEventListener('mouseout', this.setHoverItem)
+            })
           },
           removeItemEventHandlers(elem) {
-            // console.log(`removeItemEventHandlers: elemId=${elem}`)
-            // const elem = document.getElementById(elem)
-            if (elem) {
-              // document.getElementById(elemId)
-              elem.querySelectorAll('.active .inferred').forEach((entity) => {
-                entity.removeEventListener('click', this.itemClickHandler)
-                entity.removeEventListener('mouseover', this.setHoverItem)
-                entity.removeEventListener('mouseout', this.setHoverItem)
-              })
-            }
+            elem.querySelectorAll('.active .inferred').forEach((entity) => {
+              entity.removeEventListener('click', this.itemClickHandler)
+              entity.removeEventListener('mouseover', this.setHoverItem)
+              entity.removeEventListener('mouseout', this.setHoverItem)
+            })
           },
 
           setHoverItem(e) {
-            // this.$emit('set-hover-item', e.type === 'mouseover' ? e.target.dataset.eid : null)
             this.hoverItem = e.type === 'mouseover' ? e.target.dataset.eid : null
           },
           itemClickHandler(e) {
             e.stopPropagation()
-            // this.$emit('set-selected-item', e.target.attributes['data-eid'].value)
-            // this.selectedItem = e.target.dataset.eid 
+            this.selectedItem = e.target.dataset.eid 
           },
 
           getInteractionAttrs(elem) {
@@ -715,7 +683,6 @@
                 .map(attr => attr.name.split('-').slice(1,2)[0])
                 .forEach(event => eventAttrs.push({elem: span, event}))
               })
-            console.log(eventAttrs)
             return eventAttrs
           },
 
@@ -728,7 +695,6 @@
           },
   
           removeInteractionHandlers(elem) {
-            console.log(`removeInteractionHandlers: elemId=${elem}`)
             Array.from(elem.querySelectorAll('.essay-interaction')).forEach(span => {
               Array.from(span.attributes)
                 .filter(attr => attr.name.indexOf('data-') === 0 && attr.name.split('-').length === 4)
@@ -755,12 +721,8 @@
                 if (!eventActions[action.target]) eventActions[action.target] = []
                 eventActions[action.target].push(action)
               })
-            console.log('eventActions', eventActions)
             const actions = { ...this.actions }
-            Object.keys(eventActions).forEach(target => {
-              actions[`ve-${target}`] = eventActions[target]
-            })
-            console.log('setActions', actions)
+            Object.keys(eventActions).forEach(target => actions[`ve-${target}`] = eventActions[target])
             this.actions = actions
           }
     
@@ -776,10 +738,7 @@
               for (i = 0; i < segments.length; i++) {
                 if (target.scrollTop <= segments[i].offsetTop + segments[i].clientHeight - 200) break
               }
-              if (i < segments.length && this.active !== segments[i].dataset.id ) {
-                console.log(this.active, segments[i].dataset.id)
-                this.active = segments[i].dataset.id
-              }
+              if (i < segments.length && this.active !== segments[i].dataset.id ) this.active = segments[i].dataset.id
             },
             immediate: false
           },
@@ -828,7 +787,6 @@
 
           isVerticalLayout: {
             handler: function () {
-              console.log(`isVerticalLayout=${this.isVerticalLayout}`)
               this.selectedViewer = this.isVerticalLayout && this.viewers.length > 0 ? this.viewers[0] : this.selectedViewer
               if (this.isVerticalLayout) this.viewerIsOpen = true
             },
@@ -864,7 +822,6 @@
       methods: {
         loadDependencies(dependencies, i, callback) {
           if (i === 0) {
-            // console.log('loadDependencies', this.$options.name, this.dependencies)
             let componentData = {}
             componentData[this.$options.name] = { label: this.label, icon: this.icon }
             this.$emit('update-component-data', componentData)
@@ -955,7 +912,6 @@
                                       headers: { Authorization: `Token ${atob(unscopedToken)}` } })
           if (resp.ok) {
             resp = await resp.json()
-            // console.log(resp)
             config = JSON.parse(atob(resp.content))
           }
         }
@@ -963,25 +919,22 @@
         let resp = await fetch(`${window.location.origin}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
       }
-      ['banner', 'favicon'].forEach(attr => {
-        if (config[attr]) config[attr] = convertURL(config[attr])
-      })
+      ['banner', 'favicon', 'customCSS'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       return config
     }
 
     // Determines if Github repo exists
     async function githubRepoInfo(acct, repo) {
-      console.log(`githubRepoInfo: acct=${acct} rep=${repo} isKnownAcct=${knownGhAccts[acct] !== undefined}`)
       if (knownGhAccts[acct]) {
         return {acct, repo, ref: knownGhAccts[acct], basePath: `/${acct}/${repo}`,
-                assetsBaseUrl: `https://raw.githubusercontent.com/${acct}/${repo}/${knownGhAccts[acct]}`
+                assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || knownGhAccts[acct]}`
                }
       } else {
         let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`, {headers: {Authorization: `Token ${atob(unscopedToken)}`}})
         if (resp.ok) {
           resp = await resp.json()
-          return {acct, repo, ref: resp.default_branch, basePath: `/${acct}/${repo}`, 
-                  assetsBaseUrl: `https://raw.githubusercontent.com/${acct}/${repo}/${resp.default_branch}`
+          return {acct, repo, ref: qargs.ref || resp.default_branch, basePath: `/${acct}/${repo}`, 
+                  assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || resp.default_branch}`
                  }
         }
       }
@@ -1062,13 +1015,10 @@
         pathElems = (path || window.location.pathname).split('/').filter(elem => elem !== '')
         if (!pathIsDir) pathElems = pathElems.slice(0, -1)
         pathElems = [...pathElems, ...current.split('/').filter(elem => elem !== '')]
-        // pathElems = `${path || window.location.pathname}/${current}`.split('/').filter(elem => elem !== '')
       }
       if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
-      console.log(pathElems)
-      // converted = `${baseUrl}${basePath}/${pathElems.join('/')}`
-      converted = `${contentSource.assetsBaseUrl}/${pathElems.join('/')}`
-      console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathname=${window.location.pathname} pathElems=${pathElems}`)
+      converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
+      // console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
       return converted
     }
   </script>
