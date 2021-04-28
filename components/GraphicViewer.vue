@@ -17,7 +17,7 @@ const label = 'Graphic Viewer'
 const icon = 'fa-table'
 
 module.exports = {
-    name: 'graphicViewer',
+    name: 've-graphic',
     props: {
       items: Array,
       width: Number,
