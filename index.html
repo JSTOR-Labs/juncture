@@ -946,7 +946,9 @@
       if (contentSource.acct && contentSource.repo && contentSource.ref) {
         let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${contentSource.ref}`, {
                          headers: {Authorization: `Token ${atob(unscopedToken)}`}})
+        console.log(resp)
         resp = await resp.json()
+        console.log(resp)
         resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url)
         resp = await resp.json()
         componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}/${componentsRoot}/${item.path}`)]
