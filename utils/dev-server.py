@@ -48,7 +48,7 @@ def assets(path=''):
             return send_from_directory(f'{root}/{"/".join(path_elems[:idx+1])}', path_elems[idx+1], as_attachment=False), 200 
     
     content_path = f'{root}/{"/".join(path_elems)}'
-    
+    logger.info(f'{content_path} {os.path.isfile(content_path)}')
     if os.path.exists(content_path) and os.path.isfile(content_path):
         logger.info(f'{content_path} {os.path.isfile(content_path)}')
         return send_from_directory(f'{root}/{"/".join(path_elems[:-1])}', path_elems[-1], as_attachment=False), 200 
@@ -68,12 +68,13 @@ def assets(path=''):
         logger.info(content_path)
         with open(content_path, 'r') as fp:
             return fp.read(), 200
-    
-    content_path = f'{root}/index.html'
-    if os.path.exists(content_path):
-        logger.info(content_path)
-        with open(content_path, 'r') as fp:
-            return fp.read(), 200
+
+    if len(path_elems) > 0 and path_elems[-1].split('.')[-1] not in ('ico', 'svg', 'yaml', 'json', 'md'):
+        content_path = f'{root}/index.html'
+        if os.path.exists(content_path):
+            logger.info(content_path)
+            with open(content_path, 'r') as fp:
+                return fp.read(), 200
 
     return 'Not found', 404
 
