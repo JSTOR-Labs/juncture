@@ -11,9 +11,11 @@ The Graphic viewer is used to display images, GIFs, and SVGs. This component is 
 ```html
 <param ve-graphic img="https://upload.wikimedia.org/wikipedia/commons/a/ad/SunflowerModel.svg">
 ```
+<param ve-graphic img="https://upload.wikimedia.org/wikipedia/commons/a/ad/SunflowerModel.svg">
 
 ###
 An optional `title` attribute can be added to the graphic tag to display a caption.
 ```html
 <param ve-graphic img="https://upload.wikimedia.org/wikipedia/commons/a/ad/SunflowerModel.svg" title="Sunflower">
 ```
+<param ve-graphic img="https://upload.wikimedia.org/wikipedia/commons/a/ad/SunflowerModel.svg" title="Sunflower">
