@@ -20,7 +20,7 @@
 
 const label = 'Video Viewer'
 const icon = 'fas fa-video'
-const dependencies = []
+const dependencies = ['https://cdnjs.cloudflare.com/ajax/libs/plyr/3.6.7/plyr.min.js']
 
 module.exports = {
   name: 've-video',
@@ -30,6 +30,7 @@ module.exports = {
   data: () => ({
     label,
     icon,
+    dependencies,
     playerVars: {
       ytppauseoverlay: 0,
       modestbranding: 1,
