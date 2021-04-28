@@ -46,6 +46,7 @@ module.exports = {
     player() { return this.$refs.youtube ? this.$refs.youtube.player : null }
   },
   mounted() {
+    console.log('video component');
     console.log(`${this.$options.name}.mounted: height=${this.height} width=${this.width}`, this.mapDef)
     this.loadDependencies(dependencies, 0, this.init)
   },
