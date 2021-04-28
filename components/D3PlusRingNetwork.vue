@@ -9,7 +9,7 @@
 // Uses https://d3plus.org/
 
 const label = 'Network Viewer'
-const icon = 'fa-chart-network'
+const icon = 'fas fa-project-diagram'
 const dependencies = [
     // 'https://fonts.googleapis.com/css?family=Roboto',
     // 'https://d3plus.org/css/styles.css?v=3',
