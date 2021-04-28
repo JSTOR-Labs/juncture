@@ -19,7 +19,7 @@
 <script>
 
 const label = 'Video Viewer'
-const icon = 'fa-video'
+const icon = 'fas fa-video'
 const dependencies = []
 
 module.exports = {
