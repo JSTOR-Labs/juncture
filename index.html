@@ -167,7 +167,7 @@
 
         // juncture-digital.org
         } else if (window.location.hostname === 'juncture-digital.org') {
-          contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${ref}`, assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${ref}`, basePath: '', isGhpSite: false}
+          contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: 'https://gitcdn.link/repo/jstor-labs/juncture/main', assetsBaseUrl: 'https://gitcdn.link/repo/jstor-labs/juncture/main', basePath: '', isGhpSite: false}
           let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
           if (pathElems.length >= 2) {
             let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
