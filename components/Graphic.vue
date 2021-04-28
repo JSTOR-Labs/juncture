@@ -14,7 +14,7 @@
 
 <script>
 const label = 'Graphic Viewer'
-const icon = 'fa-table'
+const icon = 'fas fa-table'
 
 module.exports = {
     name: 've-graphic',
