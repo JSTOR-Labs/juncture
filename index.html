@@ -974,7 +974,7 @@
       console.log(`githubRepoInfo: acct=${acct} rep=${repo} isKnownAcct=${qargs.ref || knownGhAccts[acct] !== undefined}`)
       if (knownGhAccts[acct]) {
         return {acct, repo, ref: knownGhAccts[acct], basePath: `/${acct}/${repo}`,
-                assetsBaseUrl: `https://raw.githubusercontent.com/${acct}/${repo}/${knownGhAccts[acct]}`
+                assetsBaseUrl: `https://raw.githubusercontent.com/${acct}/${repo}/${qargs.ref || knownGhAccts[acct]}`
                }
       } else {
         let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`, {headers: {Authorization: `Token ${atob(unscopedToken)}`}})
