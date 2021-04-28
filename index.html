@@ -167,7 +167,7 @@
 
         // juncture-digital.org
         } else if (window.location.hostname === 'juncture-digital.org') {
-          contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: `https://gitcdn.link/repo/jstor-labs/juncture/main`, assetsBaseUrl: `https://gitcdn.link/repo/jstor-labs/juncture/main`, basePath: '', isGhpSite: false}
+          contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${ref}`, assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${ref}`, basePath: '', isGhpSite: false}
           let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
           if (pathElems.length >= 2) {
             let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
@@ -218,7 +218,7 @@
       })
 
       let head = document.querySelector('head')
-      let assetsBase = contentSource.isGhpSite ? `${contentSource.baseUrl}${contentSource.basePath}` : contentSource.assetsBaseUrl
+      let assetsBase = contentSource.isGhpSite ? `${contentSource.baseUrl}${contentSource.basePath}` : window.location.origin
       head.appendChild(makeLink(siteConfig.favicon || `${assetsBase}/images/favicon.svg`, 'icon'))
       head.appendChild(makeLink(`${assetsBase}/css/main.css`))
       head.appendChild(makeLink(`${contentSource.baseUrl}${contentSource.basePath}/css/custom.css`))
@@ -974,14 +974,14 @@
       console.log(`githubRepoInfo: acct=${acct} rep=${repo} isKnownAcct=${knownGhAccts[acct] !== undefined}`)
       if (knownGhAccts[acct]) {
         return {acct, repo, ref: knownGhAccts[acct], basePath: `/${acct}/${repo}`,
-                assetsBaseUrl: `https://raw.githubusercontent.com/${acct}/${repo}/${qargs.ref || knownGhAccts[acct]}`
+                assetsBaseUrl: `https://raw.githubusercontent.com/${acct}/${repo}/${knownGhAccts[acct]}`
                }
       } else {
         let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`, {headers: {Authorization: `Token ${atob(unscopedToken)}`}})
         if (resp.ok) {
           resp = await resp.json()
           return {acct, repo, ref: resp.default_branch, basePath: `/${acct}/${repo}`, 
-                  assetsBaseUrl: `https://raw.githubusercontent.com/${acct}/${repo}/${qargs.ref || resp.default_branch}`
+                  assetsBaseUrl: `https://raw.githubusercontent.com/${acct}/${repo}/${resp.default_branch}`
                  }
         }
       }
