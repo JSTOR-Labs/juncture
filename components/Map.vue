@@ -75,6 +75,7 @@ module.exports = {
         items: { type: Array, default: () => ([]) },
         allItems: { type: Array, default: () => ([]) },
         entities: { type: Object, default: () => ({}) },
+        active: Boolean,
 
         // actions: { type: Array, default: () => ([]) },
         actions: { type: Object, default: () => ({}) },
@@ -156,7 +157,7 @@ module.exports = {
         containerStyle() {
             return {
                 width: '100%',
-                height: '100%',
+                height: this.active ? '100%' : '0'
             }
         },
         title() { return this.mapDef['title_formatted'] ? this.mapDef['title_formatted'] : this.mapDef['title'] }
