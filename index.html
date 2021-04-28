@@ -218,7 +218,7 @@
       })
 
       let head = document.querySelector('head')
-      let assetsBase = contentSource.isGhpSite ? `${contentSource.baseUrl}${contentSource.basePath}` : contentSource.assetsBasePath
+      let assetsBase = contentSource.isGhpSite ? `${contentSource.baseUrl}${contentSource.basePath}` : contentSource.assetsBaseUrl
       head.appendChild(makeLink(siteConfig.favicon || `${assetsBase}/images/favicon.svg`, 'icon'))
       head.appendChild(makeLink(`${assetsBase}/css/main.css`))
       head.appendChild(makeLink(`${contentSource.baseUrl}${contentSource.basePath}/css/custom.css`))
