@@ -164,7 +164,6 @@
           [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2, 4)
           contentSource = {acct, repo, ref: null, baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true, 
                            assetsBaseUrl: `${window.location.origin}/${repo}`}
-
         // juncture-digital.org
         } else if (window.location.hostname === 'juncture-digital.org') {
           contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: 'https://gitcdn.link/repo/jstor-labs/juncture/main', basePath: '', isGhpSite: false}
@@ -553,7 +552,7 @@
                 if (segment) {
                   segment.innerHTML += el.outerHTML
                 } else {
-                  essay.innerHTML += el.outerHTML
+                  currentSection.innerHTML += el.outerHTML
                 }
               }
             })
@@ -947,10 +946,15 @@
       if (contentSource.acct && contentSource.repo && contentSource.ref) {
         let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${contentSource.ref}`, {
                          headers: {Authorization: `Token ${atob(unscopedToken)}`}})
-        resp = await resp.json()
-        resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url)
-        resp = await resp.json()
-        componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}/${componentsRoot}/${item.path}`)]
+        if (resp.ok) {
+          resp = await resp.json()
+          let ghComponentsItem = resp.tree.find(item => item.path === componentsRoot)
+          if (ghComponentsItem) {
+            resp = await fetch(ghComponentsItem.url)
+            resp = await resp.json()
+            componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}/${componentsRoot}/${item.path}`)]
+          }
+        }
       } 
       if (window.location.hostname === 'localhost') {
         let basePath = contentSource.isGhpSite ? contentSource.basePath : ''
