@@ -160,14 +160,10 @@ module.exports = {
       if (this.currentItem.target) {
         return this.currentItem.target
       } else {
-        let path = !this.path || this.path === '/' 
-          ? ''
-          : this.path[this.path.length-1] === '/' 
-            ? this.path.slice(0,this.path.length-1)
-            : this.path
+        let path = `${window.location.pathname.split('/').filter(elem => elem !== '').join('/')}`
         console.log(`path=${path}`)
         const imageSourceHash = this.currentItem ? this.sha256(this.currentItem['@id']).slice(0,8) : ''
-        return `${this.contentSource.acct}/${this.contentSource.repo}/${this.contentSource.editBranch}${path}/${imageSourceHash}`
+        return `${this.contentSource.acct}/${this.contentSource.repo}/${this.contentSource.ref}${path ? '/'+path : ''}/${imageSourceHash}`
       }
     },
     annotations() { const annos = this.currentItem ? this.currentItem.annotations || [] : []; return annos; },
