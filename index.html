@@ -17,21 +17,20 @@
       ></component>
     </div>
     <div id="tabs-bar" ref="tabsBar">
-      <span v-for="viewer in viewers" :key="`tab-${viewer.name}`" 
-            :class="{'active-tab': activeViewer && activeViewer.name === viewer.name}" 
-            :data-tab="viewer.name" 
+      <span v-for="viewer in viewersEnabled" :key="`tab-${viewer}`" 
+            :class="{'active-tab': selectedViewer === viewer}" 
+            :data-tab="viewer" 
             @click="selectedViewer = viewer; viewerIsOpen = true">
-        <i v-if="viewerData[viewer.name]" :class="viewerData[viewer.name].icon"></i>
+        <i v-if="viewerData[viewer]" :class="viewerData[viewer].icon"></i>
       </span>
     </div>
     <div id="essay" ref="essay" v-html="html" @scroll="onScroll"></div>
     <div id="viewer" ref="viewer" :style="viewerStyle">
       <i v-if="!isVerticalLayout && viewerIsOpen" class="far fa-times-circle" style="position:absolute; top:0; right:0; z-index:500; font-size:26px;" @click="viewerIsOpen = !viewerIsOpen"></i>
-      <component v-for="viewer in viewers" :key="viewer.name" v-bind:is="viewer.name" 
-                 :items="viewer.items"
-                 :all-items="viewer.allItems"
+      <component v-for="viewer in viewersEnabled" :key="viewer" v-bind:is="viewer" 
+                 :items="items"
                  :entities="entities"
-                 :active="selectedViewer !== null && viewer.name === selectedViewer.name"
+                 :active="viewer === selectedViewer"
                  :actions="actions"
                  :hover-item="hoverItem"
                  :content-source="contentSource"
@@ -148,7 +147,7 @@
       // For local dev in GHP mode
       if (window.location.host === 'localhost:8080' || window.location.hostname.indexOf('gitpod') >= 0) {
         let repo = window.location.pathname.split('/').filter(elem => elem !== '')[0]
-        contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true}
+        contentSource = {acct: null, repo, ref: null, baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true}
 
       // For local dev in custom domain mode
       } else if (window.location.host === 'localhost:8088') {
@@ -239,7 +238,7 @@
           segments: {},
           entities: {},
           availableViewers,
-          viewers: [],
+          // viewers: [],
           selectedViewer: null,
           viewerData: {},
           scrollTop: 0,
@@ -252,7 +251,6 @@
         }),
         computed: {
           essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
-          activeViewer() { return this.viewers.find(viewer => this.selectedViewer && viewer.name === this.selectedViewer.name) },
           viewerStyle() { return { 
             height: this.viewerIsOpen
               ? this.isVerticalLayout 
@@ -261,7 +259,12 @@
               : 0 
             } 
           },
-          isVerticalLayout() { return !this.forceHorizontalLayout && this.layouts.indexOf('vertical') >= 0 }
+          isVerticalLayout() { return !this.forceHorizontalLayout && this.layouts.indexOf('vertical') >= 0 },
+          items() { return this.active ? this.paramsInScope(document.querySelector(`[data-id="${this.active}"]`)) : [] },
+          viewersEnabled() { 
+              let viewers = this.items.filter(item => this.availableViewers.has(item.viewer)).map(item => item.viewer)
+              return viewers.filter((viewer, index) => viewers.indexOf(viewer) === index)
+          }
         },
         mounted() {
           this.anchor = window.location.href.indexOf('#') >= 0 ? window.location.href.split('#').pop() : null
@@ -281,10 +284,8 @@
             placement: 'bottom-start',          
             onShow: async (instance) => { 
               instance.setContent(this.$refs.markdownViewer.innerHTML) 
-              // this.$refs.app.classList.add('dimmed')
             },
             onHide: (instance) => { 
-              // this.$refs.app.classList.remove('dimmed')
             },
           })
         },
@@ -438,8 +439,8 @@
           // Finds all entity references in param tags
           findEntities() {
             return new Set(Array.from(this.$refs.essay.querySelectorAll('param'))
-                           .filter(el => el.attributes.eid)
-                           .map(el => el.attributes.eid.value))
+                           .filter(el => el.attributes.eid || (el.attributes.center && isEntityID(el.attributes.center.value)))
+                           .map(el => (el.attributes.eid || el.attributes.center).value))
           },
 
           // Finds all param tags in elements between top-level app element and element in para arg
@@ -760,40 +761,33 @@
           },
 
           // Watcher that updates various data elements when the active paragraph changes
-          active(paraId, priorId) {
-            console.log(`active=${this.active}`)
-            let activePara = document.querySelector(`[data-id="${paraId}"]`)
-            if (activePara) {
-              if (this.$refs.tabsBar) activePara.appendChild(this.$refs.tabsBar)
-              activePara.classList.add('active')
-              this.addItemEventHandlers(activePara)
-              this.addInteractionHandlers(activePara)
+          active(current, prior) {
+            console.log(`activeSegment=${current}`)
+            let activeSegment = document.querySelector(`[data-id="${current}"]`)
+            if (activeSegment) {
+              if (this.$refs.tabsBar) activeSegment.appendChild(this.$refs.tabsBar)
+              activeSegment.classList.add('active')
+              this.addItemEventHandlers(activeSegment)
+              this.addInteractionHandlers(activeSegment)
             }
-            let priorPara = document.querySelector(`[data-id="${priorId}"]`)
-            if (priorPara) {
-              priorPara.classList.remove('active')
-              this.removeItemEventHandlers(priorPara)
-              this.removeInteractionHandlers(priorPara)
+            let priorSegment = document.querySelector(`[data-id="${prior}"]`)
+            if (priorSegment) {
+              priorSegment.classList.remove('active')
+              this.removeItemEventHandlers(priorSegment)
+              this.removeInteractionHandlers(priorSegment)
             }
-            let viewers = []
-            let allItems = this.paramsInScope(activePara)
-            allItems
-              .filter(param => this.availableViewers.has(param.viewer))
-              .forEach(param => {
-                let viewerData = viewers.find(viewer => viewer.name === param.viewer)
-                if (!viewerData) {
-                  viewerData = {name: param.viewer, allItems, items: []}
-                  viewers.push(viewerData)
-                }
-                viewerData.items.push(param)
-              })
-            this.viewers = viewers
-            this.selectedViewer = this.viewerIsOpen && this.viewers.length > 0 ? this.viewers[0] : null
+          },
+
+          viewersEnabled: {
+            handler: function () {
+              this.selectedViewer = this.viewerIsOpen && this.viewersEnabled.length > 0 ? this.viewersEnabled[0] : null
+            },
+            immediate: true
           },
 
           isVerticalLayout: {
             handler: function () {
-              this.selectedViewer = this.isVerticalLayout && this.viewers.length > 0 ? this.viewers[0] : this.selectedViewer
+              this.selectedViewer = this.isVerticalLayout && this.viewersEnabled.length > 0 ? this.viewersEnabled[0] : this.selectedViewer
               if (this.isVerticalLayout) this.viewerIsOpen = true
             },
             immediate: true
@@ -806,15 +800,6 @@
           selectedViewer (selectedViewer) { console.log('selectedViewer', selectedViewer) },
           selectedItem (eid) { console.log(`selectedItem=${eid}`) },
           hoverItem (eid) { console.log(`index.hoverItem=${eid}`) },
-
-          forceHorizontalLayout: {
-            handler: function (forceHorizontalLayout) { console.log(`forceHorizontalLayout=${forceHorizontalLayout}`) },
-            immediate: true
-          },
-          viewers: {
-            handler: function (viewers) { if (viewers.length > 0) console.log('viewers', viewers) },
-            immediate: true
-          }
 
         }
       })
@@ -894,7 +879,8 @@
     // Various utility and helper methods
     function camelToKebab(input) { return input.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}
     function kebabToCamel(input) { return input.replace(/-([a-z])/g, function (g) {return g[1].toUpperCase()})}
-    function isNumeric(arg){ return !isNaN(arg) }
+    function isNumeric(arg) { return !isNaN(arg) }
+    function isEntityID(arg) { console.log('arg', arg); return typeof arg === 'string' && arg.split(':').slice(-1).filter(val => val.length > 1 && val[0] === 'Q' && isNumeric(val.slice(0))) !== undefined }
 
     // Gets site config
     async function getSiteConfig() {
