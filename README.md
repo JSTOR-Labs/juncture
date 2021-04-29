@@ -1,4 +1,4 @@
-<a href="https://juncture-digital.org"><img src="https://raw.githubusercontent.com/jstor-labs/juncture/main/images/ve-button.png"></a>
+<a href="https://visual-essays.app"><img src="https://gitcdn.link/repo/jstor-labs/juncture/main/images/ve-button.png"></a>
 
 # What is Juncture?
 
