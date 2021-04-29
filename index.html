@@ -34,6 +34,7 @@
                  :active="selectedViewer !== null && viewer.name === selectedViewer.name"
                  :actions="actions"
                  :hover-item="hoverItem"
+                 :content-source="contentSource"
                  @update-component-data="updateComponentData"
                  @set-hover-item="hoverItem = $event"
       ></component>
