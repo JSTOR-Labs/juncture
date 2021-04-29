@@ -63,22 +63,7 @@
         this.$emit('menu-item-clicked', item)
       }
     },
-    watch: {
-      siteConfig: {
-        handler: function (config) { console.log(`${this.$options.name}.siteConfig`, config) },
-        immediate: true
-      },
-      essayConfig: {
-        handler: function (config) { console.log(`${this.$options.name}.essayConfig`, config) },
-        immediate: true
-      },
-      scrollTop: {
-        handler: function (scrollTop) { 
-          // console.log(`${this.$options.name}.scrollTop`, scrollTop) 
-        },
-        immediate: true
-      }
-    }
+    watch: {}
   }
 </script>
 
