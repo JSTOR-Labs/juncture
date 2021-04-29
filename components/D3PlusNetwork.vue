@@ -7,8 +7,8 @@
 /* global d3plus */
 
 // Uses https://d3plus.org/
-const label = 'Network Viewer'
-const icon = 'fas fa-project-diagram'
+const viewerLabel = 'Network Viewer'
+const viewerIcon = 'fas fa-project-diagram'
 const dependencies = [
     'https://d3plus.org/js/d3.min.js',
     'https://d3plus.org/js/d3plus.min.js',
@@ -23,8 +23,8 @@ module.exports = {
       height: Number
     },
     data: () => ({
-    label,
-    icon,
+    viewerLabel,
+    viewerIcon,
     dependencies,
     }),
     computed: {

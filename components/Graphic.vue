@@ -13,8 +13,8 @@
 </template>
 
 <script>
-const label = 'Graphic Viewer'
-const icon = 'fas fa-photo-video'
+const viewerLabel = 'Graphic Viewer'
+const viewerIcon = 'fas fa-photo-video'
 
 module.exports = {
     name: 've-graphic',
@@ -27,8 +27,8 @@ module.exports = {
     data: () => ({
         svg: undefined,
         image: undefined,
-        label,
-        icon
+        viewerLabel,
+        viewerIcon
     }),
     
     computed: {

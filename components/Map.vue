@@ -10,8 +10,8 @@
 <script>
 /* global L, _, moment */
 
-const label = 'Map Viewer'
-const icon = 'fas fa-map-marker-alt'
+const viewerLabel = 'Map Viewer'
+const viewerIcon = 'fas fa-map-marker-alt'
 const dependencies = [
     'https://cdn.jsdelivr.net/npm/leaflet@1.5.1/dist/leaflet.css',
     'https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css',
@@ -88,8 +88,8 @@ module.exports = {
         selectedItem: String
     },
     data: () => ({
-        label,
-        icon,
+        viewerLabel,
+        viewerIcon,
         map: undefined,
         popups: {},
         labelsLayer: undefined,

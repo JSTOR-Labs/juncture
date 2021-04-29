@@ -8,8 +8,8 @@
 
 // Uses https://d3plus.org/
 
-const label = 'Network Viewer'
-const icon = 'fas fa-project-diagram'
+const viewerLabel = 'Network Viewer'
+const viewerIcon = 'fas fa-project-diagram'
 const dependencies = [
     // 'https://fonts.googleapis.com/css?family=Roboto',
     // 'https://d3plus.org/css/styles.css?v=3',
@@ -26,8 +26,8 @@ module.exports = {
       height: Number
     },
     data: () => ({
-    label,
-    icon,
+    viewerLabel,
+    viewerIcon,
     dependencies,
     }),
     computed: {

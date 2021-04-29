@@ -18,8 +18,8 @@
 
 <script>
 
-const label = 'Video Viewer'
-const icon = 'fas fa-video'
+const viewerLabel = 'Video Viewer'
+const viewerIcon = 'fas fa-video'
 const dependencies = ['https://cdnjs.cloudflare.com/ajax/libs/plyr/3.6.7/plyr.min.js']
 
 module.exports = {
@@ -28,8 +28,8 @@ module.exports = {
     items: { type: Array, default: () => ([]) }
   },
   data: () => ({
-    label,
-    icon,
+    viewerLabel,
+    viewerIcon,
     dependencies,
     playerVars: {
       ytppauseoverlay: 0,

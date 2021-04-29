@@ -9,8 +9,8 @@
 
 <script>
 /* global vis, L */
-const label = "Network Viewer"
-const icon = "fas fa-project-diagram"
+const viewerLabel = "Network Viewer"
+const viewerIcon = "fas fa-project-diagram"
 const dependencies = [
   "https://unpkg.com/vis-network/styles/vis-network.min.css",
   "https://unpkg.com/vis-data@latest/peer/umd/vis-data.min.js",
@@ -30,8 +30,8 @@ module.exports = {
     selectedItemID: String,
   },
   data: () => ({
-    label,
-    icon,
+    viewerLabel,
+    viewerIcon,
     activeWindow: undefined,
     popups: {},
     active: new Set(),

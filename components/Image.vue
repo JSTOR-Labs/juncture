@@ -63,8 +63,8 @@
 const iiifService = 'https://iiif-v2.visual-essays.app'
 // const iiifService = 'http://localhost:8000'
 
-const label = 'Image Viewer'
-const icon = 'far fa-file-image'
+const viewerLabel = 'Image Viewer'
+const viewerIcon = 'far fa-file-image'
 
 const prefixUrl = 'https://openseadragon.github.io/openseadragon/images/'
 
@@ -111,8 +111,8 @@ module.exports = {
     serviceBase: String
   },
   data: () => ({
-    icon,
-    label,
+    viewerIcon,
+    viewerLabel,
     dependencies,
     prefixUrl,
     manifests: undefined,
@@ -142,7 +142,7 @@ module.exports = {
       return {
         backgroundColor: this.currentItem ? this.currentItem.background || 'black' : 'black',
         textAlign: 'center',
-        height: `${this.height}px`,
+        height: this.active ? '100%' : '0',
         width: `${this.width}px`,
         maxHeight: this.showAnnotations ? `${this.width}px` : '',
         position: 'relative'

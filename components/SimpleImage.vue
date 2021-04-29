@@ -5,8 +5,8 @@
 <script>
 /* global OpenSeadragon */
 
-const label = 'Image Viewer'
-const icon = 'far fa-file-image'
+const viewerLabel = 'Image Viewer'
+const viewerIcon = 'far fa-file-image'
 const dependencies= [
   'https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js'
 ]
@@ -19,8 +19,8 @@ module.exports = {
     active: Boolean
   },
   data: () => ({
-    label,
-    icon,
+    viewerLabel,
+    viewerIcon,
     dependencies,
     osdElem: null,
     tileSources: []

@@ -4,8 +4,8 @@
 
 <script>
 
-const label = 'Map Viewer'
-const icon = 'fas fa-map-marker-alt'
+const viewerLabel = 'Map Viewer'
+const viewerIcon = 'fas fa-map-marker-alt'
 const dependencies = [
   'https://cdn.jsdelivr.net/npm/leaflet@1.5.1/dist/leaflet.css',
   'https://cdn.jsdelivr.net/npm/leaflet@1.5.1/dist/leaflet.js'
@@ -36,8 +36,8 @@ module.exports = {
     active: Boolean
   },
   data: () => ({
-    label,
-    icon,
+    viewerLabel,
+    viewerIcon,
     dependencies,
     map: null,
     tileLayers: [],
