@@ -824,7 +824,7 @@
         loadDependencies(dependencies, i, callback) {
           if (i === 0) {
             let componentData = {}
-            componentData[this.$options.name] = { label: this.label, icon: this.icon }
+            componentData[this.$options.name] = { label: this.viewerLabel, icon: this.viewerIcon }
             this.$emit('update-component-data', componentData)
           }
           if (dependencies.length > 0) {
