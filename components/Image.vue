@@ -46,7 +46,7 @@
       >
       
       <div class="citation">
-        <span v-if='title || itemLabel || description' v-html="title || label || description" class="image-label"></span><br>
+        <span v-if='title || itemLabel || description' v-html="title || itemLabel || description" class="image-label"></span><br>
         <span v-if="attribution" v-html="attribution" class="attribution"></span>
         <span v-if="licenseUrl" class="licenses">
           <a :href="licenseUrl" target="_blank">
