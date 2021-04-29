@@ -10,7 +10,7 @@
 <script>
 /* global vis, L */
 const label = "Network Viewer"
-const icon = "fa-chart-network"
+const icon = "fas fa-project-diagram"
 const dependencies = [
   "https://unpkg.com/vis-network/styles/vis-network.min.css",
   "https://unpkg.com/vis-data@latest/peer/umd/vis-data.min.js",

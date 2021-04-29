@@ -8,7 +8,7 @@
 
 // Uses https://d3plus.org/
 const label = 'Network Viewer'
-const icon = 'fa-chart-network'
+const icon = 'fas fa-project-diagram'
 const dependencies = [
     'https://d3plus.org/js/d3.min.js',
     'https://d3plus.org/js/d3plus.min.js',
