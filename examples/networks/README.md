@@ -1,4 +1,4 @@
-<a href="https://visual-essays.app"><img src="https://gitcdn.link/repo/jstor-labs/juncture/main/images/ve-button.png"></a>
+<a href="https://essays.juncture-digital.org"><img src="https://gitcdn.link/repo/jstor-labs/juncture/main/images/ve-button.png"></a>
 
 <param ve-config
        title="Network examples"
