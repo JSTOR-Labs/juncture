@@ -1,5 +1,6 @@
 <template>
   <div ref="player" class="text-xs-center">
+    <!--
     <youtube
       v-if="playerWidth"
       ref="youtube"
@@ -13,6 +14,12 @@
       @paused="paused"
       class="youtube-iframe"
     />
+    -->
+  <iframe
+    v-if="playerWidth"
+    :src="videoId"
+    :width="playerWidth - 12">
+  </iframe>
   </div>
 </template>
 
@@ -44,19 +51,21 @@ module.exports = {
   }),
   computed: {
     videoId() { return this.items[0].vid || this.items[0].id },
-    player() { return this.$refs.youtube ? this.$refs.youtube.player : null }
+    //player() { return this.$refs.youtube ? this.$refs.youtube.player : null }
   },
   mounted() {
     console.log('video component');
     console.log(`${this.$options.name}.mounted: height=${this.height} width=${this.width}`, this.mapDef)
     this.loadDependencies(dependencies, 0, this.init)
   },
+  /*
   beforeDestroy() {
     this.isPlaying = false
     if (this.isPlaying) {
       this.player.stopVideo()
     }
   },
+  */
   methods: {
     init() {
 
