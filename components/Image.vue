@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="image-viewer" :style="osdContainerStyle">
+  <div class="image-viewer" :style="osdContainerStyle">
     
       <div class="osd" id="osd"></div>
       <div id="osd-toolbar" class="controls auto-hide">
@@ -40,7 +40,7 @@
         <div class="annos" v-html="annoText" @click="copyAnnoIdToClipboard"></div>
       </div>
   
-      <input v-if="items && items.length > 1 && (mode === 'layers' || mode === 'curtain')"
+      <input v-if="viewerItems && viewerItems.length > 1 && (mode === 'layers' || mode === 'curtain')"
             class="slider" 
             v-model="sliderPct" type="range" min="0" max="100" value="0"
       >
@@ -60,8 +60,8 @@
 <script>
 /* global _, OpenSeadragon, sjcl */
 
-const iiifService = 'https://iiif-v2.visual-essays.app'
-// const iiifService = 'http://localhost:8000'
+// const iiifService = 'https://iiif-v2.visual-essays.app'
+const iiifService = 'http://localhost:8000'
 
 const viewerLabel = 'Image Viewer'
 const viewerIcon = 'far fa-file-image'
@@ -100,9 +100,9 @@ module.exports = {
     siteInfo: { type: Object, default: () => ({}) },
 
     path: String,
-    items: Array,
-    active: Boolean,
-    actions: { type: Object, default: () => ({}) },
+    // items: Array,
+    // active: Boolean,
+    // actions: { type: Object, default: () => ({}) },
 
     width: Number,
     height: Number,
@@ -148,8 +148,9 @@ module.exports = {
         position: 'relative'
       }
     },
+    viewerItems() { return this.items.filter(item => item.viewer === this.$options.name) },
     manifest() { return this.currentItem ? `<a href="${this.currentItem.manifest}"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e8/International_Image_Interoperability_Framework_logo.png" height="30" width="30"></a>` : null},
-    mode() { return this.items.length > 0 ? this.items[0].mode || 'gallery' : 'gallery'},
+    mode() { return this.viewerItems.length > 0 ? this.viewerItems[0].mode || 'gallery' : 'gallery'},
     fit() { return this.currentItem && this.currentItem.fit
       ? this.currentItem.fit
       : this.mode === 'gallery'
@@ -185,15 +186,15 @@ module.exports = {
         ? this.currentItem.label['@value'] || this.currentItem.label : null
     },
     title() {
-      if (this.items.length > 0){
-        if (this.items[0]['title']){
-          if (this.items[0]['title'] !== "" && this.items[0]['title'] !== 'true'){
-            return this.items[0]['title']
+      if (this.viewerItems.length > 0){
+        if (this.viewerItems[0]['title']){
+          if (this.viewerItems[0]['title'] !== "" && this.viewerItems[0]['title'] !== 'true'){
+            return this.viewerItems[0]['title']
           }
         }
       }
       return null;
-      //return this.items[0]['title'] ? (this.items[0]['title'] !== "" ? this.items[0]['title'] : null) : null
+      //return this.viewerItems[0]['title'] ? (this.viewerItems[0]['title'] !== "" ? this.viewerItems[0]['title'] : null) : null
       },
     description() { return this.currentItem ? this.currentItem.description || this.metadata.description : null },
     attribution() { return this.currentItem ? this.currentItem.attribution || this.metadata.attribution : null },
@@ -217,10 +218,10 @@ module.exports = {
   },
   methods: {
     init() {
-      console.log(this.$options.name, this.items, this.active, this.width, this.height, this.selected)
+      console.log(this.$options.name, this.viewerItems, this.active, this.width, this.height, this.selected)
       // console.log(`acct=${this.acct} repo=${this.repo} path=${this.path}`)
       this.initViewer()
-      this.loadManifests(this.items)
+      this.loadManifests(this.viewerItems)
       //this.displayInfoBox()
     },
     sha256(s) {
@@ -337,7 +338,6 @@ module.exports = {
     loadManifests(items) {
       console.log('loadManifests', items)
       let promises = items.map(item => {
-        console.log('item', item)
         if (item.manifest) {
           return fetch(item.manifest).then(resp => resp.json())
         } else if (item.url) {
@@ -352,7 +352,6 @@ module.exports = {
           }).then(resp => resp.json())
         }
       })
-      console.log(promises)
       Promise.all(promises).then(manifests => {
           this.manifests = manifests.map((manifest, idx) => {return {...manifest, ...items[idx]}})
           this.tileSources = this.manifests.map((manifest, idx) => {
@@ -364,7 +363,6 @@ module.exports = {
             return { tileSource, opacity }
           })
           this.loadTileSources()
-          console.log('this.manifests:', this.manifests)
           this.displayInfoBox()
         })
     },
@@ -410,7 +408,6 @@ module.exports = {
     }, 100),
     newPage(e) {
       this.page = e.page
-      console.log('new page event', e)
     },
     initAnnotator() {
       // console.log('initAnnotator', this.currentItem.annotations.length)
@@ -449,7 +446,6 @@ module.exports = {
       const tmp = document.createElement('div')
       tmp.innerHTML = anno
       let annoText = tmp.textContent;
-      console.log('annoText', annoText)
 
       anno.seq = this.currentItem.annotations ? this.currentItem.annotations.length : 0
       anno.target.id = this.target
@@ -473,7 +469,6 @@ module.exports = {
       const tmp = document.createElement('div')
       tmp.innerHTML = anno
       let annoText = tmp.textContent;
-      console.log('annoText', annoText)
 
       const _id = anno.id.split('/').pop()
       fetch(`${this.annosEndpoint}${this.target}/${_id}`, {
@@ -668,13 +663,11 @@ module.exports = {
       const versionRegex = RegExp(`^[0-9.]+$`)
       let licenseCode, licenseUrl, licenseIcons
       if (this.license) {
-        console.log(this.license)
         if (this.license.indexOf('http') === 0) {
           licenseUrl = this.license
           if (this.license.indexOf('creativecommons.org') > 0) {
             const pathElems = this.license.split('/').filter(p => p !== '').slice(2)
             const ccVersion = pathElems.find(pe => versionRegex.test(pe))
-            console.log(`evalLicenses: path=${pathElems} version=${ccVersion}`)
             if (pathElems[0] === 'publicdomain') {
               licenseCode = pathElems[1] === 'zero' ? `CC0 ${ccVersion}` : 'PD'
             } else if (pathElems[0] === 'licenses') {
@@ -686,16 +679,13 @@ module.exports = {
         }
       }
       if (licenseCode) {
-        console.log(`licenseCode=${licenseCode}`)    
         if (licenseCode.toUpperCase() === 'PD' || licenseCode.toUpperCase() === 'public domain') {
           
           licenseUrl = licenseUrl || 'https://creativecommons.org/publicdomain/mark/1.0'
           licenseIcons = [ccLicenseIcons.PD]
-          console.log('if', licenseIcons)
         } else if (licenseCode.indexOf('CC0') === 0) {
           licenseUrl = licenseUrl || 'https://creativecommons.org/publicdomain/zero/1.0'
           licenseIcons = [ccLicenseIcons.CC, ccLicenseIcons.CC0]
-          console.log('else if', licenseIcons)
         } else if (licenseCode == 'NO KNOWN COPYRIGHT RESTRICTIONS') {
           //do nothing
           licenseIcons = [];
@@ -709,7 +699,6 @@ module.exports = {
           })
           licenseUrl = licenseUrl || `https://creativecommons.org/licenses/${ccTerms.join('-').toLowerCase()}/${ccVersion}`
           licenseIcons = icons
-          console.log('else', licenseIcons)
         }
       }
       this.licenseUrl = licenseUrl
@@ -730,7 +719,7 @@ module.exports = {
               content[message['label']] = message['value']
             }
           })
-          //this.items[0]['metadata'].forEach(a => authors[parseInt(a.ordinal)-1] = a['label'])
+          //this.viewerItems[0]['metadata'].forEach(a => authors[parseInt(a.ordinal)-1] = a['label'])
         }
         if (manifest['sequences']){
           if (manifest['sequences'][0]['canvases'][0]){
@@ -845,7 +834,7 @@ module.exports = {
         })
       }
     },
-    items (current, previous) {
+    viewerItems (current, previous) {
       let sorted = [...current].sort((a, b) => {
         let aIdx = parseInt(a.id.split('-').pop())
         let bIdx = parseInt(b.id.split('-').pop())
@@ -857,13 +846,12 @@ module.exports = {
       const prev = previous ? previous.map(item => this.stringifyKeysInOrder(item)) : []
       if (this.viewer) {
         if (cur.join() !== prev.join()) {
-          this.loadManifests(this.items)
+          this.loadManifests(this.viewerItems)
         } else {
           this.page = 0
           this.currentItem = { ...this.manifests[this.page], ...sorted[0] }
         }
       }
-      console.log('currentitem', this.currentItem)
     },
     manifests(manifests) {
       // console.log('manifests', manifests)
@@ -873,7 +861,6 @@ module.exports = {
       }
     },
     page() {
-      console.log(`page=${this.page}`)
       this.currentItem = this.manifests[this.page]
       if (this.goToRegionCoords != null){
         //this.$nextTick(() => setTimeout(() => this.gotoRegion(this.goToRegionCoords), 100))

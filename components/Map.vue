@@ -691,7 +691,6 @@ module.exports = {
                         }
                     }
                 } else {
-                    console.log(itemID, this.popups)
                     if (prior && this.popups[prior]) this.map.closePopup(this.popups[prior])
                     if (itemID && this.popups[itemID]) this.map.openPopup(this.popups[itemID])
                 }
