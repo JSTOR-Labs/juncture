@@ -585,7 +585,12 @@
                   while (!target.dataset.target && target.parentElement) { target = target.parentElement }
                   let path = target.dataset.target
                   if (path[0] === '#') {
-                    document.querySelector(path).scrollIntoView({ block:'start' })
+                    // document.querySelector(path).scrollIntoView({ block:'start' })
+                    let anchorElem = document.getElementById(path.slice(1))
+                    if (anchorElem) {
+                      this.scrollTop = anchorElem.offsetTop
+                      this.$refs.essay.scrollTop = this.scrollTop - 100
+                    }
                   } else {
                     this.loadEssay(path)
                   }
