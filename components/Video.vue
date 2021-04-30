@@ -14,12 +14,22 @@
       @paused="paused"
       class="youtube-iframe"
     />
-    -->
+    
   <iframe
     v-if="playerWidth"
     :src="videoId"
     :width="playerWidth - 12">
   </iframe>
+  -->
+    <video
+   id=”my-player”
+   class=”video-js”
+   controls
+   preload=”auto”
+   poster=”//vjs.zencdn.net/v/oceans.png”
+   data-setup=’{}’>
+   <source src=”https://www.youtube.com/embed/_VwKvS6QpsI" type=”video/mp4"></source>
+   </video>
   </div>
 </template>
 
@@ -27,7 +37,7 @@
 
 const viewerLabel = 'Video Viewer'
 const viewerIcon = 'fas fa-video'
-const dependencies = ['https://cdnjs.cloudflare.com/ajax/libs/plyr/3.6.7/plyr.min.js']
+const dependencies = ['https://cdnjs.cloudflare.com/ajax/libs/plyr/3.6.7/plyr.min.js', 'https://vjs.zencdn.net/7.11.4/video.min.js', 'https://vjs.zencdn.net/7.11.4/video-js.css']
 
 module.exports = {
   name: 've-video',
