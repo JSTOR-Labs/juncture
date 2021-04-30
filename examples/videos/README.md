@@ -18,11 +18,11 @@ The basic tag for video requires an `id` attribute for the URL of the video.
 The video tag accepts an optional `title` attribute and `start` attribute.
 ```html
 <param ve-video
-	id="https://www.youtube.com/watch?v=C0CIRCjoICA"
+	id="https://www.youtube.com/embed/C0CIRCjoICA"
 	title="Sylbo, The Last Speakers of the Lost Whistling Language.">
 ```
 <param ve-video
-	id="https://youtu.be/C0CIRCjoICA"
+	id="https://www.youtube.com/embed/C0CIRCjoICA"
 	title="Sylbo, The Last Speakers of the Lost Whistling Language.">
 	
 ### Vimeo
