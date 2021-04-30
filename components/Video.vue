@@ -55,7 +55,8 @@ const dependencies = ['https://cdnjs.cloudflare.com/ajax/libs/plyr/3.6.7/plyr.mi
   'https://vjs.zencdn.net/7.11.4/video.min.js',
   'https://vjs.zencdn.net/7.11.4/video-js.css',
   'https://cdnjs.cloudflare.com/ajax/libs/videojs-vimeo/2.0.2/video.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/videojs-youtube/2.0.4/Youtube.min.js']
+  'https://cdnjs.cloudflare.com/ajax/libs/videojs-youtube/2.0.4/Youtube.min.js',
+  'https://cdn.plyr.io/3.6.7/plyr.css']
 
 module.exports = {
   name: 've-video',
