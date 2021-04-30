@@ -7,5 +7,5 @@ Below are some sample essays:
 - [Images](images)
 - [Networks](networks)
 - [Graphics](graphics)
-- [Video](video)
+- [Videos](videos)
 - [Peony](peony)
