@@ -1,6 +1,6 @@
 <template>
     <div class="map-viewer" :style="containerStyle">
-        <div id="map" class="map-main" :style="mapStyle"></div>
+        <div id="map" ref="map" class="map-main" :style="mapStyle"></div>
         <div class="map-label">
             <span v-if="title" class="title" v-html="title"></span>
         </div>
@@ -108,7 +108,7 @@ module.exports = {
         mapDef() { return this.item.layers ? this.item : {...this.item, ...{layers: []}} },
         showLabels() { return this.mapDef['show-labels'] },
         preferGeoJSON() { return this.mapDef['prefer-geojson'] },
-        isSelected() { return this.selected === 'mapViewer' },
+        // isSelected() { return this.selected === 'mapViewer' },
         data() { return this.mapDef.data },
         basemap() { return this.mapDef.basemap || defaults.basemap },
         center() { return this.mapDef.center
@@ -148,8 +148,8 @@ module.exports = {
         dateFormat() { return this.mapDef['date-format'] || defaults.dateFormat },
         mapStyle() {
             return {
-                width: `${this.width}px`,
-                height: '100%',
+                height: this.active ? '100vh' : '0',
+                width: '100%',
                 overflowY: 'auto !important',
                 marginLeft: '0',   
             }
@@ -168,8 +168,12 @@ module.exports = {
     methods: {
         init() {
             console.log(this.$options.name, this.mapDef, this.allItems)
-            this.createMap()
-            this.syncLayers()
+            if (this.active) {
+                this.$nextTick(() => {
+                    this.createMap()
+                    this.syncLayers()
+                })
+            }
         },
         createMap(reload) {
             if (reload && this.map) {
@@ -178,38 +182,43 @@ module.exports = {
                 this.map = undefined
             }
             if (!this.map) {
-                // this.labelsLayer = L.layerGroup()
-                // this.baseLayer = L.tileLayer(...baseLayers[this.basemap])
-                this.tileLayers.basemap = this.basemap
-                this.map = L.map('map', {
-                    center: this.center,
-                    zoom: this.zoom,
-                    zoomSnap: 0.1,
-                    maxZoom: this.maxZoom,
-                    fullscreenControl: true,
-                    preferCanvas: false
-                })
-                if (this.timeDimension) this.addTimeDimension()
-                this.map.on('moveend', e => {
-                    // console.log('moveend', e)
-                    // console.log(this.map.getBounds().getCenter())
-                })
-                this.map.on('layeradd', e => {
-                    if (e.layer.feature) {
+                //this.$nextTick(() => {
+                    console.log('createMap', document.getElementById('map').clientHeight)
+
+                    console.log(this.$refs.map.clientHeight)
+                    // this.labelsLayer = L.layerGroup()
+                    // this.baseLayer = L.tileLayer(...baseLayers[this.basemap])
+                    this.tileLayers.basemap = this.basemap
+                    this.map = L.map('map', {
+                        center: this.center,
+                        zoom: this.zoom,
+                        zoomSnap: 0.1,
+                        maxZoom: this.maxZoom,
+                        fullscreenControl: true,
+                        preferCanvas: false
+                    })
+                    if (this.timeDimension) this.addTimeDimension()
+                    this.map.on('moveend', e => {
+                        // console.log('moveend', e)
+                        // console.log(this.map.getBounds().getCenter())
+                    })
+                    this.map.on('layeradd', e => {
                         if (e.layer.feature) {
-                            if (e.layer.feature.properties.label) {
-                                const featureType = e.layer.feature.geometry.type
-                                const latLng = featureType === 'Polygon' || featureType === 'MultiPolygon' || featureType === 'LineString'
-                                    ? e.layer.getBounds().getCenter()
-                                    : e.layer.getLatLng()
-                                const labelOffset = e.layer.feature.properties['marker-type'] === 'circle' ? -6 : -30
-                                this.addPopup(e.layer.feature.properties.eid || e.layer.feature.properties.id, e.layer.feature.properties.label, latLng, labelOffset)
+                            if (e.layer.feature) {
+                                if (e.layer.feature.properties.label) {
+                                    const featureType = e.layer.feature.geometry.type
+                                    const latLng = featureType === 'Polygon' || featureType === 'MultiPolygon' || featureType === 'LineString'
+                                        ? e.layer.getBounds().getCenter()
+                                        : e.layer.getLatLng()
+                                    const labelOffset = e.layer.feature.properties['marker-type'] === 'circle' ? -6 : -30
+                                    this.addPopup(e.layer.feature.properties.eid || e.layer.feature.properties.id, e.layer.feature.properties.label, latLng, labelOffset)
+                                }
+                                this.features.push(e.layer.feature)
+                                this.layersUpdated()
                             }
-                            this.features.push(e.layer.feature)
-                            this.layersUpdated()
                         }
-                    }
-                })
+                    })
+                //})
             }
         },
         addTimeDimension() {
@@ -630,7 +639,7 @@ module.exports = {
                 if (this.timeDimension) {
                     this.addTimeDimension()
                 } 
-                this.syncLayers()
+                if (this.map) this.syncLayers()
             },
             immediate: false
         },
@@ -640,15 +649,20 @@ module.exports = {
             },
             immediate: true
         },
-        isSelected: {
-            handler: function (isSelected) {
-                if (isSelected) {
+        active: {
+            handler: function (isActive) { 
+                console.log(`${this.$options.name}.active=${isActive}`) 
+                if (isActive) {
+                    if (!this.map) this.$nextTick(() => {
+                        this.createMap()
+                        this.syncLayers()
+                    })
                     this.actionSources.forEach(elem => elem.classList.add('map-interaction'))
                 } else {
                     this.actionSources.forEach(elem => elem.classList.remove('map-interaction'))
                 }
             },
-            immediate: true
+            immediate: false
         },
         actions: {
             handler: function (actions) {

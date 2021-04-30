@@ -143,6 +143,7 @@ module.exports = {
         backgroundColor: this.currentItem ? this.currentItem.background || 'black' : 'black',
         textAlign: 'center',
         height: this.active ? '100%' : '0',
+        display: this.active ? 'unset' : 'none',
         width: `${this.width}px`,
         maxHeight: this.showAnnotations ? `${this.width}px` : '',
         position: 'relative'
@@ -1114,7 +1115,7 @@ module.exports = {
     }
 
     .controls span {
-        line-height: 0;
+        line-height: 2;
         border-bottom: 1px solid #989898;
     }
 
@@ -1122,7 +1123,7 @@ module.exports = {
       border-bottom: none;
     }
 
-    .controls svg:hover {
+    .controls span:hover, .controls svg:hover {
         color: #444A1E;
         fill: #444A1E;
         transform: scale(1.05, 1.05);

@@ -147,7 +147,8 @@
       // For local dev in GHP mode
       if (window.location.host === 'localhost:8080' || window.location.hostname.indexOf('gitpod') >= 0) {
         let repo = window.location.pathname.split('/').filter(elem => elem !== '')[0]
-        contentSource = {acct: null, repo, ref: null, baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true}
+        contentSource = {acct: null, repo, ref: null, baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true,
+                         assetsBaseUrl: `${window.location.origin}/${repo}`}
 
       // For local dev in custom domain mode
       } else if (window.location.host === 'localhost:8088') {
@@ -200,7 +201,9 @@
     })
     .then(config => {
       siteConfig = config
-      contentSource = {...contentSource, ...{acct: config.acct || contentSource.acct, repo: config.repo || contentSource.repo, ref: config.ref || contentSource.ref}}
+      if (window.location.host !== 'localhost:8080') {
+        contentSource = {...contentSource, ...{acct: config.acct || contentSource.acct, repo: config.repo || contentSource.repo, ref: config.ref || contentSource.ref}}
+      }
     })
     .then(resp => getComponentsList())
     .then(clist => {
@@ -370,6 +373,19 @@
                   this.active = segments.length > 0 ? segments[0].dataset.id : null
                 }
               })
+              // Load custom components declared in essay
+              Array.from(document.getElementById('essay').querySelectorAll('param'))
+                .filter(param => param.attributes['ve-component'])
+                .map(param => param.attributes.url.value)
+                .forEach(customComponentUrl => {
+                  let httpComponent = httpVueLoader(customComponentUrl)
+                  let componentName = `${componentPrefix}${camelToKebab(customComponentUrl.split('/').pop().split('.')[0])}`
+                  if (!availableViewers.has(componentName)) {
+                    availableViewers.add(componentName)
+                    Vue.component(componentName, httpComponent)
+                  }
+              })
+              
               this.params = Array.from(document.getElementById('essay').querySelectorAll('param'))
                 .map(param => {
                   let prior = param.previousElementSibling
@@ -1015,7 +1031,7 @@
       }
       if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
       converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
-      // console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
+      console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
       return converted
     }
   </script>
