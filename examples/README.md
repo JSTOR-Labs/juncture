@@ -8,5 +8,5 @@ Below are some sample essays:
 - [Image comparison](image-compare)
 - [Networks](networks)
 - [Graphics](graphics)
-- [Video](video)
+- [Videos](videos)
 - [Peony](peony)

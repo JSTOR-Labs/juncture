@@ -1,6 +1,7 @@
 <template>
+  <!--
   <div ref="player" class="text-xs-center">
-    <!--
+    
     <youtube
       v-if="playerWidth"
       ref="youtube"
@@ -14,20 +15,44 @@
       @paused="paused"
       class="youtube-iframe"
     />
-    -->
+    
   <iframe
     v-if="playerWidth"
     :src="videoId"
     :width="playerWidth - 12">
   </iframe>
+ 
+      <video
+     id=”my-player”
+     class=”video-js”
+     controls
+     preload=”auto”
+     poster=”//vjs.zencdn.net/v/oceans.png”
+     data-setup=’{}’>
+     <source src=”https://www.youtube.com/watch?v=_VwKvS6QpsI" type=”video/mp4"></source>
+   </video>
   </div>
+  -->
+  <div class="plyr__video-embed" id="player">
+    <iframe
+      :src="videoId"
+      allowfullscreen
+      allowtransparency
+      allow="autoplay"
+      :width="playerWidth - 12"
+    ></iframe>
+  </div>
+  
 </template>
 
 <script>
 
 const viewerLabel = 'Video Viewer'
 const viewerIcon = 'fas fa-video'
-const dependencies = ['https://cdnjs.cloudflare.com/ajax/libs/plyr/3.6.7/plyr.min.js']
+const dependencies = [
+  'https://cdnjs.cloudflare.com/ajax/libs/plyr/3.6.7/plyr.min.js',
+  'https://cdn.plyr.io/3.6.7/plyr.css'
+  ]
 
 module.exports = {
   name: 've-video',
