@@ -22,7 +22,7 @@ The video tag accepts an optional `title` attribute and `start` attribute.
 	title="Sylbo, The Last Speakers of the Lost Whistling Language.">
 ```
 <param ve-video
-	id="https://www.youtube.com/watch?v=C0CIRCjoICA"
+	id="https://youtu.be/C0CIRCjoICA"
 	title="Sylbo, The Last Speakers of the Lost Whistling Language.">
 	
 ### Vimeo
