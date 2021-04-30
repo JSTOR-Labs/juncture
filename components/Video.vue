@@ -22,22 +22,20 @@
     :width="playerWidth - 12">
   </iframe>
  
-    <video
-   id=”my-player”
-   class=”video-js”
-   controls
-   preload=”auto”
-   poster=”//vjs.zencdn.net/v/oceans.png”
-   data-setup=’{}’>
-   <source src=”https://www.youtube.com/watch?v=_VwKvS6QpsI" type=”video/mp4"></source>
+      <video
+     id=”my-player”
+     class=”video-js”
+     controls
+     preload=”auto”
+     poster=”//vjs.zencdn.net/v/oceans.png”
+     data-setup=’{}’>
+     <source src=”https://www.youtube.com/watch?v=_VwKvS6QpsI" type=”video/mp4"></source>
    </video>
-   
-   
   </div>
   -->
   <div class="plyr__video-embed" id="player">
     <iframe
-      src="https://www.youtube.com/embed/bTqVqk7FSmY?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1"
+      :src="videoId"
       allowfullscreen
       allowtransparency
       allow="autoplay"
@@ -51,12 +49,10 @@
 
 const viewerLabel = 'Video Viewer'
 const viewerIcon = 'fas fa-video'
-const dependencies = ['https://cdnjs.cloudflare.com/ajax/libs/plyr/3.6.7/plyr.min.js',
-  'https://vjs.zencdn.net/7.11.4/video.min.js',
-  'https://vjs.zencdn.net/7.11.4/video-js.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/videojs-vimeo/2.0.2/video.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/videojs-youtube/2.0.4/Youtube.min.js',
-  'https://cdn.plyr.io/3.6.7/plyr.css']
+const dependencies = [
+  'https://cdnjs.cloudflare.com/ajax/libs/plyr/3.6.7/plyr.min.js',
+  'https://cdn.plyr.io/3.6.7/plyr.css'
+  ]
 
 module.exports = {
   name: 've-video',
