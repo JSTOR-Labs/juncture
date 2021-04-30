@@ -7,19 +7,25 @@
 /* global Tabulator */
 
 // A wrapper for http://tabulator.info/
-
+const viewerLabel = 'Table Viewer'
+const viewerIcon = 'fas fa-table'
 const dependencies = [
     'https://unpkg.com/tabulator-tables@4.9.1/dist/css/tabulator.min.css',
     'https://unpkg.com/tabulator-tables@4.9.1/dist/js/tabulator.min.js'
 ]
 
 module.exports = {
-    name: 'Tabulator',
+    name: 've-tabulator',
     props: {
       items: Array,
       width: Number,
       height: Number
     },
+    data: () => ({
+        viewerLabel,
+        viewerIcon,
+        dependencies
+    }),
     computed: {
         containerStyle() { return { width: `${this.width}px`, height: `${this.height}px`} },
         input() { return this.items[0].data || this.items[0].url }
