@@ -28,7 +28,7 @@
    preload=”auto”
    poster=”//vjs.zencdn.net/v/oceans.png”
    data-setup=’{}’>
-   <source src=”https://www.youtube.com/embed/_VwKvS6QpsI" type=”video/mp4"></source>
+   <source src=”https://www.youtube.com/watch?v=_VwKvS6QpsI" type=”video/mp4"></source>
    </video>
   </div>
 </template>
