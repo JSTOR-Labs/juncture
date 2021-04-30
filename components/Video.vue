@@ -41,6 +41,7 @@
       allowfullscreen
       allowtransparency
       allow="autoplay"
+      :width="playerWidth - 12"
     ></iframe>
   </div>
   
