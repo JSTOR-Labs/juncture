@@ -1,6 +1,7 @@
 <template>
+  <!--
   <div ref="player" class="text-xs-center">
-    <!--
+    
     <youtube
       v-if="playerWidth"
       ref="youtube"
@@ -20,7 +21,7 @@
     :src="videoId"
     :width="playerWidth - 12">
   </iframe>
-  -->
+ 
     <video
    id=”my-player”
    class=”video-js”
@@ -30,7 +31,19 @@
    data-setup=’{}’>
    <source src=”https://www.youtube.com/watch?v=_VwKvS6QpsI" type=”video/mp4"></source>
    </video>
+   
+   
   </div>
+  -->
+  <div class="plyr__video-embed" id="player">
+    <iframe
+      src="https://www.youtube.com/embed/bTqVqk7FSmY?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1"
+      allowfullscreen
+      allowtransparency
+      allow="autoplay"
+    ></iframe>
+  </div>
+  
 </template>
 
 <script>
