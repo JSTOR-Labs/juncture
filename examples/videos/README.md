@@ -10,9 +10,9 @@
 The video viewer is used to associate and display a video with a text element. Youtube videos are supported in the current version of the visual essay tool. Other streaming services may be added in future versions.
 The basic tag for video requires an `id` attribute for the URL of the video. 
 ```html
-<param ve-video id="5upF4rJUxC4">
+<param ve-video id="https://youtu.be/_VwKvS6QpsI">
 ```
-<param ve-video id="_VwKvS6QpsI">
+<param ve-video id="https://youtu.be/_VwKvS6QpsI">
 
 ### Options
 The video tag accepts an optional `title` attribute and `start` attribute.
