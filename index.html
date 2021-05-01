@@ -318,9 +318,7 @@
 
           authenticate() {
             console.log('index.authenticate')
-            let provider = new firebase.auth.GithubAuthProvider()
-            console.log(provider)
-            firebase.auth().signInWithRedirect(provider)
+            firebase.auth().signInWithRedirect(new firebase.auth.GithubAuthProvider())
           },
 
           logout() {
