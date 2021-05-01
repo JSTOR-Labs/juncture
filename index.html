@@ -72,7 +72,7 @@
   <script src="https://unpkg.com/tippy.js@6"></script>
   <script src="https://blueimp.github.io/JavaScript-MD5/js/md5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
-  <script src="https://unpkg.com/netlify-auth-providers"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase.js"></script>
 
   <!-- This is used for deep linking of Single Page Apps when hosted with GitHub Pages -->
   <script type="text/javascript">
@@ -200,6 +200,18 @@
     const availableViewers = new Set()
     const knownGhAccts = {'jstor-labs': 'main', 'rsnyder': 'main', 'kent-map': 'main'}
 
+    async function gcOauth(apiKey, authDomain) {
+      console.log(`gcOauth: apiKey=${apiKey} authDomain=${authDomain}`)
+      if (apiKey && authDomain) {
+        firebase.initializeApp({apiKey: atob(apiKey), authDomain})
+        let result = await firebase.auth().getRedirectResult()
+        console.log(result)
+        if (result.credential) window.localStorage.setItem('ghauth', result)
+      }
+      console.log('ghauth', window.localStorage.getItem('ghauth'))
+      return window.localStorage.getItem('ghauth')
+    }
+
     getContentSource()
     .then(sourceInfo => {
       contentSource = sourceInfo
@@ -210,7 +222,9 @@
       if (window.location.host !== 'localhost:8080') {
         contentSource = {...contentSource, ...{acct: config.acct || contentSource.acct, repo: config.repo || contentSource.repo, ref: config.ref || contentSource.ref}}
       }
+      return config
     })
+    .then(config => gcOauth(config.gcApiKey, config.gcAuthDomain))
     .then(resp => getComponentsList())
     .then(clist => {
       componentsList = clist
@@ -257,7 +271,7 @@
           hoverItem: undefined,
           selectedItem: undefined,
           actions: {},
-          authToken: window.localStorage.getItem('ghcreds'),
+          authToken: window.localStorage.getItem('ghauth'),
           externalWindow: null
         }),
         computed: {
@@ -305,22 +319,13 @@
 
           authenticate() {
             console.log('index.authenticate')
-            new netlify.default({}).authenticate({provider:"github", scope: "user"}, (err, data) => {
-              if (err) {
-                console.log(`Error Authenticating with GitHub: ${err}`)
-              } else {
-                window.localStorage.setItem('ghcreds', data.token)
-                this.authToken = data.token
-                console.log(`Authenticated with GitHub. Access Token: ${this.authToken}`)
-              }
-              // err ? outputText.innerText = "Error Authenticating with GitHub: " + err : 
-              // outputText.innerText = "Authenticated with GitHub. Access Token: " + data.token
-            })
-
+            let provider = new firebase.auth.GithubAuthProvider()
+            console.log(provider)
+            firebase.auth().signInWithRedirect(provider)
           },
 
           logout() {
-            window.localStorage.removeItem('ghcreds')
+            window.localStorage.removeItem('ghauth')
             this.authToken = null
           },
 
