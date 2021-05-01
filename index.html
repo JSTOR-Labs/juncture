@@ -214,6 +214,7 @@
       return window.localStorage.getItem('ghauth')
     }
 
+    /*
     firebase.auth().getRedirectResult().then(function(result) {
       console.log(result.credential)
       if (result.credential) {
@@ -236,8 +237,8 @@
       var credential = error.credential;
       // ...
     })
-
-    // getContentSource()
+    */
+    getContentSource()
     .then(sourceInfo => {
       contentSource = sourceInfo
       return getSiteConfig()
@@ -249,7 +250,7 @@
       }
       return config
     })
-    // .then(config => gcOauth(config.gcApiKey, config.gcAuthDomain))
+    .then(config => gcOauth(config.gcApiKey, config.gcAuthDomain))
     .then(resp => getComponentsList())
     .then(clist => {
       componentsList = clist
