@@ -73,9 +73,6 @@
   <script src="https://blueimp.github.io/JavaScript-MD5/js/md5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase.js"></script>
-  <script>
-    firebase.initializeApp({apiKey: atob('QUl6YVN5Qk9ia1dHU3NDMXhmX1o3ckZRNC1oRkJ1NVpvTjdxaDBv'), authDomain: 'juncture-digital.firebaseapp.com'})
-  </script>
   <!-- This is used for deep linking of Single Page Apps when hosted with GitHub Pages -->
   <script type="text/javascript">
     (function(l) {
@@ -214,30 +211,6 @@
       return window.localStorage.getItem('ghauth')
     }
 
-    /*
-    firebase.auth().getRedirectResult().then(function(result) {
-      console.log(result.credential)
-      if (result.credential) {
-        window.localStorage.setItem('ghcreds', result.credential.accessToken)
-      }
-      authToken = window.localStorage.getItem('ghcreds')
-      console.log(`gitHubToken=${authToken}`)
-
-      // The signed-in user info.
-      var user = result.user
-      console.log('GitHub user:', user)
-      return getContentSource()
-    }).catch(function(error) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      // The email of the user's account used.
-      var email = error.email;
-      // The firebase.auth.AuthCredential type that was used.
-      var credential = error.credential;
-      // ...
-    })
-    */
     getContentSource()
     .then(sourceInfo => {
       contentSource = sourceInfo
