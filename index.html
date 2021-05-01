@@ -249,7 +249,7 @@
       }
       return config
     })
-    .then(config => gcOauth(config.gcApiKey, config.gcAuthDomain))
+    // .then(config => gcOauth(config.gcApiKey, config.gcAuthDomain))
     .then(resp => getComponentsList())
     .then(clist => {
       componentsList = clist
