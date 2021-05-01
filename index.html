@@ -61,10 +61,6 @@
     </div>
 
   </div>
-  <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase.js"></script>
-  <script>
-    firebase.initializeApp({apiKey: atob('QUl6YVN5Qk9ia1dHU3NDMXhmX1o3ckZRNC1oRkJ1NVpvTjdxaDBv'), authDomain: 'juncture-digital.firebaseapp.com'})
-  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it-footnote/3.0.2/markdown-it-footnote.min.js" integrity="sha512-9VOGZLBYkfqGR+OigfgoF3RUvDJRvQ9BAVgOKYmrvXlX7k+yBm5iJCpZEMpqmg2b1Cld1fiy2p0nEbDAcz9Q4w==" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/markdown-it-attrs@4.0.0/markdown-it-attrs.browser.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.0.6/markdown-it.min.js" integrity="sha512-7U8vY7c6UQpBNQOnBg3xKX502NAckvk70H1nWvh6W7izA489jEz+RCN3ntT1VMdXewaSKkOrEBegp/h6SPXrjw==" crossorigin="anonymous"></script>
@@ -76,6 +72,7 @@
   <script src="https://unpkg.com/tippy.js@6"></script>
   <script src="https://blueimp.github.io/JavaScript-MD5/js/md5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
+  <script src="https://unpkg.com/netlify-auth-providers"></script>
 
   <!-- This is used for deep linking of Single Page Apps when hosted with GitHub Pages -->
   <script type="text/javascript">
@@ -94,8 +91,6 @@
   </script>
   <script>
     console.log(window.location)
-
-    let authToken = null
 
     const referrerUrl = document.referrer
     if (referrerUrl) {
@@ -205,28 +200,7 @@
     const availableViewers = new Set()
     const knownGhAccts = {'jstor-labs': 'main', 'rsnyder': 'main', 'kent-map': 'main'}
 
-    firebase.auth().getRedirectResult().then(function(result) {
-      console.log(result.credential)
-      if (result.credential) {
-        window.localStorage.setItem('ghcreds', result.credential.accessToken)
-      }
-      authToken = window.localStorage.getItem('ghcreds')
-      console.log(`gitHubToken=${authToken}`)
-
-      // The signed-in user info.
-      var user = result.user
-      console.log('GitHub user:', user)
-      return getContentSource()
-    }).catch(function(error) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      // The email of the user's account used.
-      var email = error.email;
-      // The firebase.auth.AuthCredential type that was used.
-      var credential = error.credential;
-      // ...
-    })
+    getContentSource()
     .then(sourceInfo => {
       contentSource = sourceInfo
       return getSiteConfig()
@@ -283,7 +257,7 @@
           hoverItem: undefined,
           selectedItem: undefined,
           actions: {},
-          authToken,
+          authToken: window.localStorage.getItem('ghcreds'),
           externalWindow: null
         }),
         computed: {
@@ -331,8 +305,18 @@
 
           authenticate() {
             console.log('index.authenticate')
-            var provider = new firebase.auth.GithubAuthProvider()
-            firebase.auth().signInWithRedirect(provider)
+            new netlify.default({}).authenticate({provider:"github", scope: "user"}, (err, data) => {
+              if (err) {
+                console.log(`Error Authenticating with GitHub: ${err}`)
+              } else {
+                window.localStorage.setItem('ghcreds', data.token)
+                this.authToken = data.token
+                console.log(`Authenticated with GitHub. Access Token: ${this.authToken}`)
+              }
+              // err ? outputText.innerText = "Error Authenticating with GitHub: " + err : 
+              // outputText.innerText = "Authenticated with GitHub. Access Token: " + data.token
+            })
+
           },
 
           logout() {
