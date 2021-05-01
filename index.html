@@ -13,7 +13,12 @@
   <div id="app" ref="app" :class="layouts.join(' ')">
     <div id="header" ref="header">            
       <component v-bind:is="'ve-header'" :active="true" :scroll-top="scrollTop"
-                 :site-config="siteConfig" :essay-config="essayConfig" @menu-item-clicked="menuItemClicked"
+                 :site-config="siteConfig" 
+                 :essay-config="essayConfig"
+                 :is-authenticated="authToken !== null"
+                 @menu-item-clicked="menuItemClicked"
+                 @authenticate="authenticate"
+                 @logout="logout"
       ></component>
     </div>
     <div id="tabs-bar" ref="tabsBar">
@@ -56,6 +61,10 @@
     </div>
 
   </div>
+  <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase.js"></script>
+  <script>
+    firebase.initializeApp({apiKey: 'AIzaSyBObkWGSsC1xf_Z7rFQ4-hFBu5ZoN7qh0o', authDomain: 'juncture-digital.firebaseapp.com'})
+  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it-footnote/3.0.2/markdown-it-footnote.min.js" integrity="sha512-9VOGZLBYkfqGR+OigfgoF3RUvDJRvQ9BAVgOKYmrvXlX7k+yBm5iJCpZEMpqmg2b1Cld1fiy2p0nEbDAcz9Q4w==" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/markdown-it-attrs@4.0.0/markdown-it-attrs.browser.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.0.6/markdown-it.min.js" integrity="sha512-7U8vY7c6UQpBNQOnBg3xKX502NAckvk70H1nWvh6W7izA489jEz+RCN3ntT1VMdXewaSKkOrEBegp/h6SPXrjw==" crossorigin="anonymous"></script>
@@ -85,6 +94,8 @@
   </script>
   <script>
     console.log(window.location)
+
+    let authToken = null
 
     const referrerUrl = document.referrer
     if (referrerUrl) {
@@ -194,7 +205,28 @@
     const availableViewers = new Set()
     const knownGhAccts = {'jstor-labs': 'main', 'rsnyder': 'main', 'kent-map': 'main'}
 
-    getContentSource()
+    firebase.auth().getRedirectResult().then(function(result) {
+      console.log(result.credential)
+      if (result.credential) {
+        window.localStorage.setItem('ghcreds', result.credential.accessToken)
+      }
+      authToken = window.localStorage.getItem('ghcreds')
+      console.log(`gitHubToken=${authToken}`)
+
+      // The signed-in user info.
+      var user = result.user
+      console.log('GitHub user:', user)
+      return getContentSource()
+    }).catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // The email of the user's account used.
+      var email = error.email;
+      // The firebase.auth.AuthCredential type that was used.
+      var credential = error.credential;
+      // ...
+    })
     .then(sourceInfo => {
       contentSource = sourceInfo
       return getSiteConfig()
@@ -250,7 +282,9 @@
           hoverEntity: undefined,
           hoverItem: undefined,
           selectedItem: undefined,
-          actions: {}
+          actions: {},
+          authToken,
+          externalWindow: null
         }),
         computed: {
           essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
@@ -270,6 +304,7 @@
           }
         },
         mounted() {
+          console.log(`authToken=${this.authToken}`)
           this.anchor = window.location.href.indexOf('#') >= 0 ? window.location.href.split('#').pop() : null
           window.onpopstate = (e) => this.loadEssay(e.state.file, true) 
           const resizeObserver = new ResizeObserver(entries => { 
@@ -294,6 +329,26 @@
         },
         methods: {
 
+          authenticate() {
+            console.log('index.authenticate')
+            var provider = new firebase.auth.GithubAuthProvider()
+            firebase.auth().signInWithRedirect(provider)
+          },
+
+          logout() {
+            window.localStorage.removeItem('ghcreds')
+            this.authToken = null
+          },
+
+          editMarkdown() {
+            this.openWindow(`https://github.com/${this.contentSource.acct}/${this.contentSource.repo}/edit/${this.contentSource.ref}/README.md`) 
+          },
+          openWindow(url, options) {
+            if (this.externalWindow) { this.externalWindow.close() }
+            if (options === undefined) options = 'toolbar=yes,location=yes,left=0,top=0,width=1000,height=1200,scrollbars=yes,status=yes'
+            this.externalWindow = window.open(url, '_blank', options)
+          },
+
           // Updates viewer data from events emitted when viewer components are loaded
           updateComponentData(data) { this.viewerData = {...this.viewerData, ...data }},
 
@@ -307,6 +362,8 @@
           menuItemClicked(item) {
             if (item === 'viewMarkdown') {
               this.markdownViewer.show()
+            } else if (item === 'editMarkdown') {
+              this.editMarkdown()
             } else {
               this.loadEssay(item)
             }

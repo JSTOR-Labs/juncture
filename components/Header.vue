@@ -16,6 +16,18 @@
               <i :class="`fas fa-${item.icon}`"></i>{{item.label}}
             </li>
           </template>
+          <li v-if="!readOnly">
+            <a v-if="isAuthenticated" @click="logout">
+              <i :class="`fas fa-user`"></i>Logout
+            </a>
+            <a v-else @click="authenticate">
+              <i :class="`fas fa-user`"></i>Login
+            </a>
+          </li>
+          <hr>
+          <li v-if="isAuthenticated && !readOnly" @click="nav('editMarkdown')">
+            <i class="fas fa-edit"></i>Edit page
+          </li>
           <li @click="nav('viewMarkdown')">
             <i class="fas fa-file-code"></i>View page markdown
           </li>
@@ -40,7 +52,9 @@
       active: { type: Boolean, default: true },
       scrollTop: { type: Number, default: 0 },
       essayConfig: { type: Object, default: () => ({}) },
-      siteConfig: { type: Object, default: () => ({}) }
+      siteConfig: { type: Object, default: () => ({}) },
+      isAuthenticated: { type: Boolean, default: false },
+      readOnly: { type: Boolean, default: false },
     },    
     data: () => ({
       dependencies: [],
@@ -58,10 +72,22 @@
     },
     mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
     methods: {
+      closeDrawer() { document.querySelector('#menuToggle input').checked = false },
       nav(item) {
-        document.querySelector('#menuToggle input').checked = false // close drawer
+        this.closeDrawer()
         this.$emit('menu-item-clicked', item)
-      }
+      },
+      authenticate(e) {
+        console.log('header.authenticate')
+        e.preventDefault()
+        this.closeDrawer()
+        this.$emit('authenticate')
+      },
+      logout(e) {
+        e.preventDefault()
+        this.closeDrawer()
+        this.$emit('logout')
+      },
     },
     watch: {}
   }

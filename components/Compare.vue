@@ -56,9 +56,19 @@ module.exports = {
           container,
           images: this.images,
           osdOptions: { // OpenSeaDragon options
-            zoomPerClick: 2,
+            autoHideControls: false,
+            showHomeControl: true,
+            showZoomControl: true,
             homeFillsViewer: false,
-            prefixUrl
+            prefixUrl,
+            zoomPerClick: 2,
+            visibilityRatio: 1,
+            wrapHorizontal: false,
+            constrainDuringPan: true,
+            minZoomImageRatio: 1.35,  
+            // maxZoomPixelRatio: Infinity,
+            maxZoomPixelRatio: 3,
+            viewportMargins: {left:0, top:0, bottom:0, right:0}
           }
         })
       })
