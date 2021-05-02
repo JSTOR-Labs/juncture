@@ -351,6 +351,7 @@
           async getMarkdown(path) {
             if (contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
+              console.log(`getMarkdown: url=${url}`)
               let resp = await fetch(url, ghUnscopedToken ? {headers: {Authorization:`Token ${atob(ghUnscopedToken)}`}} : {})
               if (resp.ok) {
                 resp = await resp.json()
