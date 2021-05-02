@@ -197,16 +197,16 @@
     let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
     
     // GLobal variables used to initialize Vue
-    let siteConfig, contentSource, componentsList, ghUnscopedToken, ghAuth
+    let siteConfig, contentSource, componentsList, ghUnscopedToken, gcApiKey, gcAuthDomain, ghAuth
     
     const componentsRoot = 'components'
     const componentPrefix = 've-'
     const availableViewers = new Set()
     const knownGhAccts = {'jstor-labs': 'main', 'rsnyder': 'main', 'kent-map': 'main'}
 
-    async function gcOauth(apiKey, authDomain) {
-      if (apiKey && authDomain) {
-        firebase.initializeApp({apiKey: atob(apiKey), authDomain})
+    async function gcOauth() {
+      if (gcApiKey && gcAuthDomain) {
+        firebase.initializeApp({apiKey: gcApiKey, authDomain: gcAuthDomain})
         let result = await firebase.auth().getRedirectResult()
         if (result.credential) window.localStorage.setItem('ghAuth', JSON.stringify(result))
       }
@@ -225,7 +225,7 @@
       }
       return config
     })
-    .then(config => gcOauth(config.gcApiKey, config.gcAuthDomain))
+    .then(config => gcOauth())
     .then(resp => getComponentsList())
     .then(clist => {
       componentsList = clist
@@ -938,6 +938,14 @@
     // Gets site config
     async function getSiteConfig() {
       let config = {}
+      if (isJuncture) {
+        let resp = await fetch(`${window.location.origin}/config.yaml`)
+        let junctureConfig = YAML.parse(await resp.text())
+        console.log('junctureConfig', junctureConfig)
+        ghUnscopedToken = junctureConfig.ghUnscopedToken
+        gcApiKey = junctureConfig.gcApiKey
+        gcAuthDomain = junctureConfig.gcAuthDomain
+      }
       if (contentSource.isGhpSite) {
         let resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
         if (resp.ok) {
@@ -960,6 +968,8 @@
       }
       ['banner', 'favicon', 'customCSS'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       if (config.ghUnscopedToken) ghUnscopedToken = config.ghUnscopedToken
+      if (config.gcApiKey) gcApiKey = config.gcApiKey
+      if (config.gcAuthDomain) gcAuthDomain = config.gcAuthDomain
       return config
     }
 
