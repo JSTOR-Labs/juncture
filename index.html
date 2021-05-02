@@ -944,18 +944,18 @@
         }
       } else if (contentSource.acct) {
         let ref = isJuncture ? junctureVersion : contentSource.ref 
-        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`, {
-                                      headers: { Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}` } })
+        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`
+                               // , { headers: { Authorization: `Token ${atob(siteConfig.ghUnscopedToken)}` } }
+                              )
         if (resp.ok) {
           resp = await resp.json()
           config = YAML.parse(atob(resp.content))
         } else {
-          resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.json?ref=${ref}`, {
-                                      headers: { Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}` } })
-          if (resp.ok) {
-            resp = await resp.json()
-            config = JSON.parse(atob(resp.content))
-          }
+          resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.json?ref=${ref}`
+                             // , { headers: { Authorization: `Token ${atob(siteConfig.ghUnscopedToken)}` } }
+                            )
+          resp = await resp.json()
+          config = JSON.parse(atob(resp.content))
         }
       } else {
         let resp = await fetch(`${window.location.origin}/config.yaml`)
@@ -969,15 +969,14 @@
     async function githubRepoInfo(acct, repo) {
       if (knownGhAccts[acct]) {
         return {acct, repo, ref: knownGhAccts[acct], basePath: `/${acct}/${repo}`,
-                assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || knownGhAccts[acct]}`
-               }
+                assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || knownGhAccts[acct]}`}
       } else {
-        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`, {headers: {Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}`}})
+        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`,
+                               siteConfig.ghUnscopedToken ? { headers: {Authorization: `Token ${atob(siteConfig.ghUnscopedToken)}`}} : {} )
         if (resp.ok) {
           resp = await resp.json()
           return {acct, repo, ref: qargs.ref || resp.default_branch, basePath: `/${acct}/${repo}`, 
-                  assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || resp.default_branch}`
-                 }
+                  assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || resp.default_branch}`}
         }
       }
     }
@@ -986,8 +985,8 @@
     async function getComponentsList() {
       let componentsList = []
       if (contentSource.acct && contentSource.repo && contentSource.ref) {
-        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${contentSource.ref}`, {
-                         headers: {Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}`}})
+        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${contentSource.ref}`,
+                                siteConfig.ghUnscopedToken ? { headers: {Authorization: `Token ${atob(siteConfig.ghUnscopedToken)}`}} : {} )
         if (resp.ok) {
           resp = await resp.json()
           let ghComponentsItem = resp.tree.find(item => item.path === componentsRoot)
@@ -1005,7 +1004,8 @@
         componentsList = [...componentsList, ...resp.files.map(fname => `${contentSource.baseUrl}${basePath}/${componentsRoot}/${fname}`)]
       }
       if (window.location.hostname.indexOf('juncture-digital.org') >= 0 && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
-        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/main`, {headers: {Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}`}})
+        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/main`,
+                               siteConfig.ghUnscopedToken ? { headers: {Authorization: `Token ${atob(siteConfig.ghUnscopedToken)}`}} : {} )
         resp = await resp.json()
         resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url)
         resp = await resp.json()
