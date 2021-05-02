@@ -64,6 +64,25 @@
       </div>
     </div>
 
+    <div ref="markdownViewer" id="markdown-viewer" style="display: none;">
+      <div style="padding:20px; width:50vw; height:50vh; overflow-y:scroll;">
+        <h3>Markdown</h3>
+        <div>
+          <pre v-highlightjs="markdown"><code class="markdown"></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-us-container">
+      <h1>Contact us</h1><hr>
+      <form class="form-wrapper" ref="feedback-form" v-on:submit.prevent="onSubmit">
+        <input v-model="name" name="name" placeholder="Name" class="form-name" type="text" required> <br/>
+        <input v-model="email" placeholder="Email" class="form-email" type="email" required> <br/>
+        <textarea v-model="message" placeholder="Your message here" class="form-message" type="text" required></textarea>
+        <button class="form-submit">Send</button>
+      </form>
+    </div>
+
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it-footnote/3.0.2/markdown-it-footnote.min.js" integrity="sha512-9VOGZLBYkfqGR+OigfgoF3RUvDJRvQ9BAVgOKYmrvXlX7k+yBm5iJCpZEMpqmg2b1Cld1fiy2p0nEbDAcz9Q4w==" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/markdown-it-attrs@4.0.0/markdown-it-attrs.browser.js"></script>
@@ -340,13 +359,15 @@
             this.scrollTop = e.target.scrollTop
           }, 5),
 
-          menuItemClicked(item) {
-            if (item === 'viewMarkdown') {
+          menuItemClicked(e) {
+            if (e.action === 'viewMarkdown') {
               this.markdownViewer.show()
-            } else if (item === 'editMarkdown') {
+            } else if (e.action === 'editMarkdown') {
               this.editMarkdown()
-            } else {
-              this.loadEssay(item)
+            } else if (e.action === 'showContactForm') {
+              console.log('showContactForm')
+            } else if (e.action === 'loadEssay') {
+              this.loadEssay(e.options)
             }
           },
 
@@ -1074,6 +1095,14 @@
       converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
       // console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
       return converted
+    }
+
+    async function sendEmail(options) {
+      let resp = await fetch(`${this.serviceBase}/send-email/`, {
+        method: 'POST', body: JSON.stringify(options),
+        headers: {'Content-Type': 'application/json', Accept: 'application/json'},
+      })
+      return await resp.json()
     }
   </script>
 
