@@ -1012,11 +1012,10 @@
         resp = await resp.json()
         componentsList = [...componentsList, ...resp.files.map(fname => `${contentSource.baseUrl}${basePath}/${componentsRoot}/${fname}`)]
       }
-      if (window.location.hostname.indexOf('juncture-digital.org') >= 0 && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
-        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/main`,
-                               ghUnscopedToken ? { headers: {Authorization: `Token ${ghUnscopedToken}`}} : {} )
+      if (isJuncture && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
+        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/main`, {headers: {Authorization: `Token ${ghUnscopedToken}`}})
         resp = await resp.json()
-        resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url)
+        resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url, {headers: {Authorization: `Token ${ghUnscopedToken}`}})
         resp = await resp.json()
         componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/jstor-labs/juncture/main/${componentsRoot}/${item.path}`)]
       }
