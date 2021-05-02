@@ -995,7 +995,7 @@
       let componentsList = []
       if (contentSource.acct && contentSource.repo && contentSource.ref) {
         let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${contentSource.ref}`,
-                                siteConfig.ghUnscopedToken ? { headers: {Authorization: `Token ${atob(siteConfig.ghUnscopedToken)}`}} : {} )
+                                ghUnscopedToken ? { headers: {Authorization: `Token ${ghUnscopedToken}`}} : {} )
         if (resp.ok) {
           resp = await resp.json()
           let ghComponentsItem = resp.tree.find(item => item.path === componentsRoot)
