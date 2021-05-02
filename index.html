@@ -92,7 +92,6 @@
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') > 0
     const junctureVersion = 'v0.1.0'
-    const ghUnscopedToken = 'Z2hwX05lcnV2RUYzRmx6M3o5YnFjQWZuOGpJQnJMR3lEMTNmYjYyVw=='
 
     const referrerUrl = document.referrer
     if (referrerUrl) {
@@ -349,7 +348,7 @@
           async getMarkdown(path) {
             if (contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref || ref}`
-              let resp = await fetch(url, { headers: { Authorization: `Token ${atob(ghUnscopedToken)}` } })
+              let resp = await fetch(url, { headers: { Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}` } })
               if (resp.ok) {
                 resp = await resp.json()
                 return decodeURIComponent(escape(atob(resp.content)))
@@ -946,13 +945,13 @@
       } else if (contentSource.acct) {
         let ref = isJuncture ? junctureVersion : contentSource.ref 
         let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`, {
-                                      headers: { Authorization: `Token ${atob(ghUnscopedToken)}` } })
+                                      headers: { Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}` } })
         if (resp.ok) {
           resp = await resp.json()
           config = YAML.parse(atob(resp.content))
         } else {
           resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.json?ref=${ref}`, {
-                                      headers: { Authorization: `Token ${atob(ghUnscopedToken)}` } })
+                                      headers: { Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}` } })
           if (resp.ok) {
             resp = await resp.json()
             config = JSON.parse(atob(resp.content))
@@ -973,7 +972,7 @@
                 assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || knownGhAccts[acct]}`
                }
       } else {
-        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`, {headers: {Authorization: `Token ${atob(ghUnscopedToken)}`}})
+        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`, {headers: {Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}`}})
         if (resp.ok) {
           resp = await resp.json()
           return {acct, repo, ref: qargs.ref || resp.default_branch, basePath: `/${acct}/${repo}`, 
@@ -988,7 +987,7 @@
       let componentsList = []
       if (contentSource.acct && contentSource.repo && contentSource.ref) {
         let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${contentSource.ref}`, {
-                         headers: {Authorization: `Token ${atob(ghUnscopedToken)}`}})
+                         headers: {Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}`}})
         if (resp.ok) {
           resp = await resp.json()
           let ghComponentsItem = resp.tree.find(item => item.path === componentsRoot)
@@ -1006,7 +1005,7 @@
         componentsList = [...componentsList, ...resp.files.map(fname => `${contentSource.baseUrl}${basePath}/${componentsRoot}/${fname}`)]
       }
       if (window.location.hostname.indexOf('juncture-digital.org') >= 0 && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
-        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/main`, {headers: {Authorization: `Token ${atob(ghUnscopedToken)}`}})
+        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/main`, {headers: {Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}`}})
         resp = await resp.json()
         resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url)
         resp = await resp.json()
