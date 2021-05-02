@@ -15,7 +15,7 @@
       <component v-bind:is="'ve-header'" :active="true" :scroll-top="scrollTop"
                  :site-config="siteConfig" 
                  :essay-config="essayConfig"
-                 :is-authenticated="authToken !== null"
+                 :is-authenticated="ghAuth !== null"
                  @menu-item-clicked="menuItemClicked"
                  @authenticate="authenticate"
                  @logout="logout"
@@ -205,10 +205,10 @@
         firebase.initializeApp({apiKey: atob(apiKey), authDomain})
         let result = await firebase.auth().getRedirectResult()
         console.log(result)
-        if (result.credential) window.localStorage.setItem('ghauth', result)
+        if (result.credential) window.localStorage.setItem('ghauth', JSON.stringify(result))
       }
-      console.log('ghauth', window.localStorage.getItem('ghauth'))
-      return window.localStorage.getItem('ghauth')
+      console.log('ghauth', JSON.parse(window.localStorage.getItem('ghauth')))
+      return JSON.parse(window.localStorage.getItem('ghauth'))
     }
 
     getContentSource()
@@ -270,7 +270,7 @@
           hoverItem: undefined,
           selectedItem: undefined,
           actions: {},
-          authToken: window.localStorage.getItem('ghauth'),
+          ghAuth: JSON.parse(window.localStorage.getItem('ghauth')),
           externalWindow: null
         }),
         computed: {
@@ -291,7 +291,6 @@
           }
         },
         mounted() {
-          console.log(`authToken=${this.authToken}`)
           this.anchor = window.location.href.indexOf('#') >= 0 ? window.location.href.split('#').pop() : null
           window.onpopstate = (e) => this.loadEssay(e.state.file, true) 
           const resizeObserver = new ResizeObserver(entries => { 
@@ -323,7 +322,7 @@
 
           logout() {
             window.localStorage.removeItem('ghauth')
-            this.authToken = null
+            this.ghAuth = null
           },
 
           editMarkdown() {
@@ -965,6 +964,10 @@
             resp = await resp.json()
             config = JSON.parse(atob(resp.content))
           }
+        }
+        if (!contentSource.isGhpSite) {
+          let resp = await fetch('/extras.yaml')
+          if (resp.ok) config = {... config, ...YAML.parse(await resp.text())}
         }
       } else {
         let resp = await fetch(`${window.location.origin}/config.yaml`)
