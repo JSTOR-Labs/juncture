@@ -942,9 +942,10 @@
         let resp = await fetch(`${window.location.origin}/config.yaml`)
         let junctureConfig = YAML.parse(await resp.text())
         console.log('junctureConfig', junctureConfig)
-        ghUnscopedToken = junctureConfig.ghUnscopedToken
-        gcApiKey = junctureConfig.gcApiKey
-        gcAuthDomain = junctureConfig.gcAuthDomain
+        ghUnscopedToken = atob(junctureConfig.ghUnscopedToken)
+        gcApiKey = atob(junctureConfig.gcApiKey)
+        gcAuthDomain = atob(junctureConfig.gcAuthDomain)
+        console.log(`ghUnscopedToken=${ghUnscopedToken} gcApiKey=${gcApiKey} gcAuthDomain=${gcAuthDomain}`)
       }
       if (contentSource.isGhpSite) {
         let resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
@@ -967,9 +968,9 @@
         if (resp.ok) config = YAML.parse(await resp.text())
       }
       ['banner', 'favicon', 'customCSS'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
-      if (config.ghUnscopedToken) ghUnscopedToken = config.ghUnscopedToken
-      if (config.gcApiKey) gcApiKey = config.gcApiKey
-      if (config.gcAuthDomain) gcAuthDomain = config.gcAuthDomain
+      if (config.ghUnscopedToken) ghUnscopedToken = atob(config.ghUnscopedToken)
+      if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
+      if (config.gcAuthDomain) gcAuthDomain = atob(config.gcAuthDomain)
       return config
     }
 
