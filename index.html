@@ -946,19 +946,13 @@
           config = resp.ok ? await resp.json() : {}
         }
       } else if (contentSource.acct) {
-        let ref = isJuncture ? junctureVersion : contentSource.ref 
+        let ref = contentSource.acct === 'jstor-labs' && contentSource.acct === 'juncture' ? junctureVersion : contentSource.ref 
         let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`
                                // , { headers: { Authorization: `Token ${atob(siteConfig.ghUnscopedToken)}` } }
                               )
         if (resp.ok) {
           resp = await resp.json()
           config = YAML.parse(atob(resp.content))
-        } else {
-          resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.json?ref=${ref}`
-                             // , { headers: { Authorization: `Token ${atob(siteConfig.ghUnscopedToken)}` } }
-                            )
-          resp = await resp.json()
-          config = JSON.parse(atob(resp.content))
         }
       } else {
         let resp = await fetch(`${window.location.origin}/config.yaml`)
