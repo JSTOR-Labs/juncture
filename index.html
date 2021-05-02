@@ -15,7 +15,7 @@
       <component v-bind:is="'ve-header'" :active="true" :scroll-top="scrollTop"
                  :site-config="siteConfig" 
                  :essay-config="essayConfig"
-                 :is-authenticated="authToken !== null"
+                 :is-authenticated="ghAuth !== null"
                  @menu-item-clicked="menuItemClicked"
                  @authenticate="authenticate"
                  @logout="logout"
@@ -73,7 +73,6 @@
   <script src="https://blueimp.github.io/JavaScript-MD5/js/md5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase.js"></script>
-
   <!-- This is used for deep linking of Single Page Apps when hosted with GitHub Pages -->
   <script type="text/javascript">
     (function(l) {
@@ -206,10 +205,10 @@
         firebase.initializeApp({apiKey: atob(apiKey), authDomain})
         let result = await firebase.auth().getRedirectResult()
         console.log(result)
-        if (result.credential) window.localStorage.setItem('ghauth', result)
+        if (result.credential) window.localStorage.setItem('ghauth', JSON.stringify(result))
       }
-      console.log('ghauth', window.localStorage.getItem('ghauth'))
-      return window.localStorage.getItem('ghauth')
+      console.log('ghauth', JSON.parse(window.localStorage.getItem('ghauth')))
+      return JSON.parse(window.localStorage.getItem('ghauth'))
     }
 
     getContentSource()
@@ -271,7 +270,7 @@
           hoverItem: undefined,
           selectedItem: undefined,
           actions: {},
-          authToken: window.localStorage.getItem('ghauth'),
+          ghAuth: JSON.parse(window.localStorage.getItem('ghauth')),
           externalWindow: null
         }),
         computed: {
@@ -292,7 +291,6 @@
           }
         },
         mounted() {
-          console.log(`authToken=${this.authToken}`)
           this.anchor = window.location.href.indexOf('#') >= 0 ? window.location.href.split('#').pop() : null
           window.onpopstate = (e) => this.loadEssay(e.state.file, true) 
           const resizeObserver = new ResizeObserver(entries => { 
@@ -319,14 +317,12 @@
 
           authenticate() {
             console.log('index.authenticate')
-            let provider = new firebase.auth.GithubAuthProvider()
-            console.log(provider)
-            firebase.auth().signInWithRedirect(provider)
+            firebase.auth().signInWithRedirect(new firebase.auth.GithubAuthProvider())
           },
 
           logout() {
             window.localStorage.removeItem('ghauth')
-            this.authToken = null
+            this.ghAuth = null
           },
 
           editMarkdown() {
@@ -968,6 +964,10 @@
             resp = await resp.json()
             config = JSON.parse(atob(resp.content))
           }
+        }
+        if (!contentSource.isGhpSite) {
+          let resp = await fetch('/extras.yaml')
+          if (resp.ok) config = {... config, ...YAML.parse(await resp.text())}
         }
       } else {
         let resp = await fetch(`${window.location.origin}/config.yaml`)
