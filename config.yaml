@@ -5,8 +5,8 @@ favicon: /images/favicon.svg
 
 # When using a custom domain these fields must be updated to match
 # the account and repository name
-#acct: YOUR_GITHUB_USERNAME
-#repo: YOUR_GITHUB_REPOSITORY_NAME
+#acct: <GitHub account/username>
+#repo: <GitHub repository>
 
 ######################################################
 # Defines options shown in the header navigation menu
@@ -30,6 +30,7 @@ nav:
 #  - name@example.org
 #  subject: My Juncture site feedback
 
-ghUnscopedToken: Z2hwX05lcnV2RUYzRmx6M3o5YnFjQWZuOGpJQnJMR3lEMTNmYjYyVw==
-gcAuthDomain: juncture-digital.firebaseapp.com
-gcApiKey: QUl6YVN5Qk9ia1dHU3NDMXhmX1o3ckZRNC1oRkJ1NVpvTjdxaDBv
+# Optional credentials used for GitHub API and OAuth integration
+#ghUnscopedToken: <Base64 encoded GitHub unscoped token>
+#gcAuthDomain: <Google Cloud OAuth domain>
+#gcApiKey: <Base64 encoded restricted access Google Cloud API key>
