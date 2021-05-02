@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <link href="https://juncture-digital.org/images/favicon.svg" rel="icon">
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
   <link href="https://unpkg.com/tippy.js@6/dist/tippy.css" rel="stylesheet"/>
   <link href="https://unpkg.com/tippy.js@6/themes/light-border.css" rel="stylesheet"/>
+  <link href="https://juncture-digital.org/css/main.css" rel="stylesheet"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <title>Juncture</title>
 </head>
 <body>
 
@@ -16,6 +19,7 @@
                  :site-config="siteConfig" 
                  :essay-config="essayConfig"
                  :is-authenticated="ghAuth !== null"
+                 :version="junctureVersion"
                  @menu-item-clicked="menuItemClicked"
                  @authenticate="authenticate"
                  @logout="logout"
@@ -90,8 +94,9 @@
   </script>
   <script>
     console.log(window.location)
-    const isJuncture = window.location.hostname.indexOf('juncture-digital.org') > 0
+    const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0
     const junctureVersion = 'v0.1.0'
+    console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion}`)
 
     const referrerUrl = document.referrer
     if (referrerUrl) {
@@ -193,16 +198,16 @@
     let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
     
     // GLobal variables used to initialize Vue
-    let siteConfig, contentSource, componentsList, ghAuth
+    let siteConfig, contentSource, componentsList, ghUnscopedToken, gcApiKey, gcAuthDomain, ghAuth
     
     const componentsRoot = 'components'
     const componentPrefix = 've-'
     const availableViewers = new Set()
     const knownGhAccts = {'jstor-labs': 'main', 'rsnyder': 'main', 'kent-map': 'main'}
 
-    async function gcOauth(apiKey, authDomain) {
-      if (apiKey && authDomain) {
-        firebase.initializeApp({apiKey: atob(apiKey), authDomain})
+    async function gcOauth() {
+      if (gcApiKey && gcAuthDomain) {
+        firebase.initializeApp({apiKey: gcApiKey, authDomain: gcAuthDomain})
         let result = await firebase.auth().getRedirectResult()
         if (result.credential) window.localStorage.setItem('ghAuth', JSON.stringify(result))
       }
@@ -221,7 +226,7 @@
       }
       return config
     })
-    .then(config => gcOauth(config.gcApiKey, config.gcAuthDomain))
+    .then(config => gcOauth())
     .then(resp => getComponentsList())
     .then(clist => {
       componentsList = clist
@@ -235,10 +240,9 @@
       })
 
       let head = document.querySelector('head')
-      head.appendChild(makeLink(siteConfig.favicon || `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}/images/favicon.svg`, 'icon'))
-      head.appendChild(makeLink(`${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}/css/main.css`))
       if (siteConfig.customCSS) head.appendChild(makeLink(siteConfig.customCSS))
-      document.title = siteConfig.title || 'Juncture'
+      if (siteConfig.favicon) head.appendChild(makeLink(siteConfig.favicon, 'icon'))
+      if (siteConfig.title) document.title = siteConfig.title
 
       new Vue({
         el: '#app',
@@ -249,6 +253,7 @@
           siteConfig,
           contentSource,
           componentsList,
+          junctureVersion,
           params: [],
           markdown: null,
           mdPathIsDir: false,
@@ -347,8 +352,8 @@
 
           async getMarkdown(path) {
             if (contentSource.acct) {
-              let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref || ref}`
-              let resp = await fetch(url, { headers: { Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}` } })
+              let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
+              let resp = await fetch(url, ghUnscopedToken ? {headers: {Authorization:`Token ${ghUnscopedToken}`}} : {})
               if (resp.ok) {
                 resp = await resp.json()
                 return decodeURIComponent(escape(atob(resp.content)))
@@ -929,11 +934,18 @@
     function camelToKebab(input) { return input.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}
     function kebabToCamel(input) { return input.replace(/-([a-z])/g, function (g) {return g[1].toUpperCase()})}
     function isNumeric(arg) { return !isNaN(arg) }
-    function isEntityID(arg) { console.log('arg', arg); return typeof arg === 'string' && arg.split(':').slice(-1).filter(val => val.length > 1 && val[0] === 'Q' && isNumeric(val.slice(0))) !== undefined }
+    function isEntityID(arg) { return typeof arg === 'string' && arg.split(':').slice(-1).filter(val => val.length > 1 && val[0] === 'Q' && isNumeric(val.slice(0))) !== undefined }
 
     // Gets site config
     async function getSiteConfig() {
       let config = {}
+      if (isJuncture) {
+        let resp = await fetch(`${window.location.origin}/config.yaml`)
+        let junctureConfig = YAML.parse(await resp.text())
+        ghUnscopedToken = atob(junctureConfig.ghUnscopedToken)
+        gcApiKey = atob(junctureConfig.gcApiKey)
+        gcAuthDomain = atob(junctureConfig.gcAuthDomain)
+      }
       if (contentSource.isGhpSite) {
         let resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
         if (resp.ok) {
@@ -943,25 +955,21 @@
           config = resp.ok ? await resp.json() : {}
         }
       } else if (contentSource.acct) {
-        let ref = isJuncture ? junctureVersion : contentSource.ref 
-        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`, {
-                                      headers: { Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}` } })
+        let ref = contentSource.acct === 'jstor-labs' && contentSource.acct === 'juncture' ? junctureVersion : contentSource.ref 
+        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`,
+                               ghUnscopedToken ? {headers: {Authorization:`Token ${ghUnscopedToken}`}} : {})
         if (resp.ok) {
           resp = await resp.json()
           config = YAML.parse(atob(resp.content))
-        } else {
-          resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.json?ref=${ref}`, {
-                                      headers: { Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}` } })
-          if (resp.ok) {
-            resp = await resp.json()
-            config = JSON.parse(atob(resp.content))
-          }
         }
       } else {
         let resp = await fetch(`${window.location.origin}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
       }
       ['banner', 'favicon', 'customCSS'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
+      if (config.ghUnscopedToken) ghUnscopedToken = atob(config.ghUnscopedToken)
+      if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
+      if (config.gcAuthDomain) gcAuthDomain = atob(config.gcAuthDomain)
       return config
     }
 
@@ -969,15 +977,14 @@
     async function githubRepoInfo(acct, repo) {
       if (knownGhAccts[acct]) {
         return {acct, repo, ref: knownGhAccts[acct], basePath: `/${acct}/${repo}`,
-                assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || knownGhAccts[acct]}`
-               }
+                assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || knownGhAccts[acct]}`}
       } else {
-        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`, {headers: {Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}`}})
+        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`,
+                               ghUnscopedToken ? { headers: {Authorization: `Token ${ghUnscopedToken}`}} : {} )
         if (resp.ok) {
           resp = await resp.json()
           return {acct, repo, ref: qargs.ref || resp.default_branch, basePath: `/${acct}/${repo}`, 
-                  assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || resp.default_branch}`
-                 }
+                  assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || resp.default_branch}`}
         }
       }
     }
@@ -986,13 +993,13 @@
     async function getComponentsList() {
       let componentsList = []
       if (contentSource.acct && contentSource.repo && contentSource.ref) {
-        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${contentSource.ref}`, {
-                         headers: {Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}`}})
+        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${contentSource.ref}`,
+                                ghUnscopedToken ? { headers: {Authorization: `Token ${ghUnscopedToken}`}} : {} )
         if (resp.ok) {
           resp = await resp.json()
           let ghComponentsItem = resp.tree.find(item => item.path === componentsRoot)
           if (ghComponentsItem) {
-            resp = await fetch(ghComponentsItem.url)
+            resp = await fetch(ghComponentsItem.url, ghUnscopedToken ? { headers: {Authorization: `Token ${ghUnscopedToken}`}} : {} )
             resp = await resp.json()
             componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}/${componentsRoot}/${item.path}`)]
           }
@@ -1004,10 +1011,10 @@
         resp = await resp.json()
         componentsList = [...componentsList, ...resp.files.map(fname => `${contentSource.baseUrl}${basePath}/${componentsRoot}/${fname}`)]
       }
-      if (window.location.hostname.indexOf('juncture-digital.org') >= 0 && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
-        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/main`, {headers: {Authorization: `Token ${atob(this.siteConfig.ghUnscopedToken)}`}})
+      if (isJuncture && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
+        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/main`, {headers: {Authorization:`Token ${ghUnscopedToken}`}})
         resp = await resp.json()
-        resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url)
+        resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url, {headers: {Authorization: `Token ${ghUnscopedToken}`}})
         resp = await resp.json()
         componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/jstor-labs/juncture/main/${componentsRoot}/${item.path}`)]
       }
@@ -1065,7 +1072,7 @@
       }
       if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
       converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
-      console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
+      // console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
       return converted
     }
   </script>
