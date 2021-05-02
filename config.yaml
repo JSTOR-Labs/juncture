@@ -1,7 +1,7 @@
 title: Juncture
 tagline: Your Visual Essays tool
 banner: https://picsum.photos/id/403/1000/400?blur=1
-favicon: /images/favicon.svg
+# favicon: /images/favicon.svg
 
 # When using a custom domain these fields must be updated to match
 # the account and repository name
@@ -32,5 +32,5 @@ nav:
 
 # Optional credentials used for GitHub API and OAuth integration
 #ghUnscopedToken: <Base64 encoded GitHub unscoped token>
-#gcAuthDomain: <Google Cloud OAuth domain>
-#gcApiKey: <Base64 encoded restricted access Google Cloud API key>
+#gcAuthDomain: <Base64-encoded Google Cloud OAuth domain>
+#gcApiKey: <Base64-encoded restricted access Google Cloud API key>
