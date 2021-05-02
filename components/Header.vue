@@ -31,6 +31,10 @@
           <li @click="nav('viewMarkdown')">
             <i class="fas fa-file-code"></i>View page markdown
           </li>
+          <li v-if="version">
+            <br>
+            <div class="version">Version: {{version}}</div>
+          </li>
         </ul>
       </div>
     </nav>
@@ -55,6 +59,7 @@
       siteConfig: { type: Object, default: () => ({}) },
       isAuthenticated: { type: Boolean, default: false },
       readOnly: { type: Boolean, default: false },
+      version: { type: String, default: '' },
     },    
     data: () => ({
       dependencies: [],
@@ -284,7 +289,7 @@
     user-select: none;
   }
 
-  .app-version {
+  .version {
     font-size: 0.9rem;
   }
 
