@@ -60,8 +60,7 @@
 <script>
 /* global _, OpenSeadragon, sjcl */
 
-// const iiifService = 'https://iiif-v2.visual-essays.app'
-const iiifService = 'http://localhost:8000'
+const iiifService = 'https://iiif.juncture-digital.org'
 
 const viewerLabel = 'Image Viewer'
 const viewerIcon = 'far fa-file-image'
