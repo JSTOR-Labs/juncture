@@ -352,7 +352,7 @@
             if (contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
               console.log(`getMarkdown: url=${url}`)
-              let resp = await fetch(url, ghUnscopedToken ? {headers: {Authorization:`Token ${atob(ghUnscopedToken)}`}} : {})
+              let resp = await fetch(url, ghUnscopedToken ? {headers: {Authorization:`Token ${ghUnscopedToken}`}} : {})
               if (resp.ok) {
                 resp = await resp.json()
                 return decodeURIComponent(escape(atob(resp.content)))
@@ -958,7 +958,7 @@
       } else if (contentSource.acct) {
         let ref = contentSource.acct === 'jstor-labs' && contentSource.acct === 'juncture' ? junctureVersion : contentSource.ref 
         let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`,
-                               ghUnscopedToken ? {headers: {Authorization:`Token ${atob(ghUnscopedToken)}`}} : {})
+                               ghUnscopedToken ? {headers: {Authorization:`Token ${ghUnscopedToken}`}} : {})
         if (resp.ok) {
           resp = await resp.json()
           config = YAML.parse(atob(resp.content))
@@ -981,7 +981,7 @@
                 assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || knownGhAccts[acct]}`}
       } else {
         let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`,
-                               ghUnscopedToken ? { headers: {Authorization: `Token ${atob(ghUnscopedToken)}`}} : {} )
+                               ghUnscopedToken ? { headers: {Authorization: `Token ${ghUnscopedToken}`}} : {} )
         if (resp.ok) {
           resp = await resp.json()
           return {acct, repo, ref: qargs.ref || resp.default_branch, basePath: `/${acct}/${repo}`, 
@@ -1014,7 +1014,7 @@
       }
       if (window.location.hostname.indexOf('juncture-digital.org') >= 0 && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
         let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/main`,
-                               ghUnscopedToken ? { headers: {Authorization: `Token ${atob(ghUnscopedToken)}`}} : {} )
+                               ghUnscopedToken ? { headers: {Authorization: `Token ${ghUnscopedToken}`}} : {} )
         resp = await resp.json()
         resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url)
         resp = await resp.json()
