@@ -997,7 +997,7 @@
           resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.json`)
           config = resp.ok ? await resp.json() : {}
         }
-      } else if (contentSource.acct) {
+      } else if (contentSource.acct && !isJuncture) {
         // let ref = contentSource.acct === 'jstor-labs' && contentSource.acct === 'juncture' ? junctureVersion : contentSource.ref 
         // let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`,
         let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${contentSource.ref }`,
