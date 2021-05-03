@@ -111,7 +111,7 @@
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0
     const junctureVersion = 'v0.1.0'
-    console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion}`)
+    console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
     if (referrerUrl) {
