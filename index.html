@@ -1006,7 +1006,7 @@
           resp = await resp.json()
           config = YAML.parse(atob(resp.content))
         }
-      } else {
+      }else if (!isJuncture) {
         let resp = await fetch(`${window.location.origin}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
       }
