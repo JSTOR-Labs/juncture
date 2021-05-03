@@ -1,12 +1,13 @@
 title: Juncture
 tagline: Your Visual Essays tool
-banner: https://picsum.photos/id/403/1000/400?blur=1
+banner: https://picsum.photos/1000/400
 # favicon: /images/favicon.svg
+# customCSS: /css/custom.css
 
 # When using a custom domain these fields must be updated to match
 # the account and repository name
-#acct: <GitHub account/username>
-#repo: <GitHub repository>
+# acct: <GitHub account/username>
+# repo: <GitHub repository>
 
 ######################################################
 # Defines options shown in the header navigation menu
@@ -18,19 +19,19 @@ nav:
 - label: Help
   icon: question
   path: /docs
-#- label: Contact Us
-#  icon: envelope
-#  path: "/contact-us"
+# - label: Contact Us
+#   icon: envelope
+#   path: "/contact-us"
 
 # If the /contact-us path is defined for the nav menu a contact form will be enabled
 # The following information is used in the display and processing of the contact form
 # A valid toEmail address is required. Other fields are optional
-#contactForm:
-#  toEmail:
-#  - someone@example.com
-#  subject: Juncture Contact Form
+# contactForm:
+#   toEmail:
+#   - someone@example.com
+#   subject: Juncture Contact Form
 
 # Optional credentials used for GitHub API and OAuth integration
-#ghUnscopedToken: <Base64 encoded GitHub unscoped token>
-#gcAuthDomain: <Base64-encoded Google Cloud OAuth domain>
-#gcApiKey: <Base64-encoded restricted access Google Cloud API key>
+# ghUnscopedToken: <Base64 encoded GitHub unscoped token>
+# gcAuthDomain: <Base64-encoded Google Cloud OAuth domain>
+# gcApiKey: <Base64-encoded restricted access Google Cloud API key>

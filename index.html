@@ -7,7 +7,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
   <link href="https://unpkg.com/tippy.js@6/dist/tippy.css" rel="stylesheet"/>
   <link href="https://unpkg.com/tippy.js@6/themes/light-border.css" rel="stylesheet"/>
-  <link href="css/main.css" rel="stylesheet"/>
+  <link href="/css/main.css" rel="stylesheet"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
   <title>Juncture</title>
 </head>
@@ -90,6 +90,7 @@
   <script src="https://blueimp.github.io/JavaScript-MD5/js/md5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase.js"></script>
+  
   <!-- This is used for deep linking of Single Page Apps when hosted with GitHub Pages -->
   <script type="text/javascript">
     (function(l) {
@@ -105,6 +106,7 @@
       }
     }(window.location))
   </script>
+  
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0
@@ -984,10 +986,10 @@
       let config = {}
       if (isJuncture) {
         let resp = await fetch(`${window.location.origin}/config.yaml`)
-        let junctureConfig = YAML.parse(await resp.text())
-        ghUnscopedToken = atob(junctureConfig.ghUnscopedToken)
-        gcApiKey = atob(junctureConfig.gcApiKey)
-        gcAuthDomain = atob(junctureConfig.gcAuthDomain)
+        config = YAML.parse(await resp.text())
+        ghUnscopedToken = atob(config.ghUnscopedToken)
+        gcApiKey = atob(config.gcApiKey)
+        gcAuthDomain = atob(config.gcAuthDomain)
       }
       if (contentSource.isGhpSite) {
         let resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
@@ -998,7 +1000,7 @@
           config = resp.ok ? await resp.json() : {}
         }
       } else if (contentSource.acct) {
-        let ref = contentSource.acct === 'jstor-labs' && contentSource.acct === 'juncture' ? junctureVersion : contentSource.ref 
+        let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersion : contentSource.ref 
         let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`,
                                ghUnscopedToken ? {headers: {Authorization:`Token ${ghUnscopedToken}`}} : {})
         if (resp.ok) {
