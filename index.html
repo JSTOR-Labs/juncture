@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link href="https://juncture-digital.org/images/favicon.svg" rel="icon">
+  <link href="/images/favicon.svg" rel="icon">
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
   <link href="https://unpkg.com/tippy.js@6/dist/tippy.css" rel="stylesheet"/>
   <link href="https://unpkg.com/tippy.js@6/themes/light-border.css" rel="stylesheet"/>
-  <link href="https://juncture-digital.org/css/main.css" rel="stylesheet"/>
+  <link href="css/main.css" rel="stylesheet"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
   <title>Juncture</title>
 </head>
@@ -62,6 +62,19 @@
           <pre v-highlightjs="markdown"><code class="markdown"></code></pre>
         </div>
       </div>
+    </div>
+
+    <div ref="contactForm" id="contact-form">
+      <form v-on:submit.prevent="submitContactForm">
+        <h1>Contact us</h1>
+        <input v-model="contactName" name="name" placeholder="Name" class="form-name" type="text" required>
+        <input v-model="contactEmail" placeholder="Email" class="form-email" type="email" required>
+        <textarea v-model="contactMessage" placeholder="Your message here" class="form-message" type="text" required></textarea>
+        <div class="form-controls">
+          <button class="form-cancel" @click="resetContactForm">Cancel</button>
+          <button class="form-submit">Send</button>
+        </div>
+      </form>
     </div>
 
   </div>
@@ -265,6 +278,7 @@
           availableViewers,
           // viewers: [],
           selectedViewer: null,
+          contactForm: null,
           viewerData: {},
           scrollTop: 0,
           forceHorizontalLayout: window.matchMedia('only screen and (max-width: 1000px)').matches,
@@ -274,7 +288,10 @@
           selectedItem: undefined,
           actions: {},
           ghAuth,
-          externalWindow: null
+          externalWindow: null,
+          contactName: null,
+          contactEmail: null,
+          contactMessage: null
         }),
         computed: {
           essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
@@ -309,11 +326,8 @@
             interactive: true,
             arrow: false,
             placement: 'bottom-start',          
-            onShow: async (instance) => { 
-              instance.setContent(this.$refs.markdownViewer.innerHTML) 
-            },
-            onHide: (instance) => { 
-            },
+            onShow: async (instance) => { instance.setContent(this.$refs.markdownViewer.innerHTML) },
+            onHide: (instance) => {}
           })
         },
         methods: {
@@ -340,16 +354,45 @@
             this.scrollTop = e.target.scrollTop
           }, 5),
 
-          menuItemClicked(item) {
-            if (item === 'viewMarkdown') {
+          menuItemClicked(action) {
+            if (action === 'viewMarkdown') {
               this.markdownViewer.show()
-            } else if (item === 'editMarkdown') {
+            } else if (action === 'editMarkdown') {
               this.editMarkdown()
+            } else if (action === '/contact-us') {
+              this.showContactForm()
             } else {
-              this.loadEssay(item)
+              this.loadEssay(action)
             }
           },
 
+          showContactForm() {
+            this.$refs.app.classList.add('dimmed')
+            this.$refs.contactForm.style.display = 'unset'
+          },
+
+          resetContactForm() {
+            this.$refs.app.classList.remove('dimmed')
+            this.$refs.contactForm.style.display = 'none'
+            this.contactName = this.contactEmail = this.contactMessage = null
+          },
+
+          submitContactForm() {
+            console.log(document.querySelector('.tippy-content .contact-form'))
+            let contactData = {
+              fromAddress: this.contactEmail,
+              toAddress: this.siteConfig.contactForm.toEmail,
+              messageSubject: this.siteConfig.contactForm.subject,
+              messageBodyText: `${this.contactMessage}\n\r[Sent by: ${this.contactName}]`,
+            }
+            console.log('submitContactForm', contactData)
+            sendEmail(contactData).then(resp => {
+              console.log(resp)
+              this.resetContactForm()
+            })
+
+          },
+          
           async getMarkdown(path) {
             if (contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
@@ -1074,6 +1117,14 @@
       converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
       // console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
       return converted
+    }
+
+    async function sendEmail(options) {
+      let resp = await fetch('https://visual-essays.app/send-email/', {
+        method: 'POST', body: JSON.stringify(options),
+        headers: {'Content-Type': 'application/json', Accept: 'application/json'},
+      })
+      return await resp.json()
     }
   </script>
 

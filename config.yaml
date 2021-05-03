@@ -27,8 +27,8 @@ nav:
 # A valid toEmail address is required. Other fields are optional
 #contactForm:
 #  toEmail:
-#  - name@example.org
-#  subject: My Juncture site feedback
+#  - someone@example.com
+#  subject: Juncture Contact Form
 
 # Optional credentials used for GitHub API and OAuth integration
 #ghUnscopedToken: <Base64 encoded GitHub unscoped token>
