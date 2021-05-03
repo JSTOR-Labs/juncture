@@ -191,7 +191,7 @@
         // GHP deploy mode
         if (window.location.hostname.indexOf('github.io') > 0) {
           [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2, 4)
-          contentSource = {acct, repo, ref: null, baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true, 
+          contentSource = {acct, repo, ref: 'main', baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true, 
                            assetsBaseUrl: `${window.location.origin}/${repo}`}
         // juncture-digital.org
         } else if (isJuncture) {
@@ -993,7 +993,7 @@
         gcApiKey = atob(config.gcApiKey)
         gcAuthDomain = atob(config.gcAuthDomain)
         loginsEnabled = true
-        console.log(`ghUnscopedToken=${ghUnscopedToken} gcApiKey=${gcApiKey} gcAuthDomain=${gcAuthDomain}`)
+        // console.log(`ghUnscopedToken=${ghUnscopedToken} gcApiKey=${gcApiKey} gcAuthDomain=${gcAuthDomain}`)
       }
       if (contentSource.isGhpSite) {
         let resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
