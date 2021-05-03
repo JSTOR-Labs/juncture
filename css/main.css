@@ -83,6 +83,58 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif;}
   }
 }
 
+#contact-form {
+    display: none;
+    position: absolute;
+    top: 25vh;
+    left: 25vw;
+    width: 50vw;
+    height: 50vh;
+    background-color: white;
+    z-index: 10;
+    box-shadow: 0 0 3px 1px rgb(0 0 0 / 25%);
+    border-radius: 10px;
+    padding: 12px;
+}
+
+#contact-form form {
+  display: grid;
+  height: 100%;
+  width: 100%;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto auto 1fr auto;
+  grid-gap: 4px;
+}
+#contact-form form h1 {
+  align-self: center;
+  justify-self: center;
+  padding: 6px;
+  margin: 0;
+  font-size: 1.5rem;
+}
+.form-name, .form-email {
+  height: 30px;
+  padding: 3px 12px;
+  font-size: 1rem;
+}
+.form-message {
+  padding: 12px;
+  font-family: "Roboto",sans-serif;
+  font-size: 1.1rem;
+}
+.form-controls {
+  display: flex;
+  align-self: center;
+  justify-self: center;
+  padding: 6px;
+}
+.form-controls button {
+  margin: 0 6px;
+  font-size: 1rem;
+  padding: 3px 6px;
+}
+
+
 p {
     padding-right: 18px;
 }
