@@ -27,7 +27,6 @@ nav:
 # A valid toEmail address is required. Other fields are optional
 contactForm:
   toEmail:
-  - Ron.Snyder@ITHAKA.org
   - labs@ithaka.org
   subject: Juncture Contact Form
 
