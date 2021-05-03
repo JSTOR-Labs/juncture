@@ -58,7 +58,7 @@
       essayConfig: { type: Object, default: () => ({}) },
       siteConfig: { type: Object, default: () => ({}) },
       isAuthenticated: { type: Boolean, default: false },
-      readOnly: { type: Boolean, default: false },
+      readOnly: { type: Boolean, default: true },
       version: { type: String, default: '' },
     },    
     data: () => ({

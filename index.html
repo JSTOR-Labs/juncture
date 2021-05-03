@@ -18,6 +18,7 @@
       <component v-bind:is="'ve-header'" :active="true" :scroll-top="scrollTop"
                  :site-config="siteConfig" 
                  :essay-config="essayConfig"
+                 :read-only="!siteConfig.gcApiKey"
                  :is-authenticated="ghAuth !== null"
                  :version="junctureVersion"
                  @menu-item-clicked="menuItemClicked"
