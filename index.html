@@ -19,7 +19,7 @@
                  :site-config="siteConfig" 
                  :essay-config="essayConfig"
                  :logins-enabled="loginsEnabled"
-                 :is-authenticated="ghAuth !== null"
+                 :is-authenticated="ghAuth !== null && loginsEnabled"
                  :version="junctureVersion"
                  @menu-item-clicked="menuItemClicked"
                  @authenticate="authenticate"
@@ -214,7 +214,8 @@
     let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
     
     // GLobal variables used to initialize Vue
-    let siteConfig, contentSource, componentsList, ghUnscopedToken, gcApiKey, gcAuthDomain, ghAuth, loginsEnabled
+    let siteConfig, contentSource, componentsList, ghUnscopedToken, gcApiKey, gcAuthDomain, ghAuth
+    let loginsEnabled = false
     
     const componentsRoot = 'components'
     const componentPrefix = 've-'
@@ -993,7 +994,7 @@
         gcApiKey = atob(config.gcApiKey)
         gcAuthDomain = atob(config.gcAuthDomain)
         loginsEnabled = true
-        // console.log(`ghUnscopedToken=${ghUnscopedToken} gcApiKey=${gcApiKey} gcAuthDomain=${gcAuthDomain}`)
+        console.log(`ghUnscopedToken=${ghUnscopedToken} gcApiKey=${gcApiKey} gcAuthDomain=${gcAuthDomain} loginsEnabled=${loginsEnabled}`)
       }
       if (contentSource.isGhpSite) {
         let resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
