@@ -998,8 +998,9 @@
           config = resp.ok ? await resp.json() : {}
         }
       } else if (contentSource.acct) {
-        let ref = contentSource.acct === 'jstor-labs' && contentSource.acct === 'juncture' ? junctureVersion : contentSource.ref 
-        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`,
+        // let ref = contentSource.acct === 'jstor-labs' && contentSource.acct === 'juncture' ? junctureVersion : contentSource.ref 
+        // let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`,
+        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${contentSource.ref }`,
                                ghUnscopedToken ? {headers: {Authorization:`Token ${ghUnscopedToken}`}} : {})
         if (resp.ok) {
           resp = await resp.json()
