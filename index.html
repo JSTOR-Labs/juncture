@@ -19,7 +19,7 @@
                  :site-config="siteConfig" 
                  :essay-config="essayConfig"
                  :logins-enabled="loginsEnabled"
-                 :is-authenticated="ghAuth !== null"
+                 :is-authenticated="ghAuth !== null && loginsEnabled"
                  :version="junctureVersion"
                  @menu-item-clicked="menuItemClicked"
                  @authenticate="authenticate"
