@@ -256,7 +256,7 @@
 
       let head = document.querySelector('head')
       if (contentSource.isGhpSite) head.appendChild(makeLink(`${contentSource.baseUrl}${contentSource.basePath}/css/main.css`))
-      if (siteConfig.favicon ) head.appendChild(makeLink(siteConfig.favicon, 'icon'))
+      if (contentSource.isGhpSite || siteConfig.favicon) head.appendChild(makeLink(siteConfig.favicon ? siteConfig.favicon : `${contentSource.baseUrl}${contentSource.basePath}/images/favicon.svg`, 'icon'))
       if (siteConfig.customCSS) head.appendChild(makeLink(siteConfig.customCSS))
       if (siteConfig.title) document.title = siteConfig.title
 
