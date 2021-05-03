@@ -18,7 +18,7 @@
       <component v-bind:is="'ve-header'" :active="true" :scroll-top="scrollTop"
                  :site-config="siteConfig" 
                  :essay-config="essayConfig"
-                 :read-only="!siteConfig.gcApiKey"
+                 :logins-enabled="loginsEnabled"
                  :is-authenticated="ghAuth !== null"
                  :version="junctureVersion"
                  @menu-item-clicked="menuItemClicked"
@@ -191,7 +191,7 @@
         // GHP deploy mode
         if (window.location.hostname.indexOf('github.io') > 0) {
           [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2, 4)
-          contentSource = {acct, repo, ref: 'main', baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true, 
+          contentSource = {acct, repo, ref: null, baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true, 
                            assetsBaseUrl: `${window.location.origin}/${repo}`}
         // juncture-digital.org
         } else if (isJuncture) {
@@ -214,7 +214,7 @@
     let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
     
     // GLobal variables used to initialize Vue
-    let siteConfig, contentSource, componentsList, ghUnscopedToken, gcApiKey, gcAuthDomain, ghAuth
+    let siteConfig, contentSource, componentsList, ghUnscopedToken, gcApiKey, gcAuthDomain, ghAuth, loginsEnabled
     
     const componentsRoot = 'components'
     const componentPrefix = 've-'
@@ -257,7 +257,7 @@
 
       let head = document.querySelector('head')
       if (contentSource.isGhpSite) head.appendChild(makeLink(`${contentSource.baseUrl}${contentSource.basePath}/css/main.css`))
-      if (contentSource.isGhpSite || siteConfig.favicon) head.appendChild(makeLink(siteConfig.favicon ? siteConfig.favicon : `${contentSource.baseUrl}${contentSource.basePath}/images/favicon.svg`, 'icon'))
+      if (siteConfig.favicon ) head.appendChild(makeLink(siteConfig.favicon, 'icon'))
       if (siteConfig.customCSS) head.appendChild(makeLink(siteConfig.customCSS))
       if (siteConfig.title) document.title = siteConfig.title
 
@@ -292,6 +292,7 @@
           selectedItem: undefined,
           actions: {},
           ghAuth,
+          loginsEnabled,
           externalWindow: null,
           contactName: null,
           contactEmail: null,
@@ -991,6 +992,8 @@
         ghUnscopedToken = atob(config.ghUnscopedToken)
         gcApiKey = atob(config.gcApiKey)
         gcAuthDomain = atob(config.gcAuthDomain)
+        loginsEnabled = true
+        console.log(`ghUnscopedToken=${ghUnscopedToken} gcApiKey=${gcApiKey} gcAuthDomain=${gcAuthDomain}`)
       }
       if (contentSource.isGhpSite) {
         let resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)

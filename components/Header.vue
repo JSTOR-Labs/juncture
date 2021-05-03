@@ -16,7 +16,7 @@
               <i :class="`fas fa-${item.icon}`"></i>{{item.label}}
             </li>
           </template>
-          <li v-if="!readOnly">
+          <li v-if="!loginsEnabled">
             <a v-if="isAuthenticated" @click="logout">
               <i :class="`fas fa-user`"></i>Logout
             </a>
@@ -25,7 +25,7 @@
             </a>
           </li>
           <hr>
-          <li v-if="isAuthenticated && !readOnly" @click="nav('editMarkdown')">
+          <li v-if="isAuthenticated" @click="nav('editMarkdown')">
             <i class="fas fa-edit"></i>Edit page
           </li>
           <li @click="nav('viewMarkdown')">
@@ -58,7 +58,7 @@
       essayConfig: { type: Object, default: () => ({}) },
       siteConfig: { type: Object, default: () => ({}) },
       isAuthenticated: { type: Boolean, default: false },
-      readOnly: { type: Boolean, default: true },
+      loginsEnabled: { type: Boolean, default: false },
       version: { type: String, default: '' },
     },    
     data: () => ({
