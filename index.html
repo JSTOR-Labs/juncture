@@ -984,10 +984,10 @@
       let config = {}
       if (isJuncture) {
         let resp = await fetch(`${window.location.origin}/config.yaml`)
-        let junctureConfig = YAML.parse(await resp.text())
-        ghUnscopedToken = atob(junctureConfig.ghUnscopedToken)
-        gcApiKey = atob(junctureConfig.gcApiKey)
-        gcAuthDomain = atob(junctureConfig.gcAuthDomain)
+        config = YAML.parse(await resp.text())
+        ghUnscopedToken = atob(config.ghUnscopedToken)
+        gcApiKey = atob(config.gcApiKey)
+        gcAuthDomain = atob(config.gcAuthDomain)
       }
       if (contentSource.isGhpSite) {
         let resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
@@ -997,16 +997,15 @@
           resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.json`)
           config = resp.ok ? await resp.json() : {}
         }
-      } else if (contentSource.acct && !isJuncture) {
-        // let ref = contentSource.acct === 'jstor-labs' && contentSource.acct === 'juncture' ? junctureVersion : contentSource.ref 
-        // let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`,
-        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${contentSource.ref }`,
+      } else if (contentSource.acct) {
+        let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersion : contentSource.ref 
+        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`,
                                ghUnscopedToken ? {headers: {Authorization:`Token ${ghUnscopedToken}`}} : {})
         if (resp.ok) {
           resp = await resp.json()
           config = YAML.parse(atob(resp.content))
         }
-      }else if (!isJuncture) {
+      } else {
         let resp = await fetch(`${window.location.origin}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
       }
