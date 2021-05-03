@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link href="/images/favicon.svg" rel="icon">
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
   <link href="https://unpkg.com/tippy.js@6/dist/tippy.css" rel="stylesheet"/>
   <link href="https://unpkg.com/tippy.js@6/themes/light-border.css" rel="stylesheet"/>
-  <link href="/css/main.css" rel="stylesheet"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
   <title>Juncture</title>
 </head>
@@ -255,8 +253,10 @@
       })
 
       let head = document.querySelector('head')
+      if (contentSource.isGhpSite) head.appendChild(makeLink(`${contentSource.baseUrl}${contentSource.basePath}/css/main.css`))
+      head.appendChild(makeLink(siteConfig.favicon ? siteConfig.favicon : `${contentSource.baseUrl}${contentSource.basePath}/images/favicon.svg`, 'icon'))
+
       if (siteConfig.customCSS) head.appendChild(makeLink(siteConfig.customCSS))
-      if (siteConfig.favicon) head.appendChild(makeLink(siteConfig.favicon, 'icon'))
       if (siteConfig.title) document.title = siteConfig.title
 
       new Vue({
@@ -673,6 +673,7 @@
                 if (!target) { 
                   const parsedUrl = parseUrl(link.href)
                   let pathElems = parsedUrl.pathname.split('/').filter(elem => elem !== '')
+                  console.log(pathElems)
                   if (contentSource.isGhpSite && pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
                   target = parsedUrl.hash === '' ? `/${pathElems.join('/')}/` : parsedUrl.hash.split('?')[0]
                 }
@@ -685,7 +686,6 @@
                   while (!target.dataset.target && target.parentElement) { target = target.parentElement }
                   let path = target.dataset.target
                   if (path[0] === '#') {
-                    // document.querySelector(path).scrollIntoView({ block:'start' })
                     let anchorElem = document.getElementById(path.slice(1))
                     if (anchorElem) {
                       this.scrollTop = anchorElem.offsetTop

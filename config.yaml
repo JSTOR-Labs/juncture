@@ -31,7 +31,14 @@ nav:
 #   - someone@example.com
 #   subject: Juncture Contact Form
 
+#######################################################
+# Base URL of server used for IIIF presentation manifests
+######################################################
+iiifServer: https://iiif.juncture-digital.org
+
+######################################################
 # Optional credentials used for GitHub API and OAuth integration
+######################################################
 # ghUnscopedToken: <Base64 encoded GitHub unscoped token>
 # gcAuthDomain: <Base64-encoded Google Cloud OAuth domain>
 # gcApiKey: <Base64-encoded restricted access Google Cloud API key>
