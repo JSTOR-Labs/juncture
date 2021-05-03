@@ -9,7 +9,7 @@ RUN set -e; \
     rm -rf /var/tmp/* /tmp/* /var/lib/apt/lists/*
 
 RUN set -e; \
-    pip install flask flask_cors pymongo dnspython PyYAML requests expiringdict uwsgi 
+    pip install flask pymongo pydnspython PyYAML requests expiringdict uwsgi 
 
 WORKDIR /usr/src/app
 

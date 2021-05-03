@@ -4,3 +4,4 @@ venv
 CNAME
 tmp
 creds
+iiif-server/config.yaml
