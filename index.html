@@ -421,7 +421,7 @@
           async loadEssay(path, replace, anchor) {
             path = path || window.location.pathname.slice(contentSource.basePath.length) || '/'
             if (path.slice(-1) !== '/') path += '/'
-            console.log(`loadEssay: basePath=${contentSource.basePath} path=${path}`)
+            console.log(`loadEssay: basePath=${contentSource.basePath} path=${path} anchor=${this.anchor}`)
             let pathsToTry = [`${path}README.md`, `${path.slice(0,-1)}.md`, `${path}index.md`]
             for (let i = 0; i < pathsToTry.length; i++) {
               let markdown = await this.getMarkdown(pathsToTry[i])
@@ -1004,7 +1004,7 @@
     function camelToKebab(input) { return input.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}
     function kebabToCamel(input) { return input.replace(/-([a-z])/g, function (g) {return g[1].toUpperCase()})}
     function isNumeric(arg) { return !isNaN(arg) }
-    function isEntityID(arg) { return typeof arg === 'string' && arg.split(':').slice(-1).filter(val => val.length > 1 && val[0] === 'Q' && isNumeric(val.slice(0))) !== undefined }
+    function isEntityID(arg) { return typeof arg === 'string' && arg.split(':').slice(-1).find(val => val.length > 1 && val[0] === 'Q' && isNumeric(val.slice(1))) !== undefined }
 
     // Gets site config
     async function getSiteConfig() {
