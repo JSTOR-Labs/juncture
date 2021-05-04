@@ -13,6 +13,16 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 <param ve-compare url="https://stor.artstor.org/stor/1420f054-9ba2-427b-b007-6aa22a7e785d" label="Cafe Nero High Street (pre 1918)" description="Canterbury High Street. Unposted and with no identifying features." license="No Known Copyright">
 ```
 
+## Using IIIF manifest
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+<param ve-compare curtain manifest="https://iiif-v2.visual-essays.app/manifest/10efe9aefabc3f1fec43d9a906b3e277b18431eb52c61bc7946e2e8578548440">
+<param ve-compare manifest="https://iiif-v2.visual-essays.app/manifest/8f38d1f490e2485f0947ca032bcc8b3751f19c0cb7e972081204bcacd0ab36c9">
+
+```html
+<param ve-compare curtain manifest="https://iiif-v2.visual-essays.app/manifest/10efe9aefabc3f1fec43d9a906b3e277b18431eb52c61bc7946e2e8578548440">
+<param ve-compare curtain manifest="https://iiif-v2.visual-essays.app/manifest/8f38d1f490e2485f0947ca032bcc8b3751f19c0cb7e972081204bcacd0ab36c9">
+```
+
 ## Sync mode
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
