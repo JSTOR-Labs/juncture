@@ -6,6 +6,13 @@
        layout="vtl"
        author="JSTOR Labs team">
 
+
+## Map with heatmap overlay
+
+This examples uses the [Leaflet Heatmap Layer Plugin](https://www.patrick-wied.at/static/heatmapjs/plugin-leaflet-layer.html) to add a heatmap overlay on a map
+<param ve-simple-map center="-2, 118" zoom="4">
+<param ve-map-layer heatmap url="nepenthes_horticultural_heatmap.tsv">
+
 ## Introduction
 
 This sample essay provides examples showing how maps can be incorporated into an essay.  Various features are used in the examples.

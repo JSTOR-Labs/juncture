@@ -8,7 +8,9 @@ const viewerLabel = 'Map Viewer'
 const viewerIcon = 'fas fa-map-marker-alt'
 const dependencies = [
   'https://cdn.jsdelivr.net/npm/leaflet@1.5.1/dist/leaflet.css',
-  'https://cdn.jsdelivr.net/npm/leaflet@1.5.1/dist/leaflet.js'
+  'https://cdn.jsdelivr.net/npm/leaflet@1.5.1/dist/leaflet.js',
+  'https://gitcdn.link/repo/pa7/heatmap.js/develop/build/heatmap.min.js',
+  'https://gitcdn.link/repo/pa7/heatmap.js/develop/plugins/leaflet-heatmap/leaflet-heatmap.js'
 ]
 
 // A leaflet baselayer
@@ -28,7 +30,7 @@ const defaults = {
 }
 
 module.exports = {
-  name: 've-map',
+  name: 've-simple-map',
   props: {
     items: { type: Array, default: () => ([]) },
     allItems: { type: Array, default: () => ([]) },
@@ -43,7 +45,7 @@ module.exports = {
     tileLayers: [],
   }),
   computed: {
-    mapDef() { return this.items.find(item => item.viewer === this.$options.name) },
+    mapDef() { return this.items.find(item => item.viewer === this.$options.name) || {} },
     basemap() { return this.mapDef.basemap || defaults.basemap },
     center() { 
       let coordsStr = this.entities[this.mapDef.center] ? this.entities[this.mapDef.center].coords : this.mapDef.center
@@ -51,6 +53,7 @@ module.exports = {
     },
     zoom() { return this.mapDef.zoom || defaults.zoom },
     maxZoom() { return this.mapDef['max-zoom'] || defaults.maxZoom },
+    layers() { return this.items.filter(item => item['ve-map-layer']) },
 
     mapStyle() { return {
       width: `${this.width}px`,
@@ -84,8 +87,45 @@ module.exports = {
             maxZoom: this.maxZoom, 
             layers: [L.tileLayer(...baseLayers.OpenStreetMap)]
           })
+          this.layers.forEach(layer => {
+            if (layer.heatmap) this.addHeatmap(layer)
+          })
         })
       }
+    },
+    addHeatmap(layer) {
+      let cfg = {
+        // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+        // if scaleRadius is false it will be the constant radius used in pixels
+        radius: 2,
+        maxOpacity: .8,
+        // scales the radius based on map zoom
+        scaleRadius: true,
+        // if set to false the heatmap uses the global maximum for colorization
+        // if activated: uses the data maximum within the current map boundaries
+        //   (there will always be a red spot with useLocalExtremas true)
+        useLocalExtrema: true,
+        // which field name in your data represents the latitude - default "lat"
+        latField: 'lat',
+        // which field name in your data represents the longitude - default "lng"
+        lngField: 'lng',
+        // which field name in your data represents the data value - default "value"
+        valueField: 'count'
+      }
+      let heatmapLayer = new HeatmapOverlay(cfg)
+      this.map.addLayer(heatmapLayer)
+
+      fetch(layer.url).then(resp => resp.text())
+        .then(delimitedDataString => {
+          let byPlace = {}
+          this.delimitedStringToObjArray(delimitedDataString)
+            .forEach(item => {
+              if (!byPlace[item.PlaceQID.id]) byPlace[item.PlaceQID.id] = {lat: parseFloat(item.Lat1.id), lng: parseFloat(item.Long1.id), count: 0}
+              byPlace[item.PlaceQID.id].count += 1
+            })
+          let heatmapData = {max: 8, data: Object.values(byPlace)}
+          heatmapLayer.setData(heatmapData)
+        })
     }
   },
   watch: {
@@ -106,6 +146,12 @@ module.exports = {
         }
       },
       immediate: false
+    },
+    items: {
+      handler: function (items) {
+        console.log('items', items)
+      },
+      immediate: true
     }
   }
 }
