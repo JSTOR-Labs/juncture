@@ -242,8 +242,11 @@ def manifest(path=None):
         else:
             return 'Not found', 404
     elif request.method == 'POST':
-        if request.referrer not in referrer_whitelist:
-            return ('Not authorized', 403)
+        referrer = urlparse(request.referrer).netloc if request.referrer else None
+        can_mutate = referrer in referrer_whitelist
+        logger.info(f'referrer={referrer} can_mutate={can_mutate}')
+
+
 
         mdb = connect_db()
         input_data = request.json
@@ -261,16 +264,19 @@ def manifest(path=None):
             manifest_md_hash = hashlib.md5(json.dumps(manifest.get('metadata',{}), sort_keys=True).encode()).hexdigest()
             input_data_md_hash = hashlib.md5(json.dumps(metadata(**input_data), sort_keys=True).encode()).hexdigest()
             logger.info(f'manifest found: manifest_md_hash={manifest_md_hash} input_data_md_hash={input_data_md_hash}')
-            if refresh or 'service' not in manifest['sequences'][0]['canvases'][0]['images'][0]['resource']:
-                image_data = get_image_data(mdb, input_data['url'])
-                #logger.info(json.dumps(image_data, indent=2))
-                if refresh or image_data is None or image_data['status'] != 'done':
-                    make_iiif_image(mdb, manifest, **input_data)
-            else:
-                image_data = None
-            if (image_data is not None) or (manifest_md_hash != input_data_md_hash):
-                manifest = update_manifest(mdb, manifest, image_data, **input_data)
+            if can_mutate:
+                if refresh or 'service' not in manifest['sequences'][0]['canvases'][0]['images'][0]['resource']:
+                    image_data = get_image_data(mdb, input_data['url'])
+                    if refresh or image_data is None or image_data['status'] != 'done':
+                        make_iiif_image(mdb, manifest, **input_data)
+                else:
+                    image_data = None
+                if (image_data is not None) or (manifest_md_hash != input_data_md_hash):
+                    manifest = update_manifest(mdb, manifest, image_data, **input_data)
         else:
+            if not can_mutate:
+                return ('Not authorized', 403)
+
             image_data = get_image_data(mdb, input_data['url'])
             if image_data is None and input_data['url'].endswith('/info.json'):
                 resp = requests.get(input_data['url'], headers = {'Accept': 'application/json'})
@@ -287,7 +293,11 @@ def manifest(path=None):
                 make_iiif_image(mdb, manifest, **input_data)
             manifest = make_manifest_v2_1_1(mdb, mid, image_data, **input_data)
         return manifest, 200
+    
     elif request.method == 'PUT':
+        if not can_mutate:
+            return ('Not authorized', 403)
+
         mdb = connect_db()
         input_data = request.json
         manifest = update_manifest(mdb, manifest, **input_data)

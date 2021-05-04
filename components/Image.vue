@@ -16,7 +16,7 @@
             <path fill-rule="evenodd" clip-rule="evenodd" d="M13.3333 8L7.77778 12.4444V3.55556L13.3333 8ZM2.22222 0H17.7778C19 0 20 1 20 2.22222V13.7778C20 15 19 16 17.7778 16H11.885L14.2682 18.8598C14.6218 19.2841 14.5645 19.9147 14.1402 20.2682C13.7159 20.6218 13.0853 20.5645 12.7318 20.1402L9.75 16.562L6.76822 20.1402C6.41466 20.5645 5.78409 20.6218 5.35982 20.2682C4.93554 19.9147 4.87821 19.2841 5.23178 18.8598L7.61496 16H2.22222C1 16 0 15 0 13.7778V2.22222C0 1 1 0 2.22222 0ZM2.22222 13.7778H17.7778V2.22222H2.22222V13.7778Z"/>
           </svg>
         </span>
-        <span v-if="jwt" @click="openAnnotationsEditor" title="Open Annotations Editor">
+        <span @click="toggleAnnotatorEnabled" title="Open Annotations Editor">
           <svg width="21" height="18" viewBox="0 0 22 19" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M20.6453 5.5585L17.0283 4.25559C16.8759 4.2007 16.7039 4.27914 16.6455 4.43017L13.2845 13.1108L14.1453 15.7556C14.2596 16.1093 14.6807 16.2609 15.0074 16.0661L17.4548 14.613L20.8158 5.93242C20.8743 5.78138 20.7977 5.61339 20.6453 5.5585ZM19.2831 0.880764L21.2399 1.58566C21.8495 1.80522 22.1546 2.47448 21.9219 3.08134L21.3772 4.48836C21.3187 4.6394 21.1467 4.71783 20.9943 4.66294L17.3774 3.36003C17.225 3.30514 17.1484 3.13715 17.2069 2.98611L17.7516 1.57909C17.9883 0.973681 18.6736 0.661205 19.2831 0.880764ZM10.6142 12.8025L14.7886 2.84821C13.8401 2.62062 12.8308 2.49796 11.784 2.49796C6.24285 2.49796 1.75304 5.93501 1.75304 10.1785C1.75304 11.825 2.43302 13.3419 3.58562 14.5948C2.98452 15.9433 0.742171 17.2336 0.420251 17.4188C0.39608 17.4327 0.382736 17.4404 0.381725 17.4414C0.275629 17.5518 0.246694 17.715 0.309387 17.8591C0.37208 18.0031 0.507112 18.0895 0.661434 18.0895C2.42649 18.0895 5.36514 17.2686 6.41646 16.659C7.96933 17.4126 9.80673 17.8591 11.784 17.8591C12.0419 17.8591 12.2976 17.8516 12.5506 17.837L10.6142 12.8025Z"/>
         </svg>
@@ -93,6 +93,7 @@ module.exports = {
     active: Boolean,
     actions: { type: Object, default: () => ({}) },
     contentSource:  { type: Object, default: () => ({}) },
+    ghToken: String,
 
     // actions: { type: Array, default: () => ([]) },
     actionSources: { type: Array, default: () => ([]) },
@@ -135,6 +136,7 @@ module.exports = {
     tippy: null,
     imageInfo: null,
     showTippy: false,
+    annotatorEnabled: false,
   }),
   computed: {
     osdContainerStyle() {
@@ -142,7 +144,7 @@ module.exports = {
         backgroundColor: this.currentItem ? this.currentItem.background || 'black' : 'black',
         textAlign: 'center',
         height: this.active ? '100%' : '0',
-        display: this.active ? 'unset' : 'none',
+        display: this.active ? 'grid' : 'none',
         width: `${this.width}px`,
         maxHeight: this.showAnnotations ? `${this.width}px` : '',
         position: 'relative'
@@ -274,6 +276,8 @@ module.exports = {
           }}  
         }
         this.viewer = OpenSeadragon(options)
+        this.initAnnotator()
+
         // this.viewer.viewport.goHome = function(immediately) { if (this.viewer) this.viewer.raiseEvent('home', { immediately: immediately }) }
         this.viewer.addHandler('home', (e) => {
           this.positionImage(e.immediately, 'home')
@@ -312,6 +316,7 @@ module.exports = {
             this.viewer.world.getItemAt(numItems-1).setClip(new OpenSeadragon.Rect(0, 0, 0, 0))
           }
           this.imageSize = e.item.getContentSize() || {x:0 , y:0}
+
         })
         // console.log(this.drawRect({left: 0, top: 0, width: this.viewer.drawer.canvas.width-2, height: this.viewer.drawer.canvas.height-2, stroke: 'red', strokeWidth: 2, fill: null}))
       })
@@ -410,19 +415,20 @@ module.exports = {
       this.page = e.page
     },
     initAnnotator() {
-      // console.log('initAnnotator', this.currentItem.annotations.length)
+      console.log('initAnnotator')
       if (this.annotator) {
         this.annotator.destroy()
       }
-      this.annotator = OpenSeadragon.Annotorious(this.viewer, { readOnly: true })
+      this.annotator = OpenSeadragon.Annotorious(this.viewer, { readOnly: false })
       this.annotator.off()
       this.annotator.on('selectAnnotation', this.annotationSelected)
       this.annotator.on('createAnnotation', this.createAnnotation)
       this.annotator.on('updateAnnotation', this.updateAnnotation)
       this.annotator.on('deleteAnnotation', this.deleteAnnotation)
-      this.currentItem.annotations.map(anno => this.annotator.addAnnotation(anno))
+      //this.currentItem.annotations.map(anno => this.annotator.addAnnotation(anno))
     },
-    loadAnnotations() {
+    loadAnnotations(path) {
+      /*
       const url = `${this.annosEndpoint}?target=${encodeURIComponent(this.target)}`
       // console.log('loadAnnotations', this.target, url)
       return fetch(url)
@@ -437,12 +443,15 @@ module.exports = {
           // console.log(`annotations=${this.currentItem.annotations.length}`)
           return this.currentItem.annotations
         })
+      */
+      return this.getFile(path)
     },
     annotationSelected(anno) {
       console.log('annotationSelected', anno)
     },
     createAnnotation(anno) {
-      // console.log('createAnnotation', anno)
+      console.log('createAnnotation', anno)
+      this.putFile('path')
       const tmp = document.createElement('div')
       tmp.innerHTML = anno
       let annoText = tmp.textContent;
@@ -506,6 +515,19 @@ module.exports = {
           this.goHome()
         }
       })
+    },
+    toggleAnnotatorEnabled() {
+     this.annotatorEnabled = !this.annotatorEnabled
+    },
+    setAnnotatorEnabled(enabled) {
+      console.log(`setAnnotatorEnabled=${enabled}`)
+      const osdElem = document.getElementById('osd')
+      console.log(osdElem)
+      if (osdElem) {
+        osdElem.style.maxHeight = enabled ? `${this.width}px` : ''
+        Array.from (document.querySelectorAll('.a9s-annotationlayer')).forEach(elem => elem.style.display = enabled ? 'unset' : 'none')
+        setTimeout(() => this.goHome(true), 10)
+      }
     },
     openAnnotationsEditor() {
       // console.log('openAnnotationsEditor', this.currentItem)
@@ -889,7 +911,8 @@ module.exports = {
     currentItem(current, previous) {
       // console.log('currentItem', current, previous)
       if (this.viewer && current && (!previous || current['@id'] !== previous['@id'])) {
-        this.loadAnnotations().then(() => this.initAnnotator())
+        // this.loadAnnotations().then(() => this.initAnnotator())
+        this.loadAnnotations('/examples/images/README.md').then((annos) => console.log(annos))
         this.displayInfoBox();
       } else {
         // vvvvv this causes an infinite loop!!!!
@@ -911,6 +934,12 @@ module.exports = {
     showAnnotations(show) {
       Array.from (document.querySelectorAll('.a9s-annotationlayer')).forEach(elem => elem.style.display = show ? 'unset' : 'none')
       if (!show && !this.showAnnotationsNavigator) setTimeout(() => this.goHome(true), 10)
+    },
+    annotatorEnabled: {
+      handler: function (annotatorIsEnabled) {
+        this.setAnnotatorEnabled(annotatorIsEnabled)
+      },
+      immediate: false
     },
     sliderPct() {
       const numItems = this.viewer.world.getItemCount()
