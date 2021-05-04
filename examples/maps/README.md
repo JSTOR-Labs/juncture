@@ -6,13 +6,6 @@
        layout="vtl"
        author="JSTOR Labs team">
 
-
-## Map with heatmap overlay
-
-This examples uses the [Leaflet Heatmap Layer Plugin](https://www.patrick-wied.at/static/heatmapjs/plugin-leaflet-layer.html) to add a heatmap overlay on a map
-<param ve-simple-map center="-2, 118" zoom="4">
-<param ve-map-layer heatmap url="nepenthes_horticultural_heatmap.tsv">
-
 ## Introduction
 
 This sample essay provides examples showing how maps can be incorporated into an essay.  Various features are used in the examples.
@@ -215,4 +208,14 @@ This map of the county of Kent in the UK uses the standard OSM basemap overlaid 
 ```markdown
 `flyto` actions can be used in the essay text to trigger an update in the map viewer.  The action is triggered by a user mouse click or hover interaction with text that is "wrapped" with an HTML `span` tag defining the action.  This paragraph used a map of <span data-mouseover-map-flyto="43,12.3,6">Italy</span> and includes actions causing the map to flyto <span data-click-map-flyto="41.893,12.483,10" data-mouseover-map-flyto="41.893,12.483,11">Rome</span> or <span data-mouseover-map-flyto="45.440, 12.332, 13">Venice</span> when the mouse hovers over the text.
 <param ve-map center="43,12.3" zoom="6">
+```
+## Map with heatmap overlay {#heatmap}
+
+This examples uses the [Leaflet Heatmap Layer Plugin](https://www.patrick-wied.at/static/heatmapjs/plugin-leaflet-layer.html) to add a heatmap overlay on a map
+<param ve-simple-map center="-2, 118" zoom="4">
+<param ve-map-layer heatmap url="nepenthes_horticultural_heatmap.tsv">
+
+```markdown
+<param ve-simple-map center="-2, 118" zoom="4">
+<param ve-map-layer heatmap url="nepenthes_horticultural_heatmap.tsv">
 ```
