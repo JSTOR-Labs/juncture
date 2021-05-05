@@ -131,7 +131,7 @@ module.exports = {
           heatmapLayer.setData(heatmapData)
         })
     },
-    makeCustomMarker(data) {
+    addCustomMarker(data) {
         console.log('make custom marker', data)
         //const faIcon = 'https://d29fhpw069ctt2.cloudfront.net/icon/image/49017/preview.svg'
         const faIcon = 'http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg'
