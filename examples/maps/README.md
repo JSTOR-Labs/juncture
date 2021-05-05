@@ -211,12 +211,19 @@ This map of the county of Kent in the UK uses the standard OSM basemap overlaid 
 ```
 ## Map with heatmap overlay {#heatmap}
 
-This examples uses the [Leaflet Heatmap Layer Plugin](https://www.patrick-wied.at/static/heatmapjs/plugin-leaflet-layer.html) to add a heatmap overlay on a map
+This example uses the [Leaflet Heatmap Layer Plugin](https://www.patrick-wied.at/static/heatmapjs/plugin-leaflet-layer.html) to add a heatmap overlay on a map.  `ve-map-layer` options:
+- **heatmap** - _required_
+- **url** - _required_ URL to dataset file, currently assumes this is a TSV tile. 
+- **radius** - _optional_ (integer, default 15) Defines the radius of your datapoints. If scaleRadius is false, radius is measured in pixels. If scaleRadius is true it's measured in the scale of the map
+- **max-opacity** - _optional_ (float, default 0.6)
+- **scale-radius** - _optional_ (boolean, default false) Defines whether the radius should be scaled to accordingly to zoom level.
+- **use-local-extrema** - _optional_ (boolean, default false) Defines whether the heatmap should use a global extrema set via setData/addData OR a local extrema (the maximum and minimum of the currently displayed viewport)
+- **max** - _optional_ (integer, default 10) Sets the upper bound of your dataset
 <param ve-simple-map center="-2, 118" zoom="4">
 <param ve-map-layer heatmap url="nepenthes_horticultural_heatmap.tsv">
 
 ```markdown
-<param ve-simple-map center="-2, 118" zoom="4">
+<param ve-map center="-2, 118" zoom="4">
 <param ve-map-layer heatmap url="nepenthes_horticultural_heatmap.tsv">
 ```
 
