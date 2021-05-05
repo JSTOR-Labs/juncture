@@ -92,6 +92,7 @@ module.exports = {
             if (layer.heatmap) this.addHeatmap(layer)
           })
           this.markers.forEach(marker => {
+            console.log('marker', marker);
             if (marker) this.addCustomMarker(marker)
           })
         })
