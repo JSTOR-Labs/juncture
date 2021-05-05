@@ -54,7 +54,7 @@ module.exports = {
     zoom() { return this.mapDef.zoom || defaults.zoom },
     maxZoom() { return this.mapDef['max-zoom'] || defaults.maxZoom },
     layers() { return this.items.filter(item => item['ve-map-layer']) },
-    markers() { return this.items.filter(item => item['map-marker']) },
+    markers() { return this.items.filter(item => item['ve-map-marker']) },
 
     mapStyle() { return {
       width: `${this.width}px`,
