@@ -54,6 +54,7 @@ module.exports = {
     zoom() { return this.mapDef.zoom || defaults.zoom },
     maxZoom() { return this.mapDef['max-zoom'] || defaults.maxZoom },
     layers() { return this.items.filter(item => item['ve-map-layer']) },
+    markers() { return this.items.filter(item => item['ve-map-marker']) },
 
     mapStyle() { return {
       width: `${this.width}px`,
@@ -89,6 +90,9 @@ module.exports = {
           })
           this.layers.forEach(layer => {
             if (layer.heatmap) this.addHeatmap(layer)
+          })
+          this.markers.forEach(marker => {
+            if (marker) this.addCustomMarker(marker)
           })
         })
       }
@@ -126,7 +130,21 @@ module.exports = {
           let heatmapData = {max: 8, data: Object.values(byPlace)}
           heatmapLayer.setData(heatmapData)
         })
-    }
+    },
+    makeCustomMarker(data) {
+        console.log('make custom marker', data)
+        //const faIcon = 'https://d29fhpw069ctt2.cloudfront.net/icon/image/49017/preview.svg'
+        const faIcon = 'http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg'
+        var icon = L.icon({
+                iconUrl: faIcon,
+                iconSize:     [38, 95], // size of the icon
+                shadowSize:   [50, 64], // size of the shadow
+                iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+                shadowAnchor: [4, 62],  // the same for the shadow
+                popupAnchor:  [-3, -76]
+            });
+        L.marker([51.5, -0.09], {icon: icon}).addTo(this.map);
+    },
   },
   watch: {
     active: {
