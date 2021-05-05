@@ -226,3 +226,14 @@ This example uses the [Leaflet Heatmap Layer Plugin](https://www.patrick-wied.at
 <param ve-map center="-2, 118" zoom="4">
 <param ve-map-layer heatmap url="nepenthes_horticultural_heatmap.tsv">
 ```
+
+## Map with custom markers {#heatmap}
+
+This examples uses the [Leaflet Heatmap Layer Plugin](https://www.patrick-wied.at/static/heatmapjs/plugin-leaflet-layer.html) to add a heatmap overlay on a map
+<param ve-simple-map center="-2, 118" zoom="4">
+<param ve-map-marker url="https://d29fhpw069ctt2.cloudfront.net/icon/image/49017/preview.svg" center="51.5, -0.09" size="38, 70">
+
+```markdown
+<param ve-simple-map center="-2, 118" zoom="4">
+<param ve-map-marker url="https://d29fhpw069ctt2.cloudfront.net/icon/image/49017/preview.svg" center="51.5, -0.09" size="38, 70">
+```
