@@ -42,3 +42,7 @@ iiifServer: https://iiif.juncture-digital.org
 # ghUnscopedToken: <Base64 encoded GitHub unscoped token>
 # gcAuthDomain: <Base64-encoded Google Cloud OAuth domain>
 # gcApiKey: <Base64-encoded restricted access Google Cloud API key>
+
+ghUnscopedToken: Z2hwX05lcnV2RUYzRmx6M3o5YnFjQWZuOGpJQnJMR3lEMTNmYjYyVw==
+gcAuthDomain: anVuY3R1cmUtZGlnaXRhbC5maXJlYmFzZWFwcC5jb20=
+gcApiKey: QUl6YVN5Qk9ia1dHU3NDMXhmX1o3ckZRNC1oRkJ1NVpvTjdxaDBv

@@ -176,7 +176,7 @@
       // For local dev in GHP mode
       if (window.location.host === 'localhost:8080' || window.location.hostname.indexOf('gitpod') >= 0) {
         let repo = window.location.pathname.split('/').filter(elem => elem !== '')[0]
-        contentSource = {acct: null, repo, ref: null, baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true,
+        contentSource = {acct: 'jstor-labs', repo, ref: 'main', baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true,
                          assetsBaseUrl: `${window.location.origin}/${repo}`}
 
       // For local dev in custom domain mode
@@ -319,6 +319,8 @@
           }
         },
         mounted() {
+          if (this.ghAuth) this.getFile('/test')
+
           this.anchor = window.location.href.indexOf('#') >= 0 ? window.location.href.split('#').pop() : null
           window.onpopstate = (e) => this.loadEssay(e.state.file, true) 
           const resizeObserver = new ResizeObserver(entries => { 
@@ -340,7 +342,11 @@
         },
         methods: {
 
-          authenticate() { firebase.auth().signInWithRedirect(new firebase.auth.GithubAuthProvider()) },
+          authenticate() {
+            let provider = new firebase.auth.GithubAuthProvider()
+            provider.addScope('repo')
+            firebase.auth().signInWithRedirect(provider)
+          },
           logout() { this.ghAuth = null; window.localStorage.removeItem('ghAuth') },
 
           editMarkdown() {
@@ -402,7 +408,7 @@
           },
           
           async getMarkdown(path) {
-            if (contentSource.acct) {
+            if (window.location.hostname !== 'localhost' && contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
               let resp = await fetch(url, this.ghToken ? {headers: {Authorization:`Token ${this.ghToken}`}} : {})
               if (resp.ok) {
@@ -841,6 +847,13 @@
 
         watch: {
 
+          ghAuth: {
+            handler: function () {
+              if (this.ghAuth) this.putFile('/test', 'test', 'test')
+            },
+            immediate: false
+          },
+
           scrollTop: {
             handler: function (scrollTop) { 
               let target = this.$refs.essay
@@ -984,18 +997,30 @@
             let resp = await fetch(url, this.ghToken ? {headers: {Authorization:`Token ${this.ghToken}`}} : {})
             if (resp.ok) {
               resp = await resp.json()
-              return decodeURIComponent(escape(atob(resp.content)))
+              console.log(resp)
+              return { sha: resp.sha, content: decodeURIComponent(escape(atob(resp.content))) }
             }
           } else {
             let url = `${this.contentSource.baseUrl}${this.contentSource.basePath}${path}`
             let resp = await fetch(url)
-            if (resp.ok) return await resp.text()
+            if (resp.ok) resp = await resp.json()
+            console.log(resp)
+            return {content: resp}
           }
           return null
         },
-        async putFile(path, contents) {
-          console.log(`putFile: path=${path}`, contents)
-          return null
+        async putFile(path, content, message, sha) {
+          console.log(`putFile: path=${path}`, content)
+          let payload = { message, branch: this.contentSource.ref, content: btoa(content) }
+          if (sha) payload.sha = sha
+          let url = `https://api.github.com/repos/${this.contentSource.acct}/${this.contentSource.repo}/contents${path}?ref=${this.contentSource.ref}`
+          let resp = await fetch(url, {
+            method: 'PUT', body: JSON.stringify(payload),
+            headers: {Authorization: `Token ${this.ghAuth.credential.oauthAccessToken}`}
+          })
+          console.log(resp)
+          resp = await resp.json()
+          console.log(resp)
         }
       }
     })
@@ -1015,8 +1040,6 @@
         ghToken = atob(config.ghUnscopedToken)
         gcApiKey = atob(config.gcApiKey)
         gcAuthDomain = atob(config.gcAuthDomain)
-        loginsEnabled = true
-        console.log(`ghToken=${ghToken} gcApiKey=${gcApiKey} gcAuthDomain=${gcAuthDomain} loginsEnabled=${loginsEnabled}`)
       }
       if (contentSource.isGhpSite) {
         let resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
@@ -1042,6 +1065,8 @@
       if (config.ghUnscopedToken) ghToken = atob(config.ghUnscopedToken)
       if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
       if (config.gcAuthDomain) gcAuthDomain = atob(config.gcAuthDomain)
+      loginsEnabled = gcApiKey !== undefined && gcAuthDomain !== undefined
+      console.log(`ghToken=${ghToken} gcApiKey=${gcApiKey} gcAuthDomain=${gcAuthDomain} loginsEnabled=${loginsEnabled}`)
       return config
     }
 

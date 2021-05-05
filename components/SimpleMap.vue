@@ -97,14 +97,14 @@ module.exports = {
       let cfg = {
         // radius should be small ONLY if scaleRadius is true (or small radius is intended)
         // if scaleRadius is false it will be the constant radius used in pixels
-        radius: 2,
-        maxOpacity: .8,
+        radius: parseInt(layer.radius || '15'),
+        maxOpacity: parseFloat(layer['max-opacity'] || '0.6'),
         // scales the radius based on map zoom
-        scaleRadius: true,
+        scaleRadius: layer['scale-radius'] === 'true',
         // if set to false the heatmap uses the global maximum for colorization
         // if activated: uses the data maximum within the current map boundaries
         //   (there will always be a red spot with useLocalExtremas true)
-        useLocalExtrema: true,
+        useLocalExtrema: layer['use-local-extrema'] === 'true',
         // which field name in your data represents the latitude - default "lat"
         latField: 'lat',
         // which field name in your data represents the longitude - default "lng"
@@ -123,7 +123,7 @@ module.exports = {
               if (!byPlace[item.PlaceQID.id]) byPlace[item.PlaceQID.id] = {lat: parseFloat(item.Lat1.id), lng: parseFloat(item.Long1.id), count: 0}
               byPlace[item.PlaceQID.id].count += 1
             })
-          let heatmapData = {max: 8, data: Object.values(byPlace)}
+          let heatmapData = {layer: parseInt(layer.max || '10'), data: Object.values(byPlace)}
           heatmapLayer.setData(heatmapData)
         })
     }
