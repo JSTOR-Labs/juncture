@@ -134,16 +134,19 @@ module.exports = {
     addCustomMarker(data) {
         console.log('make custom marker', data)
         //const faIcon = 'https://d29fhpw069ctt2.cloudfront.net/icon/image/49017/preview.svg'
-        const faIcon = data.url
+        const faIcon = data.url;
+        const iconsize = data.size.split(',');
+        const coords = data.center.split(',');
+        console.log('data.url', faIcon, iconsize, coords)
         var icon = L.icon({
                 iconUrl: faIcon,
-                iconSize:     [data.size], // size of the icon
-                //shadowSize:   [50, 64], // size of the shadow
+                iconSize:     iconsize, // size of the icon
+                shadowSize:   [50, 64], // size of the shadow
                 iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
                 shadowAnchor: [4, 62],  // the same for the shadow
                 popupAnchor:  [-3, -76]
             });
-        L.marker([data.center], {icon: faIcon}).addTo(this.map);
+        L.marker(coords, {icon: faIcon}).addTo(this.map);
     },
   },
   watch: {
