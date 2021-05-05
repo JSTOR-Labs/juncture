@@ -841,6 +841,10 @@
 
         watch: {
 
+          ghAuth() {
+            if (this.ghAuth()) this.putFile('test', 'test', 'test')
+          },
+
           scrollTop: {
             handler: function (scrollTop) { 
               let target = this.$refs.essay
@@ -993,9 +997,17 @@
           }
           return null
         },
-        async putFile(path, contents) {
-          console.log(`putFile: path=${path}`, contents)
-          return null
+        async putFile(path, content, message) {
+          console.log(`putFile: path=${path}`, content)
+          let payload = { message, branch: this.contentSource.ref, content: btoa(content) }
+          let url = `https://api.github.com/repos/${this.contentSource.acct}/${this.contentSource.repo}/contents${path}?ref=${this.contentSource.ref}`
+          let resp = fetch(url, {
+            method: 'PUT', body: JSON.stringify(payload),
+            headers: {Authorization: `Token ${this.ghAuth.credential.oauthAccessToken}`}
+          })
+          console.log(resp)
+          resp = await resp.json()
+          console.log(resp)
         }
       }
     })
