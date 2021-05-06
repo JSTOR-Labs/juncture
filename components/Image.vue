@@ -168,7 +168,7 @@ module.exports = {
       : null
     },
     currentItemSourceHash() { return this.currentItemSource ? this.sha256(this.currentItemSource).slice(0,8) : '' },
-    annosUrl() { return `${this.contentSource.assetsBaseUrl}/${this.mdDir}${this.currentItemSourceHash}.json` },
+    annosUrl() { return `${this.contentSource.assetsBaseUrl || this.contentSource.baseUrl}/${this.mdDir}${this.currentItemSourceHash}.json` },
     target() {
       if (this.currentItem.target) {
         return this.currentItem.target
