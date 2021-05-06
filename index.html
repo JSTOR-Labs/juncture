@@ -1089,7 +1089,7 @@
     // Gets a list of available components
     async function getComponentsList() {
       let componentsList = []
-      if (contentSource.acct && contentSource.repo && contentSource.ref) {
+      if (window.location.hostname !== 'localhost' && contentSource.acct && contentSource.repo && contentSource.ref) {
         let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${contentSource.ref}`,
                                ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
         if (resp.ok) {

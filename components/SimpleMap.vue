@@ -26,7 +26,8 @@ const defaults = {
   basemap: 'OpenStreetMap',
   center: [25, 0],
   zoom: 2.5,
-  maxZoom: 16
+  maxZoom: 16,
+  iconSize: [40, 70]
 }
 
 module.exports = {
@@ -42,14 +43,14 @@ module.exports = {
     viewerIcon,
     dependencies,
     map: null,
-    tileLayers: [],
+    currentLayers: []
   }),
   computed: {
     mapDef() { return this.items.find(item => item.viewer === this.$options.name) || {} },
     basemap() { return this.mapDef.basemap || defaults.basemap },
     center() { 
       let coordsStr = this.entities[this.mapDef.center] ? this.entities[this.mapDef.center].coords : this.mapDef.center
-      return coordsStr ? coordsStr.split(',').map(coord => parseFloat(coord)) : defaults.center 
+      return coordsStr ? this.toFloatArray(coordsStr) : defaults.center 
     },
     zoom() { return this.mapDef.zoom || defaults.zoom },
     maxZoom() { return this.mapDef['max-zoom'] || defaults.maxZoom },
@@ -88,15 +89,22 @@ module.exports = {
             maxZoom: this.maxZoom, 
             layers: [L.tileLayer(...baseLayers.OpenStreetMap)]
           })
-          this.layers.forEach(layer => {
-            if (layer.heatmap) this.addHeatmap(layer)
-          })
-          this.markers.forEach(marker => {
-            console.log('marker', marker);
-            if (marker) this.addCustomMarker(marker)
-          })
+          this.syncLayers()
         })
       }
+    },
+    toFloatArray(str) { return str.split(',').map(num => parseFloat(num))},
+    toIntArray(str) { return str.split(',').map(num => parseInt(num))},
+    syncLayers() {
+      console.log('syncLayers')
+      this.currentLayers.forEach(layer => this.map.removeLayer(layer))
+      this.currentLayers = []
+      this.layers.forEach(layer => {
+        if (layer.heatmap) this.addHeatmap(layer)
+      })
+      this.markers.forEach(marker => {
+        if (marker) this.addCustomMarker(marker)
+      })
     },
     addHeatmap(layer) {
       let cfg = {
@@ -119,6 +127,7 @@ module.exports = {
       }
       let heatmapLayer = new HeatmapOverlay(cfg)
       this.map.addLayer(heatmapLayer)
+      this.currentLayers.push(heatmapLayer)
 
       fetch(layer.url).then(resp => resp.text())
         .then(delimitedDataString => {
@@ -135,19 +144,20 @@ module.exports = {
     addCustomMarker(data) {
         console.log('make custom marker', data)
         //const faIcon = 'https://d29fhpw069ctt2.cloudfront.net/icon/image/49017/preview.svg'
-        const faIcon = data.url;
+        const faIcon = data.url
         //const iconsize = data.size.split(',');
         //const coords = data.center.split(',');
         //console.log('data.url', faIcon, iconsize, coords)
         var icon = L.icon({
-                iconUrl: faIcon,
-                iconSize:     [40, 70], // size of the icon
+                iconUrl:      faIcon,
+                iconSize:     data.size ? this.toIntArray(data.size) : defaults.iconSize, // size of the icon
                 shadowSize:   [50, 64], // size of the shadow
                 iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
                 shadowAnchor: [4, 62],  // the same for the shadow
                 popupAnchor:  [-3, -76]
-            });
-        L.marker([51.5, -0.09], {icon: faIcon}).addTo(this.map);
+            })
+        console.log(icon)
+        this.currentLayers.push(L.marker(this.toFloatArray(data.center), {icon}).addTo(this.map))
     },
   },
   watch: {
@@ -162,6 +172,7 @@ module.exports = {
       handler: function (mapDef) {
         console.log('mapDef', mapDef)
         if (this.map) {
+          this.syncLayers()
           this.map.flyTo(this.center, this.zoom)
         } else {
           this.createMap()
