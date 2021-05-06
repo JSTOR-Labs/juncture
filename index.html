@@ -118,7 +118,6 @@
 
     const referrerUrl = document.referrer
     if (referrerUrl) {
-      console.log(`referrer=${referrerUrl}`)
       const referrer = parseUrl(referrerUrl)
       if (referrer.host === 'github.com') {
         const referrerPath = referrer.pathname.slice(1).split('/')
@@ -398,7 +397,6 @@
           },
 
           submitContactForm() {
-            console.log(document.querySelector('.tippy-content .contact-form'))
             let contactData = {
               fromAddress: 'Labs@ithaka.org',
               toAddress: this.siteConfig.contactForm.toEmail,
@@ -416,7 +414,6 @@
           async getMarkdown(path) {
             if (window.location.hostname !== 'localhost' && contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
-              // console.log(`getMarkdown: url=${url} ghToken=${this.ghToken}`)
               let resp = await fetch(url, this.ghToken ? {headers: {Authorization:`Token ${this.ghToken}`}} : {})
               if (resp.ok) {
                 resp = await resp.json()
@@ -993,41 +990,35 @@
         async getFile(path) {
           console.log(`getFile: path=${path}`)
           if (window.location.hostname !== 'localhost' && this.contentSource.acct) {
+            let ghToken = oauthAccessToken || ghUnscopedToken
             let url = `https://api.github.com/repos/${this.contentSource.acct}/${this.contentSource.repo}/contents${path}?ref=${this.contentSource.ref}`
-            let resp = await fetch(url, this.ghToken ? {headers: {Authorization:`Token ${this.ghToken}`}} : {})
+            let resp = await fetch(url, ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
             if (resp.ok) {
               resp = await resp.json()
-              console.log(resp)
               return { sha: resp.sha, content: decodeURIComponent(escape(atob(resp.content))) }
             }
           } else {
             let url = `${this.contentSource.baseUrl}${this.contentSource.basePath}${path}`
             let resp = await fetch(url)
             if (resp.ok) resp = await resp.json()
-            console.log(resp)
             return {content: resp}
           }
           return null
         },
         async putFile(path, content, message) {
-          console.log(`putFile: path=${path} message=${message}`, content)
+          message = message || 'API Commit'
+          console.log(`putFile: path=${path} message=${message}`)
           if (window.location.hostname !== 'localhost' && this.contentSource.acct) {
+            let ghToken = oauthAccessToken || ghUnscopedToken
             let existing = await this.getFile(path)
             let payload = { message, branch: this.contentSource.ref, content: btoa(content) }
             if (existing) payload.sha = existing.sha
             let url = `https://api.github.com/repos/${this.contentSource.acct}/${this.contentSource.repo}/contents${path}?ref=${this.contentSource.ref}`
-            let resp = await fetch(url, {
-              method: 'PUT', body: JSON.stringify(payload),
-              headers: {Authorization: `Token ${this.ghToken}`}
-            })
-            console.log(resp)
+            let resp = await fetch(url, { method: 'PUT', body: JSON.stringify(payload), headers: {Authorization: `Token ${ghToken}`} })
             resp = await resp.json()
-            console.log(resp)
           } else {
             let url = `${this.contentSource.baseUrl}${this.contentSource.basePath}${path}`
-            console.log('Put local file', url)
             let resp = await fetch(url, { method: 'PUT', body: content })
-            console.log(resp)
           }
         }
       }
@@ -1075,7 +1066,6 @@
       if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
       if (config.gcAuthDomain) gcAuthDomain = atob(config.gcAuthDomain)
       loginsEnabled = gcApiKey !== undefined && gcAuthDomain !== undefined
-      console.log(`ghUnscopedToken=${ghUnscopedToken} gcApiKey=${gcApiKey} gcAuthDomain=${gcAuthDomain} loginsEnabled=${loginsEnabled}`)
       return config
     }
 
