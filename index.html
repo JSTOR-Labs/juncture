@@ -46,6 +46,7 @@
                  :content-source="contentSource"
                  :gh-token:="ghToken"
                  :md-dir="mdDir"
+                 :is-authenticated="authenticatedUser !== null && loginsEnabled"
                  @update-component-data="updateComponentData"
                  @set-hover-item="hoverItem = $event"
       ></component>
