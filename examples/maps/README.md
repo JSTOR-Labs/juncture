@@ -256,7 +256,7 @@ This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/)
 <param ve-map-marker
        url="https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg/330px-Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg"
        center="-7.182405194219532, 35.05200886854757"
-       size="129, 190"
+       size="129, 170"
        >
 
 ```markdown
@@ -271,6 +271,6 @@ This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/)
 <param ve-map-marker
        url="https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg/330px-Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg"
        center="-7.182405194219532, 35.05200886854757"
-       size="129, 190"
+       size="129, 170"
        >
 ```
