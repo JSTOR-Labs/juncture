@@ -310,7 +310,7 @@
         }),
         computed: {
           essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
-          ghToken() { return oauthAccessToken || ghUnscopedToken },
+          ghToken() { console.log(`ghToken: oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`); return oauthAccessToken || ghUnscopedToken },
           viewerStyle() { return { 
             height: this.viewerIsOpen
               ? this.isVerticalLayout 
@@ -416,7 +416,7 @@
           async getMarkdown(path) {
             if (window.location.hostname !== 'localhost' && contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
-              // console.log(`getMarkdown: url=${url} ghToken=${this.ghToken}`)
+              console.log(`getMarkdown: url=${url} ghToken=${this.ghToken}`)
               let resp = await fetch(url, this.ghToken ? {headers: {Authorization:`Token ${this.ghToken}`}} : {})
               if (resp.ok) {
                 resp = await resp.json()
@@ -994,6 +994,7 @@
           console.log(`getFile: path=${path}`)
           if (window.location.hostname !== 'localhost' && this.contentSource.acct) {
             let url = `https://api.github.com/repos/${this.contentSource.acct}/${this.contentSource.repo}/contents${path}?ref=${this.contentSource.ref}`
+            console.log(`getFile: url=${url} ghToken=${this.ghToken}`)
             let resp = await fetch(url, this.ghToken ? {headers: {Authorization:`Token ${this.ghToken}`}} : {})
             if (resp.ok) {
               resp = await resp.json()
