@@ -440,7 +440,7 @@ module.exports = {
       this.getFile(annosPath).then(annos => {
         console.log('annos', annos)
         if (annos && annos.content) {
-          annos.content.forEach(anno => this.annotator.addAnnotation(anno))
+          JSON.parse(annos.content).forEach(anno => this.annotator.addAnnotation(anno))
         }
       })
     },
