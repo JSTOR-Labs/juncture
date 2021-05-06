@@ -1000,7 +1000,7 @@
           } else {
             let url = `${this.contentSource.baseUrl}${this.contentSource.basePath}${path}`
             let resp = await fetch(url)
-            if (resp.ok) resp = await resp.json()
+            if (resp.ok) resp = await resp.text()
             return {content: resp}
           }
           return null

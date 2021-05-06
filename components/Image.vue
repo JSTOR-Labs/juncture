@@ -123,6 +123,7 @@ module.exports = {
     viewer: undefined,
     imageSize: {x:0,y:0},
     annotator: undefined,
+    annotations: [],
     annoCursor: 0,
     overlay: undefined,
     annosEditor: undefined,
@@ -179,7 +180,7 @@ module.exports = {
         return `${this.contentSource.acct}/${this.contentSource.repo}/${this.contentSource.ref}${path ? '/'+path : ''}/${imageSourceHash}`
       }
     },
-    annotations() { const annos = this.currentItem ? this.currentItem.annotations || [] : []; return annos; },
+    // annotations() { const annos = this.currentItem ? this.currentItem.annotations || [] : []; return annos; },
     numAnnotations() { return this.annotations.length },
     hasAnnotations() { return this.numAnnotations > 0 },
     hasNextAnnotation() { return this.annoCursor < this.numAnnotations - 1 },
@@ -438,16 +439,18 @@ module.exports = {
       let annosPath = `${this.mdDir}${this.currentItemSourceHash}.json`
       console.log(`loadAnnotations: path=${annosPath}`)
       this.getFile(annosPath).then(annos => {
-        console.log('annos', annos)
-        if (annos && annos.content) {
-          JSON.parse(annos.content).forEach(anno => this.annotator.addAnnotation(anno))
+        if (annos && annos.content && annos.content.length > 0) {
+          this.annotations = JSON.parse(annos.content)
+          this.annotations.forEach(anno => this.annotator.addAnnotation(anno))
+        } else {
+          this.annotations = []
         }
       })
     },
     saveAnnotations() {
-      let annotations = this.annotator.getAnnotations()
-      console.log('saveAnnotations', annotations)
-      this.putFile(`${this.mdDir}${this.currentItemSourceHash}.json`, JSON.stringify(annotations, null, 2))
+      this.annotations = this.annotator.getAnnotations()
+      console.log('saveAnnotations', this.annotations)
+      this.putFile(`${this.mdDir}${this.currentItemSourceHash}.json`, JSON.stringify(this.annotations, null, 2))
     },
     annotationSelected(anno) {
       console.log('annotationSelected', anno)
@@ -473,6 +476,7 @@ module.exports = {
       this.annosEditor = window.open(url, '_blank', `toolbar=yes,location=yes,left=0,top=0,width=1400,height=1200,scrollbars=yes,status=yes`)
     },
     viewNextAnnotation() {
+      console.log(`viewNextAnnotation: hasNext=${this.hasNextAnnotation}`)
       this.gotoAnnotationSeq(this.hasNextAnnotation ? this.annoCursor + 1 : 0)
     },
     viewPreviousAnnotation() {
@@ -480,9 +484,10 @@ module.exports = {
     },
     gotoAnnotationSeq(idx) {
       idx = idx !== undefined ? idx : this.annoCursor
-      if (this.currentItem.annotations && idx < this.currentItem.annotations.length) {
+      // if (this.currentItem.annotations && idx < this.currentItem.annotations.length) {
+      if (idx < this.annotations.length) {
         this.annoCursor = idx
-        this.gotoAnnotation(this.currentItem.annotations[idx])
+        this.gotoAnnotation(this.annotations[idx])
       }
     },
     gotoAnnotation(anno) {
