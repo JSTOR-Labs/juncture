@@ -147,12 +147,12 @@ module.exports = {
         var icon = L.icon({
                 iconUrl:      faIcon,
                 iconSize:     data.size ? this.toIntArray(data.size) : defaults.iconSize, // size of the icon
-                shadowUrl:    data.shadowUrl ? data.shadowUrl : null,
-                shadowSize:   data.shadowSize ? this.toIntArray(data.shadowSize) : defaults.iconSize, // size of the shadow
-                iconAnchor:   data.iconAnchor ? this.toIntArray(data.iconAnchor) : [22, 94], // point of the icon which will correspond to marker's location
-                shadowAnchor: data.shadowAnchor ? this.toIntArray(data.shadowAnchor) : [4, 62],  // the same for the shadow
+                shadowUrl:    data.shadowurl ? data.shadowurl : null,
+                shadowSize:   data.shadowsize ? this.toIntArray(data.shadowsize) : defaults.iconSize, // size of the shadow
+                iconAnchor:   data.iconanchor ? this.toIntArray(data.iconanchor) : [22, 94], // point of the icon which will correspond to marker's location
+                shadowAnchor: data.shadowanchor ? this.toIntArray(data.shadowanchor) : [4, 62],  // the same for the shadow
                 popupAnchor:  [-3, -76],
-                className:    data.className ? data.className : ''
+                className:    data.classname ? data.classname : ''
             })
         console.log(icon)
         this.currentLayers.push(L.marker(this.toFloatArray(data.center), {icon}).addTo(this.map))
