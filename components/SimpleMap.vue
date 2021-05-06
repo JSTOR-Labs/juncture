@@ -142,7 +142,7 @@ module.exports = {
         })
     },
     addCustomMarker(data) {
-        //console.log('make custom marker', data)
+        console.log('make custom marker', data)
         const faIcon = data.url
         var icon = L.icon({
                 iconUrl:      faIcon,
