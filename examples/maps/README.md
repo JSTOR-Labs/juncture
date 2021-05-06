@@ -234,7 +234,16 @@ This example uses the [Leaflet Heatmap Layer Plugin](https://www.patrick-wied.at
 
 ## Map with custom markers {#custom-markers}
 
-This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/) to put an image on the map.
+This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/) to put an image on the map. The basic tag is `<param ve-map-marker>` and the options are:
+- **url** - _required_ URL to image.
+- **center** - _required_ latitude and longitude coordinates for the image placement, in that order, separated by a comma. For example: `"39, 20"`
+- **size** - _required_ the size of the image in pixels, separated by a comma.
+- **iconAnchor** - The coordinates of the "tip" of the icon (relative to its top left corner). The icon will be aligned so that this point is at the marker's geographical location. Centered by default.
+- **shadowUrl** - the URL to a shadow image.
+- **shadowSize** - the size of the shadow image in pixels, separated by a comma.
+- **shadowAnchor** - The coordinates of the "tip" of the shadow (relative to its top left corner) (the same as iconAnchor if not specified).
+- **className** - A custom class name to assign to both primary and shadow images. Used for custom CSS styling.
+
 <param ve-simple-map center="-2, 118" zoom="4">
 <param ve-map-marker url="https://d29fhpw069ctt2.cloudfront.net/icon/image/49017/preview.svg" center="-2, 118" size="38, 70">
 
