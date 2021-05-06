@@ -245,7 +245,12 @@ This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/)
 - **className** - A custom class name to assign to both primary and shadow images. Used for custom CSS styling.
 
 <param ve-simple-map center="-2, 118" zoom="4">
-<param ve-map-marker url="https://d29fhpw069ctt2.cloudfront.net/icon/image/49017/preview.svg" center="-2, 118" size="38, 70">
+<param ve-map-marker
+       url="https://leafletjs.com/examples/custom-icons/leaf-green.png"
+       center="-2, 118"
+       size="38, 70"
+       shadowUrl="https://leafletjs.com/examples/custom-icons/leaf-shadow.png"
+       shadowSize="25, 60">
 
 ```markdown
 <param ve-simple-map center="-2, 118" zoom="4">
