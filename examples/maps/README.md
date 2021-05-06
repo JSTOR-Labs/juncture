@@ -249,6 +249,7 @@ This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/)
        url="https://leafletjs.com/examples/custom-icons/leaf-green.png"
        center="-2, 118"
        size="38, 70"
+       iconAnchor="22, 94"
        shadowUrl="https://leafletjs.com/examples/custom-icons/leaf-shadow.png"
        shadowSize="25, 60">
 
