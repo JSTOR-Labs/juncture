@@ -246,11 +246,11 @@ This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/)
 
 <param ve-simple-map center="-2, 118" zoom="4">
 <param ve-map-marker
-       url="https://leafletjs.com/examples/custom-icons/leaf-green.png"
+       url="https://freeicons.io/flowers/flower-flowers-colors-colorfulflower-plant-leaves-leaf-icon-45051"
        center="-2, 118"
        size="38, 70"
        iconAnchor="22, 94"
-       shadowUrl="https://leafletjs.com/examples/custom-icons/leaf-shadow.png"
+       shadowUrl="https://freeicons.io/flowers-2/flower-flowers-colorfulflower-yellowflower-plantation-icon-45099"
        shadowSize="25, 60">
 
 ```markdown
