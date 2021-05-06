@@ -232,7 +232,7 @@ This example uses the [Leaflet Heatmap Layer Plugin](https://www.patrick-wied.at
        max-opacity="0.6">
 ```
 
-## Map with custom markers {#custom-markers}
+## Map with custom markers or images {#custom-markers}
 
 This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/) to put an image on the map. The basic tag is `<param ve-map-marker>` and the options are:
 - **url** - _required_ URL to image.
