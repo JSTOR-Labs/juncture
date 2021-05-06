@@ -69,8 +69,8 @@ const prefixUrl = 'https://openseadragon.github.io/openseadragon/images/'
 
 const dependencies = [
   'https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js',
-  '/juncture/js/openseadragon-annotorious-2.3.1.min.js',
-  '/juncture/css/annotorious-2.3.1.min.css',
+  '/js/openseadragon-annotorious-2.3.1.min.js',
+  '/css/annotorious-2.3.1.min.css',
   'https://cdn.jsdelivr.net/npm/sjcl@1.0.8/sjcl.min.js'
   // 'https://altert.github.io/OpenseadragonFabricjsOverlay/openseadragon-fabricjs-overlay.js',
   // 'https://altert.github.io/OpenseadragonFabricjsOverlay/fabric/fabric.adapted.js'
