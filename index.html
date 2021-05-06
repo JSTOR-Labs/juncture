@@ -1016,7 +1016,7 @@
             let payload = { message, branch: this.contentSource.ref, content: btoa(content) }
             if (existing) payload.sha = existing.sha
             let url = `https://api.github.com/repos/${this.contentSource.acct}/${this.contentSource.repo}/contents${path}?ref=${this.contentSource.ref}`
-            console.log(`putFile: url=${url} sha=${sha} ghToken=${this.ghToken}`)
+            console.log(`putFile: url=${url} sha=${existing.sha} ghToken=${this.ghToken}`)
             let resp = await fetch(url, {
               method: 'PUT', body: JSON.stringify(payload),
               headers: {Authorization: `Token ${this.ghToken}`}
