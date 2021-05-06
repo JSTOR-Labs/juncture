@@ -234,11 +234,43 @@ This example uses the [Leaflet Heatmap Layer Plugin](https://www.patrick-wied.at
 
 ## Map with custom markers {#custom-markers}
 
-This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/) to put an image on the map.
-<param ve-simple-map center="-2, 118" zoom="4">
-<param ve-map-marker url="https://d29fhpw069ctt2.cloudfront.net/icon/image/49017/preview.svg" center="-2, 118" size="38, 70">
+This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/) to put an image on the map. The basic tag is `<param ve-map-marker>` and the options are:
+- **url** - _required_ URL to image.
+- **center** - _required_ latitude and longitude coordinates for the image placement, in that order, separated by a comma. For example: `"39, 20"`
+- **size** - _required_ the size of the image in pixels, separated by a comma.
+- **iconAnchor** - The coordinates of the "tip" of the icon (relative to its top left corner). The icon will be aligned so that this point is at the marker's geographical location. Centered by default.
+- **shadowUrl** - the URL to a shadow image.
+- **shadowSize** - the size of the shadow image in pixels, separated by a comma.
+- **shadowAnchor** - The coordinates of the "tip" of the shadow (relative to its top left corner) (the same as iconAnchor if not specified).
+- **className** - A custom class name to assign to both primary and shadow images. Used for custom CSS styling.
+
+<param ve-simple-map center="2, 40" zoom="3">
+<param ve-map-marker
+       url="https://leafletjs.com/examples/custom-icons/leaf-green.png"
+       center="17.188263050774324, 52.28406397248149"
+       size="38, 95"
+       iconAnchor="22, 94"
+       shadowUrl="https://leafletjs.com/examples/custom-icons/leaf-red.png"
+       shadowSize="50, 64"
+       >
+<param ve-map-marker
+       url="https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg/330px-Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg"
+       center="-7.182405194219532, 35.05200886854757"
+       size="129, 190"
+       >
 
 ```markdown
-<param ve-simple-map center="-2, 118" zoom="4">
-<param ve-map-marker url="https://d29fhpw069ctt2.cloudfront.net/icon/image/49017/preview.svg" center="-2, 118" size="38, 70">
+<param ve-simple-map center="2, 40" zoom="4">
+<param ve-map-marker
+       url="https://leafletjs.com/examples/custom-icons/leaf-green.png"
+       center="17.188263050774324, 52.28406397248149"
+       size="38, 95"
+       iconAnchor="22, 94"
+       shadowUrl="https://leafletjs.com/examples/custom-icons/leaf-red.png"
+       shadowSize="50, 64">
+<param ve-map-marker
+       url="https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg/330px-Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg"
+       center="-7.182405194219532, 35.05200886854757"
+       size="129, 190"
+       >
 ```

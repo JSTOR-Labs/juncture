@@ -142,19 +142,17 @@ module.exports = {
         })
     },
     addCustomMarker(data) {
-        console.log('make custom marker', data)
-        //const faIcon = 'https://d29fhpw069ctt2.cloudfront.net/icon/image/49017/preview.svg'
+        //console.log('make custom marker', data)
         const faIcon = data.url
-        //const iconsize = data.size.split(',');
-        //const coords = data.center.split(',');
-        //console.log('data.url', faIcon, iconsize, coords)
         var icon = L.icon({
                 iconUrl:      faIcon,
                 iconSize:     data.size ? this.toIntArray(data.size) : defaults.iconSize, // size of the icon
-                shadowSize:   [50, 64], // size of the shadow
-                iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-                shadowAnchor: [4, 62],  // the same for the shadow
-                popupAnchor:  [-3, -76]
+                shadowUrl:    data.shadowurl ? data.shadowurl : null,
+                shadowSize:   data.shadowsize ? this.toIntArray(data.shadowsize) : defaults.iconSize, // size of the shadow
+                iconAnchor:   data.iconanchor ? this.toIntArray(data.iconanchor) : [22, 94], // point of the icon which will correspond to marker's location
+                shadowAnchor: data.shadowanchor ? this.toIntArray(data.shadowanchor) : [4, 62],  // the same for the shadow
+                popupAnchor:  [-3, -76],
+                className:    data.classname ? data.classname : ''
             })
         console.log(icon)
         this.currentLayers.push(L.marker(this.toFloatArray(data.center), {icon}).addTo(this.map))
