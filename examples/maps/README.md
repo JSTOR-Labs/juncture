@@ -250,7 +250,7 @@ This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/)
        center="17.188263050774324, 52.28406397248149"
        size="38, 95"
        iconAnchor="22, 94"
-       shadowUrl="https://leafletjs.com/examples/custom-icons/leaf-red.png"
+       shadowUrl="https://leafletjs.com/examples/custom-icons/leaf-shadow.png"
        shadowSize="50, 64"
        >
 <param ve-map-marker
@@ -266,7 +266,7 @@ This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/)
        center="17.188263050774324, 52.28406397248149"
        size="38, 95"
        iconAnchor="22, 94"
-       shadowUrl="https://leafletjs.com/examples/custom-icons/leaf-red.png"
+       shadowUrl="https://leafletjs.com/examples/custom-icons/leaf-shadow.png"
        shadowSize="50, 64">
 <param ve-map-marker
        url="https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg/330px-Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg"
