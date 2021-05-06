@@ -45,6 +45,7 @@
                  :hover-item="hoverItem"
                  :content-source="contentSource"
                  :gh-token:="ghToken"
+                 :md-dir="mdDir"
                  @update-component-data="updateComponentData"
                  @set-hover-item="hoverItem = $event"
       ></component>
@@ -276,7 +277,7 @@
           ghToken: null,
           params: [],
           markdown: null,
-          mdPathIsDir: false,
+          mdDir: null,
           markdownViewer: null,
           html: null,
           active: null,
@@ -319,8 +320,6 @@
           }
         },
         mounted() {
-          if (this.ghAuth) this.getFile('/test')
-
           this.anchor = window.location.href.indexOf('#') >= 0 ? window.location.href.split('#').pop() : null
           window.onpopstate = (e) => this.loadEssay(e.state.file, true) 
           const resizeObserver = new ResizeObserver(entries => { 
@@ -433,7 +432,7 @@
               let markdown = await this.getMarkdown(pathsToTry[i])
               if (markdown) {
                 this.markdown = markdown
-                this.mdPathIsDir = i !== 1
+                this.mdDir = i === 1 ? null : path
                 break
               }
             }
@@ -720,7 +719,7 @@
             })
             root.querySelectorAll('param').forEach(param => {
               ['url', 'banner'].forEach(attr => {
-                if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value, window.location.pathname, this.mdPathIsDir))
+                if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value, window.location.pathname, this.mdDir !== null))
               })
             })
           },
@@ -992,7 +991,7 @@
         },
         async getFile(path) {
           console.log(`getFile: path=${path}`)
-          if (this.contentSource.acct) {
+          if (window.location.hostname !== 'localhost' && this.contentSource.acct) {
             let url = `https://api.github.com/repos/${this.contentSource.acct}/${this.contentSource.repo}/contents${path}?ref=${this.contentSource.ref}`
             let resp = await fetch(url, this.ghToken ? {headers: {Authorization:`Token ${this.ghToken}`}} : {})
             if (resp.ok) {
@@ -1009,18 +1008,26 @@
           }
           return null
         },
-        async putFile(path, content, message, sha) {
-          console.log(`putFile: path=${path}`, content)
-          let payload = { message, branch: this.contentSource.ref, content: btoa(content) }
-          if (sha) payload.sha = sha
-          let url = `https://api.github.com/repos/${this.contentSource.acct}/${this.contentSource.repo}/contents${path}?ref=${this.contentSource.ref}`
-          let resp = await fetch(url, {
-            method: 'PUT', body: JSON.stringify(payload),
-            headers: {Authorization: `Token ${this.ghAuth.credential.oauthAccessToken}`}
-          })
-          console.log(resp)
-          resp = await resp.json()
-          console.log(resp)
+        async putFile(path, content, message) {
+          console.log(`putFile: path=${path} message=${message}`, content)
+          if (window.location.hostname !== 'localhost' && this.contentSource.acct) {
+            let existing = await this.getFile(path)
+            let payload = { message, branch: this.contentSource.ref, content: btoa(content) }
+            if (existing) payload.sha = existing.sha
+            let url = `https://api.github.com/repos/${this.contentSource.acct}/${this.contentSource.repo}/contents${path}?ref=${this.contentSource.ref}`
+            let resp = await fetch(url, {
+              method: 'PUT', body: JSON.stringify(payload),
+              headers: {Authorization: `Token ${this.ghAuth.credential.oauthAccessToken}`}
+            })
+            console.log(resp)
+            resp = await resp.json()
+            console.log(resp)
+          } else {
+            let url = `${this.contentSource.baseUrl}${this.contentSource.basePath}${path}`
+            console.log('Put local file', url)
+            let resp = await fetch(url, { method: 'PUT', body: content })
+            console.log(resp)
+          }
         }
       }
     })

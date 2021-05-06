@@ -11,7 +11,7 @@ import getopt
 
 BASEDIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 
-from flask import Flask, send_from_directory
+from flask import Flask, request, send_from_directory
 app = Flask(__name__)
 
 root = BASEDIR
@@ -25,9 +25,17 @@ def main(path=None):
         return fp.read(), 200
 '''
 
+@app.route('/<path:path>', methods=['PUT'])
+def put(path=''):
+    logger.info(f'PUT: {path}')
+    logger.info(request.data)
+    with open(f'{root}/{path}', 'wb') as fp:
+        fp.write(request.data)
+    return 'OK', 200
+
 @app.route('/', methods=['GET'])
 @app.route('/<path:path>', methods=['GET'])
-def assets(path=''):
+def get(path=''):
     path_elems = [elem for elem in path.split('/') if elem]
     logger.info(path_elems)
 

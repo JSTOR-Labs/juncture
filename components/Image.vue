@@ -69,8 +69,8 @@ const prefixUrl = 'https://openseadragon.github.io/openseadragon/images/'
 
 const dependencies = [
   'https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js',
-  // 'https://recogito.github.io/js/openseadragon-annotorious.min.js',
-  'https://jstor-labs.github.io/visual-essays/js/openseadragon-annotorious.min.js',
+  '/juncture/js/openseadragon-annotorious-2.3.1.min.js',
+  '/juncture/css/annotorious-2.3.1.min.css',
   'https://cdn.jsdelivr.net/npm/sjcl@1.0.8/sjcl.min.js'
   // 'https://altert.github.io/OpenseadragonFabricjsOverlay/openseadragon-fabricjs-overlay.js',
   // 'https://altert.github.io/OpenseadragonFabricjsOverlay/fabric/fabric.adapted.js'
@@ -93,6 +93,7 @@ module.exports = {
     active: Boolean,
     actions: { type: Object, default: () => ({}) },
     contentSource:  { type: Object, default: () => ({}) },
+    mdDir: String,
     ghToken: String,
 
     // actions: { type: Array, default: () => ([]) },
@@ -159,6 +160,15 @@ module.exports = {
         ? 'cover'
         : 'contain'
     },
+    currentItemSource() {
+      return this.currentItem
+        ? this.currentItem.sequences
+          ? this.currentItem.sequences[0].canvases[this.currentItem.manifest && this.currentItem.manifest.seq || 0].images[0].resource['@id']
+          : this.currentItem.url
+      : null
+    },
+    currentItemSourceHash() { return this.currentItemSource ? this.sha256(this.currentItemSource).slice(0,8) : '' },
+    annosUrl() { return `${this.contentSource.assetsBaseUrl}/${this.mdDir}${this.currentItemSourceHash}.json` },
     target() {
       if (this.currentItem.target) {
         return this.currentItem.target
@@ -415,106 +425,26 @@ module.exports = {
       this.page = e.page
     },
     initAnnotator() {
-      console.log('initAnnotator')
-      if (this.annotator) {
-        this.annotator.destroy()
+      if (!this.annotator) {
+        this.annotator = OpenSeadragon.Annotorious(this.viewer, { readOnly: false })
+        this.annotator.off()
+        this.annotator.on('selectAnnotation', this.annotationSelected)
+        this.annotator.on('createAnnotation', this.saveAnnotations)
+        this.annotator.on('updateAnnotation', this.saveAnnotations)
+        this.annotator.on('deleteAnnotation', this.saveAnnotations)
       }
-      this.annotator = OpenSeadragon.Annotorious(this.viewer, { readOnly: false })
-      this.annotator.off()
-      this.annotator.on('selectAnnotation', this.annotationSelected)
-      this.annotator.on('createAnnotation', this.createAnnotation)
-      this.annotator.on('updateAnnotation', this.updateAnnotation)
-      this.annotator.on('deleteAnnotation', this.deleteAnnotation)
-      //this.currentItem.annotations.map(anno => this.annotator.addAnnotation(anno))
     },
-    loadAnnotations(path) {
-      /*
-      const url = `${this.annosEndpoint}?target=${encodeURIComponent(this.target)}`
-      // console.log('loadAnnotations', this.target, url)
-      return fetch(url)
-        .then(resp => resp.json())
-        .then(data => {
-          const annotations = data.first
-            ? data.first.items
-            : data.items
-              ? data.items
-              : []
-          this.currentItem = { ...this.currentItem, ...{ annotations } } 
-          // console.log(`annotations=${this.currentItem.annotations.length}`)
-          return this.currentItem.annotations
-        })
-      */
-      return this.getFile(path)
+    async loadAnnotations() {
+      console.log(`loadAnnotations: url=${this.annosUrl}`)
+      this.annotator.loadAnnotations(this.annosUrl)
+    },
+    saveAnnotations() {
+      let annotations = this.annotator.getAnnotations()
+      console.log('saveAnnotations', annotations)
+      this.putFile(`${this.mdDir}${this.currentItemSourceHash}.json`, JSON.stringify(annotations, null, 2))
     },
     annotationSelected(anno) {
       console.log('annotationSelected', anno)
-    },
-    createAnnotation(anno) {
-      console.log('createAnnotation', anno)
-      this.putFile('path')
-      const tmp = document.createElement('div')
-      tmp.innerHTML = anno
-      let annoText = tmp.textContent;
-
-      anno.seq = this.currentItem.annotations ? this.currentItem.annotations.length : 0
-      anno.target.id = this.target
-      fetch(`${this.annosEndpoint}`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${this.jwt}`,
-          'Content-type': 'application/json'
-        },
-        body: JSON.stringify(annoText)
-      })
-      .then(resp => resp.json())
-      .then(createdAnno => {
-        // console.log('created', createdAnno)
-        anno.id = createdAnno.id
-        this.currentItem = { ...this.currentItem, ...{annotations: [...this.currentItem.annotations, createdAnno]}}
-      })
-    },
-    updateAnnotation(anno) {
-      // console.log('updateAnnotation', anno)
-      const tmp = document.createElement('div')
-      tmp.innerHTML = anno
-      let annoText = tmp.textContent;
-
-      const _id = anno.id.split('/').pop()
-      fetch(`${this.annosEndpoint}${this.target}/${_id}`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${this.jwt}`,
-          'Content-type': 'application/json'
-        },
-        body: JSON.stringify(anno)
-      })
-      .then(resp => resp.json())
-      .then(updated => {
-        let idx
-        for (idx = 0; idx < this.currentItem.annotations.length; idx++) {
-          if (this.currentItem.annotations[idx].id === updated.id) {
-            break
-          }
-        }
-        const annotations = this.currentItem.annotations.filter(_anno => _anno.id !== updated.id)
-        annotations.splice(idx, 0, updated)
-        this.currentItem = { ...this.currentItem, ...{annotations}}
-      })
-    },
-    deleteAnnotation(anno) {
-      const _id = anno.id.split('/').pop()
-      fetch(`${this.annosEndpoint}${this.target}/${_id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${this.jwt}`}
-      })
-      .then(resp => {
-        if (resp.ok) {
-          const annoId = resp.url.split('/').pop()
-          const annotations = this.currentItem.annotations.filter(_anno => _anno.id !== annoId)
-          this.currentItem = { ...this.currentItem, ...{annotations}}
-          this.goHome()
-        }
-      })
     },
     toggleAnnotatorEnabled() {
      this.annotatorEnabled = !this.annotatorEnabled
@@ -834,7 +764,6 @@ module.exports = {
   watch: {
     license: {
       handler: function () {
-      
         this.evalLicense()
       },
       immediate: true
@@ -894,7 +823,6 @@ module.exports = {
         
       }
     },
-    
     actions: {
       handler: function () {
         // this.actions.forEach(action => this.handleEssayAction(action))
@@ -909,10 +837,9 @@ module.exports = {
       immediate: true
     },
     currentItem(current, previous) {
-      // console.log('currentItem', current, previous)
+      console.log('currentItem', current, previous)
       if (this.viewer && current && (!previous || current['@id'] !== previous['@id'])) {
-        // this.loadAnnotations().then(() => this.initAnnotator())
-        this.loadAnnotations('/examples/images/README.md').then((annos) => console.log(annos))
+        this.loadAnnotations()
         this.displayInfoBox();
       } else {
         // vvvvv this causes an infinite loop!!!!
@@ -920,6 +847,7 @@ module.exports = {
         if (current && previous && previous.annotations) this.currentItem.annotations = [...previous.annotations]
       }
     },
+    currentItemSourceHash() { console.log(`currentItemSource=${this.currentItemSource} hash=${this.currentItemSourceHash}`) },
     mode() {
       if (this.viewer) this.initViewer()
     },
