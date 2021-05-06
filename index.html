@@ -995,7 +995,7 @@
           if (window.location.hostname !== 'localhost' && this.contentSource.acct) {
             let ghToken = oauthAccessToken || ghUnscopedToken
             let url = `https://api.github.com/repos/${this.contentSource.acct}/${this.contentSource.repo}/contents${path}?ref=${this.contentSource.ref}`
-            console.log(`getFile: url=${url} ghToken=${ghToken} tnis.ghToken=${this.ghToken}`)
+            console.log(`getFile: url=${url} ghToken=${ghToken} this.ghToken=${this.ghToken}`)
             let resp = await fetch(url, ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
             if (resp.ok) {
               resp = await resp.json()
@@ -1012,6 +1012,7 @@
           return null
         },
         async putFile(path, content, message) {
+          message = message || 'API Commit'
           console.log(`putFile: path=${path} message=${message}`, content)
           if (window.location.hostname !== 'localhost' && this.contentSource.acct) {
             let ghToken = oauthAccessToken || ghUnscopedToken
