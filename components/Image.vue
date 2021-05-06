@@ -435,8 +435,13 @@ module.exports = {
       }
     },
     async loadAnnotations() {
-      console.log(`loadAnnotations: url=${this.annosUrl}`)
-      this.annotator.loadAnnotations(this.annosUrl)
+      let annosPath = `${this.mdDir}${this.currentItemSourceHash}.json`
+      console.log(`loadAnnotations: path=${annosPath}`)
+      this.getFile(annosPath).then(annos => {
+        if (annos && annos.content) {
+          annos.content.forEach(anno => this.annotator.addAnnotation(anno))
+        }
+      })
     },
     saveAnnotations() {
       let annotations = this.annotator.getAnnotations()
