@@ -19,7 +19,7 @@
                  :site-config="siteConfig" 
                  :essay-config="essayConfig"
                  :logins-enabled="loginsEnabled"
-                 :is-authenticated="ghAuth !== null && loginsEnabled"
+                 :is-authenticated="authenticatedUser !== null && loginsEnabled"
                  :version="junctureVersion"
                  @menu-item-clicked="menuItemClicked"
                  @authenticate="authenticate"
@@ -216,8 +216,9 @@
     let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
     
     // GLobal variables used to initialize Vue
-    let siteConfig, contentSource, componentsList, ghToken, gcApiKey, gcAuthDomain, ghAuth
+    let siteConfig, contentSource, componentsList, ghUnscopedToken, oauthAccessToken, gcApiKey, gcAuthDomain
     let loginsEnabled = false
+    let authenticatedUser = null
     
     const componentsRoot = 'components'
     const componentPrefix = 've-'
@@ -230,7 +231,13 @@
         let result = await firebase.auth().getRedirectResult()
         if (result.credential) window.localStorage.setItem('ghAuth', JSON.stringify(result))
       }
-      try {ghAuth = JSON.parse(window.localStorage.getItem('ghAuth'))} catch(err){console.log(err)}
+      try {
+        let ghAuth = JSON.parse(window.localStorage.getItem('ghAuth'))
+        if (ghAuth) {
+          authenticatedUser = ghAuth.user
+          oauthAccessToken = ghAuth.credential.oauthAccessToken
+        }
+      } catch(err){console.log(err)}
     }
 
     getContentSource()
@@ -295,7 +302,7 @@
           hoverItem: undefined,
           selectedItem: undefined,
           actions: {},
-          ghAuth,
+          authenticatedUser,
           loginsEnabled,
           externalWindow: null,
           contactName: null,
@@ -304,6 +311,7 @@
         }),
         computed: {
           essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
+          ghToken() { return oauthAccessToken || ghUnscopedToken },
           viewerStyle() { return { 
             height: this.viewerIsOpen
               ? this.isVerticalLayout 
@@ -346,7 +354,7 @@
             provider.addScope('repo')
             firebase.auth().signInWithRedirect(provider)
           },
-          logout() { this.ghAuth = null; window.localStorage.removeItem('ghAuth') },
+          logout() { this.authenticatedUser = null; window.localStorage.removeItem('ghAuth') },
 
           editMarkdown() {
             this.openWindow(`https://github.com/${this.contentSource.acct}/${this.contentSource.repo}/edit/${this.contentSource.ref}/README.md`) 
@@ -847,13 +855,6 @@
 
         watch: {
 
-          ghAuth: {
-            handler: function () {
-              if (this.ghAuth) this.putFile('/test', 'test', 'test')
-            },
-            immediate: false
-          },
-
           scrollTop: {
             handler: function (scrollTop) { 
               let target = this.$refs.essay
@@ -1018,7 +1019,7 @@
             let url = `https://api.github.com/repos/${this.contentSource.acct}/${this.contentSource.repo}/contents${path}?ref=${this.contentSource.ref}`
             let resp = await fetch(url, {
               method: 'PUT', body: JSON.stringify(payload),
-              headers: {Authorization: `Token ${this.ghAuth.credential.oauthAccessToken}`}
+              headers: {Authorization: `Token ${this.ghAuth}`}
             })
             console.log(resp)
             resp = await resp.json()
@@ -1045,7 +1046,7 @@
       if (isJuncture) {
         let resp = await fetch(`${window.location.origin}/config.yaml`)
         config = YAML.parse(await resp.text())
-        ghToken = atob(config.ghUnscopedToken)
+        ghUnscopedToken = atob(config.ghUnscopedToken)
         gcApiKey = atob(config.gcApiKey)
         gcAuthDomain = atob(config.gcAuthDomain)
       }
@@ -1074,7 +1075,7 @@
       if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
       if (config.gcAuthDomain) gcAuthDomain = atob(config.gcAuthDomain)
       loginsEnabled = gcApiKey !== undefined && gcAuthDomain !== undefined
-      console.log(`ghToken=${ghToken} gcApiKey=${gcApiKey} gcAuthDomain=${gcAuthDomain} loginsEnabled=${loginsEnabled}`)
+      console.log(`ghUnscopedToken=${ghUnscopedToken} gcApiKey=${gcApiKey} gcAuthDomain=${gcAuthDomain} loginsEnabled=${loginsEnabled}`)
       return config
     }
 
