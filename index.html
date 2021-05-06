@@ -400,10 +400,10 @@
           submitContactForm() {
             console.log(document.querySelector('.tippy-content .contact-form'))
             let contactData = {
-              fromAddress: this.contactEmail,
+              fromAddress: 'Labs@ithaka.org',
               toAddress: this.siteConfig.contactForm.toEmail,
               messageSubject: this.siteConfig.contactForm.subject,
-              messageBodyText: `${this.contactMessage}\n\r[Sent by: ${this.contactName}]`,
+              messageBodyText: `${this.contactMessage}\n\r[Sent by: ${this.contactName} <${this.contactEmail}>]`,
             }
             console.log('submitContactForm', contactData)
             sendEmail(contactData).then(resp => {
@@ -416,7 +416,7 @@
           async getMarkdown(path) {
             if (window.location.hostname !== 'localhost' && contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
-              console.log(`getMarkdown: url=${url} ghToken=${this.ghToken}`)
+              // console.log(`getMarkdown: url=${url} ghToken=${this.ghToken}`)
               let resp = await fetch(url, this.ghToken ? {headers: {Authorization:`Token ${this.ghToken}`}} : {})
               if (resp.ok) {
                 resp = await resp.json()
