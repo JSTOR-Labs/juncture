@@ -19,7 +19,7 @@
                  :site-config="siteConfig" 
                  :essay-config="essayConfig"
                  :logins-enabled="loginsEnabled"
-                 :is-authenticated="ghAuth !== null && loginsEnabled"
+                 :is-authenticated="authenticatedUser !== null && loginsEnabled"
                  :version="junctureVersion"
                  @menu-item-clicked="menuItemClicked"
                  @authenticate="authenticate"
@@ -216,8 +216,9 @@
     let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
     
     // GLobal variables used to initialize Vue
-    let siteConfig, contentSource, componentsList, ghToken, gcApiKey, gcAuthDomain, ghAuth
+    let siteConfig, contentSource, componentsList, ghUnscopedToken, oauthAccessToken, gcApiKey, gcAuthDomain
     let loginsEnabled = false
+    let authenticatedUser = null
     
     const componentsRoot = 'components'
     const componentPrefix = 've-'
@@ -230,7 +231,13 @@
         let result = await firebase.auth().getRedirectResult()
         if (result.credential) window.localStorage.setItem('ghAuth', JSON.stringify(result))
       }
-      try {ghAuth = JSON.parse(window.localStorage.getItem('ghAuth'))} catch(err){console.log(err)}
+      try {
+        let ghAuth = JSON.parse(window.localStorage.getItem('ghAuth'))
+        if (ghAuth) {
+          authenticatedUser = ghAuth.user
+          oauthAccessToken = ghAuth.credential.oauthAccessToken
+        }
+      } catch(err){console.log(err)}
     }
 
     getContentSource()
@@ -274,7 +281,6 @@
           contentSource,
           componentsList,
           junctureVersion,
-          ghToken: null,
           params: [],
           markdown: null,
           mdDir: null,
@@ -295,7 +301,7 @@
           hoverItem: undefined,
           selectedItem: undefined,
           actions: {},
-          ghAuth,
+          authenticatedUser,
           loginsEnabled,
           externalWindow: null,
           contactName: null,
@@ -304,6 +310,7 @@
         }),
         computed: {
           essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
+          ghToken() { return oauthAccessToken || ghUnscopedToken },
           viewerStyle() { return { 
             height: this.viewerIsOpen
               ? this.isVerticalLayout 
@@ -346,7 +353,7 @@
             provider.addScope('repo')
             firebase.auth().signInWithRedirect(provider)
           },
-          logout() { this.ghAuth = null; window.localStorage.removeItem('ghAuth') },
+          logout() { this.authenticatedUser = null; window.localStorage.removeItem('ghAuth') },
 
           editMarkdown() {
             this.openWindow(`https://github.com/${this.contentSource.acct}/${this.contentSource.repo}/edit/${this.contentSource.ref}/README.md`) 
@@ -393,10 +400,10 @@
           submitContactForm() {
             console.log(document.querySelector('.tippy-content .contact-form'))
             let contactData = {
-              fromAddress: this.contactEmail,
+              fromAddress: 'Labs@ithaka.org',
               toAddress: this.siteConfig.contactForm.toEmail,
               messageSubject: this.siteConfig.contactForm.subject,
-              messageBodyText: `${this.contactMessage}\n\r[Sent by: ${this.contactName}]`,
+              messageBodyText: `${this.contactMessage}\n\r[Sent by: ${this.contactName} <${this.contactEmail}>]`,
             }
             console.log('submitContactForm', contactData)
             sendEmail(contactData).then(resp => {
@@ -409,6 +416,7 @@
           async getMarkdown(path) {
             if (window.location.hostname !== 'localhost' && contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
+              // console.log(`getMarkdown: url=${url} ghToken=${this.ghToken}`)
               let resp = await fetch(url, this.ghToken ? {headers: {Authorization:`Token ${this.ghToken}`}} : {})
               if (resp.ok) {
                 resp = await resp.json()
@@ -846,13 +854,6 @@
 
         watch: {
 
-          ghAuth: {
-            handler: function () {
-              if (this.ghAuth) this.putFile('/test', 'test', 'test')
-            },
-            immediate: false
-          },
-
           scrollTop: {
             handler: function (scrollTop) { 
               let target = this.$refs.essay
@@ -1017,7 +1018,7 @@
             let url = `https://api.github.com/repos/${this.contentSource.acct}/${this.contentSource.repo}/contents${path}?ref=${this.contentSource.ref}`
             let resp = await fetch(url, {
               method: 'PUT', body: JSON.stringify(payload),
-              headers: {Authorization: `Token ${this.ghAuth.credential.oauthAccessToken}`}
+              headers: {Authorization: `Token ${this.ghToken}`}
             })
             console.log(resp)
             resp = await resp.json()
@@ -1044,7 +1045,7 @@
       if (isJuncture) {
         let resp = await fetch(`${window.location.origin}/config.yaml`)
         config = YAML.parse(await resp.text())
-        ghToken = atob(config.ghUnscopedToken)
+        ghUnscopedToken = atob(config.ghUnscopedToken)
         gcApiKey = atob(config.gcApiKey)
         gcAuthDomain = atob(config.gcAuthDomain)
       }
@@ -1057,6 +1058,7 @@
           config = resp.ok ? await resp.json() : {}
         }
       } else if (contentSource.acct) {
+        let ghToken = oauthAccessToken || ghUnscopedToken
         let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersion : contentSource.ref 
         let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`,
                                ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
@@ -1069,11 +1071,11 @@
         if (resp.ok) config = YAML.parse(await resp.text())
       }
       ['banner', 'favicon', 'customCSS'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
-      if (config.ghUnscopedToken) ghToken = atob(config.ghUnscopedToken)
+      if (config.ghUnscopedToken) ghUnscopedToken = atob(config.ghUnscopedToken)
       if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
       if (config.gcAuthDomain) gcAuthDomain = atob(config.gcAuthDomain)
       loginsEnabled = gcApiKey !== undefined && gcAuthDomain !== undefined
-      console.log(`ghToken=${ghToken} gcApiKey=${gcApiKey} gcAuthDomain=${gcAuthDomain} loginsEnabled=${loginsEnabled}`)
+      console.log(`ghUnscopedToken=${ghUnscopedToken} gcApiKey=${gcApiKey} gcAuthDomain=${gcAuthDomain} loginsEnabled=${loginsEnabled}`)
       return config
     }
 
@@ -1083,6 +1085,7 @@
         return {acct, repo, ref: knownGhAccts[acct], basePath: `/${acct}/${repo}`,
                 assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || knownGhAccts[acct]}`}
       } else {
+        let ghToken = oauthAccessToken || ghUnscopedToken
         let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`,
                                ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
         if (resp.ok) {
@@ -1096,6 +1099,7 @@
     // Gets a list of available components
     async function getComponentsList() {
       let componentsList = []
+      let ghToken = oauthAccessToken || ghUnscopedToken
       if (window.location.hostname !== 'localhost' && contentSource.acct && contentSource.repo && contentSource.ref) {
         let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${contentSource.ref}`,
                                ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
