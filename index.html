@@ -281,7 +281,6 @@
           contentSource,
           componentsList,
           junctureVersion,
-          ghToken,
           params: [],
           markdown: null,
           mdDir: null,
@@ -1019,7 +1018,7 @@
             let url = `https://api.github.com/repos/${this.contentSource.acct}/${this.contentSource.repo}/contents${path}?ref=${this.contentSource.ref}`
             let resp = await fetch(url, {
               method: 'PUT', body: JSON.stringify(payload),
-              headers: {Authorization: `Token ${this.ghAuth}`}
+              headers: {Authorization: `Token ${this.ghToken}`}
             })
             console.log(resp)
             resp = await resp.json()
@@ -1059,6 +1058,7 @@
           config = resp.ok ? await resp.json() : {}
         }
       } else if (contentSource.acct) {
+        let ghToken = oauthAccessToken || ghUnscopedToken
         let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersion : contentSource.ref 
         let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`,
                                ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
@@ -1071,7 +1071,7 @@
         if (resp.ok) config = YAML.parse(await resp.text())
       }
       ['banner', 'favicon', 'customCSS'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
-      if (config.ghUnscopedToken) ghToken = atob(config.ghUnscopedToken)
+      if (config.ghUnscopedToken) ghUnscopedToken = atob(config.ghUnscopedToken)
       if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
       if (config.gcAuthDomain) gcAuthDomain = atob(config.gcAuthDomain)
       loginsEnabled = gcApiKey !== undefined && gcAuthDomain !== undefined
@@ -1085,6 +1085,7 @@
         return {acct, repo, ref: knownGhAccts[acct], basePath: `/${acct}/${repo}`,
                 assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || knownGhAccts[acct]}`}
       } else {
+        let ghToken = oauthAccessToken || ghUnscopedToken
         let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`,
                                ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
         if (resp.ok) {
@@ -1098,6 +1099,7 @@
     // Gets a list of available components
     async function getComponentsList() {
       let componentsList = []
+      let ghToken = oauthAccessToken || ghUnscopedToken
       if (window.location.hostname !== 'localhost' && contentSource.acct && contentSource.repo && contentSource.ref) {
         let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${contentSource.ref}`,
                                ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
