@@ -113,11 +113,11 @@ module.exports = {
         radius: parseInt(layer.radius || '15'),
         maxOpacity: parseFloat(layer['max-opacity'] || '0.6'),
         // scales the radius based on map zoom
-        scaleRadius: layer['scale-radius'] === 'true',
+        scaleRadius: layer['scale-radius'],
         // if set to false the heatmap uses the global maximum for colorization
         // if activated: uses the data maximum within the current map boundaries
         //   (there will always be a red spot with useLocalExtremas true)
-        useLocalExtrema: layer['use-local-extrema'] === 'true',
+        useLocalExtrema: layer['use-local-extrema'],
         // which field name in your data represents the latitude - default "lat"
         latField: 'lat',
         // which field name in your data represents the longitude - default "lng"
