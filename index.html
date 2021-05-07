@@ -299,7 +299,7 @@
           junctureVersion,
           params: [],
           markdown: null,
-          mdDir: null,
+          mdDir: '',
           markdownViewer: null,
           html: null,
           active: null,
@@ -474,7 +474,7 @@
               let markdown = await this.getMarkdown(pathsToTry[i])
               if (markdown) {
                 this.markdown = markdown
-                this.mdDir = i === 1 ? null : path
+                this.mdDir = i === 1 ? '' : path
                 break
               }
             }
@@ -761,7 +761,7 @@
             })
             root.querySelectorAll('param').forEach(param => {
               ['url', 'banner'].forEach(attr => {
-                if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value, window.location.pathname, this.mdDir !== null))
+                if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value, window.location.pathname, this.mdDir !== ''))
               })
             })
           },
