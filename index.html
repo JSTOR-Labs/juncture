@@ -84,7 +84,7 @@
     <div ref="createSiteForm" id="create-site-form" class="modal-form" style="display: none;">
       <form v-on:submit.prevent>
         <h1>Create or Update Juncture Site</h1>
-        <input :value="authenticatedUser.acct" class="form-name" type="text" readonly>
+        <input :value="authenticatedUser && authenticatedUser.acct" class="form-name" type="text" readonly>
         <input v-model="newRepo" placeholder="Repository name to update or create" class="form-email" required>
         <div v-if="newSiteUrl">New Juncture site created at URL {{newSiteUrl}}</div>
         <div class="form-controls">
