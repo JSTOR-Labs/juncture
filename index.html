@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link href="/images/favicon.svg" rel="icon"/>
+  <link href="https://gitcdn.link/repo/jstor-labs/juncture/main/images/favicon.svg" rel="icon"/>
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
   <link href="https://unpkg.com/tippy.js@6/dist/tippy.css" rel="stylesheet"/>
   <link href="https://unpkg.com/tippy.js@6/themes/light-border.css" rel="stylesheet"/>
-  <link href="/css/main.css" rel="stylesheet"/>
+  <link href="https://gitcdn.link/repo/jstor-labs/juncture/main/css/main.css" rel="stylesheet"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
   <title>Juncture</title>
 </head>
@@ -68,15 +68,30 @@
       </div>
     </div>
 
-    <div ref="contactForm" id="contact-form" style="display: none;">
+    <div ref="contactForm" class="modal-form" style="display: none;">
       <form v-on:submit.prevent="submitContactForm">
         <h1>Contact us</h1>
         <input v-model="contactName" name="name" placeholder="Name" class="form-name" type="text" required>
         <input v-model="contactEmail" placeholder="Email" class="form-email" type="email" required>
         <textarea v-model="contactMessage" placeholder="Your message here" class="form-message" type="text" required></textarea>
         <div class="form-controls">
-          <button class="form-cancel" @click="resetContactForm">Cancel</button>
+          <button class="form-cancel" formnovalidate @click="resetContactForm">Cancel</button>
           <button class="form-submit">Send</button>
+        </div>
+      </form>
+    </div>
+
+    <div ref="createSiteForm" id="create-site-form" class="modal-form" style="display: none;">
+      <form v-on:submit.prevent>
+        <h1>Create or Update Juncture Site</h1>
+        <input :value="authenticatedUser.acct" class="form-name" type="text" readonly>
+        <input v-model="newRepo" placeholder="Repository name to update or create" class="form-email" required>
+        <div v-if="newSiteUrl">New Juncture site created at URL {{newSiteUrl}}</div>
+        <div class="form-controls">
+          <button v-if="!newSiteUrl" class="form-cancel" formnovalidate @click="closeCreateSiteForm">Cancel</button>
+          <button v-if="!newSiteUrl" class="form-submit" @click="submitCreateSiteForm">Submit</button>
+          <button v-if="newSiteUrl" class="form-submit" @click="closeCreateSiteForm">Close</button>
+          <button v-if="newSiteUrl" class="form-submit" @click="openNewSite">Open New Site</button>
         </div>
       </form>
     </div>
@@ -114,7 +129,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0
-    const junctureVersion = 'v0.1.0'
+    const junctureVersion = 'v0.1.1'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -235,6 +250,7 @@
         let ghAuth = JSON.parse(window.localStorage.getItem('ghAuth'))
         if (ghAuth) {
           authenticatedUser = ghAuth.user
+          authenticatedUser.acct = ghAuth.additionalUserInfo.username
           oauthAccessToken = ghAuth.credential.oauthAccessToken
         }
       } catch(err){console.log(err)}
@@ -306,7 +322,9 @@
           externalWindow: null,
           contactName: null,
           contactEmail: null,
-          contactMessage: null
+          contactMessage: null, 
+          newRepo: null,
+          newSiteUrl: null
         }),
         computed: {
           essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
@@ -381,6 +399,9 @@
               this.editMarkdown()
             } else if (action === '/contact-us') {
               this.showContactForm()
+            } else if (action === 'createPagesSite') {
+              this.createPagesSite('rsnyder', 'test')
+              this.showCreateSiteForm()
             } else {
               this.loadEssay(action)
             }
@@ -404,14 +425,28 @@
               messageSubject: this.siteConfig.contactForm.subject,
               messageBodyText: `${this.contactMessage}\n\r[Sent by: ${this.contactName} <${this.contactEmail}>]`,
             }
-            console.log('submitContactForm', contactData)
-            sendEmail(contactData).then(resp => {
-              console.log(resp)
-              this.resetContactForm()
-            })
-
+            sendEmail(contactData).then(resp => { this.resetContactForm()})
           },
           
+          showCreateSiteForm() {
+            this.newRepo = this.newSiteUrl = null
+            this.$refs.app.classList.add('dimmed')
+            this.$refs.createSiteForm.style.display = 'unset'
+          },
+
+          closeCreateSiteForm() {
+            this.$refs.app.classList.remove('dimmed')
+            this.$refs.createSiteForm.style.display = 'none'
+          },
+
+          openNewSite() { window.open(this.newSiteUrl, '_blank') },
+
+          async submitCreateSiteForm() {
+            console.log('createSite')
+            await this.createPagesSite(this.authenticatedUser.acct, this.newRepo)
+            this.newSiteUrl = `https://${this.authenticatedUser.acct}.github.io/${this.newRepo}`
+          },
+
           async getMarkdown(path) {
             if (window.location.hostname !== 'localhost' && contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
@@ -846,7 +881,69 @@
             const actions = { ...this.actions }
             Object.keys(eventActions).forEach(target => actions[`ve-${target}`] = eventActions[target])
             this.actions = actions
-          }
+          },
+
+          async copyFile (src, tgt, path) {
+            let existing
+            resp = await fetch(`https://api.github.com/repos/${tgt.acct}/${tgt.repo}/contents/${path}?ref=${tgt.ref}`, {headers: {Authorization: `Token ${this.ghToken}`}})
+            if (resp.ok) existing = await resp.json()
+            resp = await fetch(`https://api.github.com/repos/${src.acct}/${src.repo}/contents/${path}?ref=${src.ref}`, {headers: {Authorization: `Token ${this.ghToken}`}})
+            resp = await resp.json()
+            let file = decodeURIComponent(escape(atob(resp.content)))
+            let payload = { message: 'initial', branch: tgt.ref, content: btoa(file) }
+            if (existing) payload.sha = existing.sha
+            resp = await fetch(`https://api.github.com/repos/${tgt.acct}/${tgt.repo}/contents/${path}?ref=${tgt.ref}`, {
+              method: 'PUT', body: JSON.stringify(payload), headers: {Authorization: `Token ${this.ghToken}`} })
+          },
+
+          async createPagesSite(acct, repo) {
+            
+            // See if repo exists and create it if needed
+            let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`, { headers: {Authorization: `Token ${this.ghToken}`}} )
+            let repoExists = resp.ok
+            if (repoExists) {
+              let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/contents/index.html?ref=gh-pages`, {headers: {Authorization:`Token ${this.ghToken}`}})
+              if (resp.ok) sha = await resp.json().sha
+            } else { // create repo with auto_init enabled to create main branch and README.md file
+              resp = await fetch('https://api.github.com/user/repos', { method: 'POST', headers: {Authorization:`Token ${this.ghToken}`},
+                  body: JSON.stringify({name: repo, description: 'Juncture repository', auto_init: true}) })
+              resp = await resp.json()
+            }
+
+            // Create a gh-pages branch in repo if needed
+            resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs/heads`, {
+                headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.v3+json'} })
+            let heads = await resp.json()
+            let mainHead = heads.find(head => head.ref === 'refs/heads/main')
+            let ghpHead = heads.find(head => head.ref === 'refs/heads/gh-pages')
+            if (!ghpHead) {
+              resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs`, {
+                  method: 'POST', body: JSON.stringify({ref: 'refs/heads/gh-pages', sha: mainHead.object.sha}),
+                  headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.v3+json'} })
+            }
+
+            // Make target repository a GitHub Pages site
+            resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/pages`, {
+              headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.switcheroo-preview+json'} })
+            resp = await resp.json()
+            if (resp.status === 404) {
+              resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/pages`, {
+                method: 'POST', body: JSON.stringify({source: {branch: 'gh-pages', path: '/'}}),
+                headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.switcheroo-preview+json'} })
+            }
+            
+            // Request rebuild of Pages site
+            resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
+ 
+            // Copy GHP app files from Juncture to gh-pages branch in target repo
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct, repo, ref:'gh-pages'}, 'index.html')
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct, repo, ref:'gh-pages'}, '404.html')
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct, repo, ref:'gh-pages'}, '.nojekyll')
+
+            resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
+            resp = await resp.json()
+            console.log(resp)
+         }
     
         },
 
@@ -1034,21 +1131,17 @@
     // Gets site config
     async function getSiteConfig() {
       let config = {}
-      if (isJuncture) {
-        let resp = await fetch(`${window.location.origin}/config.yaml`)
+      //if (isJuncture) {
+        // let resp = await fetch(`${window.location.origin}/config.yaml`)
+        let resp = await fetch('https://juncture-digital.org/config.yaml')
         config = YAML.parse(await resp.text())
         ghUnscopedToken = atob(config.ghUnscopedToken)
         gcApiKey = atob(config.gcApiKey)
         gcAuthDomain = atob(config.gcAuthDomain)
-      }
+      //}
       if (contentSource.isGhpSite) {
         let resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
-        if (resp.ok) {
-          config = YAML.parse(await resp.text())
-        } else {
-          resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.json`)
-          config = resp.ok ? await resp.json() : {}
-        }
+        if (resp.ok) config = YAML.parse(await resp.text())
       } else if (contentSource.acct) {
         let ghToken = oauthAccessToken || ghUnscopedToken
         let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersion : contentSource.ref 
@@ -1110,10 +1203,11 @@
         resp = await resp.json()
         componentsList = [...componentsList, ...resp.files.map(fname => `${contentSource.baseUrl}${basePath}/${componentsRoot}/${fname}`)]
       }
-      if (isJuncture && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
-        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/main`, {headers: {Authorization:`Token ${ghToken}`}})
+      // if (isJuncture && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
+      if (contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
+        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/main`, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
         resp = await resp.json()
-        resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url, {headers: {Authorization: `Token ${ghToken}`}})
+        resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
         resp = await resp.json()
         componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/jstor-labs/juncture/main/${componentsRoot}/${item.path}`)]
       }

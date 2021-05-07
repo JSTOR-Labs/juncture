@@ -1,5 +1,5 @@
 title: Juncture
-tagline: Your Visual Essays tool
+tagline: A Visual Essay tool
 banner: https://picsum.photos/1000/400
 # favicon: /images/favicon.svg
 # customCSS: /css/custom.css
@@ -32,17 +32,18 @@ nav:
 #   subject: Juncture Contact Form
 
 #######################################################
-# Base URL of server used for IIIF presentation manifests
+# Base URL of server used for serving and optionally
+# creating IIIF presentation manifests
 ######################################################
 iiifServer: https://iiif.juncture-digital.org
 
 ######################################################
 # Optional credentials used for GitHub API and OAuth integration
 ######################################################
+
+# GitHub upscoped API token used for content retrivals
 # ghUnscopedToken: <Base64 encoded GitHub unscoped token>
+
+# Google Cloud OAuth settings for GithHub login via Juncture
 # gcAuthDomain: <Base64-encoded Google Cloud OAuth domain>
 # gcApiKey: <Base64-encoded restricted access Google Cloud API key>
-
-ghUnscopedToken: Z2hwX05lcnV2RUYzRmx6M3o5YnFjQWZuOGpJQnJMR3lEMTNmYjYyVw==
-gcAuthDomain: anVuY3R1cmUtZGlnaXRhbC5maXJlYmFzZWFwcC5jb20=
-gcApiKey: QUl6YVN5Qk9ia1dHU3NDMXhmX1o3ckZRNC1oRkJ1NVpvTjdxaDBv

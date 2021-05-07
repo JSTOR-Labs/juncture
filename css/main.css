@@ -83,7 +83,7 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif;}
   }
 }
 
-#contact-form {
+.modal-form {
     display: none;
     position: absolute;
     top: 25vh;
@@ -97,7 +97,13 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif;}
     padding: 12px;
 }
 
-#contact-form form {
+#create-site-form {
+  left: 33vw;
+  width: 34vw;
+  height: 200px;
+}
+
+.modal-form form {
   display: grid;
   height: 100%;
   width: 100%;
@@ -105,7 +111,7 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif;}
   grid-template-rows: auto auto auto 1fr auto;
   grid-gap: 4px;
 }
-#contact-form form h1 {
+.modal-form form h1 {
   align-self: center;
   justify-self: center;
   padding: 6px;

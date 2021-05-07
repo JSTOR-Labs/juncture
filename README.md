@@ -4,7 +4,7 @@
 
 [Juncture](https://juncture-digital.org) is a free service for easily turning a simple text file into an engaging `visual essay`.  A visual essay is an interactive web page that enriches a text narrative with visual elements to provide depth and context.  Juncture does not require special tooling or technical expertise.  It uses the free Github site for hosting and managing the visual essay text files.
 
-In addition to converting single text files into visual narratives, Juncture can also be used to create rich web sites consisting of multiple visual essays with navigation, site info pages (_About_, _Contact us_, etc), email contact form, logo, and other simple customizations.  The creation of a custom visual essay site involves a couple of easy steps than can be accomplished in just a few minutes using a predefined site template (this repository).
+In addition to converting single text files into visual narratives, Juncture can also be used to create rich web sites consisting of multiple visual essays with navigation, site info pages (_About_, _Contact us_, etc), email contact form, logo, and other simple customizations.  The creation of a custom visual essay site involves a couple of easy steps than can be accomplished in just a few minutes.
 
 Some example essays can be seen [here](examples)
 
@@ -12,19 +12,17 @@ Some example essays can be seen [here](examples)
 
 ## Create a free Github account
 
-The only prerequisite for using Juncture is access to a Github account.  Github is a site commonly used for managing files on the web.  Github has many advanced features for managing and tracking multiple versions of files and is popular with individuals and teams developing open source software.  While the version management capabilities in Github are quite useful and can be used with visual essays, in the typical case it is only used as simple file hosting service, similar to how Dropbox or Google Drive might be used for managing documents and photographs.
-- List item1
-- List item 2
+The only prerequisite for using Juncture is an account on the Github site.  Github is a site commonly used for managing files on the web.  Github has many advanced features for managing and tracking multiple versions of files and is popular with individuals and teams developing open source software.  While the version management capabilities in Github are quite useful and can be used with visual essays, in the typical case it is only used as simple file hosting service, similar to how Dropbox or Google Drive might be used for managing documents and photographs.
 
-If you don't yet have a Github account a free one can be created at [https://github.com](https://github.com).
+If you don't have a Github account a free one can be created at [https://github.com](https://github.com).
 
 ## Create a Github repository for your visual essays
 
-After creating and signing in to your Github account select the option for creating a new repository.  This should appear as a green _New_ button.  After clicking the new repository button a form will be displayed allowing for a repository name and (optional) description to be provided.  Other options are also available in the creation form.  The repository name can be anything you choose.  In this example will be using _essays_.  After entering a repository name and description ensure the _public_ and _Add a README file_ options are selected and press the green _Create Repository_ button.  That's it, we now have a place to store visual essays and a first skeletal essay (the automatically created _README.md_ file).
+After creating and signing in to your Github account select the option for creating a new repository.  This should appear as a green _`New`_ button.  After clicking the new repository button a form will be displayed allowing a repository name and (optional) description to be provided.  Other options are also available in the creation form.  The repository name can be anything you choose.  In this example will be using _essays_.  After entering a repository name and description ensure the _public_ and _Add a README file_ options are selected and press the green _Create Repository_ button.  That's it, we now have a place to store visual essays and a first skeletal essay (the automatically created _README.md_ file).
 
 ## Creating a simple visual essay
 
-When creating a Github repository a `README.md` file is typically generated as part of the repository creation process.  If so, your first visual essay has already been created.  If not, at this point you will need to add a README.md file to your repository.  To create a new _README.md_ file (or any file for that matter) navigate to the repository home page in the Github interface and select _Create new file_ from the _Add file_ menu option.  Enter _README.md_ in the _Name your file..._ field in the generated form and then press the green _Commit new file_ button at the bottom of the page
+When creating a Github repository a `README.md` file is typically generated as part of the repository creation process.  If so, your first visual essay has already been created.  If not, at this point you will need to add a README.md file to your repository.  To create a new _README.md_ file (or any file) navigate to the repository home page in the Github interface and select `Create new file` from the _Add file_ menu option.  Enter _README.md_ in the _Name your file..._ field in the generated form and then press the green _Commit new file_ button at the bottom of the page
 
 A visual essay file can be named anything but must have a `.md` file extension.  In this example we will use a README.md file, which is considered the _root_ or _default_ visual essay for a repository (or a sub-folder in a repository).
 

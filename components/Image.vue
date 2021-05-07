@@ -462,7 +462,7 @@ module.exports = {
     setAnnotatorEnabled(enabled) {
       console.log(`setAnnotatorEnabled=${enabled}`)
       const osdElem = document.getElementById('osd')
-      console.log(osdElem)
+      this.annotator.readOnly = !this.isAuthenticated
       if (osdElem) {
         osdElem.style.maxHeight = enabled ? `${this.width}px` : ''
         Array.from (document.querySelectorAll('.a9s-annotationlayer')).forEach(elem => elem.style.display = enabled ? 'unset' : 'none')
@@ -774,6 +774,9 @@ module.exports = {
     // this.actionSources.forEach(elem => elem.classList.remove('image-interaction'))
   },        
   watch: {
+    isAuthenticated() {
+      if (this.annotator) this.annotator.readOnly = !this.isAuthenticated
+    },
     license: {
       handler: function () {
         this.evalLicense()

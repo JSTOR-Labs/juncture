@@ -28,6 +28,9 @@
           <li v-if="isAuthenticated" @click="nav('editMarkdown')">
             <i class="fas fa-edit"></i>Edit page
           </li>
+          <li v-if="isAuthenticated" @click="nav('createPagesSite')">
+            <i class="fas fa-desktop"></i>Create site
+          </li>
           <li @click="nav('viewMarkdown')">
             <i class="fas fa-file-code"></i>View page markdown
           </li>
@@ -142,7 +145,7 @@
 
   .title {
     grid-area: title;
-    font-size: min(8vw, 2em);
+    font-size: min(8vw, 2.2em);
     margin: 0 0 0 22px;
     padding: 22px 0 0 50px;
   }
@@ -151,6 +154,7 @@
     font-size: min(6vw, 1.3em);
     margin: 0 0 0 22px;
     padding: 0 0 6px 50px;
+    align-self: center;
   }
 
   #menuToggle a {
