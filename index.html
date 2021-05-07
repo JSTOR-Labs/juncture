@@ -129,7 +129,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0
-    const junctureVersion = 'v0.1.1'
+    const junctureVersion = 'v0.1.2'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -400,8 +400,9 @@
             } else if (action === '/contact-us') {
               this.showContactForm()
             } else if (action === 'createPagesSite') {
-              this.createPagesSite('rsnyder', 'test')
               this.showCreateSiteForm()
+            } else if (action === 'gotoGitHub') {
+              window.open(`https://github.com/${contentSource.acct}/${contentSource.repo}/tree/${contentSource.ref}`, '_blank')
             } else {
               this.loadEssay(action)
             }

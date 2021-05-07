@@ -34,6 +34,9 @@
           <li @click="nav('viewMarkdown')">
             <i class="fas fa-file-code"></i>View page markdown
           </li>
+          <li @click="nav('gotoGitHub')">
+            <i class="fab fa-github"></i>Goto to GitHub
+          </li>
           <li v-if="version">
             <br>
             <div class="version">Version: {{version}}</div>
