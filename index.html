@@ -93,7 +93,7 @@
           <button v-if="!newSiteUrl" class="form-submit" @click="submitCreateSiteForm">Submit</button>
           <button v-if="newSiteUrl" class="form-submit" @click="hideForm">Close</button>
           <button v-if="newSiteUrl" class="form-submit" @click="gotoSite(newSiteUrl)">Open Site</button>
-          <button v-if="newSiteUrl" class="form-submit" @click="gotoSite(`/${}${authenticatedUser.acct}/${newRepo}`)">Open Site in Juncture</button>
+          <button v-if="isJuncture && newSiteUrl" class="form-submit" @click="gotoSite(`/${authenticatedUser.acct}/${newRepo}`)">Open Site in Juncture</button>
         </div>
       </form>
     </div>
