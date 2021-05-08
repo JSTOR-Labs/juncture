@@ -97,7 +97,7 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif;}
     padding: 12px;
 }
 
-#create-site-form {
+#create-site-form, #update-site-form {
   left: 33vw;
   width: 34vw;
   height: 200px;
