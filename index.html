@@ -906,9 +906,9 @@
               method: 'PUT', body: JSON.stringify(payload), headers: {Authorization: `Token ${this.ghToken}`} })
           },
 
-          async updateSite(acct, repo) {
+          async updateSite() {
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct: contentSource.acct, repo: contentSource.repo, ref:'gh-pages'}, 'index.html')
-            if (acct === 'jstor-labs' && repo === 'juncture') {
+            if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture') {
               await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct: contentSource.acct, repo: contentSource.repo, ref:'gh-pages'}, 'css/main.css')
             }
           },
