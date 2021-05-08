@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link href="https://gitcdn.link/repo/jstor-labs/juncture/main/images/favicon.svg" rel="icon"/>
+  <link href="https://juncture-digital.org/images/favicon.svg" rel="icon"/>
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
   <link href="https://unpkg.com/tippy.js@6/dist/tippy.css" rel="stylesheet"/>
   <link href="https://unpkg.com/tippy.js@6/themes/light-border.css" rel="stylesheet"/>
-  <link href="https://gitcdn.link/repo/jstor-labs/juncture/main/css/main.css" rel="stylesheet"/>
+  <link href="https://juncture-digital.org/css/main.css" rel="stylesheet"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
   <title>Juncture</title>
 </head>
@@ -300,7 +300,7 @@
           junctureVersion,
           params: [],
           markdown: null,
-          mdDir: '',
+          mdDir: '/',
           markdownViewer: null,
           html: null,
           active: null,
@@ -479,7 +479,7 @@
               let markdown = await this.getMarkdown(pathsToTry[i])
               if (markdown) {
                 this.markdown = markdown
-                this.mdDir = i === 1 ? '' : path
+                this.mdDir = i === 1 ? '/' : path
                 break
               }
             }
@@ -766,7 +766,7 @@
             })
             root.querySelectorAll('param').forEach(param => {
               ['url', 'banner'].forEach(attr => {
-                if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value, window.location.pathname, this.mdDir !== ''))
+                if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value, window.location.pathname, this.mdDir !== '/'))
               })
             })
           },
