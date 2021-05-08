@@ -2,7 +2,7 @@
   <div class="image-viewer" :style="osdContainerStyle">
     
       <div class="osd" id="osd"></div>
-      <div id="osd-toolbar" class="controls auto-hid">
+      <div id="osd-toolbar" class="controls auto-hide">
         <span id="go-home"><i class="fas fa-home"></i></span>
         <span id="zoom-in"><i class="fas fa-search-plus"></i></span>
         <span id="zoom-out"><i class="fas fa-search-minus"></i></span>
