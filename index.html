@@ -76,7 +76,7 @@
         <input v-model="contactEmail" placeholder="Email" class="form-email" type="email" required>
         <textarea v-model="contactMessage" placeholder="Your message here" class="form-message" type="text" required></textarea>
         <div class="form-controls">
-          <button class="form-cancel" formnovalidate @click="hideForm('contact-form')">Cancel</button>
+          <button class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
           <button class="form-submit">Send</button>
         </div>
       </form>
@@ -89,10 +89,11 @@
         <input v-model="newRepo" placeholder="Repository name to update or create" class="form-email" required>
         <div v-if="newSiteUrl">New Juncture site created at URL {{newSiteUrl}}</div>
         <div class="form-controls">
-          <button v-if="!newSiteUrl" class="form-cancel" formnovalidate @click="hideForm('create-site-form')">Cancel</button>
+          <button v-if="!newSiteUrl" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
           <button v-if="!newSiteUrl" class="form-submit" @click="submitCreateSiteForm">Submit</button>
-          <button v-if="newSiteUrl" class="form-submit" @click="hideForm('create-site-form')">Close</button>
-          <button v-if="newSiteUrl" class="form-submit" @click="openNewSite">Open New Site</button>
+          <button v-if="newSiteUrl" class="form-submit" @click="hideForm">Close</button>
+          <button v-if="newSiteUrl" class="form-submit" @click="gotoSite(newSiteUrl)">Open Site</button>
+          <button v-if="newSiteUrl" class="form-submit" @click="gotoSite(`/${}${authenticatedUser.acct}/${newRepo}`)">Open Site in Juncture</button>
         </div>
       </form>
     </div>
@@ -103,10 +104,10 @@
         <input :value="contentSource.acct" class="form-name" type="text" readonly>
         <input :value="contentSource.repo" class="form-name" type="text" readonly>
         <div class="form-controls">
-          <button v-if="!newSiteUrl" class="form-cancel" formnovalidate @click="hideForm('update-site-form')">Cancel</button>
+          <button v-if="!newSiteUrl" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
           <button v-if="!newSiteUrl" class="form-submit" @click="updateSite">Submit</button>
-          <button v-if="newSiteUrl" class="form-submit" @click="hideForm('update-site-form')">Close</button>
-          <button v-if="newSiteUrl" class="form-submit" @click="openNewSite">Open New Site</button>
+          <button v-if="newSiteUrl" class="form-submit" @click="hideForm">Close</button>
+          <button v-if="newSiteUrl" class="form-submit" @click="gotoSite(newSiteUrl)">Open Site</button>
         </div>
       </form>
     </div>
@@ -144,7 +145,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0
-    const junctureVersion = 'v0.1.5'
+    const junctureVersion = 'v0.1.6'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -429,12 +430,16 @@
 
           showForm(formId) {
             this.$refs.app.classList.add('dimmed')
-            document.getElementById(formId).style.display = 'unset'
+            let form = document.getElementById(formId)
+            form.style.display = 'unset'
+            form.classList.add('visible-form')
           },
 
-          hideForm(formId) {
+          hideForm() {
             this.$refs.app.classList.remove('dimmed')
-            document.getElementById(formId).style.display = 'none'
+            let form = document.querySelector('.visible-form')
+            form.style.display = 'none'
+            form.classList.remove('visible-form')
           },
 
           submitContactForm() {
@@ -444,12 +449,12 @@
               messageSubject: this.siteConfig.contactForm.subject,
               messageBodyText: `${this.contactMessage}\n\r[Sent by: ${this.contactName} <${this.contactEmail}>]`,
             }
-            sendEmail(contactData).then(resp => { this.resetContactForm()})
+            sendEmail(contactData).then(resp => { this.hideForm()})
           },
 
-          openNewSite() { 
-            this.closeCreateSiteForm()
-            window.open(this.newSiteUrl, '_blank') 
+          gotoSite(url) { 
+            this.hideForm()
+            window.open(url, '_blank') 
           },
 
           async submitCreateSiteForm() {
@@ -941,7 +946,6 @@
             // Make target repository a GitHub Pages site
             resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/pages`, {
               headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.switcheroo-preview+json'} })
-            resp = await resp.json()
             if (resp.status === 404) {
               resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/pages`, {
                 method: 'POST', body: JSON.stringify({source: {branch: 'juncture', path: '/'}}),
