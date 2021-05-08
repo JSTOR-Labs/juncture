@@ -37,6 +37,9 @@ nav:
 ######################################################
 iiifServer: https://iiif.juncture-digital.org
 
+siteAdmins:
+- rsnyder
+
 ######################################################
 # Optional credentials used for GitHub API and OAuth integration
 ######################################################
