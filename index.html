@@ -92,7 +92,6 @@
           <button v-if="formProcessingStatus === 'ready'" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
           <button v-if="formProcessingStatus === 'ready'" class="form-submit" @click="doSiteCreate">Submit</button>
           <button v-if="formProcessingStatus === 'done'" class="form-submit" @click="hideForm">Close</button>
-          <button v-if="formProcessingStatus === 'done'" class="form-submit" @click="gotoSite(newSiteUrl)">Open Site</button>
           <button v-if="isJuncture && formProcessingStatus === 'done'" class="form-submit" @click="gotoSite(`/${authenticatedUser.acct}/${newRepo}`)">Open Site in Juncture</button>
         </div>
       </form>
@@ -108,7 +107,6 @@
           <button v-if="formProcessingStatus === 'ready'" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
           <button v-if="formProcessingStatus === 'ready'" class="form-submit" @click="doSiteUpdate">Submit</button>
           <button v-if="formProcessingStatus === 'done'" class="form-submit" @click="hideForm">Close</button>
-          <button v-if="formProcessingStatus === 'done'" class="form-submit" @click="gotoSite(newSiteUrl)">Open Site</button>
         </div>
       </form>
     </div>
@@ -146,7 +144,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0
-    const junctureVersion = 'v0.1.6'
+    const junctureVersion = 'v0.1.7'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -342,7 +340,6 @@
           contactEmail: null,
           contactMessage: null, 
           newRepo: null,
-          newSiteUrl: null,
           formProcessingMessage: '',
           formProcessingStatus: 'ready'
         }),
@@ -463,8 +460,8 @@
             this.formProcessingStatus = 'processing'
             this.formProcessingMessage = 'Creating site...'
             await this.createSite(this.authenticatedUser.acct, this.newRepo)
-            this.newSiteUrl = `https://${this.authenticatedUser.acct}.github.io/${this.newRepo}`
-            this.formProcessingMessage = `Site created at https://${this.authenticatedUser.acct}.github.io/${this.newRepo}`
+            let siteUrl = `https://${this.authenticatedUser.acct}.github.io/${this.newRepo}`
+            this.formProcessingMessage = `New Juncture site created at <a href="${siteUrl}">${siteUrl}</a>`
             this.formProcessingStatus = 'done'
           },
 
@@ -472,7 +469,8 @@
             this.formProcessingStatus = 'processing'
             this.formProcessingMessage = 'Updating site...'
             await this.updateSite()
-            this.formProcessingMessage = `Site https://${this.contentSource.acct}.github.io/${this.contentSource.repo} updated to version ${this.junctureVersion}`
+            let siteUrl = `https://${this.contentSource.acct}.github.io/${this.contentSource.repo}`
+            this.formProcessingMessage = `Site <a href="${siteUrl}">${siteUrl}</a> updated to latest version`
             this.formProcessingStatus = 'done'
           },
 
