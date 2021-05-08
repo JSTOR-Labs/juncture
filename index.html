@@ -69,29 +69,43 @@
       </div>
     </div>
 
-    <div ref="contactForm" class="modal-form" style="display: none;">
+    <div id="contact-form" class="modal-form" style="display: none;">
       <form v-on:submit.prevent="submitContactForm">
         <h1>Contact us</h1>
         <input v-model="contactName" name="name" placeholder="Name" class="form-name" type="text" required>
         <input v-model="contactEmail" placeholder="Email" class="form-email" type="email" required>
         <textarea v-model="contactMessage" placeholder="Your message here" class="form-message" type="text" required></textarea>
         <div class="form-controls">
-          <button class="form-cancel" formnovalidate @click="resetContactForm">Cancel</button>
+          <button class="form-cancel" formnovalidate @click="hideForm('contact-form')">Cancel</button>
           <button class="form-submit">Send</button>
         </div>
       </form>
     </div>
 
-    <div ref="createSiteForm" id="create-site-form" class="modal-form" style="display: none;">
+    <div id="create-site-form" class="modal-form" style="display: none;">
       <form v-on:submit.prevent>
-        <h1>Create or Update Juncture Site</h1>
+        <h1>Create new Juncture site</h1>
         <input :value="authenticatedUser && authenticatedUser.acct" class="form-name" type="text" readonly>
         <input v-model="newRepo" placeholder="Repository name to update or create" class="form-email" required>
         <div v-if="newSiteUrl">New Juncture site created at URL {{newSiteUrl}}</div>
         <div class="form-controls">
-          <button v-if="!newSiteUrl" class="form-cancel" formnovalidate @click="closeCreateSiteForm">Cancel</button>
+          <button v-if="!newSiteUrl" class="form-cancel" formnovalidate @click="hideForm('create-site-form')">Cancel</button>
           <button v-if="!newSiteUrl" class="form-submit" @click="submitCreateSiteForm">Submit</button>
-          <button v-if="newSiteUrl" class="form-submit" @click="closeCreateSiteForm">Close</button>
+          <button v-if="newSiteUrl" class="form-submit" @click="hideForm('create-site-form')">Close</button>
+          <button v-if="newSiteUrl" class="form-submit" @click="openNewSite">Open New Site</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="update-site-form" class="modal-form" style="display: none;">
+      <form v-on:submit.prevent>
+        <h1>Update Juncture site</h1>
+        <input :value="contentSource.acct" class="form-name" type="text" readonly>
+        <input :value="contentSource.repo" class="form-name" type="text" readonly>
+        <div class="form-controls">
+          <button v-if="!newSiteUrl" class="form-cancel" formnovalidate @click="hideForm('update-site-form')">Cancel</button>
+          <button v-if="!newSiteUrl" class="form-submit" @click="updateSite">Submit</button>
+          <button v-if="newSiteUrl" class="form-submit" @click="hideForm('update-site-form')">Close</button>
           <button v-if="newSiteUrl" class="form-submit" @click="openNewSite">Open New Site</button>
         </div>
       </form>
@@ -399,9 +413,11 @@
             } else if (action === 'editMarkdown') {
               this.editMarkdown()
             } else if (action === '/contact-us') {
-              this.showContactForm()
-            } else if (action === 'createPagesSite') {
-              this.showCreateSiteForm()
+              this.showForm('contact-form')
+            } else if (action === 'createSite') {
+              this.showForm('create-site-form')
+            } else if (action === 'updateSite') {
+              this.showForm('update-site-form')
             } else if (action === 'gotoGitHub') {
               window.open(`https://github.com/${contentSource.acct}/${contentSource.repo}/tree/${contentSource.ref}`, '_blank')
             } else if (action === 'viewSiteOnJuncture') {
@@ -411,15 +427,14 @@
             }
           },
 
-          showContactForm() {
+          showForm(formId) {
             this.$refs.app.classList.add('dimmed')
-            this.$refs.contactForm.style.display = 'unset'
+            document.getElementById(formId).style.display = 'unset'
           },
 
-          resetContactForm() {
+          hideForm(formId) {
             this.$refs.app.classList.remove('dimmed')
-            this.$refs.contactForm.style.display = 'none'
-            this.contactName = this.contactEmail = this.contactMessage = null
+            document.getElementById(formId).style.display = 'none'
           },
 
           submitContactForm() {
@@ -431,17 +446,6 @@
             }
             sendEmail(contactData).then(resp => { this.resetContactForm()})
           },
-          
-          showCreateSiteForm() {
-            this.newRepo = this.newSiteUrl = null
-            this.$refs.app.classList.add('dimmed')
-            this.$refs.createSiteForm.style.display = 'unset'
-          },
-
-          closeCreateSiteForm() {
-            this.$refs.app.classList.remove('dimmed')
-            this.$refs.createSiteForm.style.display = 'none'
-          },
 
           openNewSite() { 
             this.closeCreateSiteForm()
@@ -449,7 +453,7 @@
           },
 
           async submitCreateSiteForm() {
-            await this.createPagesSite(this.authenticatedUser.acct, this.newRepo)
+            await this.createSite(this.authenticatedUser.acct, this.newRepo)
             this.newSiteUrl = `https://${this.authenticatedUser.acct}.github.io/${this.newRepo}`
           },
 
@@ -902,8 +906,14 @@
               method: 'PUT', body: JSON.stringify(payload), headers: {Authorization: `Token ${this.ghToken}`} })
           },
 
-          async createPagesSite(acct, repo) {
-            
+          async updateSite(acct, repo) {
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct, repo, ref:'gh-pages'}, 'index.html')
+            if (acct === 'jstor-labs' && repo === 'juncture') {
+              await this.copyFile({acct, repo, ref:'main'}, {acct, repo, ref:'gh-pages'}, 'css/main.css')
+            }
+          },
+
+          async createSite(acct, repo) {
             // See if repo exists and create it if needed
             let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`, { headers: {Authorization: `Token ${this.ghToken}`}} )
             let repoExists = resp.ok

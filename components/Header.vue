@@ -25,14 +25,17 @@
             </a>
           </li>
           <hr>
-          <li v-if="isAuthenticated" @click="nav('editMarkdown')">
-            <i class="fas fa-edit"></i>Edit page
-          </li>
           <li v-if="!isJuncture" @click="nav('viewSiteOnJuncture')">
             <i class="fas fa-tools"></i>View site on Juncture
           </li>
-          <li v-if="isAuthenticated" @click="nav('createPagesSite')">
-            <i class="fas fa-desktop"></i>Create or update site
+          <li v-if="isAuthenticated" @click="nav('editMarkdown')">
+            <i class="fas fa-edit"></i>Edit page
+          </li>
+          <li v-if="isAuthenticated && isJuncture" @click="nav('updateSite')">
+            <i class="fas fa-wrench"></i>Update a site
+          </li>
+          <li v-if="isAuthenticated && isJuncture" @click="nav('createSite')">
+            <i class="fas fa-plus-circle"></i>Create new site
           </li>
           <li @click="nav('viewMarkdown')">
             <i class="fas fa-file-code"></i>View page markdown
