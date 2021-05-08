@@ -31,7 +31,7 @@
           <li v-if="isAuthenticated" @click="nav('editMarkdown')">
             <i class="fas fa-edit"></i>Edit page
           </li>
-          <li v-if="isAuthenticated && isJuncture" @click="nav('updateSite')">
+          <li v-if="isAuthenticated && isAdmin && isJuncture" @click="nav('updateSite')">
             <i class="fas fa-wrench"></i>Update a site
           </li>
           <li v-if="isAuthenticated && isJuncture" @click="nav('createSite')">
@@ -70,6 +70,7 @@
       essayConfig: { type: Object, default: () => ({}) },
       siteConfig: { type: Object, default: () => ({}) },
       isAuthenticated: { type: Boolean, default: false },
+      isAdmin: { type: Boolean, default: false },
       loginsEnabled: { type: Boolean, default: false },
       contentSource: { type: Object, default: () => ({}) },
       version: { type: String, default: '' },
