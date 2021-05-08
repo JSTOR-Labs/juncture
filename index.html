@@ -16,8 +16,9 @@
   <div id="app" ref="app" :class="layouts.join(' ')">
     <div id="header" ref="header">            
       <component v-bind:is="'ve-header'" :active="true" :scroll-top="scrollTop"
-                 :site-config="siteConfig" 
+                 :site-config="siteConfig"
                  :essay-config="essayConfig"
+                 :content-source="contentSource"
                  :logins-enabled="loginsEnabled"
                  :is-authenticated="authenticatedUser !== null && loginsEnabled"
                  :version="junctureVersion"
@@ -403,6 +404,8 @@
               this.showCreateSiteForm()
             } else if (action === 'gotoGitHub') {
               window.open(`https://github.com/${contentSource.acct}/${contentSource.repo}/tree/${contentSource.ref}`, '_blank')
+            } else if (action === 'viewSiteOnJuncture') {
+              this.loadEssay(`/${contentSource.acct}/${contentSource.repo}`)
             } else {
               this.loadEssay(action)
             }
@@ -440,10 +443,12 @@
             this.$refs.createSiteForm.style.display = 'none'
           },
 
-          openNewSite() { window.open(this.newSiteUrl, '_blank') },
+          openNewSite() { 
+            this.closeCreateSiteForm()
+            window.open(this.newSiteUrl, '_blank') 
+          },
 
           async submitCreateSiteForm() {
-            console.log('createSite')
             await this.createPagesSite(this.authenticatedUser.acct, this.newRepo)
             this.newSiteUrl = `https://${this.authenticatedUser.acct}.github.io/${this.newRepo}`
           },

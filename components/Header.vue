@@ -28,8 +28,11 @@
           <li v-if="isAuthenticated" @click="nav('editMarkdown')">
             <i class="fas fa-edit"></i>Edit page
           </li>
+          <li v-if="!isJuncture" @click="nav('viewSiteOnJuncture')">
+            <i class="fas fa-tools"></i>View site on Juncture
+          </li>
           <li v-if="isAuthenticated" @click="nav('createPagesSite')">
-            <i class="fas fa-desktop"></i>Create site
+            <i class="fas fa-desktop"></i>Create or update site
           </li>
           <li @click="nav('viewMarkdown')">
             <i class="fas fa-file-code"></i>View page markdown
@@ -65,12 +68,14 @@
       siteConfig: { type: Object, default: () => ({}) },
       isAuthenticated: { type: Boolean, default: false },
       loginsEnabled: { type: Boolean, default: false },
+      contentSource: { type: Object, default: () => ({}) },
       version: { type: String, default: '' },
     },    
     data: () => ({
       dependencies: [],
     }),    
     computed: {
+      isJuncture() { return contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' },
       containerStyle() { return { 
         height: this.active ? `${this.scrollTop < 400 ? 400 - this.scrollTop : 0}px` : '0',
         backgroundColor: 'white',
