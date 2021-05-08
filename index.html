@@ -907,9 +907,9 @@
           },
 
           async updateSite() {
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct: contentSource.acct, repo: contentSource.repo, ref:'gh-pages'}, 'index.html')
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'index.html')
             if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture') {
-              await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct: contentSource.acct, repo: contentSource.repo, ref:'gh-pages'}, 'css/main.css')
+              await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'css/main.css')
             }
           },
 
@@ -918,7 +918,7 @@
             let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`, { headers: {Authorization: `Token ${this.ghToken}`}} )
             let repoExists = resp.ok
             if (repoExists) {
-              let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/contents/index.html?ref=gh-pages`, {headers: {Authorization:`Token ${this.ghToken}`}})
+              let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/contents/index.html?ref=juncture`, {headers: {Authorization:`Token ${this.ghToken}`}})
               if (resp.ok) sha = await resp.json().sha
             } else { // create repo with auto_init enabled to create main branch and README.md file
               resp = await fetch('https://api.github.com/user/repos', { method: 'POST', headers: {Authorization:`Token ${this.ghToken}`},
@@ -926,15 +926,15 @@
               resp = await resp.json()
             }
 
-            // Create a gh-pages branch in repo if needed
+            // Create a juncture branch in repo if needed
             resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs/heads`, {
                 headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.v3+json'} })
             let heads = await resp.json()
             let mainHead = heads.find(head => head.ref === 'refs/heads/main')
-            let ghpHead = heads.find(head => head.ref === 'refs/heads/gh-pages')
+            let ghpHead = heads.find(head => head.ref === 'refs/heads/juncture')
             if (!ghpHead) {
               resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs`, {
-                  method: 'POST', body: JSON.stringify({ref: 'refs/heads/gh-pages', sha: mainHead.object.sha}),
+                  method: 'POST', body: JSON.stringify({ref: 'refs/heads/juncture', sha: mainHead.object.sha}),
                   headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.v3+json'} })
             }
 
@@ -944,17 +944,17 @@
             resp = await resp.json()
             if (resp.status === 404) {
               resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/pages`, {
-                method: 'POST', body: JSON.stringify({source: {branch: 'gh-pages', path: '/'}}),
+                method: 'POST', body: JSON.stringify({source: {branch: 'juncture', path: '/'}}),
                 headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.switcheroo-preview+json'} })
             }
             
             // Request rebuild of Pages site
             resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
  
-            // Copy GHP app files from Juncture to gh-pages branch in target repo
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct, repo, ref:'gh-pages'}, 'index.html')
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct, repo, ref:'gh-pages'}, '404.html')
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct, repo, ref:'gh-pages'}, '.nojekyll')
+            // Copy GHP app files from Juncture to juncture branch in target repo
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct, repo, ref:'juncture'}, 'index.html')
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct, repo, ref:'juncture'}, '404.html')
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct, repo, ref:'juncture'}, '.nojekyll')
 
             resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
             resp = await resp.json()
