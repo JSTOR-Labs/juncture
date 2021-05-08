@@ -28,7 +28,7 @@
           <li v-if="!isJuncture" @click="nav('viewSiteOnJuncture')">
             <i class="fas fa-tools"></i>View site on Juncture
           </li>
-          <li v-if="isAuthenticated" @click="nav('editMarkdown')">
+          <li v-if="isAuthenticated && (!isJuncture || isAdmin)" @click="nav('editMarkdown')">
             <i class="fas fa-edit"></i>Edit page
           </li>
           <li v-if="isAuthenticated && isAdmin && isJuncture" @click="nav('updateSite')">
