@@ -21,6 +21,7 @@
                  :content-source="contentSource"
                  :logins-enabled="loginsEnabled"
                  :is-authenticated="authenticatedUser !== null && loginsEnabled"
+                 :is-admin="authenticatedUser !== null && authenticatedUser.isAdmin"
                  :version="junctureVersion"
                  @menu-item-clicked="menuItemClicked"
                  @authenticate="authenticate"
