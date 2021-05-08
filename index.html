@@ -266,6 +266,7 @@
         if (ghAuth) {
           authenticatedUser = ghAuth.user
           authenticatedUser.acct = ghAuth.additionalUserInfo.username
+          authenticatedUser.isAdmin = siteConfig.siteAdmins && siteConfig.siteAdmins.indexOf(authenticatedUser.acct) >= 0
           oauthAccessToken = ghAuth.credential.oauthAccessToken
         }
       } catch(err){console.log(err)}
