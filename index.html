@@ -907,9 +907,9 @@
           },
 
           async updateSite(acct, repo) {
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct, repo, ref:'gh-pages'}, 'index.html')
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct: contentSource.acct, repo: contentSource.repo, ref:'gh-pages'}, 'index.html')
             if (acct === 'jstor-labs' && repo === 'juncture') {
-              await this.copyFile({acct, repo, ref:'main'}, {acct, repo, ref:'gh-pages'}, 'css/main.css')
+              await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct: contentSource.acct, repo: contentSource.repo, ref:'gh-pages'}, 'css/main.css')
             }
           },
 
