@@ -405,7 +405,7 @@
             } else if (action === 'gotoGitHub') {
               window.open(`https://github.com/${contentSource.acct}/${contentSource.repo}/tree/${contentSource.ref}`, '_blank')
             } else if (action === 'viewSiteOnJuncture') {
-              this.loadEssay(`/${contentSource.acct}/${contentSource.repo}`)
+              window.location.href = `https://juncture-digital.org/${contentSource.acct}/${contentSource.repo}`
             } else {
               this.loadEssay(action)
             }
