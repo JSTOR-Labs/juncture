@@ -948,7 +948,6 @@
             const vers = resp.content.match(/const junctureVersion = '.*'/)
             console.log(`vers=${vers}`)
             let indexFile = resp.content.replace(/const junctureVersion = '.*'/, `const junctureVersion = '${fromRef}'`)
-            console.log(indexFile)
             this.putFile('/index.html', indexFile, contentSource.acct, contentSource.repo, 'juncture')
             // await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'index.html')
             if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture') {
@@ -1170,10 +1169,12 @@
           ref = ref || this.contentSource.ref
           message = message || 'API Commit'
           console.log(`putFile: path=${path} acct=${acct} repo=${repo} ref=${ref} message=${message}`)
+          console.log(content)
           if (window.location.hostname !== 'localhost' && acct) {
             let ghToken = oauthAccessToken || ghUnscopedToken
             let existing = await this.getFile(path, acct, repo, ref)
-            let payload = { message, branch: ref, content: btoa(content) }
+            let payload = { message, branch: 'juncture', content: btoa(content) }
+            console.log(`existing=${existing ? existing.sha : 'none'}`)
             if (existing) payload.sha = existing.sha
             let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`
             let resp = await fetch(url, { method: 'PUT', body: JSON.stringify(payload), headers: {Authorization: `Token ${ghToken}`} })
