@@ -1199,10 +1199,12 @@
       //if (isJuncture) {
         // let resp = await fetch(`${window.location.origin}/config.yaml`)
         let resp = await fetch('https://juncture-digital.org/config.yaml')
-        config = YAML.parse(await resp.text())
-        ghUnscopedToken = atob(config.ghUnscopedToken)
-        gcApiKey = atob(config.gcApiKey)
-        gcAuthDomain = atob(config.gcAuthDomain)
+        let junctureConfig = YAML.parse(await resp.text())
+        ghUnscopedToken = atob(junctureConfig.ghUnscopedToken)
+        if (isJuncture) {
+          gcApiKey = atob(junctureConfig.gcApiKey)
+          gcAuthDomain = atob(junctureConfig.gcAuthDomain)
+        }
       //}
       if (contentSource.isGhpSite) {
         let resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
