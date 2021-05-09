@@ -949,7 +949,7 @@
             console.log(`vers=${vers}`)
             let indexFile = resp.content.replace(/const junctureVersion = '.*'/, `const junctureVersion = '${fromRef}'`)
             console.log(indexFile)
-            // this.putFile('/index.html', indexFile, contentSource.acct, contentSource.repo, 'juncture')
+            this.putFile('/index.html', indexFile, contentSource.acct, contentSource.repo, 'juncture')
             // await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'index.html')
             if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture') {
               await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'css/main.css')
