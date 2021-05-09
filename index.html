@@ -994,7 +994,9 @@
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, 'index.html')
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, '404.html')
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, '.nojekyll')
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: 'main'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, 'config.yaml')
+            resp = await this.getFile('/config.yaml', 'jstor-labs', 'juncture', fromRef)
+            let configFile = resp.content.replace(/<GitHub username>/, authenticatedUser.acct)
+            this.putFile('/config.yaml', configFile, targetAcct, targetRepo, 'juncture')
 
             // Request rebuild of Pages site
             resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
