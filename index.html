@@ -1197,30 +1197,24 @@
     // Gets site config
     async function getSiteConfig() {
       let config = {}
-      //if (isJuncture) {
-        // let resp = await fetch(`${window.location.origin}/config.yaml`)
-        let resp = await fetch('https://juncture-digital.org/config.yaml')
-        let junctureConfig = YAML.parse(await resp.text())
-        ghUnscopedToken = atob(junctureConfig.ghUnscopedToken)
-        if (isJuncture) {
-          gcApiKey = atob(junctureConfig.gcApiKey)
-          gcAuthDomain = atob(junctureConfig.gcAuthDomain)
-        }
-      //}
+      let resp = await fetch('https://juncture-digital.org/config.yaml')
+      resp = YAML.parse(await resp.text())
+      ghUnscopedToken = atob(resp.ghUnscopedToken)
+      if (isJuncture) config = resp
       if (contentSource.isGhpSite) {
-        let resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
+        resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
       } else if (contentSource.acct) {
         let ghToken = oauthAccessToken || ghUnscopedToken
         let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersion : contentSource.ref 
-        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`,
+        resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`,
                                ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
         if (resp.ok) {
           resp = await resp.json()
           config = YAML.parse(atob(resp.content))
         }
       } else {
-        let resp = await fetch(`${window.location.origin}/config.yaml`)
+        resp = await fetch(`${window.location.origin}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
       }
       ['banner', 'favicon', 'customCSS'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
