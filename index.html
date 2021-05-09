@@ -151,7 +151,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0
-    const junctureVersion = 'main'
+    const junctureVersion = 'v0.0.4'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -945,8 +945,11 @@
           async updateSite(fromRef) {
             console.log(`updateSite: fromRef=${fromRef}`)
             let resp = await this.getFile('/index.html', 'jstor-labs', 'juncture', fromRef)
+            const vers = resp.content.match(/const junctureVersion = '.*'/)
+            console.log(`vers=${vers}`)
             let indexFile = resp.content.replace(/const junctureVersion = '.*'/, `const junctureVersion = '${fromRef}'`)
-            this.putFile('/index.html', indexFile, contentSource.acct, contentSource.repo, 'juncture')
+            console.log(indexFile)
+            // this.putFile('/index.html', indexFile, contentSource.acct, contentSource.repo, 'juncture')
             // await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'index.html')
             if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture') {
               await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'css/main.css')
