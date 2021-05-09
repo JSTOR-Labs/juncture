@@ -943,6 +943,7 @@
           },
 
           async updateSite(fromRef) {
+            console.log(`updateSite: fromRef=${fromRef}`)
             let resp = await this.getFile('/index.html', 'jstor-labs', 'juncture', fromRef)
             let indexFile = resp.content.replace(/const junctureVersion = '.*'/, `const junctureVersion = '${fromRef}'`)
             this.putFile('/index.html', indexFile, contentSource.acct, contentSource.repo, 'juncture')
