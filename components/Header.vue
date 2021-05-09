@@ -79,7 +79,7 @@
       dependencies: [],
     }),    
     computed: {
-      isJuncture() { return contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' },
+      isJuncture() { return window.location.hostname === 'juncture-digital.org' },
       containerStyle() { return { 
         height: this.active ? `${this.scrollTop < 400 ? 400 - this.scrollTop : 0}px` : '0',
         backgroundColor: 'white',
