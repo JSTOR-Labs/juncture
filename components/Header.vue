@@ -16,33 +16,36 @@
               <i :class="`fas fa-${item.icon}`"></i>{{item.label}}
             </li>
           </template>
-          <li v-if="loginsEnabled">
-            <a v-if="isAuthenticated" @click="logout">
-              <i :class="`fas fa-user`"></i>Logout
-            </a>
-            <a v-else @click="authenticate">
-              <i :class="`fas fa-user`"></i>Login
-            </a>
-          </li>
-          <hr>
-          <li v-if="!isJuncture" @click="nav('viewSiteOnJuncture')">
-            <i class="fas fa-tools"></i>View site on Juncture
-          </li>
-          <li v-if="isAuthenticated && (!isJuncture || isAdmin)" @click="nav('editMarkdown')">
-            <i class="fas fa-edit"></i>Edit page
-          </li>
-          <li v-if="isAuthenticated && isAdmin && isJuncture" @click="nav('updateSite')">
-            <i class="fas fa-wrench"></i>Update a site
-          </li>
-          <li v-if="isAuthenticated && isJuncture" @click="nav('createSite')">
-            <i class="fas fa-plus-circle"></i>Create new site
-          </li>
-          <li @click="nav('viewMarkdown')">
-            <i class="fas fa-file-code"></i>View page markdown
-          </li>
-          <li @click="nav('gotoGitHub')">
-            <i class="fab fa-github"></i>Goto to GitHub
-          </li>
+
+          <template v-if="isJuncture">
+
+            <li v-if="loginsEnabled">
+              <a v-if="isAuthenticated" @click="logout">
+                <i :class="`fas fa-user`"></i>Logout
+              </a>
+              <a v-else @click="authenticate">
+                <i :class="`fas fa-user`"></i>Login
+              </a>
+            </li>
+
+            <hr>
+            <li v-if="isAuthenticated && ((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="nav('editMarkdown')">
+              <i class="fas fa-edit"></i>Edit page
+            </li>
+            <li v-if="isAdmin" @click="nav('updateSite')">
+              <i class="fas fa-wrench"></i>Update a site
+            </li>
+            <li v-if="isAuthenticated" @click="nav('createSite')">
+              <i class="fas fa-plus-circle"></i>Create new site
+            </li>
+            <li @click="nav('viewMarkdown')">
+              <i class="fas fa-file-code"></i>View page markdown
+            </li>
+            <li @click="nav('gotoGitHub')">
+              <i class="fab fa-github"></i>Goto to GitHub
+            </li>
+          </template>
+
           <li v-if="version">
             <br>
             <div class="version">Version: {{version}}</div>

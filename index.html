@@ -92,8 +92,7 @@
         <div class="form-controls">
           <button v-if="formProcessingStatus === 'ready'" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
           <button v-if="formProcessingStatus === 'ready'" class="form-submit" @click="doSiteCreate">Submit</button>
-          <button v-if="formProcessingStatus === 'done'" class="form-submit" @click="hideForm">Close</button>
-          <button v-if="isJuncture && formProcessingStatus === 'done'" class="form-submit" @click="gotoSite(`/${authenticatedUser.acct}/${newRepo}`)">Open Site in Juncture</button>
+          <button v-if="formProcessingStatus === 'done'" class="form-submit" @click="window.location.href = siteUrl">Close</button>
         </div>
       </form>
     </div>
@@ -106,7 +105,10 @@
         <div style="display:float; padding:6px 0"><span>Version:</span>
           <select v-model="updateVersion">
             <option value="main" selected>Latest</option>
-            <option v-for="tag in releaseTags" :key="tag" :value="tag" v-text="tag"></option>
+            <template v-for="(tag, idx) in releaseTags">
+              <option v-if="idx === 0" :key="tag" :value="tag" selected v-text="tag"></option>
+              <option v-else :key="tag" :value="tag" v-text="tag"></option>
+            </template>
           </select>
         </div>
         <div v-html="formProcessingMessage"></div>
@@ -430,9 +432,7 @@
               this.showForm('create-site-form')
             } else if (action === 'updateSite') {
               console.log('updateSite')
-              resp = await fetch('https://api.github.com/repos/jstor-labs/juncture/tags')
-              let tags = await resp.json()
-              this.releaseTags = tags.map(tag => tag.name)
+              this.releaseTags = await getReleaseTags()
               this.showForm('update-site-form')
             } else if (action === 'gotoGitHub') {
               window.open(`https://github.com/${contentSource.acct}/${contentSource.repo}/tree/${contentSource.ref}`, '_blank')
@@ -999,9 +999,7 @@
             this.putFile('/config.yaml', configFile, targetAcct, targetRepo, 'juncture')
 
             // Request rebuild of Pages site
-            resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
-            resp = await resp.json()
-            console.log(resp)
+            await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
          }
     
         },
@@ -1171,7 +1169,6 @@
           ref = ref || this.contentSource.ref
           message = message || 'API Commit'
           console.log(`putFile: path=${path} acct=${acct} repo=${repo} ref=${ref} message=${message}`)
-          console.log(content)
           if (window.location.hostname !== 'localhost' && acct) {
             let ghToken = oauthAccessToken || ghUnscopedToken
             let existing = await this.getFile(path, acct, repo, ref)
@@ -1223,6 +1220,12 @@
       if (config.gcAuthDomain) gcAuthDomain = atob(config.gcAuthDomain)
       loginsEnabled = gcApiKey !== undefined && gcAuthDomain !== undefined
       return config
+    }
+
+    async function getReleaseTags() {
+      let resp = await fetch('https://api.github.com/repos/jstor-labs/juncture/tags')
+      resp = await resp.json()
+      return tags.map(tag => tag.name)
     }
 
     // Determines if Github repo exists
