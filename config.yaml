@@ -12,13 +12,13 @@ banner: https://picsum.photos/1000/400
 ######################################################
 # Defines options shown in the header navigation menu
 ######################################################
-nav:
-- label: About
+# nav:
+# - label: About
   icon: info
   path: /about
-- label: Help
-  icon: question
-  path: /docs
+# - label: Help
+#   icon: question
+#   path: /docs
 # - label: Contact Us
 #   icon: envelope
 #   path: "/contact-us"
@@ -35,10 +35,10 @@ nav:
 # Base URL of server used for serving and optionally
 # creating IIIF presentation manifests
 ######################################################
-iiifServer: https://iiif.juncture-digital.org
+# iiifServer: <IIIF server base URL>
 
-siteAdmins:
-- rsnyder
+# siteAdmins:
+# - <GitHub user name>
 
 ######################################################
 # Optional credentials used for GitHub API and OAuth integration
