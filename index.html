@@ -1225,7 +1225,7 @@
     async function getReleaseTags() {
       let resp = await fetch('https://api.github.com/repos/jstor-labs/juncture/tags')
       resp = await resp.json()
-      return tags.map(tag => tag.name)
+      return resp.map(tag => tag.name)
     }
 
     // Determines if Github repo exists
