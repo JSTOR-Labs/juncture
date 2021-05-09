@@ -92,7 +92,7 @@
         <div class="form-controls">
           <button v-if="formProcessingStatus === 'ready'" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
           <button v-if="formProcessingStatus === 'ready'" class="form-submit" @click="doSiteCreate">Submit</button>
-          <button v-if="formProcessingStatus === 'done'" class="form-submit" @click="window.location.href = siteUrl">Close</button>
+          <button v-if="formProcessingStatus === 'done'" class="form-submit" @click="loadNewSite">Close</button>
         </div>
       </form>
     </div>
@@ -104,10 +104,7 @@
         <input :value="contentSource.repo" class="form-name" type="text" readonly>
         <div style="display:float; padding:6px 0"><span>Version:</span>
           <select v-model="updateVersion">
-            <template v-for="(tag, idx) in releaseTags">
-              <option v-if="idx === 0" :key="tag" :value="tag" selected v-text="tag"></option>
-              <option v-else :key="tag" :value="tag" v-text="tag"></option>
-            </template>
+            <option v-for="tag in releaseTags" :key="tag" :value="tag" selected v-text="tag"></option>
           </select>
         </div>
         <div v-html="formProcessingMessage"></div>
@@ -432,6 +429,7 @@
             } else if (action === 'updateSite') {
               console.log('updateSite')
               this.releaseTags = await getReleaseTags()
+              this.updateVersion = this.releaseTags[0]
               this.showForm('update-site-form')
             } else if (action === 'gotoGitHub') {
               window.open(`https://github.com/${contentSource.acct}/${contentSource.repo}/tree/${contentSource.ref}`, '_blank')
@@ -476,6 +474,10 @@
             let siteUrl = `https://${this.authenticatedUser.acct}.github.io/${this.newRepo}`
             this.formProcessingMessage = `New Juncture site created at <a href="${siteUrl}">${siteUrl}</a>`
             this.formProcessingStatus = 'done'
+          },
+          
+          loadNewSite() {
+            window.location.href = `https://${this.authenticatedUser.acct}.github.io/${this.newRepo}`
           },
 
           async doSiteUpdate() {
