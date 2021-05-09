@@ -18,6 +18,7 @@
           </template>
 
           <template v-if="isJuncture">
+            <hr>
 
             <li v-if="loginsEnabled">
               <a v-if="isAuthenticated" @click="logout">
@@ -28,7 +29,6 @@
               </a>
             </li>
 
-            <hr>
             <li @click="nav('viewMarkdown')">
               <i class="fas fa-file-code"></i>View page markdown
             </li>

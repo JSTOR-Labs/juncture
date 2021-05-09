@@ -429,7 +429,7 @@
             } else if (action === 'updateSite') {
               console.log('updateSite')
               let releaseTags = await getReleaseTags()
-              this.updateVersion = this.releaseTags[0]
+              this.updateVersion = releaseTags[0]
               this.releaseTags = releaseTags
               this.showForm('update-site-form')
             } else if (action === 'gotoGitHub') {
@@ -478,7 +478,7 @@
           },
           
           loadNewSite() {
-            window.location.href = `https://${this.authenticatedUser.acct}.github.io/${this.newRepo}`
+            window.location.href = `https://juncture-digital.org/${this.authenticatedUser.acct}/${this.newRepo}`
           },
 
           async doSiteUpdate() {
@@ -1205,6 +1205,7 @@
         resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
       } else if (contentSource.acct && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
+        config = {}
         let ghToken = oauthAccessToken || ghUnscopedToken
         resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${contentSource.ref}`,
                                ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
