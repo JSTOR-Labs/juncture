@@ -940,6 +940,7 @@
           async updateSite(fromRef) {
             let resp = await this.getFile('/index.html', 'jstor-labs', 'juncture', fromRef)
             let indexFile = resp.content.replace(/const junctureVersion = 'main'/, `const junctureVersion = '${fromRef}'`)
+            console.log(indexFile)
             this.putFile('/index.html', indexFile, contentSource.acct, contentSource.repo, 'juncture')
             // await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'index.html')
             if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture') {
