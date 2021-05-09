@@ -1203,10 +1203,9 @@
       if (contentSource.isGhpSite) {
         resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
-      } else if (contentSource.acct) {
+      } else if (contentSource.acct && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
         let ghToken = oauthAccessToken || ghUnscopedToken
-        let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersion : contentSource.ref 
-        resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`,
+        resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${contentSource.ref}`,
                                ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
         if (resp.ok) {
           resp = await resp.json()
