@@ -428,8 +428,9 @@
               this.showForm('create-site-form')
             } else if (action === 'updateSite') {
               console.log('updateSite')
-              this.releaseTags = await getReleaseTags()
+              let releaseTags = await getReleaseTags()
               this.updateVersion = this.releaseTags[0]
+              this.releaseTags = releaseTags
               this.showForm('update-site-form')
             } else if (action === 'gotoGitHub') {
               window.open(`https://github.com/${contentSource.acct}/${contentSource.repo}/tree/${contentSource.ref}`, '_blank')
