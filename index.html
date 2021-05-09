@@ -965,7 +965,7 @@
               if (resp.ok) sha = await resp.json().sha
             } else { // create repo with auto_init enabled to create main branch and README.md file
               resp = await fetch('https://api.github.com/user/repos', { method: 'POST', headers: {Authorization:`Token ${this.ghToken}`},
-                  body: JSON.stringify({name: repo, description: 'Juncture repository', auto_init: true}) })
+                  body: JSON.stringify({name: targetRepo, description: 'Juncture repository', auto_init: true}) })
               resp = await resp.json()
             }
 
@@ -989,16 +989,15 @@
                 method: 'POST', body: JSON.stringify({source: {branch: 'juncture', path: '/'}}),
                 headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.switcheroo-preview+json'} })
             }
-            
-            // Request rebuild of Pages site
-            resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
- 
+             
             // Copy GHP app files from Juncture to juncture branch in target repo
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, 'index.html')
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, '404.html')
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, '.nojekyll')
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: 'main'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, 'config.yaml')
 
-            resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
+            // Request rebuild of Pages site
+            resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
             resp = await resp.json()
             console.log(resp)
          }
@@ -1204,10 +1203,9 @@
       if (contentSource.isGhpSite) {
         resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
-      } else if (contentSource.acct) {
+      } else if (contentSource.acct && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
         let ghToken = oauthAccessToken || ghUnscopedToken
-        let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersion : contentSource.ref 
-        resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${ref}`,
+        resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${contentSource.ref}`,
                                ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
         if (resp.ok) {
           resp = await resp.json()
