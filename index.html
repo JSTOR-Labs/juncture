@@ -151,7 +151,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0
-    const junctureVersion = 'main'
+    const junctureVersion = 'v0.0.7'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -473,7 +473,7 @@
           async doSiteCreate() {
             this.formProcessingStatus = 'processing'
             this.formProcessingMessage = 'Creating site...'
-            await this.createSite(this.authenticatedUser.acct, this.newRepo)
+            await this.createSite(this.authenticatedUser.acct, this.newRepo, junctureVersion)
             let siteUrl = `https://${this.authenticatedUser.acct}.github.io/${this.newRepo}`
             this.formProcessingMessage = `New Juncture site created at <a href="${siteUrl}">${siteUrl}</a>`
             this.formProcessingStatus = 'done'
@@ -956,6 +956,7 @@
           },
 
           async createSite(targetAcct, targetRepo, fromRef) {
+            console.log(`createSite: targetAcct=${targetAcct} targetRepo=${targetRepo} fromRef=${fromRef}`)
             // See if repo exists and create it if needed
             let resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}`, { headers: {Authorization: `Token ${this.ghToken}`}} )
             let repoExists = resp.ok
@@ -1199,10 +1200,12 @@
       //if (isJuncture) {
         // let resp = await fetch(`${window.location.origin}/config.yaml`)
         let resp = await fetch('https://juncture-digital.org/config.yaml')
-        config = YAML.parse(await resp.text())
-        ghUnscopedToken = atob(config.ghUnscopedToken)
-        gcApiKey = atob(config.gcApiKey)
-        gcAuthDomain = atob(config.gcAuthDomain)
+        let junctureConfig = YAML.parse(await resp.text())
+        ghUnscopedToken = atob(junctureConfig.ghUnscopedToken)
+        if (isJuncture) {
+          gcApiKey = atob(junctureConfig.gcApiKey)
+          gcAuthDomain = atob(junctureConfig.gcAuthDomain)
+        }
       //}
       if (contentSource.isGhpSite) {
         let resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
@@ -1247,7 +1250,7 @@
   
     // Gets a list of available components
     async function getComponentsList() {
-      let ref = isJuncture ? junctureVersion : contentSource.ref
+      let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersion : contentSource.ref
       console.log(`getComponentsList: ref=${ref} junctureVersion=${junctureVersion}`)
       let componentsList = []
       let ghToken = oauthAccessToken || ghUnscopedToken
@@ -1272,11 +1275,11 @@
       }
       // if (isJuncture && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
       if (contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
-        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/${ref}`, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
+        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/${junctureVersion}`, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
         resp = await resp.json()
         resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
         resp = await resp.json()
-        componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/jstor-labs/juncture/${ref}/${componentsRoot}/${item.path}`)]
+        componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/jstor-labs/juncture/${junctureVersion}/${componentsRoot}/${item.path}`)]
       }
       return componentsList
     }
