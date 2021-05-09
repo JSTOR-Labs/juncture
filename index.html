@@ -151,7 +151,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0
-    const junctureVersion = 'v0.0.4'
+    const junctureVersion = 'main'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -989,16 +989,14 @@
                 method: 'POST', body: JSON.stringify({source: {branch: 'juncture', path: '/'}}),
                 headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.switcheroo-preview+json'} })
             }
-            
-            // Request rebuild of Pages site
-            resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
- 
+             
             // Copy GHP app files from Juncture to juncture branch in target repo
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, 'index.html')
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, '404.html')
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, '.nojekyll')
 
-            resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
+            // Request rebuild of Pages site
+            resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
             resp = await resp.json()
             console.log(resp)
          }
