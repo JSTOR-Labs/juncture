@@ -100,7 +100,7 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif;}
 #create-site-form, #update-site-form {
   left: 33vw;
   width: 34vw;
-  height: 200px;
+  height: 260px;
 }
 
 .modal-form form {
@@ -108,7 +108,7 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif;}
   height: 100%;
   width: 100%;
   grid-template-columns: 1fr;
-  grid-template-rows: auto auto auto 1fr auto;
+  grid-auto-rows: auto;
   grid-gap: 4px;
 }
 .modal-form form h1 {

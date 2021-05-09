@@ -103,6 +103,12 @@
         <h1>Update Juncture site</h1>
         <input :value="contentSource.acct" class="form-name" type="text" readonly>
         <input :value="contentSource.repo" class="form-name" type="text" readonly>
+        <div style="display:float; padding:6px 0"><span>Version:</span>
+          <select v-model="updateVersion">
+            <option value="main" selected>Latest</option>
+            <option value="v0.0.1">v0.0.1</option>
+          </select>
+        </div>
         <div v-html="formProcessingMessage"></div>
         <div class="form-controls">
           <button v-if="formProcessingStatus === 'ready'" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
@@ -145,7 +151,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0
-    const junctureVersion = 'v0.1.7'
+    const junctureVersion = 'main'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -286,7 +292,7 @@
       return config
     })
     .then(config => gcOauth())
-    .then(resp => getComponentsList())
+    .then(resp => getComponentsList(junctureVersion))
     .then(clist => {
       componentsList = clist
       componentsList.forEach(componentUrl => {
@@ -343,7 +349,8 @@
           contactMessage: null, 
           newRepo: null,
           formProcessingMessage: '',
-          formProcessingStatus: 'ready'
+          formProcessingStatus: 'ready',
+          updateVersion: 'main'
         }),
         computed: {
           essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
@@ -469,10 +476,10 @@
 
           async doSiteUpdate() {
             this.formProcessingStatus = 'processing'
-            this.formProcessingMessage = 'Updating site...'
-            await this.updateSite()
+            this.formProcessingMessage = `Updating site to version ${this.updateVersion === 'main' ? 'Latest' : this.updateVersion}...`
+            await this.updateSite(this.updateVersion)
             let siteUrl = `https://${this.contentSource.acct}.github.io/${this.contentSource.repo}`
-            this.formProcessingMessage = `Site <a href="${siteUrl}">${siteUrl}</a> updated to latest version`
+            this.formProcessingMessage = `Site <a href="${siteUrl}">${siteUrl}</a> updated to version ${this.updateVersion === 'main' ? 'Latest' : this.updateVersion}`
             this.formProcessingStatus = 'done'
           },
 
@@ -930,19 +937,22 @@
               method: 'PUT', body: JSON.stringify(payload), headers: {Authorization: `Token ${this.ghToken}`} })
           },
 
-          async updateSite() {
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'index.html')
+          async updateSite(fromRef) {
+            let resp = await this.getFile('/index.html', 'jstor-labs', 'juncture', fromRef)
+            let indexFile = resp.content.replace(/const junctureVersion = 'main'/, `const junctureVersion = '${fromRef}'`)
+            this.putFile('/index.html', indexFile, contentSource.acct, contentSource.repo, 'juncture')
+            // await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'index.html')
             if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture') {
-              await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'css/main.css')
+              await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'css/main.css')
             }
           },
 
-          async createSite(acct, repo) {
+          async createSite(targetAcct, targetRepo, fromRef) {
             // See if repo exists and create it if needed
-            let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`, { headers: {Authorization: `Token ${this.ghToken}`}} )
+            let resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}`, { headers: {Authorization: `Token ${this.ghToken}`}} )
             let repoExists = resp.ok
             if (repoExists) {
-              let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/contents/index.html?ref=juncture`, {headers: {Authorization:`Token ${this.ghToken}`}})
+              let resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/contents/index.html?ref=juncture`, {headers: {Authorization:`Token ${this.ghToken}`}})
               if (resp.ok) sha = await resp.json().sha
             } else { // create repo with auto_init enabled to create main branch and README.md file
               resp = await fetch('https://api.github.com/user/repos', { method: 'POST', headers: {Authorization:`Token ${this.ghToken}`},
@@ -951,33 +961,33 @@
             }
 
             // Create a juncture branch in repo if needed
-            resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs/heads`, {
+            resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/git/refs/heads`, {
                 headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.v3+json'} })
             let heads = await resp.json()
             let mainHead = heads.find(head => head.ref === 'refs/heads/main')
             let ghpHead = heads.find(head => head.ref === 'refs/heads/juncture')
             if (!ghpHead) {
-              resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs`, {
+              resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/git/refs`, {
                   method: 'POST', body: JSON.stringify({ref: 'refs/heads/juncture', sha: mainHead.object.sha}),
                   headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.v3+json'} })
             }
 
             // Make target repository a GitHub Pages site
-            resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/pages`, {
+            resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages`, {
               headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.switcheroo-preview+json'} })
             if (resp.status === 404) {
-              resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/pages`, {
+              resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages`, {
                 method: 'POST', body: JSON.stringify({source: {branch: 'juncture', path: '/'}}),
                 headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.switcheroo-preview+json'} })
             }
             
             // Request rebuild of Pages site
-            resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
+            resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
  
             // Copy GHP app files from Juncture to juncture branch in target repo
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct, repo, ref:'juncture'}, 'index.html')
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct, repo, ref:'juncture'}, '404.html')
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref:'main'}, {acct, repo, ref:'juncture'}, '.nojekyll')
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, 'index.html')
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, '404.html')
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, '.nojekyll')
 
             resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
             resp = await resp.json()
@@ -1124,11 +1134,14 @@
           }
           return objArray
         },
-        async getFile(path) {
-          console.log(`getFile: path=${path}`)
-          if (window.location.hostname !== 'localhost' && this.contentSource.acct) {
+        async getFile(path, acct, repo, ref) {
+          acct = acct || this.contentSource.acct
+          repo = repo || this.contentSource.repo
+          ref = ref || this.contentSource.ref
+          console.log(`getFile: path=${path} acct=${acct} repo=${repo} ref=${ref}`)
+          if (window.location.hostname !== 'localhost' && acct) {
             let ghToken = oauthAccessToken || ghUnscopedToken
-            let url = `https://api.github.com/repos/${this.contentSource.acct}/${this.contentSource.repo}/contents${path}?ref=${this.contentSource.ref}`
+            let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`
             let resp = await fetch(url, ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
             if (resp.ok) {
               resp = await resp.json()
@@ -1142,15 +1155,18 @@
           }
           return null
         },
-        async putFile(path, content, message) {
+        async putFile(path, content, acct, repo, ref, message) {
+          acct = acct || this.contentSource.acct
+          repo = repo || this.contentSource.repo
+          ref = ref || this.contentSource.ref
           message = message || 'API Commit'
-          console.log(`putFile: path=${path} message=${message}`)
+          console.log(`putFile: path=${path} acct=${acct} repo=${repo} ref=${ref} message=${message}`)
           if (window.location.hostname !== 'localhost' && this.contentSource.acct) {
             let ghToken = oauthAccessToken || ghUnscopedToken
             let existing = await this.getFile(path)
-            let payload = { message, branch: this.contentSource.ref, content: btoa(content) }
+            let payload = { message, branch: ref, content: btoa(content) }
             if (existing) payload.sha = existing.sha
-            let url = `https://api.github.com/repos/${this.contentSource.acct}/${this.contentSource.repo}/contents${path}?ref=${this.contentSource.ref}`
+            let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`
             let resp = await fetch(url, { method: 'PUT', body: JSON.stringify(payload), headers: {Authorization: `Token ${ghToken}`} })
             resp = await resp.json()
           } else {
@@ -1220,7 +1236,8 @@
     }
   
     // Gets a list of available components
-    async function getComponentsList() {
+    async function getComponentsList(ref) {
+      ref = ref || 'main'
       let componentsList = []
       let ghToken = oauthAccessToken || ghUnscopedToken
       if (window.location.hostname !== 'localhost' && contentSource.acct && contentSource.repo && contentSource.ref) {
@@ -1244,11 +1261,11 @@
       }
       // if (isJuncture && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
       if (contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
-        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/main`, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
+        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/${ref}`, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
         resp = await resp.json()
         resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
         resp = await resp.json()
-        componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/jstor-labs/juncture/main/${componentsRoot}/${item.path}`)]
+        componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/jstor-labs/juncture/${ref}/${componentsRoot}/${item.path}`)]
       }
       return componentsList
     }
