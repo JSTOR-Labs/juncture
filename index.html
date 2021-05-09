@@ -1242,10 +1242,12 @@
   
     // Gets a list of available components
     async function getComponentsList() {
+      let ref = isJuncture ? junctureVersion : contentSource.ref
+      console.log(`getComponentsList: ref=${ref} junctureVersion=${junctureVersion}`)
       let componentsList = []
       let ghToken = oauthAccessToken || ghUnscopedToken
       if (window.location.hostname !== 'localhost' && contentSource.acct && contentSource.repo && contentSource.ref) {
-        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${contentSource.ref}`,
+        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
                                ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
         if (resp.ok) {
           resp = await resp.json()
@@ -1253,7 +1255,7 @@
           if (ghComponentsItem) {
             resp = await fetch(ghComponentsItem.url, ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
             resp = await resp.json()
-            componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}/${componentsRoot}/${item.path}`)]
+            componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}/${componentsRoot}/${item.path}`)]
           }
         }
       } 
@@ -1265,11 +1267,11 @@
       }
       // if (isJuncture && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
       if (contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
-        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/${junctureVersion}`, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
+        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/${ref}`, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
         resp = await resp.json()
         resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
         resp = await resp.json()
-        componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/jstor-labs/juncture/${junctureVersion}/${componentsRoot}/${item.path}`)]
+        componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/jstor-labs/juncture/${ref}/${componentsRoot}/${item.path}`)]
       }
       return componentsList
     }
