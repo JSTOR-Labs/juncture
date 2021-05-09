@@ -104,7 +104,6 @@
         <input :value="contentSource.repo" class="form-name" type="text" readonly>
         <div style="display:float; padding:6px 0"><span>Version:</span>
           <select v-model="updateVersion">
-            <option value="main" selected>Latest</option>
             <template v-for="(tag, idx) in releaseTags">
               <option v-if="idx === 0" :key="tag" :value="tag" selected v-text="tag"></option>
               <option v-else :key="tag" :value="tag" v-text="tag"></option>
