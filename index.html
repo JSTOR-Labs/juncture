@@ -106,7 +106,7 @@
         <div style="display:float; padding:6px 0"><span>Version:</span>
           <select v-model="updateVersion">
             <option value="main" selected>Latest</option>
-            <option value="v0.0.1">v0.0.1</option>
+            <option v-for="tag in releaseTags" :key="tag" :value="tag" v-text="tag"></option>
           </select>
         </div>
         <div v-html="formProcessingMessage"></div>
@@ -350,6 +350,7 @@
           newRepo: null,
           formProcessingMessage: '',
           formProcessingStatus: 'ready',
+          releaseTags: [],
           updateVersion: 'main'
         }),
         computed: {
@@ -418,7 +419,7 @@
             this.scrollTop = e.target.scrollTop
           }, 5),
 
-          menuItemClicked(action) {
+          async menuItemClicked(action) {
             if (action === 'viewMarkdown') {
               this.markdownViewer.show()
             } else if (action === 'editMarkdown') {
@@ -428,6 +429,10 @@
             } else if (action === 'createSite') {
               this.showForm('create-site-form')
             } else if (action === 'updateSite') {
+              console.log('updateSite')
+              resp = await fetch('https://api.github.com/repos/jstor-labs/juncture/tags')
+              let tags = await resp.json()
+              this.releaseTags = tags.map(tag => tag.name)
               this.showForm('update-site-form')
             } else if (action === 'gotoGitHub') {
               window.open(`https://github.com/${contentSource.acct}/${contentSource.repo}/tree/${contentSource.ref}`, '_blank')
@@ -939,8 +944,7 @@
 
           async updateSite(fromRef) {
             let resp = await this.getFile('/index.html', 'jstor-labs', 'juncture', fromRef)
-            let indexFile = resp.content.replace(/const junctureVersion = 'main'/, `const junctureVersion = '${fromRef}'`)
-            console.log(indexFile)
+            let indexFile = resp.content.replace(/const junctureVersion = '.*'/, `const junctureVersion = '${fromRef}'`)
             this.putFile('/index.html', indexFile, contentSource.acct, contentSource.repo, 'juncture')
             // await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'index.html')
             if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture') {
