@@ -1161,9 +1161,9 @@
           ref = ref || this.contentSource.ref
           message = message || 'API Commit'
           console.log(`putFile: path=${path} acct=${acct} repo=${repo} ref=${ref} message=${message}`)
-          if (window.location.hostname !== 'localhost' && this.contentSource.acct) {
+          if (window.location.hostname !== 'localhost' && acct) {
             let ghToken = oauthAccessToken || ghUnscopedToken
-            let existing = await this.getFile(path)
+            let existing = await this.getFile(path, acct, repo, ref)
             let payload = { message, branch: ref, content: btoa(content) }
             if (existing) payload.sha = existing.sha
             let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`
