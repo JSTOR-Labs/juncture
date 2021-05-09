@@ -473,7 +473,7 @@
           async doSiteCreate() {
             this.formProcessingStatus = 'processing'
             this.formProcessingMessage = 'Creating site...'
-            await this.createSite(this.authenticatedUser.acct, this.newRepo)
+            await this.createSite(this.authenticatedUser.acct, this.newRepo, junctureVersion)
             let siteUrl = `https://${this.authenticatedUser.acct}.github.io/${this.newRepo}`
             this.formProcessingMessage = `New Juncture site created at <a href="${siteUrl}">${siteUrl}</a>`
             this.formProcessingStatus = 'done'
@@ -956,6 +956,7 @@
           },
 
           async createSite(targetAcct, targetRepo, fromRef) {
+            console.log(`createSite: targetAcct=${targetAcct} targetRepo=${targetRepo} fromRef=${fromRef}`)
             // See if repo exists and create it if needed
             let resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}`, { headers: {Authorization: `Token ${this.ghToken}`}} )
             let repoExists = resp.ok
