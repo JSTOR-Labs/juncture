@@ -965,7 +965,7 @@
               if (resp.ok) sha = await resp.json().sha
             } else { // create repo with auto_init enabled to create main branch and README.md file
               resp = await fetch('https://api.github.com/user/repos', { method: 'POST', headers: {Authorization:`Token ${this.ghToken}`},
-                  body: JSON.stringify({name: repo, description: 'Juncture repository', auto_init: true}) })
+                  body: JSON.stringify({name: targetRepo, description: 'Juncture repository', auto_init: true}) })
               resp = await resp.json()
             }
 
