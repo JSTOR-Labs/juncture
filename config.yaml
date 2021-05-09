@@ -38,7 +38,7 @@ banner: https://picsum.photos/1000/400
 # iiifServer: <IIIF server base URL>
 
 # siteAdmins:
-# - <GitHub user name>
+# - <GitHub username>
 
 ######################################################
 # Optional credentials used for GitHub API and OAuth integration
