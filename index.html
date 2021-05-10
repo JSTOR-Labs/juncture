@@ -1200,7 +1200,11 @@
       let resp = await fetch('https://juncture-digital.org/config.yaml')
       resp = YAML.parse(await resp.text())
       ghUnscopedToken = atob(resp.ghUnscopedToken)
-      if (isJuncture) config = resp
+      if (isJuncture) {
+        config = resp
+        gcApiKey = atob(config.gcApiKey)
+        gcAuthDomain = atob(config.gcAuthDomain)
+      }
       if (contentSource.isGhpSite) {
         resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
