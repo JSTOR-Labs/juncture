@@ -149,7 +149,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0
-    const junctureVersion = 'v0.0.25'
+    const junctureVersion = 'v0.0.27'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -478,6 +478,7 @@
           },
           
           loadNewSite() {
+            this.hideForm()
             // window.location.href = `https://juncture-digital.org/${this.authenticatedUser.acct}/${this.newRepo}`
             window.open(`https://juncture-digital.org/${this.authenticatedUser.acct}/${this.newRepo}`, '_blank')
           },
@@ -1003,9 +1004,9 @@
 
             resp = await this.getFile('/README.tmpl.md', 'jstor-labs', 'juncture', fromRef)
             let readmeFile = resp.content
-              .replace(/<site-url>/, `https://${targetAcct}.github.io/${targetRepo}`)
-              .replace(/<github-url>/, `https://github.com/${targetAcct}/${targetRepo}`)
-              .replace(/<config-url>/, `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`)
+              .replace(/<site-url>/g, `https://${targetAcct}.github.io/${targetRepo}`)
+              .replace(/<github-url>/g, `https://github.com/${targetAcct}/${targetRepo}`)
+              .replace(/<config-url>/g, `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`)
             await this.putFile('/README.md', readmeFile, targetAcct, targetRepo, 'main')
 
             // Request rebuild of Pages site
