@@ -231,11 +231,11 @@
           [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2, 4)
           contentSource = {acct, repo, ref: qargs.ref || 'main', baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true, 
                            // assetsBaseUrl: `${window.location.origin}/${repo}`}
-                           assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || 'main'}`}
+                           assetsBaseUrl: `https://gitcdn.cdn/repo/${acct}/${repo}/${qargs.ref || 'main'}`}
 
         // juncture-digital.org
         } else if (isJuncture) {
-          contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: 'https://gitcdn.link/repo/jstor-labs/juncture/main', basePath: '', isGhpSite: false}
+          contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: 'https://gitcdn.cdn/repo/jstor-labs/juncture/main', basePath: '', isGhpSite: false}
           let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
           if (pathElems.length >= 2) {
             let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
@@ -1285,7 +1285,7 @@
     async function githubRepoInfo(acct, repo) {
       if (knownGhAccts[acct]) {
         return {acct, repo, ref: knownGhAccts[acct], basePath: `/${acct}/${repo}`,
-                assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || knownGhAccts[acct]}`}
+                assetsBaseUrl: `https://gitcdn.cdn/repo/${acct}/${repo}/${qargs.ref || knownGhAccts[acct]}`}
       } else {
         let ghToken = oauthAccessToken || ghUnscopedToken
         let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`,
@@ -1293,7 +1293,7 @@
         if (resp.ok) {
           resp = await resp.json()
           return {acct, repo, ref: qargs.ref || resp.default_branch, basePath: `/${acct}/${repo}`, 
-                  assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || resp.default_branch}`}
+                  assetsBaseUrl: `https://gitcdn.cdn/repo/${acct}/${repo}/${qargs.ref || resp.default_branch}`}
         }
       }
     }
