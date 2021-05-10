@@ -1000,6 +1000,13 @@
             let configFile = resp.content.replace(/<GitHub username>/, authenticatedUser.acct)
             this.putFile('/config.yaml', configFile, targetAcct, targetRepo, 'juncture')
 
+            resp = await this.getFile('/README.tmpl.md', 'jstor-labs', 'juncture', fromRef)
+            let readmeFile = resp.content
+              .replace(/<site-url>/, `https://${targetAcct}.github.io/${targetRepo}`)
+              .replace(/<github-url>/, `https://github.com/${targetAcct}/${targetRepo}`)
+              .replace(/<site-url>/, `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`)
+            this.putFile('README.md', configFile, targetAcct, targetRepo, 'main')
+
             // Request rebuild of Pages site
             await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
          }
@@ -1211,7 +1218,7 @@
       } else if (contentSource.acct && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
         config = {}
         let ghToken = oauthAccessToken || ghUnscopedToken
-        resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${contentSource.ref}`,
+        resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=juncture`,
                                ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
         if (resp.ok) {
           resp = await resp.json()
