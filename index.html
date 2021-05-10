@@ -478,6 +478,7 @@
           },
           
           loadNewSite() {
+            this.hideForm()
             // window.location.href = `https://juncture-digital.org/${this.authenticatedUser.acct}/${this.newRepo}`
             window.open(`https://juncture-digital.org/${this.authenticatedUser.acct}/${this.newRepo}`, '_blank')
           },
