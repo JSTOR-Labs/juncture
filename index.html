@@ -1003,9 +1003,9 @@
 
             resp = await this.getFile('/README.tmpl.md', 'jstor-labs', 'juncture', fromRef)
             let readmeFile = resp.content
-              .replace(/<site-url>/, `https://${targetAcct}.github.io/${targetRepo}`)
-              .replace(/<github-url>/, `https://github.com/${targetAcct}/${targetRepo}`)
-              .replace(/<config-url>/, `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`)
+              .replace(/<site-url>/g, `https://${targetAcct}.github.io/${targetRepo}`)
+              .replace(/<github-url>/g, `https://github.com/${targetAcct}/${targetRepo}`)
+              .replace(/<config-url>/g, `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`)
             await this.putFile('/README.md', readmeFile, targetAcct, targetRepo, 'main')
 
             // Request rebuild of Pages site
