@@ -422,6 +422,8 @@
               this.markdownViewer.show()
             } else if (action === 'editMarkdown') {
               this.editMarkdown()
+            } else if (action === 'addPage') {
+              this.addPage()
             } else if (action === '/contact-us') {
               this.showForm('contact-form')
             } else if (action === 'createSite') {
@@ -467,7 +469,6 @@
             sendEmail(contactData).then(resp => this.formProcessingStatus = 'done')
           },
 
-
           async doSiteCreate() {
             this.formProcessingStatus = 'processing'
             this.formProcessingMessage = 'Creating site...'
@@ -511,6 +512,10 @@
               if (resp.ok) return await resp.text()
             }
             return null
+          },
+
+          addPage() {
+            console.log('addPage')
           },
 
           // Loads essay Markdown file
@@ -933,16 +938,21 @@
             this.actions = actions
           },
 
+          replaceValues(content, replacements) {
+            for (const [toMatch, replacementValue] of Object.entries(replacements)) { content = content.replace(new RegExp(toMatch, 'g'), replacementValue) }
+            return content
+          },
+
           async copyFile (src, tgt, path) {
             let existing
-            resp = await fetch(`https://api.github.com/repos/${tgt.acct}/${tgt.repo}/contents/${path}?ref=${tgt.ref}`, {headers: {Authorization: `Token ${this.ghToken}`}})
+            resp = await fetch(`https://api.github.com/repos/${tgt.acct}/${tgt.repo}/contents${src.path}?ref=${tgt.ref}`, {headers: {Authorization: `Token ${this.ghToken}`}})
             if (resp.ok) existing = await resp.json()
-            resp = await fetch(`https://api.github.com/repos/${src.acct}/${src.repo}/contents/${path}?ref=${src.ref}`, {headers: {Authorization: `Token ${this.ghToken}`}})
+            resp = await fetch(`https://api.github.com/repos/${src.acct}/${src.repo}/contents${src.path}?ref=${src.ref}`, {headers: {Authorization: `Token ${this.ghToken}`}})
             resp = await resp.json()
             let file = decodeURIComponent(escape(atob(resp.content)))
             let payload = { message: 'initial', branch: tgt.ref, content: btoa(file) }
             if (existing) payload.sha = existing.sha
-            resp = await fetch(`https://api.github.com/repos/${tgt.acct}/${tgt.repo}/contents/${path}?ref=${tgt.ref}`, {
+            resp = await fetch(`https://api.github.com/repos/${tgt.acct}/${tgt.repo}/contents${tgt.path || src.path}?ref=${tgt.ref}`, {
               method: 'PUT', body: JSON.stringify(payload), headers: {Authorization: `Token ${this.ghToken}`} })
           },
 
@@ -953,9 +963,8 @@
             console.log(`vers=${vers}`)
             let indexFile = resp.content.replace(/const junctureVersion = '.*'/, `const junctureVersion = '${fromRef}'`)
             this.putFile('/index.html', indexFile, contentSource.acct, contentSource.repo, 'juncture')
-            // await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'index.html')
             if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture') {
-              await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'css/main.css')
+              await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path: '/css/main.css'}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'})
             }
           },
 
@@ -995,19 +1004,28 @@
             }
              
             // Copy GHP app files from Juncture to juncture branch in target repo
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, 'index.html')
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, '404.html')
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, '.nojekyll')
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: 'juncture', path:'/index.html'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/404.html'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/.nojekyll'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/css/custom.css'}, {acct: targetAcct, repo: targetRepo, ref:'main'})
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/images/favicon.svg'}, {acct: targetAcct, repo: targetRepo, ref:'main'})
+            
+            let replacementValues = {
+              '<site-url>': `https://${targetAcct}.github.io/${targetRepo}`,
+              '<repo-url>': `https://github.com/${targetAcct}/${targetRepo}`,
+              '>config-url>': `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`,
+              '<page-edit-url>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/README.md`,
+              '"Page Title"': '"Replaced Page Title"',
+              '"Page Author"': `"${authenticatedUser.acct}"`,
+              '<GitHub username>': authenticatedUser.acct
+              }
+                                    
+            // Add customized files
             resp = await this.getFile('/config.yaml', 'jstor-labs', 'juncture', fromRef)
-            let configFile = resp.content.replace(/<GitHub username>/, authenticatedUser.acct)
-            await this.putFile('/config.yaml', configFile, targetAcct, targetRepo, 'juncture')
+            await this.putFile('/config.yaml', this.replaceValues(resp.content, replacementValues), targetAcct, targetRepo, 'juncture')
 
-            resp = await this.getFile('/README.tmpl.md', 'jstor-labs', 'juncture', fromRef)
-            let readmeFile = resp.content
-              .replace(/<site-url>/g, `https://${targetAcct}.github.io/${targetRepo}`)
-              .replace(/<github-url>/g, `https://github.com/${targetAcct}/${targetRepo}`)
-              .replace(/<config-url>/g, `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`)
-            await this.putFile('/README.md', readmeFile, targetAcct, targetRepo, 'main')
+            resp = await this.getFile('/page-templates/new-site-readme.md', 'jstor-labs', 'juncture', fromRef)
+            await this.putFile('/README.md', this.replaceValues(resp.content, replacementValues), targetAcct, targetRepo, 'main')
 
             // Request rebuild of Pages site
             await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})

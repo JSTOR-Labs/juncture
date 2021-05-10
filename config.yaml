@@ -1,8 +1,8 @@
 title: Juncture
 tagline: A Visual Essay tool
 banner: https://picsum.photos/1000/400
-#favicon: /images/favicon.svg
-#customCSS: /css/custom.css
+favicon: /images/favicon.svg
+customCSS: /css/custom.css
 
 # When using a custom domain these fields must be updated to match
 # the account and repository name
@@ -12,10 +12,10 @@ banner: https://picsum.photos/1000/400
 ######################################################
 # Defines options shown in the header navigation menu
 ######################################################
-#nav:
-#- label: About
-#  icon: info
-#  path: /about
+nav:
+- label: About
+  icon: info
+  path: /about
 #- label: Help
 #  icon: question
 #  path: /docs
@@ -35,7 +35,7 @@ banner: https://picsum.photos/1000/400
 # Base URL of server used for serving and optionally
 # creating IIIF presentation manifests
 ######################################################
-#iiifServer: <IIIF server base URL>
+iiifServer: https://iiif.juncture-digital.org
 
 siteAdmins:
 - <GitHub username>

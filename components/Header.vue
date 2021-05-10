@@ -33,7 +33,13 @@
               <i class="fas fa-file-code"></i>View page markdown
             </li>
             <li v-if="isAuthenticated && ((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="nav('editMarkdown')">
-              <i class="fas fa-edit"></i>Edit page on GitHub
+              <i class="fas fa-edit"></i>Edit this page (on GitHub)
+            </li>
+            <li v-if="isAuthenticated && ((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="nav('addPage')">
+              <i class="fas fa-file-medical"></i>Add a page
+            </li>
+            <li @click="nav('gotoGitHub')">
+              <i class="fab fa-github"></i>Goto to GitHub
             </li>
             <li v-if="isAuthenticated" @click="nav('createSite')">
               <i class="fas fa-plus-circle"></i>Create new site
@@ -41,9 +47,7 @@
             <li v-if="isAdmin" @click="nav('updateSite')">
               <i class="fas fa-wrench"></i>Update site
             </li>
-            <li @click="nav('gotoGitHub')">
-              <i class="fab fa-github"></i>Goto to GitHub
-            </li>
+
           </template>
 
           <li v-if="version">
