@@ -998,14 +998,14 @@
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, '.nojekyll')
             resp = await this.getFile('/config.yaml', 'jstor-labs', 'juncture', fromRef)
             let configFile = resp.content.replace(/<GitHub username>/, authenticatedUser.acct)
-            this.putFile('/config.yaml', configFile, targetAcct, targetRepo, 'juncture')
+            await this.putFile('/config.yaml', configFile, targetAcct, targetRepo, 'juncture')
 
             resp = await this.getFile('/README.tmpl.md', 'jstor-labs', 'juncture', fromRef)
             let readmeFile = resp.content
               .replace(/<site-url>/, `https://${targetAcct}.github.io/${targetRepo}`)
               .replace(/<github-url>/, `https://github.com/${targetAcct}/${targetRepo}`)
               .replace(/<config-url>/, `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`)
-            this.putFile('/README.md', readmeFile, targetAcct, targetRepo, 'main')
+            await this.putFile('/README.md', readmeFile, targetAcct, targetRepo, 'main')
 
             // Request rebuild of Pages site
             await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
