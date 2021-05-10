@@ -1005,7 +1005,7 @@
               .replace(/<site-url>/, `https://${targetAcct}.github.io/${targetRepo}`)
               .replace(/<github-url>/, `https://github.com/${targetAcct}/${targetRepo}`)
               .replace(/<site-url>/, `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`)
-            this.putFile('README.md', configFile, targetAcct, targetRepo, 'main')
+            this.putFile('/README.md', configFile, targetAcct, targetRepo, 'main')
 
             // Request rebuild of Pages site
             await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
