@@ -1010,22 +1010,26 @@
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/css/custom.css'}, {acct: targetAcct, repo: targetRepo, ref:'main'})
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/images/favicon.svg'}, {acct: targetAcct, repo: targetRepo, ref:'main'})
             
-            let replacementValues = {
+            let baseReplacementValues = {
               '<site-url>': `https://${targetAcct}.github.io/${targetRepo}`,
               '<repo-url>': `https://github.com/${targetAcct}/${targetRepo}`,
-              '>config-url>': `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`,
-              '<page-edit-url>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/README.md`,
-              '"Page Title"': '"Replaced Page Title"',
-              '"Page Author"': `"${authenticatedUser.acct}"`,
-              '<GitHub username>': authenticatedUser.acct
+              '<config-url>': `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`,
+              '"Page Author"': `"${authenticatedUser.displayName}"`,
+              '<github-username>': authenticatedUser.acct,
+              '<contact-email>': authenticatedUser.emain
               }
                                     
             // Add customized files
             resp = await this.getFile('/config.yaml', 'jstor-labs', 'juncture', fromRef)
-            await this.putFile('/config.yaml', this.replaceValues(resp.content, replacementValues), targetAcct, targetRepo, 'juncture')
+            await this.putFile('/config.yaml', this.replaceValues(resp.content, baseReplacementValues), targetAcct, targetRepo, 'juncture')
 
             resp = await this.getFile('/page-templates/new-site-readme.md', 'jstor-labs', 'juncture', fromRef)
-            await this.putFile('/README.md', this.replaceValues(resp.content, replacementValues), targetAcct, targetRepo, 'main')
+            let toReplace = {...baseReplacementValues, ...{'<edit-url>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/README.md`}}
+            await this.putFile('/README.md', this.replaceValues(resp.content, toReplace), targetAcct, targetRepo, 'main')
+
+            resp = await this.getFile('/page-templates/new-page-readme.md', 'jstor-labs', 'juncture', fromRef)
+            let toReplace = {...baseReplacementValues, ...{'<edit-url>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/about/README.md`}}
+            await this.putFile('/about/README.md', this.replaceValues(resp.content, toReplace), targetAcct, targetRepo, 'main')
 
             // Request rebuild of Pages site
             await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})

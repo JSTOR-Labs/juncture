@@ -1,5 +1,5 @@
 title: Juncture
-tagline: A Visual Essay tool
+tagline: A Visual Essay Site
 banner: https://picsum.photos/1000/400
 favicon: /images/favicon.svg
 customCSS: /css/custom.css
@@ -28,8 +28,8 @@ nav:
 # A valid toEmail address is required. Other fields are optional
 #contactForm:
 #  toEmail:
-#  - someone@example.com
-#  subject: Juncture Contact Form
+#  - <contact-email>
+#  subject: Contact Us
 
 #######################################################
 # Base URL of server used for serving and optionally
@@ -38,7 +38,7 @@ nav:
 iiifServer: https://iiif.juncture-digital.org
 
 siteAdmins:
-- <GitHub username>
+- <github-username>
 
 ######################################################
 # Optional credentials used for GitHub API and OAuth integration
