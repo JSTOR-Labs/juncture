@@ -29,7 +29,7 @@
               </a>
             </li>
 
-            <li @click="nav('viewMarkdown')">
+            <li v-if="isAuthenticated" @click="nav('viewMarkdown')">
               <i class="fas fa-file-code"></i>View page markdown
             </li>
             <li v-if="isAuthenticated && ((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="nav('editMarkdown')">
@@ -38,7 +38,7 @@
             <li v-if="isAuthenticated && ((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="nav('addPage')">
               <i class="fas fa-file-medical"></i>Add a page
             </li>
-            <li @click="nav('gotoGitHub')">
+            <li v-if="isAuthenticated" @click="nav('gotoGitHub')">
               <i class="fab fa-github"></i>Goto to GitHub
             </li>
             <li v-if="isAuthenticated" @click="nav('createSite')">

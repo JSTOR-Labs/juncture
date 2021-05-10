@@ -229,8 +229,10 @@
         // GHP deploy mode
         if (window.location.hostname.indexOf('github.io') > 0) {
           [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2, 4)
-          contentSource = {acct, repo, ref: 'main', baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true, 
-                           assetsBaseUrl: `${window.location.origin}/${repo}`}
+          contentSource = {acct, repo, ref: qargs.ref || 'main', baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true, 
+                           // assetsBaseUrl: `${window.location.origin}/${repo}`}
+                           assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || 'main'}`}
+
         // juncture-digital.org
         } else if (isJuncture) {
           contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: 'https://gitcdn.link/repo/jstor-labs/juncture/main', basePath: '', isGhpSite: false}
@@ -304,7 +306,7 @@
       })
 
       let head = document.querySelector('head')
-      if (contentSource.isGhpSite) head.appendChild(makeLink(`${contentSource.baseUrl}${contentSource.basePath}/css/main.css`))
+      if (contentSource.isGhpSite) head.appendChild(makeLink(`${contentSource.assetsBaseUrl || contentSource.baseUrl }/css/main.css`))
       if (siteConfig.favicon ) head.appendChild(makeLink(siteConfig.favicon, 'icon'))
       if (siteConfig.customCSS) head.appendChild(makeLink(siteConfig.customCSS))
       if (siteConfig.title) document.title = siteConfig.title
