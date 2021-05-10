@@ -29,6 +29,9 @@ def main(path=None):
 def put(path=''):
     logger.info(f'PUT: {path}')
     logger.info(request.data)
+    fdir = f'{root}/{"".join([elem for elem in path.split("/") if elem][:-1])}'
+    logger.info(f'dir={fdir}')
+    os.makedirs(fdir, exist_ok=True)
     with open(f'{root}/{path}', 'wb') as fp:
         fp.write(request.data)
     return 'OK', 200

@@ -76,6 +76,7 @@
       scrollTop: { type: Number, default: 0 },
       essayConfig: { type: Object, default: () => ({}) },
       siteConfig: { type: Object, default: () => ({}) },
+      isJuncture: { type: Boolean, default: false },
       isAuthenticated: { type: Boolean, default: false },
       isAdmin: { type: Boolean, default: false },
       loginsEnabled: { type: Boolean, default: false },
@@ -86,7 +87,6 @@
       dependencies: [],
     }),    
     computed: {
-      isJuncture() { return window.location.hostname === 'juncture-digital.org' },
       containerStyle() { return { 
         height: this.active ? `${this.scrollTop < 400 ? 400 - this.scrollTop : 0}px` : '0',
         backgroundColor: 'white',

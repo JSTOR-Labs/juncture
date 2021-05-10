@@ -28,7 +28,7 @@ nav:
 # A valid toEmail address is required. Other fields are optional
 #contactForm:
 #  toEmail:
-#  - <contact-email>
+#  - ronald.snyder@ithaka.org
 #  subject: Contact Us
 
 #######################################################
@@ -38,7 +38,7 @@ nav:
 iiifServer: https://iiif.juncture-digital.org
 
 siteAdmins:
-- <github-username>
+- rsnyder
 
 ######################################################
 # Optional credentials used for GitHub API and OAuth integration
