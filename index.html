@@ -478,7 +478,8 @@
           },
           
           loadNewSite() {
-            window.location.href = `https://juncture-digital.org/${this.authenticatedUser.acct}/${this.newRepo}`
+            // window.location.href = `https://juncture-digital.org/${this.authenticatedUser.acct}/${this.newRepo}`
+            window.open(`https://juncture-digital.org/${this.authenticatedUser.acct}/${this.newRepo}`, '_blank')
           },
 
           async doSiteUpdate() {
@@ -1172,19 +1173,19 @@
           }
           return null
         },
-        async putFile(path, content, acct, repo, ref, message) {
+        async putFile(path, content, acct, repo, branch, message) {
           acct = acct || this.contentSource.acct
           repo = repo || this.contentSource.repo
-          ref = ref || this.contentSource.ref
+          branch = branch || this.contentSource.ref
           message = message || 'API Commit'
-          console.log(`putFile: path=${path} acct=${acct} repo=${repo} ref=${ref} message=${message}`)
+          console.log(`putFile: path=${path} acct=${acct} repo=${repo} branch=${branch} message=${message}`)
           if (window.location.hostname !== 'localhost' && acct) {
             let ghToken = oauthAccessToken || ghUnscopedToken
-            let existing = await this.getFile(path, acct, repo, ref)
-            let payload = { message, branch: 'juncture', content: btoa(content) }
+            let existing = await this.getFile(path, acct, repo, branch)
+            let payload = { message, branch, content: btoa(content) }
             console.log(`existing=${existing ? existing.sha : 'none'}`)
             if (existing) payload.sha = existing.sha
-            let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`
+            let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${branch}`
             let resp = await fetch(url, { method: 'PUT', body: JSON.stringify(payload), headers: {Authorization: `Token ${ghToken}`} })
             resp = await resp.json()
           } else {
