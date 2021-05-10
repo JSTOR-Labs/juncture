@@ -308,7 +308,7 @@
       })
 
       let head = document.querySelector('head')
-      if (contentSource.isGhpSite) head.appendChild(makeLink(`${contentSource.assetsBaseUrl || contentSource.baseUrl }/css/main.css`))
+      if (contentSource.isGhpSite) head.appendChild(makeLink(`http://gitcdn.link/cdn/jstor-labs/juncture/${junctureVersion}/css/main.css`))
       if (siteConfig.favicon ) head.appendChild(makeLink(siteConfig.favicon, 'icon'))
       if (siteConfig.customCSS) head.appendChild(makeLink(siteConfig.customCSS))
       if (siteConfig.title) document.title = siteConfig.title
@@ -1249,7 +1249,7 @@
     // Gets site config
     async function getSiteConfig() {
       let config = {}
-      let resp = await fetch('https://juncture-digital.org/config.yaml')
+      let resp = await fetch(`https://gitcdn.link/cdn/jstor-labs/juncture/${junctureVersion}/config.yaml`)
       resp = YAML.parse(await resp.text())
       ghUnscopedToken = atob(resp.ghUnscopedToken)
       if (isJuncture) {
