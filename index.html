@@ -1249,7 +1249,8 @@
     // Gets site config
     async function getSiteConfig() {
       let config = {}
-      let resp = await fetch(`https://gitcdn.link/cdn/jstor-labs/juncture/${junctureVersion}/config.yaml`)
+      // let resp = await fetch(`https://gitcdn.link/cdn/jstor-labs/juncture/${junctureVersion}/config.yaml`)
+      let resp = await fetch(`https://gitcdn.link/cdn/jstor-labs/juncture/juncture/config.yaml`)
       resp = YAML.parse(await resp.text())
       ghUnscopedToken = atob(resp.ghUnscopedToken)
       if (isJuncture) {
