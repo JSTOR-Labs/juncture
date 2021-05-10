@@ -149,7 +149,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0
-    const junctureVersion = 'v0.0.20'
+    const junctureVersion = 'v0.0.21'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -1005,7 +1005,7 @@
               .replace(/<site-url>/, `https://${targetAcct}.github.io/${targetRepo}`)
               .replace(/<github-url>/, `https://github.com/${targetAcct}/${targetRepo}`)
               .replace(/<site-url>/, `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`)
-            this.putFile('README.md', configFile, targetAcct, targetRepo, 'main')
+            this.putFile('/README.md', configFile, targetAcct, targetRepo, 'main')
 
             // Request rebuild of Pages site
             await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
