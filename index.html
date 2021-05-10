@@ -1,1352 +1,320 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <link href="https://juncture-digital.org/images/favicon.svg" rel="icon"/>
-  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
-  <link href="https://unpkg.com/tippy.js@6/dist/tippy.css" rel="stylesheet"/>
-  <link href="https://unpkg.com/tippy.js@6/themes/light-border.css" rel="stylesheet"/>
-  <link href="https://juncture-digital.org/css/main.css" rel="stylesheet"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-  <title>Juncture</title>
-</head>
-<body>
 
-  <div id="app" ref="app" :class="layouts.join(' ')">
-    <div id="header" ref="header">            
-      <component v-bind:is="'ve-header'" :active="true" :scroll-top="scrollTop"
-                 :site-config="siteConfig"
-                 :essay-config="essayConfig"
-                 :content-source="contentSource"
-                 :logins-enabled="loginsEnabled"
-                 :is-authenticated="authenticatedUser !== null && loginsEnabled"
-                 :is-admin="authenticatedUser !== null && authenticatedUser.isAdmin"
-                 :version="junctureVersion"
-                 @menu-item-clicked="menuItemClicked"
-                 @authenticate="authenticate"
-                 @logout="logout"
-      ></component>
-    </div>
-    <div id="tabs-bar" ref="tabsBar">
-      <span v-for="viewer in viewersEnabled" :key="`tab-${viewer}`" 
-            :class="{'active-tab': selectedViewer === viewer}" 
-            :data-tab="viewer" 
-            @click="selectedViewer = viewer; viewerIsOpen = true">
-        <i v-if="viewerData[viewer]" :class="viewerData[viewer].icon"></i>
-      </span>
-    </div>
-    <div id="essay" ref="essay" v-html="html" @scroll="onScroll"></div>
-    <div id="viewer" ref="viewer" :style="viewerStyle">
-      <i v-if="!isVerticalLayout && viewerIsOpen" class="far fa-times-circle" style="position:absolute; top:0; right:0; z-index:500; font-size:26px;" @click="viewerIsOpen = !viewerIsOpen"></i>
-      <component v-for="viewer in viewersEnabled" :key="viewer" v-bind:is="viewer" 
-                 :items="items"
-                 :entities="entities"
-                 :active="viewer === selectedViewer"
-                 :actions="actions"
-                 :hover-item="hoverItem"
-                 :content-source="contentSource"
-                 :gh-token:="ghToken"
-                 :md-dir="mdDir"
-                 :is-authenticated="authenticatedUser !== null && loginsEnabled"
-                 @update-component-data="updateComponentData"
-                 @set-hover-item="hoverItem = $event"
-      ></component>
-    </div>
-    <div style="display:none;">
-      <div ref="popup" class="popup" v-if="hoverEntity">
-        <div class="label" v-html="hoverEntity.label"></div>
-        <div v-if="hoverEntity.description" class="description" v-html="hoverEntity.description"></div>
-        <div v-if="hoverEntity.images" class="image"><img :src="hoverEntity.images[0]"></div>
+<template>
+  <div ref="header" id="header" class="header" :style="containerStyle">
+    <nav>
+      <div id="menuToggle">
+        <input type="checkbox" />
+        <span></span>
+        <span></span>
+        <span></span>
+        <ul id="menu">
+          <li @click="nav('/')">
+            <i :class="`fas fa-home`"></i>Home
+          </li>
+          <template v-for="item in siteConfig.nav">
+            <li :key="item.path" @click="nav(item.path)">
+              <i :class="`fas fa-${item.icon}`"></i>{{item.label}}
+            </li>
+          </template>
+
+          <template v-if="isJuncture">
+            <hr>
+
+            <li v-if="loginsEnabled">
+              <a v-if="isAuthenticated" @click="logout">
+                <i :class="`fas fa-user`"></i>Logout
+              </a>
+              <a v-else @click="authenticate">
+                <i :class="`fas fa-user`"></i>Login
+              </a>
+            </li>
+
+            <li @click="nav('viewMarkdown')">
+              <i class="fas fa-file-code"></i>View page markdown
+            </li>
+            <li v-if="isAuthenticated && ((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="nav('editMarkdown')">
+              <i class="fas fa-edit"></i>Edit page on GitHub
+            </li>
+            <li v-if="isAuthenticated" @click="nav('createSite')">
+              <i class="fas fa-plus-circle"></i>Create new site
+            </li>
+            <li v-if="isAdmin" @click="nav('updateSite')">
+              <i class="fas fa-wrench"></i>Update site
+            </li>
+            <li @click="nav('gotoGitHub')">
+              <i class="fab fa-github"></i>Goto to GitHub
+            </li>
+          </template>
+
+          <li v-if="version">
+            <br>
+            <div class="version">Version: {{version}}</div>
+          </li>
+        </ul>
       </div>
-    </div>
+    </nav>
 
-    <div ref="markdownViewer" id="markdown-viewer" style="display: none;">
-      <div style="padding:20px; width:50vw; height:50vh; overflow-y:scroll;">
-        <h3>Markdown</h3>
-        <div>
-          <pre v-highlightjs="markdown"><code class="markdown"></code></pre>
-        </div>
-      </div>
-    </div>
-
-    <div id="contact-form" class="modal-form" style="display: none;">
-      <form v-on:submit.prevent="submitContactForm">
-        <h1>Contact us</h1>
-        <input v-model="contactName" name="name" placeholder="Name" class="form-name" type="text" required>
-        <input v-model="contactEmail" placeholder="Email" class="form-email" type="email" required>
-        <textarea v-model="contactMessage" placeholder="Your message here" class="form-message" type="text" required></textarea>
-        <div class="form-controls">
-          <button class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
-          <button class="form-submit">Send</button>
-        </div>
-      </form>
-    </div>
-
-    <div id="create-site-form" class="modal-form" style="display: none;">
-      <form v-on:submit.prevent>
-        <h1>Create new Juncture site</h1>
-        <input :value="authenticatedUser && authenticatedUser.acct" class="form-name" type="text" readonly>
-        <input v-model="newRepo" placeholder="Repository name to update or create" class="form-email" required>
-        <div v-html="formProcessingMessage"></div>
-        <div class="form-controls">
-          <button v-if="formProcessingStatus === 'ready'" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
-          <button v-if="formProcessingStatus === 'ready'" class="form-submit" @click="doSiteCreate">Submit</button>
-          <button v-if="formProcessingStatus === 'done'" class="form-submit" @click="loadNewSite">Close</button>
-        </div>
-      </form>
-    </div>
-
-    <div id="update-site-form" class="modal-form" style="display: none;">
-      <form v-on:submit.prevent>
-        <h1>Update Juncture site</h1>
-        <input :value="contentSource.acct" class="form-name" type="text" readonly>
-        <input :value="contentSource.repo" class="form-name" type="text" readonly>
-        <div style="display:float; padding:6px 0"><span>Version:</span>
-          <select v-model="updateVersion">
-            <option v-for="tag in releaseTags" :key="tag" :value="tag" selected v-text="tag"></option>
-          </select>
-        </div>
-        <div v-html="formProcessingMessage"></div>
-        <div class="form-controls">
-          <button v-if="formProcessingStatus === 'ready'" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
-          <button v-if="formProcessingStatus === 'ready'" class="form-submit" @click="doSiteUpdate">Submit</button>
-          <button v-if="formProcessingStatus === 'done'" class="form-submit" @click="hideForm">Close</button>
-        </div>
-      </form>
+    <div class="title-bar">
+      <div class="title" v-html="title"></div>
+      <div class="author" v-html="author"></div>
     </div>
 
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it-footnote/3.0.2/markdown-it-footnote.min.js" integrity="sha512-9VOGZLBYkfqGR+OigfgoF3RUvDJRvQ9BAVgOKYmrvXlX7k+yBm5iJCpZEMpqmg2b1Cld1fiy2p0nEbDAcz9Q4w==" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/markdown-it-attrs@4.0.0/markdown-it-attrs.browser.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.0.6/markdown-it.min.js" integrity="sha512-7U8vY7c6UQpBNQOnBg3xKX502NAckvk70H1nWvh6W7izA489jEz+RCN3ntT1VMdXewaSKkOrEBegp/h6SPXrjw==" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/http-vue-loader@1.4.2/src/httpVueLoader.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/yamljs/0.3.0/yaml.min.js" integrity="sha512-f/K0Q5lZ1SrdNdjc2BO2I5kTx8E5Uw1EU3PhSUB9fYPohap5rPWEmQRCjtpDxNmQB4/+MMI/Cf+nvh1VSiwrTA==" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@popperjs/core@2"></script>
-  <script src="https://unpkg.com/tippy.js@6"></script>
-  <script src="https://blueimp.github.io/JavaScript-MD5/js/md5.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase.js"></script>
-  
-  <!-- This is used for deep linking of Single Page Apps when hosted with GitHub Pages -->
-  <script type="text/javascript">
-    (function(l) {
-      if (l.search) {
-        let q = {}
-        l.search.slice(1).split('&').forEach(function(v) {
-          let a = v.split('=')
-          q[a[0]] = a.slice(1).join('=').replace(/~and~/g, '&')
-        })
-        if (q.p !== undefined) {
-          window.history.replaceState(null, null, l.pathname.slice(0, -1) + (q.p || '') + (q.q ? ('?' + q.q) : '') + l.hash)
-        }
-      }
-    }(window.location))
-  </script>
-  
-  <script>
-    console.log(window.location)
-    const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0
-    const junctureVersion = 'v0.0.17'
-    console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
+</template>
 
-    const referrerUrl = document.referrer
-    if (referrerUrl) {
-      const referrer = parseUrl(referrerUrl)
-      if (referrer.host === 'github.com') {
-        const referrerPath = referrer.pathname.slice(1).split('/')
-        const ghAcct = referrerPath[0]
-        const ghRepo = referrerPath[1]
-        const ghBranch = referrerPath.length > 2 ? referrerPath[3] : 'main'
-        const pathStart = 4
-        const pathEnd = referrerPath[referrerPath.length-1] === 'README.md' || referrerPath[referrerPath.length-1] === 'index.md' ? referrerPath.length-1 : referrerPath.length
-        const ghPath = referrerPath.slice(pathStart, pathEnd).join('/').replace(/\.md$/, '')
-        const redirect = `${window.location.origin}/${ghAcct}/${ghRepo}/${ghPath}${ghBranch === 'master' || ghBranch === 'main' ? '' : '?ref=' + ghBranch}`
-        window.location = redirect
-      }
-    }
-    
-    Vue.directive('highlightjs', {
-      deep: true,
-      bind: function(el, binding) {
-        let targets = el.querySelectorAll('code')
-        targets.forEach((target) => {
-          if (binding.value) {
-            target.textContent = binding.value
-          }
-          hljs.highlightBlock(target)
-        })
+<script>
+  const defaultBanner = 'https://picsum.photos/id/403/1000/400?blur=1'
+
+  module.exports = {
+    name: 've-header',
+    props: {
+      active: { type: Boolean, default: true },
+      scrollTop: { type: Number, default: 0 },
+      essayConfig: { type: Object, default: () => ({}) },
+      siteConfig: { type: Object, default: () => ({}) },
+      isAuthenticated: { type: Boolean, default: false },
+      isAdmin: { type: Boolean, default: false },
+      loginsEnabled: { type: Boolean, default: false },
+      contentSource: { type: Object, default: () => ({}) },
+      version: { type: String, default: '' },
+    },    
+    data: () => ({
+      dependencies: [],
+    }),    
+    computed: {
+      isJuncture() { return window.location.hostname === 'juncture-digital.org' },
+      containerStyle() { return { 
+        height: this.active ? `${this.scrollTop < 400 ? 400 - this.scrollTop : 0}px` : '0',
+        backgroundColor: 'white',
+        backgroundImage: `url(${this.essayConfig.banner || this.siteConfig.banner || defaultBanner})`
+      } },
+      banner() { return this.essayConfigLoaded ? (this.essayConfig.banner || this.siteConfig.banner) : null },
+      bannerHeight() { return this.essayConfig && this.essayConfig.bannerHeight || this.siteConfig.bannerHeight || 400 },
+      title() { return this.essayConfig.title || this.siteConfig.title },
+      author() { return this.essayConfig.author || this.siteConfig.tagline },
+    },
+    mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
+    methods: {
+      closeDrawer() { document.querySelector('#menuToggle input').checked = false },
+      nav(item) {
+        this.closeDrawer()
+        this.$emit('menu-item-clicked', item)
       },
-      componentUpdated: function(el, binding) {
-        let targets = el.querySelectorAll('code')
-        targets.forEach((target) => {
-          if (binding.value) {
-            target.textContent = binding.value
-            hljs.highlightBlock(target)
-          }
-        })
-      }
-    })
-
-    let md = window.markdownit({
-      html:         true,
-      breaks:       false,
-      linkify:      false,
-      typographer:  false,
-      highlight: function (str, lang) {
-        if (lang && hljs.getLanguage(lang)) {
-          try {
-            return hljs.highlight(lang, str).value;
-        } catch (__) {}
-      }
-      return ''; // use external default escaping
-      }
-    })
-    .use(window.markdownitFootnote)
-    .use(markdownItAttrs)
-
-    async function getContentSource() {
-      let contentSource
-      // For local dev in GHP mode
-      if (window.location.host === 'localhost:8080' || window.location.hostname.indexOf('gitpod') >= 0) {
-        let repo = window.location.pathname.split('/').filter(elem => elem !== '')[0]
-        contentSource = {acct: 'jstor-labs', repo, ref: 'main', baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true,
-                         assetsBaseUrl: `${window.location.origin}/${repo}`}
-
-      // For local dev in custom domain mode
-      } else if (window.location.host === 'localhost:8088') {
-        contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, basePath: '', isGhpSite: false}
-        let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
-        if (pathElems.length >= 2) {
-          let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
-          if (ghRepoInfo) contentSource = {...contentSource, ...ghRepoInfo}
-        }
-
-      } else {
-        // GHP deploy mode
-        if (window.location.hostname.indexOf('github.io') > 0) {
-          [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2, 4)
-          contentSource = {acct, repo, ref: 'main', baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true, 
-                           assetsBaseUrl: `${window.location.origin}/${repo}`}
-        // juncture-digital.org
-        } else if (isJuncture) {
-          contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: 'https://gitcdn.link/repo/jstor-labs/juncture/main', basePath: '', isGhpSite: false}
-          let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
-          if (pathElems.length >= 2) {
-            let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
-            if (ghRepoInfo) contentSource = {...contentSource, ...ghRepoInfo}
-          }
-
-        // Deployed in a non juncture-digital.org custom domain
-        } else {
-          contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, basePath: '', isGhpSite: false}
-        }
-      }
-      contentSource.ref = qargs.ref || contentSource.ref
-      return contentSource
-    }
-
-    let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
-    
-    // GLobal variables used to initialize Vue
-    let siteConfig, contentSource, componentsList, ghUnscopedToken, oauthAccessToken, gcApiKey, gcAuthDomain
-    let loginsEnabled = false
-    let authenticatedUser = null
-    
-    const componentsRoot = 'components'
-    const componentPrefix = 've-'
-    const availableViewers = new Set()
-    const knownGhAccts = {'jstor-labs': 'main', 'rsnyder': 'main', 'kent-map': 'main'}
-
-    async function gcOauth() {
-      if (gcApiKey && gcAuthDomain) {
-        firebase.initializeApp({apiKey: gcApiKey, authDomain: gcAuthDomain})
-        let result = await firebase.auth().getRedirectResult()
-        if (result.credential) window.localStorage.setItem('ghAuth', JSON.stringify(result))
-      }
-      try {
-        let ghAuth = JSON.parse(window.localStorage.getItem('ghAuth'))
-        if (ghAuth) {
-          authenticatedUser = ghAuth.user
-          authenticatedUser.acct = ghAuth.additionalUserInfo.username
-          authenticatedUser.isAdmin = siteConfig.siteAdmins && siteConfig.siteAdmins.indexOf(authenticatedUser.acct) >= 0
-          oauthAccessToken = ghAuth.credential.oauthAccessToken
-        }
-      } catch(err){console.log(err)}
-    }
-
-    getContentSource()
-    .then(sourceInfo => {
-      contentSource = sourceInfo
-      return getSiteConfig()
-    })
-    .then(config => {
-      siteConfig = config
-      if (window.location.host !== 'localhost:8080') {
-        contentSource = {...contentSource, ...{acct: config.acct || contentSource.acct, repo: config.repo || contentSource.repo, ref: config.ref || contentSource.ref}}
-      }
-      return config
-    })
-    .then(config => gcOauth())
-    .then(resp => getComponentsList())
-    .then(clist => {
-      componentsList = clist
-      componentsList.forEach(componentUrl => {
-        let httpComponent = httpVueLoader(componentUrl)
-        let componentName = `${componentPrefix}${camelToKebab(componentUrl.split('/').pop().split('.')[0])}`
-        if (!availableViewers.has(componentName)) {
-          availableViewers.add(componentName)
-          Vue.component(componentName, httpComponent)
-        }
-      })
-
-      let head = document.querySelector('head')
-      if (contentSource.isGhpSite) head.appendChild(makeLink(`${contentSource.baseUrl}${contentSource.basePath}/css/main.css`))
-      if (siteConfig.favicon ) head.appendChild(makeLink(siteConfig.favicon, 'icon'))
-      if (siteConfig.customCSS) head.appendChild(makeLink(siteConfig.customCSS))
-      if (siteConfig.title) document.title = siteConfig.title
-
-      new Vue({
-        el: '#app',
-        data: () => ({
-          anchor: null,
-          qargs,
-          layouts: [],
-          siteConfig,
-          contentSource,
-          componentsList,
-          isJuncture,
-          junctureVersion,
-          params: [],
-          markdown: null,
-          mdDir: '/',
-          markdownViewer: null,
-          html: null,
-          active: null,
-          segments: {},
-          entities: {},
-          availableViewers,
-          // viewers: [],
-          selectedViewer: null,
-          contactForm: null,
-          viewerData: {},
-          scrollTop: 0,
-          forceHorizontalLayout: window.matchMedia('only screen and (max-width: 1000px)').matches,
-          viewerIsOpen: false,
-          hoverEntity: undefined,
-          hoverItem: undefined,
-          selectedItem: undefined,
-          actions: {},
-          authenticatedUser,
-          loginsEnabled,
-          externalWindow: null,
-          contactName: null,
-          contactEmail: null,
-          contactMessage: null, 
-          newRepo: null,
-          formProcessingMessage: '',
-          formProcessingStatus: 'ready',
-          releaseTags: [],
-          updateVersion: 'main'
-        }),
-        computed: {
-          essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
-          ghToken() { return oauthAccessToken || ghUnscopedToken },
-          viewerStyle() { return { 
-            height: this.viewerIsOpen
-              ? this.isVerticalLayout 
-                ? '100%'
-                : `calc(50vh - ${this.$refs.header.clientHeight/2}px)`
-              : 0 
-            } 
-          },
-          isVerticalLayout() { return !this.forceHorizontalLayout && this.layouts.indexOf('vertical') >= 0 },
-          items() { return this.active ? this.paramsInScope(document.querySelector(`[data-id="${this.active}"]`)) : [] },
-          viewersEnabled() { 
-              let viewers = this.items.filter(item => this.availableViewers.has(item.viewer)).map(item => item.viewer)
-              return viewers.filter((viewer, index) => viewers.indexOf(viewer) === index)
-          }
-        },
-        mounted() {
-          this.anchor = window.location.href.indexOf('#') >= 0 ? window.location.href.split('#').pop() : null
-          window.onpopstate = (e) => this.loadEssay(e.state.file, true) 
-          const resizeObserver = new ResizeObserver(entries => { 
-            this.forceHorizontalLayout = window.matchMedia('only screen and (max-width: 1000px)').matches
-          })
-          resizeObserver.observe(this.$refs.app)
-          this.loadEssay()
-          // Initialize Markdown source viewer
-          this.markdownViewer = tippy(this.$refs.header, {
-            trigger: 'manual', 
-            theme: 'light-border',
-            allowHTML: true,
-            interactive: true,
-            arrow: false,
-            placement: 'bottom-start',          
-            onShow: async (instance) => { instance.setContent(this.$refs.markdownViewer.innerHTML) },
-            onHide: (instance) => {}
-          })
-        },
-        methods: {
-
-          authenticate() {
-            let provider = new firebase.auth.GithubAuthProvider()
-            provider.addScope('repo')
-            firebase.auth().signInWithRedirect(provider)
-          },
-          logout() { this.authenticatedUser = null; window.localStorage.removeItem('ghAuth') },
-
-          editMarkdown() {
-            this.openWindow(`https://github.com/${this.contentSource.acct}/${this.contentSource.repo}/edit/${this.contentSource.ref}/README.md`) 
-          },
-          openWindow(url, options) {
-            if (this.externalWindow) { this.externalWindow.close() }
-            if (options === undefined) options = 'toolbar=yes,location=yes,left=0,top=0,width=1000,height=1200,scrollbars=yes,status=yes'
-            this.externalWindow = window.open(url, '_blank', options)
-          },
-
-          // Updates viewer data from events emitted when viewer components are loaded
-          updateComponentData(data) { this.viewerData = {...this.viewerData, ...data }},
-
-          // Sets active element based on essay window scroll position
-          onScroll: _.throttle(function (e) {
-            e.preventDefault()
-            e.stopPropagation()
-            this.scrollTop = e.target.scrollTop
-          }, 5),
-
-          async menuItemClicked(action) {
-            if (action === 'viewMarkdown') {
-              this.markdownViewer.show()
-            } else if (action === 'editMarkdown') {
-              this.editMarkdown()
-            } else if (action === '/contact-us') {
-              this.showForm('contact-form')
-            } else if (action === 'createSite') {
-              this.showForm('create-site-form')
-            } else if (action === 'updateSite') {
-              console.log('updateSite')
-              let releaseTags = await getReleaseTags()
-              this.updateVersion = releaseTags[0]
-              this.releaseTags = releaseTags
-              this.showForm('update-site-form')
-            } else if (action === 'gotoGitHub') {
-              window.open(`https://github.com/${contentSource.acct}/${contentSource.repo}/tree/${contentSource.ref}`, '_blank')
-            } else if (action === 'viewSiteOnJuncture') {
-              window.location.href = `https://juncture-digital.org/${contentSource.acct}/${contentSource.repo}`
-            } else {
-              this.loadEssay(action)
-            }
-          },
-
-          showForm(formId) {
-            this.$refs.app.classList.add('dimmed')
-            let form = document.getElementById(formId)
-            form.style.display = 'unset'
-            form.classList.add('visible-form')
-          },
-
-          hideForm() {
-            this.$refs.app.classList.remove('dimmed')
-            let form = document.querySelector('.visible-form')
-            form.style.display = 'none'
-            form.classList.remove('visible-form')
-            this.formProcessingMessage = ''
-            this.formProcessingStatus = 'ready'
-          },
-
-          submitContactForm() {
-            let contactData = {
-              fromAddress: 'Labs@ithaka.org',
-              toAddress: this.siteConfig.contactForm.toEmail,
-              messageSubject: this.siteConfig.contactForm.subject,
-              messageBodyText: `${this.contactMessage}\n\r[Sent by: ${this.contactName} <${this.contactEmail}>]`,
-            }
-            sendEmail(contactData).then(resp => this.formProcessingStatus = 'done')
-          },
-
-
-          async doSiteCreate() {
-            this.formProcessingStatus = 'processing'
-            this.formProcessingMessage = 'Creating site...'
-            await this.createSite(this.authenticatedUser.acct, this.newRepo, junctureVersion)
-            let siteUrl = `https://${this.authenticatedUser.acct}.github.io/${this.newRepo}`
-            this.formProcessingMessage = `New Juncture site created at <a href="${siteUrl}">${siteUrl}</a>`
-            this.formProcessingStatus = 'done'
-          },
-          
-          loadNewSite() {
-            window.location.href = `https://juncture-digital.org/${this.authenticatedUser.acct}/${this.newRepo}`
-          },
-
-          async doSiteUpdate() {
-            this.formProcessingStatus = 'processing'
-            this.formProcessingMessage = `Updating site to version ${this.updateVersion === 'main' ? 'Latest' : this.updateVersion}...`
-            await this.updateSite(this.updateVersion)
-            let siteUrl = `https://${this.contentSource.acct}.github.io/${this.contentSource.repo}`
-            this.formProcessingMessage = `Site <a href="${siteUrl}">${siteUrl}</a> updated to version ${this.updateVersion === 'main' ? 'Latest' : this.updateVersion}`
-            this.formProcessingStatus = 'done'
-          },
-
-          gotoSite(url) { 
-            this.hideForm()
-            window.open(url, '_blank') 
-          },
-
-          async getMarkdown(path) {
-            if (window.location.hostname !== 'localhost' && contentSource.acct) {
-              let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
-              let resp = await fetch(url, this.ghToken ? {headers: {Authorization:`Token ${this.ghToken}`}} : {})
-              if (resp.ok) {
-                resp = await resp.json()
-                return decodeURIComponent(escape(atob(resp.content)))
-              }
-            } else {
-              let url = `${contentSource.baseUrl}${contentSource.basePath}${path}`
-              let resp = await fetch(url)
-              if (resp.ok) return await resp.text()
-            }
-            return null
-          },
-
-          // Loads essay Markdown file
-          async loadEssay(path, replace, anchor) {
-            path = path || window.location.pathname.slice(contentSource.basePath.length) || '/'
-            if (path.slice(-1) !== '/') path += '/'
-            console.log(`loadEssay: basePath=${contentSource.basePath} path=${path} anchor=${this.anchor}`)
-            let pathsToTry = [`${path}README.md`, `${path.slice(0,-1)}.md`, `${path}index.md`]
-            for (let i = 0; i < pathsToTry.length; i++) {
-              let markdown = await this.getMarkdown(pathsToTry[i])
-              if (markdown) {
-                this.markdown = markdown
-                this.mdDir = i === 1 ? '/' : path
-                break
-              }
-            }
-
-            let browserPath = `${contentSource.basePath}${path}${this.anchor ? '#'+this.anchor : ''}`
-            if (qargs.ref) browserPath += `?ref=${qargs.ref}`
-            if (replace) {
-              history.replaceState({file: path || ''}, '', browserPath)
-            } else {
-              history.pushState({file: path || ''}, '', browserPath)
-            }
-            this.active = null
-            let essayElem = this.markdownToElem(this.markdown)
-            this.convertResourceUrls(essayElem, path)
-            this.html = this.doCustomFormatting(essayElem)
-            this.$nextTick(() => {
-              let segments = [...document.getElementById('essay').querySelectorAll('.segment')]
-              this.getEntityData([...this.findEntities()]).then(entities => {
-                this.entities = entities
-                this.tagEntities()
-                this.addPopups()
-                this.convertLinks(this.$refs.essay)
-                if (this.anchor) {
-                  let anchorElem = document.getElementById(this.anchor)
-                  if (anchorElem) {
-                    this.scrollTop = anchorElem.offsetTop
-                    this.$refs.essay.scrollTop = this.scrollTop - 100
-                  }
-                  this.anchor = null
-                } else {
-                  this.$refs.essay.scrollTop = 0
-                  this.active = segments.length > 0 ? segments[0].dataset.id : null
-                }
-              })
-              // Load custom components declared in essay
-              Array.from(document.getElementById('essay').querySelectorAll('param'))
-                .filter(param => param.attributes['ve-component'])
-                .map(param => param.attributes.url.value)
-                .forEach(customComponentUrl => {
-                  let httpComponent = httpVueLoader(customComponentUrl)
-                  let componentName = `${componentPrefix}${camelToKebab(customComponentUrl.split('/').pop().split('.')[0])}`
-                  if (!availableViewers.has(componentName)) {
-                    availableViewers.add(componentName)
-                    Vue.component(componentName, httpComponent)
-                  }
-              })
-              
-              this.params = Array.from(document.getElementById('essay').querySelectorAll('param'))
-                .map(param => {
-                  let prior = param.previousElementSibling
-                  while (prior && prior.tagName !== 'P' && prior.tagName[0] !== 'H') {
-                    prior = prior.previousElementSibling
-                  }
-                  return { 
-                    ...{ elem: prior ? prior.parentElement : this.$refs.essay },
-                    ...Object.fromEntries(Array.from(param.attributes).map(attr => 
-                      [attr.nodeName, attr.value === '' || attr.value === 'true' ? true : attr.value === 'false' ? false : attr.value] )) 
-                  }
-                })
-                .map(param => {
-                  let viewerTag = Object.keys(param).find(attr => !attr.value && this.availableViewers.has(attr))
-                  if (viewerTag) param.viewer = viewerTag
-                  else if (!Object.keys(param).find(attr => attr.indexOf('ve-') === 0)) param['ve-entity'] = ''
-                  return param
-                })
-              this.segments = this.paramsForSegments()
-            })
-
-          },
-
-          doCustomFormatting(elem) {
-            Array.from(elem.querySelectorAll('section.cards')).forEach(cardsSection => {
-              Array.from(cardsSection.querySelectorAll('section')).forEach(card => {
-                ['img', 'a', 'ul'].forEach(selector => {
-                  let el = card.querySelector(selector)
-                  if (el) card.appendChild(el)
-                })
-                let segments = []
-                Array.from(card.querySelectorAll('.segment')).forEach(seg => {
-                  if (seg.textContent.trim() === '') {
-                    card.removeChild(seg)
-                  } else {
-                    segments.push(seg)
-                  }
-                })
-                if (segments.length > 0) {
-                  let segsDiv = document.createElement('div')
-                  card.appendChild(segsDiv)
-                  segments.forEach(seg => segsDiv.appendChild(seg))
-                }
-              })
-            })
-            return elem.innerHTML
-          },
-
-          // Adds tippy popups to tagged entity text
-          addPopups() {
-            tippy('.entity', {
-              allowHTML: true,
-              interactive: true,
-              appendTo: document.body,
-              delay: [null, null],
-              placement: 'right',
-              theme: 'light-border',
-              onShow: async (instance) => {
-                // let entity = await this.getEntity(instance.reference.dataset.qid, this.lang)
-                this.hoverEntity = this.entities[instance.reference.dataset.eid]
-                this.$nextTick(() => instance.setContent(this.$refs.popup.outerHTML))
-              },
-              onHide: () => {  }
-            })
-          },
-
-          // Finds all entity references in param tags
-          findEntities() {
-            return new Set(Array.from(this.$refs.essay.querySelectorAll('param'))
-                           .filter(el => el.attributes.eid || (el.attributes.center && isEntityID(el.attributes.center.value)))
-                           .map(el => (el.attributes.eid || el.attributes.center).value))
-          },
-
-          // Finds all param tags in elements between top-level app element and element in para arg
-          paramsInScope(segment) {
-            let paramTags = []
-            let scope = []
-            let el = segment
-            while (el && el.id !== 'app') {
-              scope.push(el)
-              el = el.parentElement
-            }
-            scope.forEach(elemInScope => 
-              paramTags = [...paramTags, ...this.params.filter(param => param.elem === elemInScope)]
-            )
-            return paramTags
-          },
-  
-          // Creates an object mapping paragraph data-id to all params found in para scope
-          paramsForSegments() {
-            return Object.fromEntries(
-              Array.from(this.$refs.essay.querySelectorAll('.segment'))
-              .map(segment => [segment.dataset.id, this.paramsInScope(segment)]))
-          },
-
-          // Creates a GeoJSON file URL from a Who's on First ID 
-          whosOnFirstUrl(wof) {
-            let wofParts = []
-            for (let i = 0; i < wof.length; i += 3) {
-              wofParts.push(wof.slice(i,i+3))
-            }
-            return `https://data.whosonfirst.org/${wofParts.join('/')}/${wof}.geojson`
-          },
-
-          // Gets labels, aliases, images and geo coords for referenced Wikdata entities
-          async getEntityData(eids) {
-            let values = eids.map(eid => `(<http://www.wikidata.org/entity/${eid}>)`).join(' ')
-            let query = `SELECT ?item ?label ?aliases ?description ?images ?coords ?whosOnFirst WHERE {
-                           VALUES (?item) { ${values} }
-                           ?item rdfs:label ?label . FILTER(LANG(?label) = 'en')
-                           OPTIONAL { ?item schema:description ?description . FILTER(LANG(?description) = 'en') }
-                           OPTIONAL { ?item skos:altLabel ?aliases . FILTER(LANG(?aliases) = 'en') }
-                           OPTIONAL { ?item wdt:P18 ?images . }
-                           OPTIONAL { ?item wdt:P625 ?coords . }
-                           OPTIONAL { ?item wdt:P6766 ?whosOnFirst . }
-                         }`
-            let resp = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}`, {
-              method: 'GET',
-              headers: { Accept: 'application/sparql-results+json', 'User-agent': 'Juncture web client' }
-            })
-            resp = await resp.json()
-            let entities = {}
-            resp.results.bindings.forEach(rec => {
-              let eid = rec.item.value.split('/').pop()
-              if (!entities[eid]) entities[eid] = {
-                eid, 
-                label: rec.label.value, 
-                aliases: [],
-                description: rec.description && rec.description.value,
-                geojson: rec.whosOnFirst && rec.whosOnFirst.value && this.whosOnFirstUrl(rec.whosOnFirst.value),
-                images: [], 
-                coords: rec.coords && rec.coords.value.replace(/Point\(/,'').replace(/\)/,'').split(' ').reverse().map(coord => parseFloat(coord)),
-                foundIn: new Set(),
-              }
-              if (rec.aliases && entities[eid].aliases.indexOf(rec.aliases.value) < 0) entities[eid].aliases.push(rec.aliases.value)
-              if (rec.images && entities[eid].images.indexOf(rec.images.value) < 0) entities[eid].images.push(this.commonsImageUrl(rec.images.value, 160))
-            })
-            return entities
-          },
-
-          // Convert essay Markdown into HTML.  Markdown headings are used to infer content heirarchy
-          markdownToElem(markdown) {
-            let essay = document.createElement('div')
-            let tmp = new DOMParser().parseFromString(md.render(markdown), 'text/html').children[0].children[1]
-            let currentSection = essay
-            let segments = []
-            let segment
-    
-            Array.from(tmp.children).forEach(el => {
-              if (el.tagName[0] === 'H' && isNumeric(el.tagName.slice(1))) {
-                let sectionLevel = parseInt(el.tagName.slice(1))
-                if (segments) {
-                  segments.forEach(segment => currentSection.innerHTML += segment.outerHTML)
-                  segments = []
-                }
-                currentSection = new DOMParser().parseFromString('<section></section>', 'text/html').children[0].children[1].children[0]
-                let sectionClasses = Array.from(el.classList)
-                currentSection.classList.add(...sectionClasses)
-                el.classList.remove(...sectionClasses)
-                if (!el.innerHTML) el.style.display = 'none'
-                currentSection.innerHTML += el.outerHTML
-                let headings = [...essay.querySelectorAll(`H${sectionLevel-1}`)]
-                let parent = sectionLevel === 1 || headings.length === 0 ? essay : headings.pop().parentElement
-                parent.appendChild(currentSection)
-                let parentDataID = parent.dataset.id || ''
-                let sectionSeq = parent.querySelectorAll(`H${sectionLevel}`).length
-                let currentDataID = parentDataID ? `${parentDataID}.${sectionSeq}` : sectionSeq
-                currentSection.setAttribute('data-id', currentDataID)
-              } else if (el.tagName === 'P') {
-                if (el.innerHTML.indexOf('ve-button.png') >= 0) {
-                  el = null
-                } else {
-                  segment = new DOMParser().parseFromString('<div></div>', 'text/html').children[0].children[1].children[0]
-                  segment.setAttribute('data-id', `${currentSection.dataset.id}.${segments.length + 1}`)
-                  segment.classList.add('segment')
-                  segment.innerHTML = el.outerHTML
-                  segments.push(segment)
-                }
-              } else if (el.tagName === 'SECTION' && el.className === 'footnotes') {
-                currentSection.innerHTML += el.outerHTML
-              } else {
-                if (segment) {
-                  segment.innerHTML += el.outerHTML
-                } else {
-                  currentSection.innerHTML += el.outerHTML
-                }
-              }
-            })
-            if (segments) {
-              segments.forEach(segment => currentSection.innerHTML += segment.outerHTML)
-              segments = []
-            }
-            return essay
-          },
-   
-          // Converts link tags to elements with click listeners enabling intra-app navigation without page loading
-          convertLinks(root) {
-            root.querySelectorAll('a').forEach(link => {
-              if ((!link.href && link.dataset.target) || link.href.indexOf(window.location.host) > 0) {
-                // If internal link
-                let target = link.dataset.target
-                if (!target) { 
-                  const parsedUrl = parseUrl(link.href)
-                  let pathElems = parsedUrl.pathname.split('/').filter(elem => elem !== '')
-                  if (contentSource.isGhpSite && pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
-                  target = parsedUrl.hash === '' ? `/${pathElems.join('/')}/` : parsedUrl.hash.split('?')[0]
-                }
-                link.removeAttribute('href')
-                link.setAttribute('data-target', target)
-
-                // Add click handler for internal links
-                link.addEventListener('click', (e) => {
-                  let target = e.target
-                  while (!target.dataset.target && target.parentElement) { target = target.parentElement }
-                  let path = target.dataset.target
-                  if (path[0] === '#') {
-                    let anchorElem = document.getElementById(path.slice(1))
-                    if (anchorElem) {
-                      this.scrollTop = anchorElem.offsetTop
-                      this.$refs.essay.scrollTop = this.scrollTop - 100
-                    }
-                  } else {
-                    this.loadEssay(path)
-                  }
-                })
-              } else {
-                // If external link, add external link icon to text and force opening in new tab
-                link.innerHTML += '<sup><i class="fa fa-external-link-square-alt" style="margin-left:3px;margin-right:2px;font-size:0.7em;color:#219653;"></i></sup>'
-                link.setAttribute('target', '_blank')
-              }
-            })
-          },
-
-          convertResourceUrls(root, path) {
-            root.querySelectorAll('img').forEach(img => {
-              if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src))
-            })
-            root.querySelectorAll('param').forEach(param => {
-              ['url', 'banner'].forEach(attr => {
-                if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value, window.location.pathname, this.mdDir !== '/'))
-              })
-            })
-          },
-
-          // Finds words/phrases in content paragraphs that match labels or aliases for entities in scope
-          // Matched text is wrapped with a span tag for reacting to hover and click actions
-          // TODO: make this better!
-          tagEntities() {
-            Array.from(this.$refs.essay.querySelectorAll('.segment')).forEach(segment => {
-              let segmentHTML = segment.innerHTML
-              this.paramsInScope(segment).filter(param => param['ve-entity'] !== undefined && param.eid !== undefined).map(param => param.eid).forEach(eid => {
-                let entity = this.entities[eid]
-                if (entity) {
-                  let toMatch = [...[entity.label], ...entity.aliases]
-                  for (let i = 0; i < toMatch.length; i++) {
-                    let re = new RegExp(`(${toMatch[i]})`)
-                    if (toMatch[i], re.test(segmentHTML)) {
-                      segmentHTML = segmentHTML.replace(re, `<span class="entity inferred" data-eid="${eid}">$1</span>`)
-                      entity.foundIn.add(segment.dataset.id)
-                      break
-                    }
-                  }
-                }
-              })
-              segment.innerHTML = segmentHTML
-            })
-            Array.from(this.$refs.essay.querySelectorAll('span.entity'))
-              .forEach(el => el.addEventListener('click', (e) => {
-                console.log('entity selected', e.target.dataset.eid)
-              })
-            )
-          },
-
-          commonsImageUrl(url, width) {
-            // Converts Wikimedia commons File URL to an image link
-            //  If a width is provided a thumbnail is returned
-            let mwImg = url.indexOf('Special:FilePath') > 0 ? url.split('/Special:FilePath/').pop() :  url.split('/File:').pop()
-            mwImg = decodeURIComponent(mwImg).replace(/ /g,'_')
-            const ImgMD5 = md5(mwImg)
-            const extension = mwImg.slice(mwImg.length-4)
-            let imgUrl = `https://upload.wikimedia.org/wikipedia/commons/${width ? 'thumb/' : ''}`
-            imgUrl += `${ImgMD5.slice(0,1)}/${ImgMD5.slice(0,2)}/${mwImg}`
-            if (width) imgUrl += `/${width}px-${mwImg}`
-            if (extension === '.svg') imgUrl += '.png'
-            if (extension === '.tif') imgUrl += '.jpg'
-            return imgUrl
-          },
-
-          addItemEventHandlers(elem) {
-            elem.querySelectorAll('.inferred').forEach((entity) => {
-              entity.addEventListener('click', this.itemClickHandler)
-              entity.addEventListener('mouseover', this.setHoverItem)
-              entity.addEventListener('mouseout', this.setHoverItem)
-            })
-          },
-          removeItemEventHandlers(elem) {
-            elem.querySelectorAll('.active .inferred').forEach((entity) => {
-              entity.removeEventListener('click', this.itemClickHandler)
-              entity.removeEventListener('mouseover', this.setHoverItem)
-              entity.removeEventListener('mouseout', this.setHoverItem)
-            })
-          },
-
-          setHoverItem(e) {
-            this.hoverItem = e.type === 'mouseover' ? e.target.dataset.eid : null
-          },
-          itemClickHandler(e) {
-            e.stopPropagation()
-            this.selectedItem = e.target.dataset.eid 
-          },
-
-          getInteractionAttrs(elem) {
-            const eventAttrs = []
-            Array.from(elem.querySelectorAll(`span`)).forEach(span => {
-              Array.from(span.attributes)
-                .filter(attr => attr.name.indexOf('data-') === 0 && attr.name.split('-').length === 4)
-                .map(attr => attr.name.split('-').slice(1,2)[0])
-                .forEach(event => eventAttrs.push({elem: span, event}))
-              })
-            return eventAttrs
-          },
-
-          addInteractionHandlers(elem) {
-            this.getInteractionAttrs(elem)
-            .forEach(eventAttr => {
-              eventAttr.elem.addEventListener(eventAttr.event, this.interactionHander)
-              eventAttr.elem.classList.add('essay-interaction')
-            })
-          },
-  
-          removeInteractionHandlers(elem) {
-            Array.from(elem.querySelectorAll('.essay-interaction')).forEach(span => {
-              Array.from(span.attributes)
-                .filter(attr => attr.name.indexOf('data-') === 0 && attr.name.split('-').length === 4)
-                .map(attr => attr.name.split('-').slice(1,2)[0])
-                .forEach(event => span.removeEventListener(event, this.interactionHander))
-              span.classList.remove('essay-interaction')
-            })
-          },
-
-          interactionHander(e) {
-            e.stopPropagation()
-            const eventActions = {}
-            Array.from(e.target.attributes)
-              .filter(attr => attr.name.indexOf(`data-`) === 0 && attr.name.split('-').length === 4)
-              .map(attr => {
-                const attrParts = attr.name.split('-').slice(1)
-                const event = attrParts[0]
-                const target = attrParts.slice(1,-1).join('-')
-                const action = attrParts.slice(-1)[0]
-                return { elem: e.target, event, target, action, value: attr.value } 
-              })
-              .filter(action => action.event === e.type)
-              .forEach(action => {
-                if (!eventActions[action.target]) eventActions[action.target] = []
-                eventActions[action.target].push(action)
-              })
-            const actions = { ...this.actions }
-            Object.keys(eventActions).forEach(target => actions[`ve-${target}`] = eventActions[target])
-            this.actions = actions
-          },
-
-          async copyFile (src, tgt, path) {
-            let existing
-            resp = await fetch(`https://api.github.com/repos/${tgt.acct}/${tgt.repo}/contents/${path}?ref=${tgt.ref}`, {headers: {Authorization: `Token ${this.ghToken}`}})
-            if (resp.ok) existing = await resp.json()
-            resp = await fetch(`https://api.github.com/repos/${src.acct}/${src.repo}/contents/${path}?ref=${src.ref}`, {headers: {Authorization: `Token ${this.ghToken}`}})
-            resp = await resp.json()
-            let file = decodeURIComponent(escape(atob(resp.content)))
-            let payload = { message: 'initial', branch: tgt.ref, content: btoa(file) }
-            if (existing) payload.sha = existing.sha
-            resp = await fetch(`https://api.github.com/repos/${tgt.acct}/${tgt.repo}/contents/${path}?ref=${tgt.ref}`, {
-              method: 'PUT', body: JSON.stringify(payload), headers: {Authorization: `Token ${this.ghToken}`} })
-          },
-
-          async updateSite(fromRef) {
-            console.log(`updateSite: fromRef=${fromRef}`)
-            let resp = await this.getFile('/index.html', 'jstor-labs', 'juncture', fromRef)
-            const vers = resp.content.match(/const junctureVersion = '.*'/)
-            console.log(`vers=${vers}`)
-            let indexFile = resp.content.replace(/const junctureVersion = '.*'/, `const junctureVersion = '${fromRef}'`)
-            this.putFile('/index.html', indexFile, contentSource.acct, contentSource.repo, 'juncture')
-            // await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'index.html')
-            if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture') {
-              await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'}, 'css/main.css')
-            }
-          },
-
-          async createSite(targetAcct, targetRepo, fromRef) {
-            console.log(`createSite: targetAcct=${targetAcct} targetRepo=${targetRepo} fromRef=${fromRef}`)
-            // See if repo exists and create it if needed
-            let resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}`, { headers: {Authorization: `Token ${this.ghToken}`}} )
-            let repoExists = resp.ok
-            if (repoExists) {
-              let resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/contents/index.html?ref=juncture`, {headers: {Authorization:`Token ${this.ghToken}`}})
-              if (resp.ok) sha = await resp.json().sha
-            } else { // create repo with auto_init enabled to create main branch and README.md file
-              resp = await fetch('https://api.github.com/user/repos', { method: 'POST', headers: {Authorization:`Token ${this.ghToken}`},
-                  body: JSON.stringify({name: targetRepo, description: 'Juncture repository', auto_init: true}) })
-              resp = await resp.json()
-            }
-
-            // Create a juncture branch in repo if needed
-            resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/git/refs/heads`, {
-                headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.v3+json'} })
-            let heads = await resp.json()
-            let mainHead = heads.find(head => head.ref === 'refs/heads/main')
-            let ghpHead = heads.find(head => head.ref === 'refs/heads/juncture')
-            if (!ghpHead) {
-              resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/git/refs`, {
-                  method: 'POST', body: JSON.stringify({ref: 'refs/heads/juncture', sha: mainHead.object.sha}),
-                  headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.v3+json'} })
-            }
-
-            // Make target repository a GitHub Pages site
-            resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages`, {
-              headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.switcheroo-preview+json'} })
-            if (resp.status === 404) {
-              resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages`, {
-                method: 'POST', body: JSON.stringify({source: {branch: 'juncture', path: '/'}}),
-                headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.switcheroo-preview+json'} })
-            }
-             
-            // Copy GHP app files from Juncture to juncture branch in target repo
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, 'index.html')
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, '404.html')
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef}, {acct: targetAcct, repo: targetRepo, ref:'juncture'}, '.nojekyll')
-            resp = await this.getFile('/config.yaml', 'jstor-labs', 'juncture', fromRef)
-            let configFile = resp.content.replace(/<GitHub username>/, authenticatedUser.acct)
-            this.putFile('/config.yaml', configFile, targetAcct, targetRepo, 'juncture')
-
-            // Request rebuild of Pages site
-            await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
-         }
-    
-        },
-
-        watch: {
-
-          scrollTop: {
-            handler: function (scrollTop) { 
-              let target = this.$refs.essay
-              let segments = Array.from(target.querySelectorAll('.segment'))
-              let i
-              for (i = 0; i < segments.length; i++) {
-                if (target.scrollTop <= segments[i].offsetTop + segments[i].clientHeight - 200) break
-              }
-              if (i < segments.length && this.active !== segments[i].dataset.id ) this.active = segments[i].dataset.id
-            },
-            immediate: false
-          },
-
-          // Set app classes using essay config (ve-config) attributes, if present
-          essayConfig (config) {
-            this.layouts = []
-            this.viewerIsOpen = false
-            if (config) {
-              if (config.layout) this.layouts = config.layout.split(',').map(layout => layout === 'vtl' ? 'vertical' : layout)
-              if (config.style) config.style.split(',').forEach(cls => this.$refs.app.classList.add(cls))
-            }
-          },
-
-          // Watcher that updates various data elements when the active paragraph changes
-          active(current, prior) {
-            console.log(`activeSegment=${current}`)
-            let activeSegment = document.querySelector(`[data-id="${current}"]`)
-            if (activeSegment) {
-              if (this.$refs.tabsBar) activeSegment.appendChild(this.$refs.tabsBar)
-              activeSegment.classList.add('active')
-              this.addItemEventHandlers(activeSegment)
-              this.addInteractionHandlers(activeSegment)
-            }
-            let priorSegment = document.querySelector(`[data-id="${prior}"]`)
-            if (priorSegment) {
-              priorSegment.classList.remove('active')
-              this.removeItemEventHandlers(priorSegment)
-              this.removeInteractionHandlers(priorSegment)
-            }
-          },
-
-          viewersEnabled: {
-            handler: function () {
-              this.selectedViewer = this.viewerIsOpen && this.viewersEnabled.length > 0 ? this.viewersEnabled[0] : null
-            },
-            immediate: true
-          },
-
-          isVerticalLayout: {
-            handler: function () {
-              this.selectedViewer = this.isVerticalLayout && this.viewersEnabled.length > 0 ? this.viewersEnabled[0] : this.selectedViewer
-              if (this.isVerticalLayout) this.viewerIsOpen = true
-            },
-            immediate: true
-          },
-
-          // logging watchers
-          params (params) { console.log('params', params) },
-          entities (entities) { console.log('entities', entities) },
-          segments (segments) { console.log('segments', segments) },
-          selectedViewer (selectedViewer) { console.log('selectedViewer', selectedViewer) },
-          selectedItem (eid) { console.log(`selectedItem=${eid}`) },
-          hoverItem (eid) { console.log(`index.hoverItem=${eid}`) },
-
-        }
-      })
-    })
-
-    Vue.config.productionTip = false
-    Vue.config.devtools = true
-
-    // Vue components mixin that handles linking to external JS and CSS resources
-    Vue.mixin({
-      methods: {
-        loadDependencies(dependencies, i, callback) {
-          if (i === 0) {
-            let componentData = {}
-            componentData[this.$options.name] = { label: this.viewerLabel, icon: this.viewerIcon }
-            this.$emit('update-component-data', componentData)
-          }
-          if (dependencies.length > 0) {
-            this.load(dependencies[i], () => {
-              if (i < dependencies.length-1) {
-                this.loadDependencies(dependencies, i+1, callback) 
-              } else {
-                callback()
-              }
-            })
-          }
-        },
-        load(url, callback) {
-          let e
-          if (url.split('.').pop() === 'js') {
-            e = document.createElement('script')
-            e.src = url
-            e.type='text/javascript'
-          } else {
-            e = document.createElement('link')
-            e.href = url
-            e.rel='stylesheet'
-          }
-          e.addEventListener('load', callback)
-          document.getElementsByTagName('head')[0].appendChild(e)
-        },
-        delimitedStringToObjArray(delimitedData, delimiter) {
-          delimiter = delimiter || `\t`
-          const objArray = []
-          const lines = delimitedData.split('\n').filter(line => line.trim() !== '')
-          if (lines.length > 1) {
-            const keys = lines[0].split(delimiter).map(key => key.trim())
-            lines.slice(1).forEach(line => {
-              let obj = {}
-              line.split(delimiter)
-                  .map(value => value.trim())
-                  .forEach((value, i) => {
-                    let rawKey = keys[i].split('.')
-                    let key = rawKey[0]
-                    let prop = rawKey.length === 2 ? rawKey[1] : 'id'
-                    if (!obj[key]) obj[key] = {}
-                    if (value || prop === 'id') obj[key][prop] = value
-                  })
-              objArray.push(obj)
-            })
-            let assignedId = 0
-            let labels = {}
-            objArray.forEach(obj => {
-              Object.values(obj).forEach(child => {
-                if (child.id === '' && child.label) {
-                  if (!labels[child.label]) labels[child.label] = ++assignedId
-                  child.id = labels[child.label]
-                }
-              })
-            })
-          }
-          return objArray
-        },
-        async getFile(path, acct, repo, ref) {
-          acct = acct || this.contentSource.acct
-          repo = repo || this.contentSource.repo
-          ref = ref || this.contentSource.ref
-          console.log(`getFile: path=${path} acct=${acct} repo=${repo} ref=${ref}`)
-          if (window.location.hostname !== 'localhost' && acct) {
-            let ghToken = oauthAccessToken || ghUnscopedToken
-            let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`
-            let resp = await fetch(url, ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
-            if (resp.ok) {
-              resp = await resp.json()
-              return { sha: resp.sha, content: decodeURIComponent(escape(atob(resp.content))) }
-            }
-          } else {
-            let url = `${this.contentSource.baseUrl}${this.contentSource.basePath}${path}`
-            let resp = await fetch(url)
-            if (resp.ok) resp = await resp.text()
-            return {content: resp}
-          }
-          return null
-        },
-        async putFile(path, content, acct, repo, ref, message) {
-          acct = acct || this.contentSource.acct
-          repo = repo || this.contentSource.repo
-          ref = ref || this.contentSource.ref
-          message = message || 'API Commit'
-          console.log(`putFile: path=${path} acct=${acct} repo=${repo} ref=${ref} message=${message}`)
-          if (window.location.hostname !== 'localhost' && acct) {
-            let ghToken = oauthAccessToken || ghUnscopedToken
-            let existing = await this.getFile(path, acct, repo, ref)
-            let payload = { message, branch: 'juncture', content: btoa(content) }
-            console.log(`existing=${existing ? existing.sha : 'none'}`)
-            if (existing) payload.sha = existing.sha
-            let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`
-            let resp = await fetch(url, { method: 'PUT', body: JSON.stringify(payload), headers: {Authorization: `Token ${ghToken}`} })
-            resp = await resp.json()
-          } else {
-            let url = `${this.contentSource.baseUrl}${this.contentSource.basePath}${path}`
-            let resp = await fetch(url, { method: 'PUT', body: content })
-          }
-        }
-      }
-    })
-
-    // Various utility and helper methods
-    function camelToKebab(input) { return input.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}
-    function kebabToCamel(input) { return input.replace(/-([a-z])/g, function (g) {return g[1].toUpperCase()})}
-    function isNumeric(arg) { return !isNaN(arg) }
-    function isEntityID(arg) { return typeof arg === 'string' && arg.split(':').slice(-1).find(val => val.length > 1 && val[0] === 'Q' && isNumeric(val.slice(1))) !== undefined }
-
-    // Gets site config
-    async function getSiteConfig() {
-      let config = {}
-      let resp = await fetch('https://juncture-digital.org/config.yaml')
-      resp = YAML.parse(await resp.text())
-      ghUnscopedToken = atob(resp.ghUnscopedToken)
-      if (isJuncture) config = resp
-      if (contentSource.isGhpSite) {
-        resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
-        if (resp.ok) config = YAML.parse(await resp.text())
-      } else if (contentSource.acct && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
-        config = {}
-        let ghToken = oauthAccessToken || ghUnscopedToken
-        resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${contentSource.ref}`,
-                               ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
-        if (resp.ok) {
-          resp = await resp.json()
-          config = YAML.parse(atob(resp.content))
-        }
-      } else {
-        resp = await fetch(`${window.location.origin}/config.yaml`)
-        if (resp.ok) config = YAML.parse(await resp.text())
-      }
-      ['banner', 'favicon', 'customCSS'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
-      if (config.ghUnscopedToken) ghUnscopedToken = atob(config.ghUnscopedToken)
-      if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
-      if (config.gcAuthDomain) gcAuthDomain = atob(config.gcAuthDomain)
-      loginsEnabled = gcApiKey !== undefined && gcAuthDomain !== undefined
-      return config
-    }
-
-    async function getReleaseTags() {
-      let resp = await fetch('https://api.github.com/repos/jstor-labs/juncture/tags')
-      resp = await resp.json()
-      return resp.map(tag => tag.name)
-    }
-
-    // Determines if Github repo exists
-    async function githubRepoInfo(acct, repo) {
-      if (knownGhAccts[acct]) {
-        return {acct, repo, ref: knownGhAccts[acct], basePath: `/${acct}/${repo}`,
-                assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || knownGhAccts[acct]}`}
-      } else {
-        let ghToken = oauthAccessToken || ghUnscopedToken
-        let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`,
-                               ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
-        if (resp.ok) {
-          resp = await resp.json()
-          return {acct, repo, ref: qargs.ref || resp.default_branch, basePath: `/${acct}/${repo}`, 
-                  assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || resp.default_branch}`}
-        }
-      }
-    }
-  
-    // Gets a list of available components
-    async function getComponentsList() {
-      let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersion : contentSource.ref
-      console.log(`getComponentsList: ref=${ref} junctureVersion=${junctureVersion}`)
-      let componentsList = []
-      let ghToken = oauthAccessToken || ghUnscopedToken
-      if (window.location.hostname !== 'localhost' && contentSource.acct && contentSource.repo && contentSource.ref) {
-        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
-                               ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
-        if (resp.ok) {
-          resp = await resp.json()
-          let ghComponentsItem = resp.tree.find(item => item.path === componentsRoot)
-          if (ghComponentsItem) {
-            resp = await fetch(ghComponentsItem.url, ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
-            resp = await resp.json()
-            componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}/${componentsRoot}/${item.path}`)]
-          }
-        }
-      } 
-      if (window.location.hostname === 'localhost') {
-        let basePath = contentSource.isGhpSite ? contentSource.basePath : ''
-        let resp = await fetch(`${contentSource.baseUrl}${basePath}/${componentsRoot}`)
-        resp = await resp.json()
-        componentsList = [...componentsList, ...resp.files.map(fname => `${contentSource.baseUrl}${basePath}/${componentsRoot}/${fname}`)]
-      }
-      // if (isJuncture && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
-      if (contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
-        let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/${junctureVersion}`, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
-        resp = await resp.json()
-        resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
-        resp = await resp.json()
-        componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/jstor-labs/juncture/${junctureVersion}/${componentsRoot}/${item.path}`)]
-      }
-      return componentsList
-    }
-  
-    function parseUrl(href) {
-      const match = href.match(/^(https?):\/\/(([^:/?#]*)(?::([0-9]+))?)(\/?[^?#]*)(\?[^#]*|)(#.*|)$/)
-      return (match && {protocol: match[1], host: match[2], hostname: match[3], origin: `${match[1]}://${match[2]}`,
-              port: match[4], pathname: match[5] || '/', search: match[6], hash: match[7]}
-      )
-    }
-
-    function parseQueryString(queryString) {
-      queryString = queryString || window.location.search
-      const dictionary = {}
-      try {
-        if (queryString.indexOf('?') === 0) queryString = queryString.substr(1)
-        const parts = queryString.split('&')
-        for (let i = 0; i < parts.length; i++) {
-          const kvp = parts[i].split('=')
-          if (kvp[0] !== '') {
-            if (kvp.length === 2) {
-              dictionary[kvp[0]] = decodeURIComponent(kvp[1]).replace(/\+/g, ' ')
-            } else {
-              dictionary[kvp[0]] = 'true'
-            }
-          }
-        }
-      } catch (err) { console.log(err) }
-      return dictionary
-    }
-
-    function makeLink(href, rel) {
-      let link = document.createElement('link')
-      link.href = href
-      link.rel = rel || 'stylesheet'
-      return link
-    }
-
-    function convertURL(current, path, pathIsDir) {
-      let pathElems = []
-      if (current.indexOf('http') === 0) {
-        if (current.indexOf(window.location.origin) === 0) {
-          pathElems = current.split('/').slice(3)
-        } else {
-          return current
-        }
-      } else if (current.indexOf('/') === 0) {
-        pathElems = current.split('/').filter(elem => elem !== '')
-      } else {
-        pathElems = (path || window.location.pathname).split('/').filter(elem => elem !== '')
-        if (!pathIsDir) pathElems = pathElems.slice(0, -1)
-        pathElems = [...pathElems, ...current.split('/').filter(elem => elem !== '')]
-      }
-      if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
-      converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
-      // console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
-      return converted
-    }
-
-    async function sendEmail(options) {
-      let resp = await fetch('https://visual-essays.app/send-email/', {
-        method: 'POST', body: JSON.stringify(options),
-        headers: {'Content-Type': 'application/json', Accept: 'application/json'},
-      })
-      return await resp.json()
-    }
-  </script>
-
-</body>
-</html>
+      authenticate(e) {
+        console.log('header.authenticate')
+        e.preventDefault()
+        this.closeDrawer()
+        this.$emit('authenticate')
+      },
+      logout(e) {
+        e.preventDefault()
+        this.closeDrawer()
+        this.$emit('logout')
+      },
+    },
+    watch: {}
+  }
+</script>
+
+<style scoped>
+
+  [v-cloak] { display: none; }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: white;
+    color: #444;
+  }
+
+  .header {
+    font-family: Roboto, sans-serif;
+    font-size: 1rem;
+    min-height: 90px;
+    height: 400px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    position: relative;
+    margin: 0;
+    color: #444;
+  }
+
+  .title-bar {
+    display: grid;
+    align-items: stretch;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas: 
+      "title"
+      "author";
+    color: white;
+    background-color: rgba(0, 0, 0, .6);
+    /* padding-top: 14px; */
+    position: absolute;
+    top: calc(100% - 100px);
+    height: 100px;
+    width: 100%;
+    font-weight: bold;
+  }
+
+  .title {
+    grid-area: title;
+    font-size: min(8vw, 2.2em);
+    margin: 0 0 0 22px;
+    padding: 22px 0 0 50px;
+  }
+  .author {
+    grid-area: author;
+    font-size: min(6vw, 1.3em);
+    margin: 0 0 0 22px;
+    padding: 0 0 6px 50px;
+    align-self: center;
+  }
+
+  #menuToggle a {
+    text-decoration: none;
+    color: #232323;
+    transition: color 0.3s ease;
+  }
+
+  #menuToggle a:hover {
+    color: tomato;
+  }
+
+  #menuToggle input {
+    display: block;
+    width: 40px;
+    height: 32px;
+    position: absolute;
+    top: -7px;
+    left: -5px;
+    cursor: pointer;
+    opacity: 0; /* hide this */
+    z-index: 2; /* and place it over the hamburger */
+    -webkit-touch-callout: none;
+  }
+
+  /*
+  * Just a quick hamburger
+  */
+  #menuToggle span {
+    display: block;
+    width: 30px;
+    height: 4px;
+    margin-bottom: 4px;
+    position: relative;
+    background: #cdcdcd;
+    border-radius: 3px;
+    z-index: 1;
+    transform-origin: 4px 0px;
+    transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
+                background 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
+                opacity 0.55s ease;
+  }
+
+  #menuToggle span:first-child {
+    transform-origin: 0% 0%;
+  }
+
+  #menuToggle span:nth-last-child(2) {
+    transform-origin: 0% 100%;
+  }
+
+  /* 
+  * Transform all the slices of hamburger
+  * into a crossmark.
+  */
+  #menuToggle input:checked ~ span {
+    opacity: 1;
+    transform: rotate(45deg) translate(-2px, -1px);
+    background: #232323;
+  }
+
+  /*
+  * But let's hide the middle one.
+  */
+  #menuToggle input:checked ~ span:nth-last-child(3) {
+    opacity: 0;
+    transform: rotate(0deg) scale(0.2, 0.2);
+  }
+
+  /*
+  * Ohyeah and the last one should go the other direction
+  */
+  #menuToggle input:checked ~ span:nth-last-child(2) {
+    transform: rotate(-45deg) translate(0, -1px);
+  }
+
+  /*
+  * Make this absolute positioned
+  * at the top left of the screen
+  */
+  #menu {
+    position: absolute;
+    width: 230px;
+    margin: -100px 0 0 -50px;
+    padding: 120px 50px 10px 45px;
+    background: #ededed;
+    list-style-type: none;
+    -webkit-font-smoothing: antialiased;
+    /* to stop flickering of text in safari */
+    transform-origin: 0% 0%;
+    transform: translate(-100%, 0);
+    transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  }
+
+  #menu li {
+    display: flex;
+    padding: 0.5em 0;
+    font-size: 1.1em;
+  }
+
+  #menu li i {
+    width: 20px;
+    margin-right: 10px;
+    text-align: center;
+  }
+
+  #menu li:hover {
+    cursor: pointer;
+    color: #1976d2;
+  }
+
+  #menu li svg {
+    min-width: 1.5em;
+    margin-right: 10px;
+    margin-top: 6px;
+    /* font-weight: bold; */
+    font-size: 1em;
+  }
+
+  /*
+  * And let's slide it in from the left
+  */
+  #menuToggle input:checked ~ ul {
+    transform: none;
+  }
+
+  #menuToggle {
+    display: block;
+    position: relative;
+    top: 20px;
+    /*left: 30px;*/
+    margin-left: 20px;
+    z-index: 1;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .version {
+    font-size: 0.9rem;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+
+</style>
