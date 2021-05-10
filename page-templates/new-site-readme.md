@@ -32,4 +32,4 @@ To activate the **Contact Us** form, remove the comment character (**#**) from t
 
 ## Modifying the page layout and styling
 
-A custom stylesheet can be used to alter most any styling on the site.  This includes fonts, font sizes, margins, most anything.  The empty stylesheet (found in **/css/custom.css**) is provided for performing these customizations.
+A custom stylesheet can be used to alter most any styling on the site.  This includes fonts, font sizes, margins, most anything.  The empty stylesheet (found in **[/css/custom.css](<custom-css-url>)**) is provided for performing these customizations.

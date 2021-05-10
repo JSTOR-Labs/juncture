@@ -33,7 +33,7 @@
               <i class="fas fa-file-code"></i>View page markdown
             </li>
             <li v-if="isAuthenticated && ((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="nav('editMarkdown')">
-              <i class="fas fa-edit"></i>Edit this page (on GitHub)
+              <i class="fas fa-edit"></i>Edit this page on GitHub
             </li>
             <li v-if="isAuthenticated && ((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="nav('addPage')">
               <i class="fas fa-file-medical"></i>Add a page

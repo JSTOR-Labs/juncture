@@ -328,6 +328,7 @@
           junctureVersion,
           params: [],
           markdown: null,
+          mdpath: '',
           mdDir: '/',
           markdownViewer: null,
           html: null,
@@ -406,7 +407,7 @@
           logout() { this.authenticatedUser = null; window.localStorage.removeItem('ghAuth') },
 
           editMarkdown() {
-            this.openWindow(`https://github.com/${this.contentSource.acct}/${this.contentSource.repo}/edit/${this.contentSource.ref}/README.md`) 
+            this.openWindow(`https://github.com/${this.contentSource.acct}/${this.contentSource.repo}/edit/${this.contentSource.ref}${this.mdPath}`) 
           },
           openWindow(url, options) {
             if (this.externalWindow) { this.externalWindow.close() }
@@ -538,6 +539,7 @@
             for (let i = 0; i < pathsToTry.length; i++) {
               let markdown = await this.getMarkdown(pathsToTry[i])
               if (markdown) {
+                this.mdPath = pathsToTry[i]
                 this.markdown = markdown
                 this.mdDir = i === 1 ? '/' : path
                 break
@@ -1037,6 +1039,7 @@
               '<site-url>': `https://${targetAcct}.github.io/${targetRepo}`,
               '<repo-url>': `https://github.com/${targetAcct}/${targetRepo}`,
               '<config-url>': `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`,
+              '<custom-css-url>': `https://github.com/${targetAcct}/${targetRepo}/blob/main/css/custom.css`,
               '"Page Author"': `"${authenticatedUser.displayName}"`,
               '<github-username>': authenticatedUser.acct,
               '<contact-email>': `${authenticatedUser.displayName} <${authenticatedUser.email}>`
