@@ -77,9 +77,11 @@
         <input v-model="contactName" name="name" placeholder="Name" class="form-name" type="text" required>
         <input v-model="contactEmail" placeholder="Email" class="form-email" type="email" required>
         <textarea v-model="contactMessage" placeholder="Your message here" class="form-message" type="text" required></textarea>
+        <div v-html="formProcessingMessage"></div>
         <div class="form-controls">
-          <button class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
-          <button class="form-submit">Send</button>
+          <button v-if="formProcessingStatus === 'ready'" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
+          <button v-if="formProcessingStatus === 'ready'"class="form-submit">Send</button>
+          <button v-if="formProcessingStatus === 'done'" class="form-submit" @click="hideForm">Close</button>
         </div>
       </form>
     </div>
@@ -462,14 +464,17 @@
             this.formProcessingStatus = 'ready'
           },
 
-          submitContactForm() {
+          async submitContactForm() {
             let contactData = {
-              fromAddress: 'Labs@ithaka.org',
+              fromAddress: this.contactEmail,
               toAddress: this.siteConfig.contactForm.toEmail,
               messageSubject: this.siteConfig.contactForm.subject,
               messageBodyText: `${this.contactMessage}\n\r[Sent by: ${this.contactName} <${this.contactEmail}>]`,
             }
-            sendEmail(contactData).then(resp => this.formProcessingStatus = 'done')
+            let resp = await sendEmail(contactData)
+            console.log('sendEmail response', resp)
+            this.formProcessingStatus = 'done'
+            this.formProcessingMessage = 'Contact email sent'
           },
 
           async doSiteCreate() {

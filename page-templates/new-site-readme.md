@@ -22,4 +22,14 @@ TODO
 
 ## Adding a Contact Form with a custom email
 
-TODO
+To activate the **Contact Us** form, remove the comment character (**#**) from the beginning of the following lines in the config.yaml file.
+
+```yaml
+- label: Contact Us
+  icon: envelope
+  path: "/contact-us"
+```
+
+## Modifying the page layout and styling
+
+A custom stylesheet can be used to alter most any styling on the site.  This includes fonts, font sizes, margins, most anything.  The empty stylesheet (found in **/css/custom.css**) is provided for performing these customizations.

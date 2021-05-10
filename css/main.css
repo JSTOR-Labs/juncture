@@ -97,6 +97,10 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif;}
     padding: 12px;
 }
 
+#contact-form {
+  max-height: 400px;
+}
+
 #create-site-form, #update-site-form {
   left: 33vw;
   width: 34vw;

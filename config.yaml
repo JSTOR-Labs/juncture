@@ -16,20 +16,16 @@ nav:
 - label: About
   icon: info
   path: /about
-#- label: Help
-#  icon: question
-#  path: /docs
 #- label: Contact Us
 #  icon: envelope
 #  path: "/contact-us"
 
 # If the /contact-us path is defined for the nav menu a contact form will be enabled
-# The following information is used in the display and processing of the contact form
-# A valid toEmail address is required. Other fields are optional
-#contactForm:
-#  toEmail:
-#  - ronald.snyder@ithaka.org
-#  subject: Contact Us
+# The following information is used in the display and processing of the contact form.
+contactForm:
+  toEmail:
+  - ronald.snyder@ithaka.org
+  subject: Contact Us
 
 #######################################################
 # Base URL of server used for serving and optionally
