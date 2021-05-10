@@ -72,14 +72,16 @@
     </div>
 
     <div id="contact-form" class="modal-form" style="display: none;">
-      <form v-on:submit.prevent="submitContactForm">
+      <form v-on:submit.prevent>
         <h1>Contact us</h1>
         <input v-model="contactName" name="name" placeholder="Name" class="form-name" type="text" required>
         <input v-model="contactEmail" placeholder="Email" class="form-email" type="email" required>
         <textarea v-model="contactMessage" placeholder="Your message here" class="form-message" type="text" required></textarea>
+        <div v-html="formProcessingMessage"></div>
         <div class="form-controls">
-          <button class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
-          <button class="form-submit">Send</button>
+          <button v-if="formProcessingStatus === 'ready'" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
+          <button v-if="formProcessingStatus === 'ready'" class="form-submit" @click="submitContactForm">Send</button>
+          <button v-if="formProcessingStatus === 'done'" class="form-submit" @click="hideForm">Close</button>
         </div>
       </form>
     </div>
@@ -92,7 +94,7 @@
         <div v-html="formProcessingMessage"></div>
         <div class="form-controls">
           <button v-if="formProcessingStatus === 'ready'" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
-          <button v-if="formProcessingStatus === 'ready'" class="form-submit" @click="doSiteCreate">Submit</button>
+          <button v-if="formProcessingStatus === 'ready'" class="form-submit" @click="doSiteCreate">Create site</button>
           <button v-if="formProcessingStatus === 'done'" class="form-submit" @click="loadNewSite">Close</button>
         </div>
       </form>
@@ -111,7 +113,7 @@
         <div v-html="formProcessingMessage"></div>
         <div class="form-controls">
           <button v-if="formProcessingStatus === 'ready'" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
-          <button v-if="formProcessingStatus === 'ready'" class="form-submit" @click="doSiteUpdate">Submit</button>
+          <button v-if="formProcessingStatus === 'ready'" class="form-submit" @click="doSiteUpdate">Update site</button>
           <button v-if="formProcessingStatus === 'done'" class="form-submit" @click="hideForm">Close</button>
         </div>
       </form>
@@ -150,7 +152,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
-    const junctureVersion = 'v0.0.31'
+    const junctureVersion = 'v0.0.36'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -229,11 +231,13 @@
         // GHP deploy mode
         if (window.location.hostname.indexOf('github.io') > 0) {
           [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2, 4)
-          contentSource = {acct, repo, ref: 'main', baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true, 
-                           assetsBaseUrl: `${window.location.origin}/${repo}`}
+          contentSource = {acct, repo, ref: qargs.ref || 'main', baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true, 
+                           // assetsBaseUrl: `${window.location.origin}/${repo}`}
+                           assetsBaseUrl: `https://gitcdn.link/cdn/${acct}/${repo}/${qargs.ref || 'main'}`}
+
         // juncture-digital.org
         } else if (isJuncture) {
-          contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: 'https://gitcdn.link/repo/jstor-labs/juncture/main', basePath: '', isGhpSite: false}
+          contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: 'https://gitcdn.link/cdn/jstor-labs/juncture/main', basePath: '', isGhpSite: false}
           let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
           if (pathElems.length >= 2) {
             let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
@@ -304,7 +308,7 @@
       })
 
       let head = document.querySelector('head')
-      if (contentSource.isGhpSite) head.appendChild(makeLink(`${contentSource.baseUrl}${contentSource.basePath}/css/main.css`))
+      if (contentSource.isGhpSite) head.appendChild(makeLink(`${contentSource.assetsBaseUrl || contentSource.baseUrl }/css/main.css`))
       if (siteConfig.favicon ) head.appendChild(makeLink(siteConfig.favicon, 'icon'))
       if (siteConfig.customCSS) head.appendChild(makeLink(siteConfig.customCSS))
       if (siteConfig.title) document.title = siteConfig.title
@@ -460,14 +464,18 @@
             this.formProcessingStatus = 'ready'
           },
 
-          submitContactForm() {
+          async submitContactForm() {
             let contactData = {
-              fromAddress: 'Labs@ithaka.org',
+              fromAddress: `${this.contactName} <${this.contactEmail}>`,
               toAddress: this.siteConfig.contactForm.toEmail,
               messageSubject: this.siteConfig.contactForm.subject,
               messageBodyText: `${this.contactMessage}\n\r[Sent by: ${this.contactName} <${this.contactEmail}>]`,
             }
-            sendEmail(contactData).then(resp => this.formProcessingStatus = 'done')
+            console.log('submitContactForm', contactData)
+            let resp = await sendEmail(contactData)
+            console.log('sendEmail response', resp)
+            this.formProcessingStatus = 'done'
+            this.formProcessingMessage = 'Contact email sent'
           },
 
           async doSiteCreate() {
@@ -1029,7 +1037,7 @@
               '<config-url>': `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`,
               '"Page Author"': `"${authenticatedUser.displayName}"`,
               '<github-username>': authenticatedUser.acct,
-              '<contact-email>': authenticatedUser.email
+              '<contact-email>': `${authenticatedUser.displayName} <${authenticatedUser.email}>`
               }
                                     
             // Add customized files
@@ -1283,7 +1291,7 @@
     async function githubRepoInfo(acct, repo) {
       if (knownGhAccts[acct]) {
         return {acct, repo, ref: knownGhAccts[acct], basePath: `/${acct}/${repo}`,
-                assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || knownGhAccts[acct]}`}
+                assetsBaseUrl: `https://gitcdn.link/cdn/${acct}/${repo}/${qargs.ref || knownGhAccts[acct]}`}
       } else {
         let ghToken = oauthAccessToken || ghUnscopedToken
         let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`,
@@ -1291,7 +1299,7 @@
         if (resp.ok) {
           resp = await resp.json()
           return {acct, repo, ref: qargs.ref || resp.default_branch, basePath: `/${acct}/${repo}`, 
-                  assetsBaseUrl: `https://gitcdn.link/repo/${acct}/${repo}/${qargs.ref || resp.default_branch}`}
+                  assetsBaseUrl: `https://gitcdn.link/cdn/${acct}/${repo}/${qargs.ref || resp.default_branch}`}
         }
       }
     }
