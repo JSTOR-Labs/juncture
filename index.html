@@ -152,7 +152,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
-    const junctureVersion = 'v0.0.51'
+    const junctureVersion = 'v0.0.52'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     let head = document.querySelector('head')
@@ -981,7 +981,7 @@
             return heads
           },
 
-          async syncFiles(targetAcct, targetRepo, fromRef, syncTemplates) {
+          async syncFiles(targetAcct, targetRepo, fromRef, isCreate) {
             // Create a juncture branch in repo if needed
             let resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/git/refs/heads`, {
                 headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.v3+json'} })
@@ -1019,11 +1019,6 @@
             resp = await this.getFile('/index.html', 'jstor-labs', 'juncture', fromRef)
             await this.putFile('/index.html', resp.content.replace(/const junctureVersion = '.*'/, `const junctureVersion = '${fromRef}'`), targetAcct, targetRepo, 'juncture')
 
-            if (targetAcct !== 'jstor-labs' && targetRepo !== 'juncture') {
-              resp = await this.getFile('/config.yaml', 'jstor-labs', 'juncture', fromRef)
-              await this.putFile('/config.yaml', this.replaceValues(resp.content, baseReplacementValues), targetAcct, targetRepo, 'juncture')
-            }
-
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/404.html'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/.nojekyll'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
 
@@ -1031,7 +1026,10 @@
               await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path: '/css/main.css'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
             }
 
-            if (syncTemplates) {
+            if (isCreate) {
+              resp = await this.getFile('/config.yaml', 'jstor-labs', 'juncture', fromRef)
+              await this.putFile('/config.yaml', this.replaceValues(resp.content, baseReplacementValues), targetAcct, targetRepo, 'juncture')
+
               resp = await this.getFile('/page-templates/new-site-readme.md', 'jstor-labs', 'juncture', fromRef)
               let toReplace = {...baseReplacementValues, ...{'<edit-url>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/README.md`}}
               await this.putFile('/README.md', this.replaceValues(resp.content, toReplace), targetAcct, targetRepo, 'main')
