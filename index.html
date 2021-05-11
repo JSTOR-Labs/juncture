@@ -152,7 +152,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
-    const junctureVersion = 'v0.0.42'
+    const junctureVersion = 'main'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     let head = document.querySelector('head')
@@ -1016,7 +1016,7 @@
             // At this point we have a juncture branch and it is configured as the Github Pages source
 
             resp = await this.getFile('/index.html', 'jstor-labs', 'juncture', fromRef)
-            this.putFile('/index.html', this.replaceValues(resp.content, {'const junctureVersion = \'.*\'': `const junctureVersion = 'v0.0.42')
+            this.putFile('/index.html', this.replaceValues(resp.content, {'const junctureVersion = \'.*\'': `const junctureVersion = '${fromRef}'`}), targetAcct, targetRepo, 'juncture')
 
             resp = await this.getFile('/config.yaml', 'jstor-labs', 'juncture', fromRef)
             this.putFile('/config.yaml', this.replaceValues(resp.content, baseReplacementValues), targetAcct, targetRepo, 'juncture')
@@ -1062,7 +1062,7 @@
 
           async updateSite(fromRef) {
             console.log(`updateSite: fromRef=${fromRef}`)
-            this.syncFiles(targetAcct, targetRepo, fromRef, false)
+            this.syncFiles(contentSource.acct, contentSource.repo, fromRef, false)
           }
     
         },
