@@ -22,7 +22,7 @@
                  :logins-enabled="loginsEnabled"
                  :is-juncture="isJuncture"
                  :is-authenticated="authenticatedUser !== null && loginsEnabled"
-                 :is-admin="authenticatedUser !== null && authenticatedUser.isAdmin"
+                 :is-admin="isAdminUser"
                  :version="junctureVersion"
                  @menu-item-clicked="menuItemClicked"
                  @authenticate="authenticate"
@@ -361,6 +361,7 @@
         }),
         computed: {
           essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
+          isAdminUser() { return authenticatedUser !== null && (authenticatedUser.isAdmin || contentSource.acct === authenticatedUser.acct) },
           ghToken() { return oauthAccessToken || ghUnscopedToken },
           viewerStyle() { return { 
             height: this.viewerIsOpen
@@ -511,7 +512,7 @@
           },
 
           async getMarkdown(path) {
-            if (window.location.hostname !== 'localhost' && contentSource.acct) {
+            if (window.location.host !== 'localhost:8080' && contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
               let resp = await fetch(url, this.ghToken ? {headers: {Authorization:`Token ${this.ghToken}`}} : {})
               if (resp.ok) {
@@ -969,18 +970,6 @@
               method: 'PUT', body: JSON.stringify(payload), headers: {Authorization: `Token ${this.ghToken}`} })
           },
 
-          async updateSite(fromRef) {
-            console.log(`updateSite: fromRef=${fromRef}`)
-            let resp = await this.getFile('/index.html', 'jstor-labs', 'juncture', fromRef)
-            const vers = resp.content.match(/const junctureVersion = '.*'/)
-            console.log(`vers=${vers}`)
-            let indexFile = resp.content.replace(/const junctureVersion = '.*'/, `const junctureVersion = '${fromRef}'`)
-            this.putFile('/index.html', indexFile, contentSource.acct, contentSource.repo, 'juncture')
-            if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture') {
-              await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path: '/css/main.css'}, {acct: contentSource.acct, repo: contentSource.repo, ref:'juncture'})
-            }
-          },
-
           async waitForRepoInit(acct, repo, i) {
             i = i === undefined ? 0 : i
             let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs/heads`, {
@@ -989,6 +978,67 @@
             console.log(`waitForRepoInit: i=${i} resp.ok=${resp.ok} heads=${heads !== null}`)
             if (heads === null && i < 2) setTimeout(this.waitForRepoInit(acct, repo, ++i), 500)
             return heads
+          },
+
+          async syncFiles(targetAcct, targetRepo, fromRef, syncTemplates) {
+            // Create a juncture branch in repo if needed
+            let resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/git/refs/heads`, {
+                headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.v3+json'} })
+            let heads = await this.waitForRepoInit(targetAcct, targetRepo)
+            if (heads) {
+              let mainHead = heads.find(head => head.ref === 'refs/heads/main')
+              let ghpHead = heads.find(head => head.ref === 'refs/heads/juncture')
+              if (!ghpHead) {
+                resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/git/refs`, {
+                    method: 'POST', body: JSON.stringify({ref: 'refs/heads/juncture', sha: mainHead.object.sha}),
+                    headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.v3+json'} })
+
+                // Make target repository a GitHub Pages site
+                resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages`, {
+                  headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.switcheroo-preview+json'} })
+                if (resp.status === 404) {
+                  resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages`, {
+                    method: 'POST', body: JSON.stringify({source: {branch: 'juncture', path: '/'}}),
+                    headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.switcheroo-preview+json'} })
+                }
+              }
+            }
+            let baseReplacementValues = {
+              'const junctureVersion = \'.*\'': `const junctureVersion = '${fromRef}'`,
+              '<site-url>': `https://${targetAcct}.github.io/${targetRepo}`,
+              '<repo-url>': `https://github.com/${targetAcct}/${targetRepo}`,
+              '<config-url>': `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`,
+              '<custom-css-url>': `https://github.com/${targetAcct}/${targetRepo}/blob/main/css/custom.css`,
+              '"Page Author"': `"${authenticatedUser.displayName}"`,
+              '<github-username>': authenticatedUser.acct,
+              '<contact-email>': `${authenticatedUser.displayName} <${authenticatedUser.email}>`
+              }
+
+            // At this point we have a juncture branch and it is configured as the Github Pages source
+
+            resp = await this.getFile('/index.html', 'jstor-labs', 'juncture', fromRef)
+            this.putFile('/index.html', this.replaceValues(resp.content, baseReplacementValues), targetAcct, targetRepo, 'juncture')
+
+            resp = await this.getFile('/index.html', 'jstor-labs', 'juncture', fromRef)
+            this.putFile('/config.yaml', this.replaceValues(resp.content, baseReplacementValues), targetAcct, targetRepo, 'juncture')
+
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/404.html'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
+            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/.nojekyll'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
+
+            if (targetAcct === 'jstor-labs' && targetRepo === 'juncture') {
+              await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path: '/css/main.css'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
+            }
+
+            if (syncTemplates) {
+              resp = await this.getFile('/page-templates/new-site-readme.md', 'jstor-labs', 'juncture', fromRef)
+              let toReplace = {...baseReplacementValues, ...{'<edit-url>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/README.md`}}
+              await this.putFile('/README.md', this.replaceValues(resp.content, toReplace), targetAcct, targetRepo, 'main')
+
+              resp = await this.getFile('/page-templates/new-page-readme.md', 'jstor-labs', 'juncture', fromRef)
+              toReplace = {...baseReplacementValues, ...{'<edit-url>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/about/README.md`}}
+              await this.putFile('/about/README.md', this.replaceValues(resp.content, toReplace), targetAcct, targetRepo, 'main')
+            }
+
           },
 
           async createSite(targetAcct, targetRepo, fromRef) {
@@ -1005,61 +1055,16 @@
               resp = await resp.json()
             }
 
-            // Create a juncture branch in repo if needed
-            resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/git/refs/heads`, {
-                headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.v3+json'} })
-            let heads = await this.waitForRepoInit(targetAcct, targetRepo)
-            if (heads) {
-              let mainHead = heads.find(head => head.ref === 'refs/heads/main')
-              let ghpHead = heads.find(head => head.ref === 'refs/heads/juncture')
-              if (!ghpHead) {
-                resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/git/refs`, {
-                    method: 'POST', body: JSON.stringify({ref: 'refs/heads/juncture', sha: mainHead.object.sha}),
-                    headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.v3+json'} })
-              }
-            }
-
-            // Make target repository a GitHub Pages site
-            resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages`, {
-              headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.switcheroo-preview+json'} })
-            if (resp.status === 404) {
-              resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages`, {
-                method: 'POST', body: JSON.stringify({source: {branch: 'juncture', path: '/'}}),
-                headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.switcheroo-preview+json'} })
-            }
-             
-            // Copy GHP app files from Juncture to juncture branch in target repo
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: 'juncture', path:'/index.html'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/404.html'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/.nojekyll'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/css/custom.css'}, {acct: targetAcct, repo: targetRepo, ref:'main'})
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/images/favicon.svg'}, {acct: targetAcct, repo: targetRepo, ref:'main'})
-            
-            let baseReplacementValues = {
-              '<site-url>': `https://${targetAcct}.github.io/${targetRepo}`,
-              '<repo-url>': `https://github.com/${targetAcct}/${targetRepo}`,
-              '<config-url>': `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`,
-              '<custom-css-url>': `https://github.com/${targetAcct}/${targetRepo}/blob/main/css/custom.css`,
-              '"Page Author"': `"${authenticatedUser.displayName}"`,
-              '<github-username>': authenticatedUser.acct,
-              '<contact-email>': `${authenticatedUser.displayName} <${authenticatedUser.email}>`
-              }
-                                    
-            // Add customized files
-            resp = await this.getFile('/config.yaml', 'jstor-labs', 'juncture', fromRef)
-            await this.putFile('/config.yaml', this.replaceValues(resp.content, baseReplacementValues), targetAcct, targetRepo, 'juncture')
-
-            resp = await this.getFile('/page-templates/new-site-readme.md', 'jstor-labs', 'juncture', fromRef)
-            let toReplace = {...baseReplacementValues, ...{'<edit-url>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/README.md`}}
-            await this.putFile('/README.md', this.replaceValues(resp.content, toReplace), targetAcct, targetRepo, 'main')
-
-            resp = await this.getFile('/page-templates/new-page-readme.md', 'jstor-labs', 'juncture', fromRef)
-            toReplace = {...baseReplacementValues, ...{'<edit-url>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/about/README.md`}}
-            await this.putFile('/about/README.md', this.replaceValues(resp.content, toReplace), targetAcct, targetRepo, 'main')
+            this.syncFiles(targetAcct, targetRepo, fromRef, true)
 
             // Request rebuild of Pages site
             await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
-         }
+          },
+
+          async updateSite(fromRef) {
+            console.log(`updateSite: fromRef=${fromRef}`)
+            this.syncFiles(targetAcct, targetRepo, fromRef, false)
+          }
     
         },
 
