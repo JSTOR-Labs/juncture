@@ -1401,7 +1401,7 @@
         pathElems = (path || window.location.pathname).split('/').filter(elem => elem !== '')
         if (!pathIsDir) pathElems = pathElems.slice(0, -1)
         pathElems = [...pathElems, ...current.split('/').filter(elem => elem !== '')]
-        if (!isJuncture && !contentSource.isGhpSite) pathElems = pathElems.slice(2)
+        if (isJuncture && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') pathElems = pathElems.slice(2)
         console.log(pathElems)
       }
       if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
