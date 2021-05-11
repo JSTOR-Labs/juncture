@@ -1062,7 +1062,7 @@
 
           async updateSite(fromRef) {
             console.log(`updateSite: fromRef=${fromRef}`)
-            this.syncFiles(targetAcct, targetRepo, fromRef, false)
+            this.syncFiles(contentSource.acct, contentSource.repo, fromRef, false)
           }
     
         },
