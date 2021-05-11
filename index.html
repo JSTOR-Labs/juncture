@@ -1018,8 +1018,10 @@
             resp = await this.getFile('/index.html', 'jstor-labs', 'juncture', fromRef)
             await this.putFile('/index.html', resp.content.replace(/const junctureVersion = '.*'/, `const junctureVersion = '${fromRef}'`), targetAcct, targetRepo, 'juncture')
 
-            resp = await this.getFile('/config.yaml', 'jstor-labs', 'juncture', fromRef)
-            await this.putFile('/config.yaml', this.replaceValues(resp.content, baseReplacementValues), targetAcct, targetRepo, 'juncture')
+            if (targetAcct !== 'jstor-labs' && targetRepo !== 'juncture') {
+              resp = await this.getFile('/config.yaml', 'jstor-labs', 'juncture', fromRef)
+              await this.putFile('/config.yaml', this.replaceValues(resp.content, baseReplacementValues), targetAcct, targetRepo, 'juncture')
+            }
 
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/404.html'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
             await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/.nojekyll'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
