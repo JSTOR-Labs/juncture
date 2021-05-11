@@ -152,7 +152,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
-    const junctureVersion = 'v0.0.55'
+    const junctureVersion = 'v0.0.56'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     let head = document.querySelector('head')
@@ -519,7 +519,7 @@
           async getMarkdown(path) {
             if (window.location.host !== 'localhost:8080' && contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
-              let resp = await fetch(url, this.ghToken ? {headers: {Authorization:`Token ${this.ghToken}`}} : {})
+              let resp = await fetch(url, this.ghToken ? {cache: 'no-cache', headers: {Authorization:`Token ${this.ghToken}`}} : {})
               if (resp.ok) {
                 resp = await resp.json()
                 return decodeURIComponent(escape(atob(resp.content)))
