@@ -1016,7 +1016,7 @@
             // At this point we have a juncture branch and it is configured as the Github Pages source
 
             resp = await this.getFile('/index.html', 'jstor-labs', 'juncture', fromRef)
-            this.putFile('/index.html', this.replaceValues(resp.content, {'const junctureVersion = \'.*\'': `const junctureVersion = '${fromRef}'`}), targetAcct, targetRepo, 'juncture')
+            this.putFile('/index.html', this.replaceValues(resp.content, {"const junctureVersion = '.*'": `const junctureVersion = '${fromRef}'`}), targetAcct, targetRepo, 'juncture')
 
             resp = await this.getFile('/config.yaml', 'jstor-labs', 'juncture', fromRef)
             this.putFile('/config.yaml', this.replaceValues(resp.content, baseReplacementValues), targetAcct, targetRepo, 'juncture')
