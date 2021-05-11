@@ -291,8 +291,12 @@
     })
     .then(config => {
       siteConfig = config
-      if (window.location.host !== 'localhost:8080') {
-        contentSource = {...contentSource, ...{acct: config.acct || contentSource.acct, repo: config.repo || contentSource.repo, ref: config.ref || contentSource.ref}}
+      if (window.location.host === 'localhost:8088' || (!isJuncture && !contentSource.isGhpSite)) {
+        contentSource = {...contentSource, ...{
+            acct: config.acct || contentSource.acct, 
+            repo: config.repo || contentSource.repo, 
+            ref: config.ref || contentSource.ref
+        }}
         if (!contentSource.isGhpSite) contentSource.assetsBaseUrl = `https://gitcdn.link/cdn/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`
       }
       contentSource.ref = qargs.ref || contentSource.ref
