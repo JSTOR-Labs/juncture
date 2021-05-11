@@ -1,8 +1,7 @@
 title: Juncture
-tagline: A Visual Essay Site
-banner: https://picsum.photos/1000/400
-favicon: /images/favicon.svg
-customCSS: /css/custom.css
+tagline: Your Visual Essays tool
+banner: https://picsum.photos/id/403/1000/400?blur=1
+# favicon: /images/favicon.svg
 
 # When using a custom domain these fields must be updated to match
 # the account and repository name
@@ -16,33 +15,29 @@ nav:
 - label: About
   icon: info
   path: /about
-#- label: Contact Us
-#  icon: envelope
-#  path: "/contact-us"
+- label: Help
+  icon: question
+  path: /docs
+- label: Contact Us
+  icon: envelope
+  path: "/contact-us"
 
 # If the /contact-us path is defined for the nav menu a contact form will be enabled
-# The following information is used in the display and processing of the contact form.
+# The following information is used in the display and processing of the contact form
+# A valid toEmail address is required. Other fields are optional
 contactForm:
   toEmail:
-  - Ron Snyder <ronald.snyder@ithaka.org>
-  subject: Contact Us
+  - labs@ithaka.org
+  subject: Juncture Contact Form
 
 #######################################################
-# Base URL of server used for serving and optionally
-# creating IIIF presentation manifests
+# Base URL of server used for IIIF presentation manifests
 ######################################################
 iiifServer: https://iiif.juncture-digital.org
 
 siteAdmins:
 - rsnyder
 
-######################################################
-# Optional credentials used for GitHub API and OAuth integration
-######################################################
-
-# GitHub upscoped API token used for content retrivals
-#ghUnscopedToken: <Base64 encoded GitHub unscoped token>
-
-# Google Cloud OAuth settings for GithHub login via Juncture
-#gcAuthDomain: <Base64-encoded Google Cloud OAuth domain>
-#gcApiKey: <Base64-encoded restricted access Google Cloud API key>
+ghUnscopedToken: Z2hwX05lcnV2RUYzRmx6M3o5YnFjQWZuOGpJQnJMR3lEMTNmYjYyVw==
+gcAuthDomain: anVuY3R1cmUtZGlnaXRhbC5maXJlYmFzZWFwcC5jb20=
+gcApiKey: QUl6YVN5Qk9ia1dHU3NDMXhmX1o3ckZRNC1oRkJ1NVpvTjdxaDBv
