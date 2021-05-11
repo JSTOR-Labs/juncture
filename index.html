@@ -1401,10 +1401,11 @@
         pathElems = (path || window.location.pathname).split('/').filter(elem => elem !== '')
         if (!pathIsDir) pathElems = pathElems.slice(0, -1)
         pathElems = [...pathElems, ...current.split('/').filter(elem => elem !== '')]
+        console.log(pathElems)
       }
       if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
       converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
-      // console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
+      console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
       return converted
     }
 
