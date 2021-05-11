@@ -1273,7 +1273,7 @@
       if (contentSource.isGhpSite) {
         resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
-      } else if (contentSource.repo !== 'juncture' && contentSource.acct !== 'jstor-labs') {
+      } else if (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs') {
         config = {}
         let ghToken = oauthAccessToken || ghUnscopedToken
         resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=juncture`,
@@ -1342,8 +1342,8 @@
         resp = await resp.json()
         componentsList = [...componentsList, ...resp.files.map(fname => `${contentSource.baseUrl}${basePath}/${componentsRoot}/${fname}`)]
       }
-      // if (isJuncture && contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') {
-      if (contentSource.repo !== 'juncture' && contentSource.acct !== 'jstor-labs') {
+      // if (isJuncture && contentSource.acct !== 'jstor-labs' || contentSource.repo !== 'juncture') {
+      if (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs') {
         let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/${junctureVersion}`, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
         resp = await resp.json()
         resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
@@ -1401,7 +1401,7 @@
         pathElems = (path || window.location.pathname).split('/').filter(elem => elem !== '')
         if (!pathIsDir) pathElems = pathElems.slice(0, -1)
         pathElems = [...pathElems, ...current.split('/').filter(elem => elem !== '')]
-        if (isJuncture && contentSource.repo !== 'juncture' && contentSource.acct !== 'jstor-labs') pathElems = pathElems.slice(2)
+        if (isJuncture && contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs') pathElems = pathElems.slice(2)
         console.log(pathElems)
       }
       if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
