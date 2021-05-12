@@ -24,7 +24,7 @@ nav:
 # The following information is used in the display and processing of the contact form.
 contactForm:
   toEmail:
-  - <contact-email>
+  - <<email>>
   subject: Contact Us
 
 #######################################################
@@ -34,7 +34,7 @@ contactForm:
 iiifServer: https://iiif.juncture-digital.org
 
 siteAdmins:
-- <github-username>
+- <<acct>>
 
 ######################################################
 # Optional credentials used for GitHub API and OAuth integration
