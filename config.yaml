@@ -1,6 +1,6 @@
 title: Juncture
 tagline: A Visual Essay Site
-banner: https://picsum.photos/1000/400
+banner: https://picsum.photos/id/164/1000/400
 favicon: /images/favicon.svg
 customCSS: /css/custom.css
 
@@ -24,7 +24,7 @@ nav:
 # The following information is used in the display and processing of the contact form.
 contactForm:
   toEmail:
-  - <<email>>
+  - <<display-name>> <<<email>>>
   subject: Contact Us
 
 #######################################################
