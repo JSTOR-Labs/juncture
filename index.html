@@ -152,7 +152,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
-    const junctureVersion = 'v0.0.59'
+    const junctureVersion = 'v0.0.63'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     let head = document.querySelector('head')
@@ -297,7 +297,8 @@
             repo: contentSource.repo || config.repo, 
             ref: config.ref || contentSource.ref
         }}
-        if (!contentSource.isGhpSite) contentSource.assetsBaseUrl = `https://gitcdn.link/cdn/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`
+        if (!contentSource.isGhpSite) contentSource.assetsBaseUrl = `https://gitcdn.link/cdn/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`;
+        ['banner', 'favicon', 'customCSS'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       //}
       contentSource.ref = qargs.ref || contentSource.ref
       return config
@@ -1008,14 +1009,13 @@
                 }
               }
             }
-            let baseReplacementValues = {
-              '<site-url>': `https://${targetAcct}.github.io/${targetRepo}`,
-              '<repo-url>': `https://github.com/${targetAcct}/${targetRepo}`,
-              '<config-url>': `https://github.com/${targetAcct}/${targetRepo}/blob/juncture/config.yaml`,
-              '<custom-css-url>': `https://github.com/${targetAcct}/${targetRepo}/blob/main/css/custom.css`,
-              '"Page Author"': `"${authenticatedUser.displayName}"`,
-              '<github-username>': authenticatedUser.acct,
-              '<contact-email>': `${authenticatedUser.displayName} <${authenticatedUser.email}>`
+
+            // template tages used for customized starter pages
+            let replacementValues = {
+              '<<acct>>': targetAcct,
+              '<<repo>>': targetRepo,
+              '<<display-name>>': authenticatedUser.displayName,
+              '<<email>>': authenticatedUser.email,
               }
 
             // At this point we have a juncture branch and it is configured as the Github Pages source
@@ -1032,14 +1032,14 @@
 
             if (isCreate) {
               resp = await this.getFile('/config.yaml', 'jstor-labs', 'juncture', fromRef)
-              await this.putFile('/config.yaml', this.replaceValues(resp.content, baseReplacementValues), targetAcct, targetRepo, 'juncture')
+              await this.putFile('/config.yaml', this.replaceValues(resp.content, replacementValues), targetAcct, targetRepo, 'juncture')
 
               resp = await this.getFile('/page-templates/new-site-readme.md', 'jstor-labs', 'juncture', fromRef)
-              let toReplace = {...baseReplacementValues, ...{'<edit-url>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/README.md`}}
+              let toReplace = {...replacementValues, ...{'<<edit-url>>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/README.md`}}
               await this.putFile('/README.md', this.replaceValues(resp.content, toReplace), targetAcct, targetRepo, 'main')
 
               resp = await this.getFile('/page-templates/new-page-readme.md', 'jstor-labs', 'juncture', fromRef)
-              toReplace = {...baseReplacementValues, ...{'<edit-url>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/about/README.md`}}
+              toReplace = {...replacementValues, ...{'<<edit-url>>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/about/README.md`}}
               await this.putFile('/about/README.md', this.replaceValues(resp.content, toReplace), targetAcct, targetRepo, 'main')
             }
 
@@ -1288,7 +1288,6 @@
         resp = await fetch(`${window.location.origin}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
       }
-      ['banner', 'favicon', 'customCSS'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       if (config.ghUnscopedToken) ghUnscopedToken = atob(config.ghUnscopedToken)
       if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
       if (config.gcAuthDomain) gcAuthDomain = atob(config.gcAuthDomain)
@@ -1407,6 +1406,7 @@
         console.log(pathElems)
       }
       if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
+      console.log(`assetsBaseUrl=${contentSource.assetsBaseUrl}`)
       converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
       console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
       return converted
