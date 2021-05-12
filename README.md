@@ -2,7 +2,7 @@
 
 # Welcome to Juncture
 
-**Juncture** is a framework for converting simple text files into an engaging `visual essay`.  A visual essay is an interactive web page that augments a text narrative with visual elements to provide depth and context.
+**Juncture** is a framework for converting simple text files into an engaging **visual essay**.  A visual essay is an interactive web page that augments a text narrative with visual elements to provide depth and context.
 
 In addition to converting single text files into visual narratives, Juncture can also be used to create full web sites consisting of multiple visual essays with navigation, site info pages (_About_, _Contact us_, etc), email contact form, logo, and other simple customizations.
 
