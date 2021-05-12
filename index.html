@@ -152,7 +152,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
-    const junctureVersion = 'v0.0.58'
+    const junctureVersion = 'v0.0.59'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     let head = document.querySelector('head')
@@ -1403,7 +1403,7 @@
         pathElems = (path || window.location.pathname).split('/').filter(elem => elem !== '')
         if (!pathIsDir) pathElems = pathElems.slice(0, -1)
         pathElems = [...pathElems, ...current.split('/').filter(elem => elem !== '')]
-        if (isJuncture && contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs') pathElems = pathElems.slice(2)
+        if (isJuncture && (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs')) pathElems = pathElems.slice(2)
         console.log(pathElems)
       }
       if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
