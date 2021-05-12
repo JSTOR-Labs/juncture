@@ -16,7 +16,14 @@ A configuration file (**config.yaml**) is located at root of the **juncture** br
 
 ## Setting a default banner, title, and tagline for the site
 
-TODO
+At the top of the configuration file are a number of options for customizing the site display.
+
+```yaml
+title: Juncture
+tagline: A Visual Essay Site
+banner: https://picsum.photos/id/164/1000/400
+favicon: /images/favicon.svg
+```
 
 ## Adding pages to the top level site menu
 
