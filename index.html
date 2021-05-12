@@ -297,7 +297,7 @@
             repo: contentSource.repo || config.repo, 
             ref: config.ref || contentSource.ref
         }}
-        if (!contentSource.isGhpSite) contentSource.assetsBaseUrl = `https://gitcdn.link/cdn/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`
+        if (!contentSource.isGhpSite) contentSource.assetsBaseUrl = `https://gitcdn.link/cdn/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`;
         ['banner', 'favicon', 'customCSS'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       //}
       contentSource.ref = qargs.ref || contentSource.ref
