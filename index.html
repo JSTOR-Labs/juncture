@@ -155,13 +155,6 @@
     const junctureVersion = 'main'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
-    let head = document.querySelector('head')
-    if (window.location.hostname === 'localhost') {
-      head.appendChild(makeLink(`${window.location.href}css/main.css`))
-    } else {
-      head.appendChild(makeLink(`https://gitcdn.link/cdn/jstor-labs/juncture/${junctureVersion}/css/main.css`))
-    }
-
     const referrerUrl = document.referrer
     if (referrerUrl) {
       const referrer = parseUrl(referrerUrl)
@@ -321,6 +314,13 @@
       })
 
       // if (contentSource.isGhpSite) head.appendChild(makeLink(`https://gitcdn.link/cdn/jstor-labs/juncture/${junctureVersion}/css/main.css`))
+
+      let head = document.querySelector('head')
+      if (window.location.hostname === 'localhost') {
+        head.appendChild(makeLink(`${contentSource.assetsBaseUrl}/css/main.css`))
+      } else {
+        head.appendChild(makeLink(`https://gitcdn.link/cdn/jstor-labs/juncture/${junctureVersion}/css/main.css`))
+      }
       if (siteConfig.favicon ) head.appendChild(makeLink(siteConfig.favicon, 'icon'))
       if (siteConfig.customCSS) head.appendChild(makeLink(siteConfig.customCSS))
       if (siteConfig.title) document.title = siteConfig.title

@@ -839,8 +839,8 @@ module.exports = {
       }
     },
     actions: {
-      handler: function () {
-        // this.actions.forEach(action => this.handleEssayAction(action))
+      handler: function (actions) {
+        if (actions[this.$options.name]) actions[this.$options.name].forEach(action => this.handleEssayAction(action))
       },
       immediate: true
     },
