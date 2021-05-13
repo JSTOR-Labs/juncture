@@ -24,6 +24,26 @@
     "body": [
       {
         "type": "TextualBody",
+        "value": "Mouth",
+        "purpose": "commenting"
+      }
+    ],
+    "target": {
+      "source": "https://free.iiifhosting.com/iiif/1e5f83addb00d09494efbc67ab64ccce37ce6e1caf2f12dc26740c4a734ebcbf",
+      "selector": {
+        "type": "FragmentSelector",
+        "conformsTo": "http://www.w3.org/TR/media-frags/",
+        "value": "xywh=pixel:3938.295166015625,7238.14599609375,1864.546630859375,930.150390625"
+      }
+    },
+    "@context": "http://www.w3.org/ns/anno.jsonld",
+    "id": "#63064f82-cb50-4acf-a106-8761e5d610eb"
+  },
+  {
+    "type": "Annotation",
+    "body": [
+      {
+        "type": "TextualBody",
         "value": "Left eye",
         "purpose": "commenting"
       }
