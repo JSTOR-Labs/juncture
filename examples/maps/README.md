@@ -244,10 +244,10 @@ This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/)
 - **shadowAnchor** - The coordinates of the "tip" of the shadow (relative to its top left corner) (the same as iconAnchor if not specified).
 - **className** - A custom class name to assign to both primary and shadow images. Used for custom CSS styling.
 
-<param ve-simple-map center="2, 40" zoom="3">
+<param ve-map center="2, 40" zoom="3">
 <param ve-map-marker
        url="https://leafletjs.com/examples/custom-icons/leaf-green.png"
-       center="17.188263050774324, 52.28406397248149"
+       coords="17.188263050774324, 52.28406397248149"
        size="38, 95"
        iconAnchor="22, 94"
        shadowUrl="https://leafletjs.com/examples/custom-icons/leaf-shadow.png"
@@ -255,22 +255,22 @@ This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/)
        >
 <param ve-map-marker
        url="https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg/330px-Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg"
-       center="-7.182405194219532, 35.05200886854757"
+       coords="-7.182405194219532, 35.05200886854757"
        size="129, 170"
        >
 
 ```markdown
-<param ve-simple-map center="2, 40" zoom="4">
+<param ve-map center="2, 40" zoom="4">
 <param ve-map-marker
        url="https://leafletjs.com/examples/custom-icons/leaf-green.png"
-       center="17.188263050774324, 52.28406397248149"
+       coords="17.188263050774324, 52.28406397248149"
        size="38, 95"
        iconAnchor="22, 94"
        shadowUrl="https://leafletjs.com/examples/custom-icons/leaf-shadow.png"
        shadowSize="50, 64">
 <param ve-map-marker
        url="https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg/330px-Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg"
-       center="-7.182405194219532, 35.05200886854757"
+       coords="-7.182405194219532, 35.05200886854757"
        size="129, 170"
        >
 ```
