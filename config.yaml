@@ -27,7 +27,7 @@ nav:
 # A valid toEmail address is required. Other fields are optional
 contactForm:
   toEmail:
-  - labs@ithaka.org
+  - labs@ithakaorg.onmicrosoft.com
   subject: Juncture Contact Form
 
 #######################################################
