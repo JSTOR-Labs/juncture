@@ -104,8 +104,8 @@ module.exports = {
         }
     }),
     computed: {
-        item() { return this.items.length > 0 ? this.items[0] : {} },
-        mapDef() { return this.item.layers ? this.item : {...this.item, ...{layers: []}} },
+        // item() { return this.items.length > 0 ? this.items[0] : {} },
+        mapDef() { return this.items.find(item => item['ve-map']) },
         showLabels() { return this.mapDef['show-labels'] },
         preferGeoJSON() { return this.mapDef['prefer-geojson'] },
         // isSelected() { return this.selected === 'mapViewer' },
@@ -118,7 +118,7 @@ module.exports = {
                     ? this.mapDef.center
                     : this.mapDef.center.split(',').map(coordStr => parseFloat(coordStr))
             : defaults.center },
-        itemsWithCoords() { return this.allItems
+        itemsWithCoords() { return this.items
             .filter(item => item.coords || (item.eid && this.entities[item.eid] && this.entities[item.eid].coords))
             .map(item => item['ve-entity'] ? {...item, ...this.entities[item.eid]} : item )
         },
@@ -126,7 +126,7 @@ module.exports = {
             .filter(item => !item.geojson && (!item.eid || !this.entities[item.eid] || !this.entities[item.eid].geojson))
             .map(item => item['ve-entity'] ? {...item, ...this.entities[item.eid]} : item )
         },
-        itemsWithGeojson() { return this.allItems
+        itemsWithGeojson() { return this.items
             .filter(item => item.geojson || (item['ve-map-layer'] && item.geojson) || (item.eid && this.entities[item.eid] && this.entities[item.eid].geojson))
             .map(item => item['ve-entity'] ? {...item, ...this.entities[item.eid]} : item )
         },
@@ -134,7 +134,7 @@ module.exports = {
             .filter(item => !item.coords && (!item.eid || !this.entities[item.eid] || !this.entities[item.eid].coords))
             .map(item => item['ve-entity'] ? {...item, ...this.entities[item.eid]} : item )
         },
-        itemsWithMapwarperLayer() { return this.allItems.filter(item => item.mapwarper)},
+        itemsWithMapwarperLayer() { return this.items.filter(item => item.mapwarper)},
         zoom() { return this.mapDef.zoom || defaults.zoom },
         maxZoom() { return this.mapDef['max-zoom'] || defaults.maxZoom },
         timeDimension() { return this.mapDef['time-dimension'] || defaults.timeDimension },
