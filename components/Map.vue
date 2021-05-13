@@ -101,7 +101,8 @@ module.exports = {
             timeDimension: undefined,
             layers: undefined,
             opacity: undefined
-        }
+        },
+        markers: [],
     }),
     computed: {
         item() { return this.items.length > 0 ? this.items[0] : {} },
@@ -120,11 +121,13 @@ module.exports = {
             : defaults.center },
         itemsWithCoords() { return this.allItems
             .filter(item => item.coords || (item.eid && this.entities[item.eid] && this.entities[item.eid].coords))
-            .map(item => item['ve-entity'] ? {...item, ...this.entities[item.eid]} : item )
+            .map(item => item['ve-entity'] ? {...item, ...this.entities[item.eid]} : 
+                         item['ve-map-marker'] ? this.markers.push(item) : item )
         },
         itemsWithCoordsNoGeojson() { return this.itemsWithCoords
             .filter(item => !item.geojson && (!item.eid || !this.entities[item.eid] || !this.entities[item.eid].geojson))
-            .map(item => item['ve-entity'] ? {...item, ...this.entities[item.eid]} : item )
+            .map(item => item['ve-entity'] ? {...item, ...this.entities[item.eid]} :
+                         item['ve-map-marker'] ? this.markers.push(item) : item  )
         },
         itemsWithGeojson() { return this.allItems
             .filter(item => item.geojson || (item['ve-map-layer'] && item.geojson) || (item.eid && this.entities[item.eid] && this.entities[item.eid].geojson))
@@ -134,6 +137,7 @@ module.exports = {
             .filter(item => !item.coords && (!item.eid || !this.entities[item.eid] || !this.entities[item.eid].coords))
             .map(item => item['ve-entity'] ? {...item, ...this.entities[item.eid]} : item )
         },
+        itemsWithMarkers() { return this.items.filter(item => item['ve-map-marker']); }, 
         itemsWithMapwarperLayer() { return this.allItems.filter(item => item.mapwarper)},
         zoom() { return this.mapDef.zoom || defaults.zoom },
         maxZoom() { return this.mapDef['max-zoom'] || defaults.maxZoom },
@@ -168,6 +172,7 @@ module.exports = {
     methods: {
         init() {
             console.log(this.$options.name, this.mapDef, this.allItems)
+            
             if (this.active) {
                 this.$nextTick(() => {
                     this.createMap()
@@ -267,10 +272,17 @@ module.exports = {
                 this.map.timeDimension = undefined
             }
         },
+        toFloatArray(str) { return str.split(',').map(num => parseFloat(num))},
+        toIntArray(str) { return str.split(',').map(num => parseInt(num))},
         syncLayers() {
             this.syncGeoJSONLayers()
             this.syncTileLayers()
             this.map.flyTo(this.center, this.zoom)
+            
+            const markers = this.itemsWithMarkers;
+            markers.forEach(marker => {
+                if (marker) this.addCustomMarker(marker)
+            })
         },
         syncTileLayers() {
             const mapDefs = {}
@@ -323,7 +335,7 @@ module.exports = {
             this.tileLayers = next
         },
         syncGeoJSONLayers() {
-            console.log('syncGeoJSONLayers')
+            console.log('syncGeoJSONLayers');
             for (let [label, layer] of Object.entries(this.geoJSONLayers)) {  // eslint-disable-line no-unused-vars
                 this.map.removeLayer(layer)
             }
@@ -440,6 +452,21 @@ module.exports = {
                 }),
                 id: props.eid
             })
+        },
+        addCustomMarker(data) {
+            const faIcon = data.url
+            var icon = L.icon({
+                    iconUrl:      faIcon,
+                    iconSize:     data.size ? this.toIntArray(data.size) : defaults.iconSize, // size of the icon
+                    shadowUrl:    data.shadowurl ? data.shadowurl : null,
+                    shadowSize:   data.shadowsize ? this.toIntArray(data.shadowsize) : defaults.iconSize, // size of the shadow
+                    iconAnchor:   data.iconanchor ? this.toIntArray(data.iconanchor) : [22, 94], // point of the icon which will correspond to marker's location
+                    shadowAnchor: data.shadowanchor ? this.toIntArray(data.shadowanchor) : [4, 62],  // the same for the shadow
+                    popupAnchor:  [-3, -76],
+                    className:    data.classname ? data.classname : ''
+                })
+            console.log(icon)
+            this.tileLayers.push(L.marker(this.toFloatArray(data.coords), {icon}).addTo(this.map))
         },
         cachedGeoJSON(url) {
             if (!window.geojsonCache) {
