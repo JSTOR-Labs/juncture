@@ -101,6 +101,20 @@
       </form>
     </div>
 
+    <div id="add-page-form" class="modal-form" style="display: none;">
+      <form v-on:submit.prevent>
+        <h1>Add new page</h1>
+        <input :value="authenticatedUser && authenticatedUser.acct" class="form-name" type="text" readonly>
+        <input v-model="newPage" placeholder="Name of new page" class="form-email" required>
+        <div v-html="formProcessingMessage"></div>
+        <div class="form-controls">
+          <button v-if="formProcessingStatus === 'ready'" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
+          <button v-if="formProcessingStatus === 'ready'" class="form-submit" @click="doPageAdd">Add page</button>
+          <button v-if="formProcessingStatus === 'done'" class="form-submit" @click="gotoAddedPage">Close</button>
+        </div>
+      </form>
+    </div>
+
     <div id="update-site-form" class="modal-form" style="display: none;">
       <form v-on:submit.prevent>
         <h1>Update Juncture site</h1>
@@ -221,7 +235,9 @@
 
       // For local dev in custom domain mode
       } else if (window.location.host === 'localhost:8088') {
-        contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, basePath: '', isGhpSite: false}
+        contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, basePath: '', isGhpSite: false,
+                        assetsBaseUrl: `${window.location.origin}`
+      }
         let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
         if (pathElems.length >= 2) {
           let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
@@ -295,7 +311,7 @@
             repo: contentSource.repo || config.repo, 
             ref: config.ref || contentSource.ref
         }}
-        if (!contentSource.isGhpSite) contentSource.assetsBaseUrl = `https://gitcdn.link/cdn/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`;
+        if (!contentSource.isGhpSite && contentSource.acct) contentSource.assetsBaseUrl = `https://gitcdn.link/cdn/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`;
         ['banner', 'favicon', 'customCSS'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       //}
       contentSource.ref = qargs.ref || contentSource.ref
@@ -366,6 +382,7 @@
           contactEmail: null,
           contactMessage: null, 
           newRepo: null,
+          newPage: null,
           formProcessingMessage: '',
           formProcessingStatus: 'ready',
           releaseTags: [],
@@ -444,7 +461,7 @@
             } else if (action === 'editMarkdown') {
               this.editMarkdown()
             } else if (action === 'addPage') {
-              this.addPage()
+              this.showForm('add-page-form')
             } else if (action === '/contact-us') {
               this.showForm('contact-form')
             } else if (action === 'createSite') {
@@ -509,12 +526,25 @@
             window.open(`https://juncture-digital.org/${this.authenticatedUser.acct}/${this.newRepo}`, '_blank')
           },
 
+          gotoAddedPage() {
+            this.hideForm()
+            this.loadEssay(`/${this.newPage}`)
+          },
+
           async doSiteUpdate() {
             this.formProcessingStatus = 'processing'
             this.formProcessingMessage = `Updating site to version ${this.updateVersion === 'main' ? 'Latest' : this.updateVersion}...`
             await this.updateSite(this.updateVersion)
             let siteUrl = `https://${this.contentSource.acct}.github.io/${this.contentSource.repo}`
             this.formProcessingMessage = `Site <a href="${siteUrl}">${siteUrl}</a> updated to version ${this.updateVersion === 'main' ? 'Latest' : this.updateVersion}`
+            this.formProcessingStatus = 'done'
+          },
+
+          async doPageAdd() {
+            this.formProcessingStatus = 'processing'
+            this.formProcessingMessage = 'Adding page...'
+            await this.addPage()
+            this.formProcessingMessage = `New page added`
             this.formProcessingStatus = 'done'
           },
 
@@ -537,10 +567,6 @@
               if (resp.ok) return await resp.text()
             }
             return null
-          },
-
-          addPage() {
-            console.log('addPage')
           },
 
           // Loads essay Markdown file
@@ -1049,6 +1075,10 @@
               await this.putFile('/about/README.md', this.replaceValues(resp.content, toReplace), targetAcct, targetRepo, 'main')
             }
 
+          },
+
+          async addPage() {
+            console.log('addPage')
           },
 
           async createSite(targetAcct, targetRepo, fromRef) {
