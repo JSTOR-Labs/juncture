@@ -24,6 +24,7 @@
                  :is-authenticated="authenticatedUser !== null && loginsEnabled"
                  :is-admin="isAdminUser"
                  :version="junctureVersion"
+                 component-name="ve-header"
                  @menu-item-clicked="menuItemClicked"
                  @authenticate="authenticate"
                  @logout="logout"
@@ -45,12 +46,13 @@
                  :entities="entities"
                  :active="viewer === selectedViewer"
                  :height="viewerHeight"
-                 :actions="actions"//
+                 :actions="actions"
                  :hover-item="hoverItem"
                  :content-source="contentSource"
                  :gh-token:="ghToken"
                  :md-dir="mdDir"
                  :is-authenticated="authenticatedUser !== null && loginsEnabled"
+                 :component-name="viewer"
                  @update-component-data="updateComponentData"
                  @set-hover-item="hoverItem = $event"
       ></component>
@@ -621,7 +623,7 @@
                 .map(param => param.attributes.url.value)
                 .forEach(customComponentUrl => {
                   let httpComponent = httpVueLoader(customComponentUrl)
-                  let componentName = `${componentPrefix}${camelToKebab(customComponentUrl.split('/').pop().split('.')[0])}`
+                  let componentName = `${componentPrefix}${camelToKebab(componentUrl.split('/').pop().split('.')[0])}`
                   if (!availableViewers.has(componentName)) {
                     availableViewers.add(componentName)
                     Vue.component(componentName, httpComponent)
@@ -1185,14 +1187,17 @@
 
     // Vue components mixin that handles linking to external JS and CSS resources
     Vue.mixin({
+      props: {
+        componentName: String
+      },
       methods: {
         loadDependencies(dependencies, i, callback) {
           if (i === 0) {
             let componentData = {}
-            componentData[this.$options.name] = { label: this.viewerLabel, icon: this.viewerIcon }
+            componentData[this.componentName] = { label: this.viewerLabel, icon: this.viewerIcon }
             this.$emit('update-component-data', componentData)
           }
-          if (dependencies.length > 0) {
+          if (dependencies && dependencies.length > 0) {
             this.load(dependencies[i], () => {
               if (i < dependencies.length-1) {
                 this.loadDependencies(dependencies, i+1, callback) 
@@ -1200,6 +1205,8 @@
                 callback()
               }
             })
+          } else {
+            if (callback) callback()
           }
         },
         load(url, callback) {

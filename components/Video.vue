@@ -35,7 +35,7 @@
   -->
   <div class="plyr__video-embed" id="player">
     <iframe
-      :src="videoId"
+      :src="`https://www.youtube.com/embed/${videoId}`"
       allowfullscreen
       allowtransparency
       allow="autoplay"
@@ -75,12 +75,10 @@ module.exports = {
     playerWidth: 564
   }),
   computed: {
-    videoId() { return this.items[0].vid || this.items[0].id },
-    //player() { return this.$refs.youtube ? this.$refs.youtube.player : null }
+    videoItems() { return this.items.filter(item => item[this.componentName]) },
+    videoId() { return this.videoItems.length > 0 ? this.videoItems[0].vid || this.videoItems[0].id : null },
   },
   mounted() {
-    console.log('video component');
-    console.log(`${this.$options.name}.mounted: height=${this.height} width=${this.width}`, this.mapDef)
     this.loadDependencies(dependencies, 0, this.init)
   },
   /*

@@ -52,7 +52,7 @@ In 1735, a Viennese baroness wrote to the last Medici princess, <span id="Q23318
 <param ve-image title="Archivio di Stato di Firenze (ASF), Miscellanea Medicea (MM) 1, ins. 2, fol. 186r." url="https://raw.githubusercontent.com/jSTOR-Labs/plant-humanities/master/images/IMG_1325.JPG">
 
 In her letter to Anna Maria Luisa, the Vieannese baroness praised the powder’s effectiveness and stated that the children she treated with it had been so violently taken by convulsions that the physicians had “given up on them.” Not only had the “miraculous powder” cured the children, the baroness also stated that a number of months had passed, and the children remained in perfect health. Anna Maria Luisa was well known for her miraculous powder, which she distributed strategically to influential individuals and courts across Europe. Through the strategic distribution of her infant convulsion powder, Anna Maria Luisa created valuable socio-political alliances to protect <span eid="Q154849">The Grand Duchy of Tuscany</span> as the end of the Medici dynasty neared. 
-<param ve-d3plus-ring-network url="https://jstor-labs.github.io/plant-humanities/graphs/peony_medici.tsv" center="Anna Maria Luisa de' Medici">
+<param ve-d3plus-ring-network url="https://raw.githubusercontent.com/jstor-labs/plant-humanities/main/graphs/peony_medici.tsv" center="Anna Maria Luisa de' Medici">
 
 ### Shaoyao: The Medicine Made from Peony
 

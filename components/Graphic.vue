@@ -14,7 +14,7 @@
 
 <script>
 const viewerLabel = 'Graphic Viewer'
-const viewerIcon = 'fas fa-photo-video'
+const viewerIcon = 'fas fa-atom'
 
 module.exports = {
     name: 've-graphic',
@@ -40,7 +40,8 @@ module.exports = {
                 overflowY: "auto !important",
             }
         },
-        input() { return this.items[0].img || this.items[0].url || this.items[0].file },
+        graphicItems() { return this.items.filter(item => item[this.componentName]) },
+        input() { return this.graphicItems.length > 0 ? this.graphicItems[0].img || this.graphicItems[0].url || this.graphicItems[0].file : null },
         graphicStyle() {
             return {
                 //width: `${this.width}px`,
@@ -50,14 +51,10 @@ module.exports = {
             }
         }      
     },
-    mounted() {
-        this.init();
-    },
+    mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
     methods: {
         init() {
-            console.log('this.input', this.input)
-            console.log('this.items[0].img', this.items[0].img)
-
+            console.log('init', this.input)
             //check if svg
             if (this.input.split('.').pop() == 'svg'){
                 fetch(this.input).then((resp) => resp.text())

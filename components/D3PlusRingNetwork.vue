@@ -31,6 +31,8 @@ module.exports = {
     dependencies,
     }),
     computed: {
+      filteredItems() { return this.items.filter(item => item[this.componentName]) },
+      item() { return this.filteredItems.length > 0 ? this.filteredItems[0] : {} },
       containerStyle() { return { 
           width: `${this.width}px`,
           height: `${this.height}px`,
@@ -39,7 +41,6 @@ module.exports = {
           backgroundColor: this.items[0] ? this.items[0].background || 'white' : 'white'
         }
       },
-      item() { return this.items.length > 0 ? this.items[0] : {} }
     },
     mounted() {
         console.log(this.$options.name, this.items)
