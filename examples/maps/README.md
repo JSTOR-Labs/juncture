@@ -238,6 +238,8 @@ This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/)
 - **url** - _required_ URL to image.
 - **center** - _required_ latitude and longitude coordinates for the image placement, in that order, separated by a comma. For example: `"39, 20"`
 - **size** - _required_ the size of the image in pixels, separated by a comma.
+- **circle** - when set to "true", the image is cropped to an icon-sized circle
+- **square** - when set to true, the image is cropped to an icon-sized square
 - **iconAnchor** - The coordinates of the "tip" of the icon (relative to its top left corner). The icon will be aligned so that this point is at the marker's geographical location. Centered by default.
 - **shadowUrl** - the URL to a shadow image.
 - **shadowSize** - the size of the shadow image in pixels, separated by a comma.
@@ -254,9 +256,10 @@ This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/)
        shadowSize="50, 64"
        >
 <param ve-map-marker
-       url="https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg/330px-Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg"
+       url="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Pinz%C3%B3n_azul_de_Gran_Canaria_%28macho%29%2C_M._A._Pe%C3%B1a.jpg/220px-Pinz%C3%B3n_azul_de_Gran_Canaria_%28macho%29%2C_M._A._Pe%C3%B1a.jpg"
        coords="-7.182405194219532, 35.05200886854757"
        size="129, 170"
+       circle="true"
        >
 
 ```markdown
@@ -269,8 +272,9 @@ This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/)
        shadowUrl="https://leafletjs.com/examples/custom-icons/leaf-shadow.png"
        shadowSize="50, 64">
 <param ve-map-marker
-       url="https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg/330px-Lamprotornis_hildebrandti_-Tanzania-8-2c.jpg"
+       url="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Pinz%C3%B3n_azul_de_Gran_Canaria_%28macho%29%2C_M._A._Pe%C3%B1a.jpg/220px-Pinz%C3%B3n_azul_de_Gran_Canaria_%28macho%29%2C_M._A._Pe%C3%B1a.jpg""
        coords="-7.182405194219532, 35.05200886854757"
        size="129, 170"
+       circle="true"
        >
 ```

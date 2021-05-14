@@ -454,6 +454,10 @@ module.exports = {
         },
         addCustomMarker(data) {
             const faIcon = data.url
+            console.log('data.circle', data.circle)
+            const styleClass = data.circle ? 'circleImage' :
+                               data.square ? 'squareImage' : data.classname;
+            console.log(styleClass)
             var icon = L.icon({
                     iconUrl:      faIcon,
                     iconSize:     data.size ? this.toIntArray(data.size) : defaults.iconSize, // size of the icon
@@ -462,7 +466,7 @@ module.exports = {
                     iconAnchor:   data.iconanchor ? this.toIntArray(data.iconanchor) : [22, 94], // point of the icon which will correspond to marker's location
                     shadowAnchor: data.shadowanchor ? this.toIntArray(data.shadowanchor) : [4, 62],  // the same for the shadow
                     popupAnchor:  [-3, -76],
-                    className:    data.classname ? data.classname : ''
+                    className:    styleClass
                 })
             console.log(icon)
             this.tileLayers.push(L.marker(this.toFloatArray(data.coords), {icon}).addTo(this.map))
@@ -848,4 +852,20 @@ module.exports = {
       font-size: 0.9rem;
       font-weight: bold;
     }
+
+    .circleImage {
+        border-radius: 50%;
+        width: 80px !important;
+        height: 80px !important;
+        object-fit:cover;
+        border: 3px solid #555; 
+    }
+
+    .squareImage {
+        width: 80px !important;
+        height: 80px !important;
+        object-fit:cover;
+        border: 3px solid #555; 
+    }
+
 </style>
