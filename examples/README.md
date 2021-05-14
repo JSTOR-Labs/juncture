@@ -9,4 +9,5 @@ Below are some sample essays:
 - [Networks](networks)
 - [Graphics](graphics)
 - [Videos](videos)
+- [Tabulator](tabulator)
 - [Peony](peony)
