@@ -36,7 +36,8 @@ module.exports = {
     items: { type: Array, default: () => ([]) },
     allItems: { type: Array, default: () => ([]) },
     entities: { type: Object, default: () => ({}) },
-    active: Boolean
+    active: Boolean,
+    height: Number
   },
   data: () => ({
     viewerLabel,
@@ -183,6 +184,12 @@ module.exports = {
         console.log('items', items)
       },
       immediate: true
+    },
+    height: {
+      handler: function (height) {
+        if (this.map) this.map.invalidateSize(true)
+      },
+      immediate: true
     }
   }
 }
@@ -211,9 +218,9 @@ module.exports = {
     align-self: stretch;
     /* background-color: rgba(255, 255, 255, 0.8); */
     background-color: #ccc;
-    padding: 3px 6px;
-      text-align: center;
-      line-height: 1;
+    /* padding: 3px 6px; */
+    text-align: center;
+    line-height: 1;
   }
 
   .title {

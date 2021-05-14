@@ -44,7 +44,8 @@
                  :items="items"
                  :entities="entities"
                  :active="viewer === selectedViewer"
-                 :actions="actions"
+                 :height="viewerHeight"
+                 :actions="actions"//
                  :hover-item="hoverItem"
                  :content-source="contentSource"
                  :gh-token:="ghToken"
@@ -343,6 +344,7 @@
           markdownViewer: null,
           html: null,
           active: null,
+          viewerHeight: 0,
           segments: {},
           entities: {},
           availableViewers,
@@ -1080,6 +1082,8 @@
 
           scrollTop: {
             handler: function (scrollTop) { 
+              this.viewerHeight = this.$refs.viewer.clientHeight
+              // console.log(`scroll-top=${scrollTop} viewer=${this.viewerHeight}`)
               let target = this.$refs.essay
               let segments = Array.from(target.querySelectorAll('.segment'))
               let i
