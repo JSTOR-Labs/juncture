@@ -10,4 +10,6 @@ Below are some sample essays:
 - [Graphics](graphics)
 - [Videos](videos)
 - [Tabulator](tabulator)
+- [Plant Specimens](plant-specimens)
+- [Knightlab Timeline](knightlab-timeline)
 - [Peony](peony)
