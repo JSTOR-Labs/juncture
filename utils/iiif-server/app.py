@@ -16,8 +16,8 @@ import hashlib
 from hashlib import sha256
 import traceback
 import getopt
-from datetime import datetime
-from urllib.parse import urlparse, quote, unquote
+from datetime import datetime, timedelta
+from urllib.parse import urlparse, unquote
 from copy import deepcopy
 
 import requests
@@ -68,7 +68,7 @@ def get_image_size(url, **kwargs):
         except:
             logger.error(traceback.format_exc())
             logger.error(url)
-    logger.debug(f'get_image_size: url={url} size={size}')
+    logger.info(f'get_image_size: url={url} size={size}')
     return size
 
 def queue_image_for_iiifhosting(mdb, **kwargs):
@@ -213,6 +213,26 @@ def update_manifest(mdb, manifest, image_data, **kwargs):
     mdb['manifests'].replace_one({'_id': manifest['_id']}, manifest)        
     return mdb['manifests'].find_one({'_id': manifest['_id']})
 
+@app.route('/gp-proxy/<path:path>', methods=['GET', 'HEAD'])
+def gp_proxy(path):
+    gp_url = f'https://plants.jstor.org/seqapp/adore-djatoka/resolver?url_ver=Z39.88-2004&svc_id=info:lanl-repo/svc/getRegion&svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&svc.format=image/jpeg&rft_id=/{path}'
+    if request.method in ('HEAD'):
+        resp = requests.get(gp_url, headers = {'User-Agent': 'JSTOR Labs'})
+        _cache[gp_url] = resp.content
+        if resp.status_code == 200:
+            res = Response('', 204, content_type='image/jpeg')
+            res.headers.add('Content-Length', str(len(resp.content)))
+            res.headers.add('Content_Length', str(len(resp.content)))
+            return res
+    else:
+        content = _cache.get(gp_url)
+        if content is None:
+            resp = requests.get(gp_url, headers = {'User-Agent': 'JSTOR Labs'})
+            if resp.status_code == 200:
+                content = resp.content
+        if content:
+            return (content, 200, {'Content-Type': 'image/jpeg', 'Content-Length': len(content)})
+
 @app.route('/manifest/<path:path>', methods=['GET'])
 @app.route('/manifest/', methods=['OPTIONS', 'POST', 'PUT'])
 def manifest(path=None):
@@ -267,6 +287,7 @@ def manifest(path=None):
             if can_mutate:
                 if refresh or 'service' not in manifest['sequences'][0]['canvases'][0]['images'][0]['resource']:
                     image_data = get_image_data(mdb, input_data['url'])
+                    logger.info(json.dumps(image_data, indent=2))
                     if refresh or image_data is None or image_data['status'] != 'done':
                         make_iiif_image(mdb, manifest, **input_data)
                 else:
@@ -289,7 +310,7 @@ def manifest(path=None):
                         'height': iiif_info['height'],
                         'width': iiif_info['width']
                     }
-            if image_data:
+            if not image_data:
                 make_iiif_image(mdb, manifest, **input_data)
             manifest = make_manifest_v2_1_1(mdb, mid, image_data, **input_data)
         return manifest, 200

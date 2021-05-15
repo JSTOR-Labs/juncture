@@ -1,13 +1,12 @@
 <template>
-  <div :style="containerStyle">
-    Custom Component
+  <div v-html="viewerLabel" 
+       :style="containerStyle">
   </div>
 </template>
 
 <script>
 
 module.exports = {
-  name: 've-custom',
   props: {
     items: { type: Array, default: () => ([]) },
     active: Boolean
