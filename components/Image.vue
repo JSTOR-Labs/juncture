@@ -801,6 +801,8 @@ module.exports = {
       }
     },
     viewerItems (current, previous) {
+      console.log('viewerItems', current)
+      /*
       let sorted = [...current].sort((a, b) => {
         let aIdx = parseInt(a.id.split('-').pop())
         let bIdx = parseInt(b.id.split('-').pop())
@@ -809,13 +811,16 @@ module.exports = {
       })
       console.log('current', sorted)
       const cur = sorted.map(item => this.stringifyKeysInOrder(item))
+      */
+      const cur = current.map(item => this.stringifyKeysInOrder(item))
       const prev = previous ? previous.map(item => this.stringifyKeysInOrder(item)) : []
       if (this.viewer) {
         if (cur.join() !== prev.join()) {
           this.loadManifests(this.viewerItems)
         } else {
           this.page = 0
-          this.currentItem = { ...this.manifests[this.page], ...sorted[0] }
+          // this.currentItem = { ...this.manifests[this.page], ...sorted[0] }
+          this.currentItem = { ...this.manifests[this.page], ...current[0] }
         }
       }
     },
