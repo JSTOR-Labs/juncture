@@ -9,7 +9,11 @@ import os
 import sys
 import getopt
 
-BASEDIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
+BASEDIR = os.path.dirname(SCRIPT_DIR)
+while BASEDIR != '/' and not os.path.exists(os.path.join(BASEDIR, 'index.html')):
+    BASEDIR = os.path.dirname(BASEDIR)
+logger.info(f'SCRIPT_DIR={SCRIPT_DIR} BASEDIR={BASEDIR}')
 
 from flask import Flask, request, send_from_directory
 app = Flask(__name__)
@@ -81,7 +85,9 @@ def get(path=''):
             return fp.read(), 200
 
     if len(path_elems) > 0 and path_elems[-1].split('.')[-1] not in ('ico', 'svg', 'yaml', 'json', 'md'):
-        content_path = f'{root}/index.html'
+        # content_path = f'{root}/index.html'
+        content_path = f'{BASEDIR}/index.html'
+        logger.info(content_path)
         if os.path.exists(content_path):
             logger.info(content_path)
             with open(content_path, 'r') as fp:

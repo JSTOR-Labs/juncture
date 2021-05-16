@@ -59,9 +59,10 @@
     </div>
     <div style="display:none;">
       <div ref="popup" class="popup" v-if="hoverEntity">
+        <div v-if="hoverEntity.thumbnails" class="image"><img :src="hoverEntity.thumbnails[0]"></div>
         <div class="label" v-html="hoverEntity.label"></div>
         <div v-if="hoverEntity.description" class="description" v-html="hoverEntity.description"></div>
-        <div v-if="hoverEntity.images" class="image"><img :src="hoverEntity.images[0]"></div>
+        <div v-if="hoverEntity.summary" class="summary" v-html="hoverEntity.summary"></div>
       </div>
     </div>
 
@@ -336,7 +337,7 @@
 
       let head = document.querySelector('head')
       if (window.location.hostname === 'localhost') {
-        head.appendChild(makeLink(`${contentSource.assetsBaseUrl}/css/main.css`))
+        head.appendChild(makeLink('/juncture/css/main.css'))
       } else {
         head.appendChild(makeLink(`https://gitcdn.link/cdn/jstor-labs/juncture/${junctureVersion}/css/main.css`))
       }
@@ -688,11 +689,20 @@
               placement: 'right',
               theme: 'light-border',
               onShow: async (instance) => {
-                // let entity = await this.getEntity(instance.reference.dataset.qid, this.lang)
+                // this.hoverEntity = null
                 this.hoverEntity = this.entities[instance.reference.dataset.eid]
+                if (this.hoverEntity.mwPage && !this.hoverEntity.summary) {
+                  let page = this.hoverEntity.mwPage.replace(/\/w\//, '/wiki/').split('/wiki/').pop()
+                  let resp = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${page}`, {
+                    headers: {'User-agent': 'JSTOR Labs client'}
+                  })
+                  resp = await resp.json()
+                  this.entities[instance.reference.dataset.eid].summary = resp.extract_html
+                  this.hoverEntity = {...this.entities[instance.reference.dataset.eid]}
+                }
                 this.$nextTick(() => instance.setContent(this.$refs.popup.outerHTML))
               },
-              onHide: () => {  }
+              onHide: () => {}
             })
           },
 
@@ -760,13 +770,26 @@
                 aliases: [],
                 description: rec.description && rec.description.value,
                 geojson: rec.whosOnFirst && rec.whosOnFirst.value && this.whosOnFirstUrl(rec.whosOnFirst.value),
-                images: [], 
+                images: [],
+                thumbnails: [],
                 coords: rec.coords && rec.coords.value.replace(/Point\(/,'').replace(/\)/,'').split(' ').reverse().map(coord => parseFloat(coord)),
                 foundIn: new Set(),
               }
               if (rec.aliases && entities[eid].aliases.indexOf(rec.aliases.value) < 0) entities[eid].aliases.push(rec.aliases.value)
-              if (rec.images && entities[eid].images.indexOf(rec.images.value) < 0) entities[eid].images.push(this.commonsImageUrl(rec.images.value, 160))
+              if (rec.images && entities[eid].images.indexOf(rec.images.value) < 0) {
+                entities[eid].images.push(rec.images.value)
+                entities[eid].thumbnails.push(this.commonsImageUrl(rec.images.value, 160))
+              }
             })
+            query = `SELECT ?item ?mwPage WHERE {
+                        VALUES (?item) { ${values} }
+                        ?mwPage schema:about ?item .
+                        ?mwPage schema:isPartOf <https://en.wikipedia.org/> . }`
+            resp = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}`, {
+              method: 'GET', headers: { Accept: 'application/sparql-results+json', 'User-agent': 'Juncture web client' }
+            })
+            resp = await resp.json()
+            resp.results.bindings.forEach(rec => entities[rec.item.value.split('/').pop()]['mwPage'] = rec.mwPage.value)
             return entities
           },
 
@@ -834,7 +857,11 @@
                 if (!target) { 
                   const parsedUrl = parseUrl(link.href)
                   let pathElems = parsedUrl.pathname.split('/').filter(elem => elem !== '')
-                  if (contentSource.isGhpSite && pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
+                  if (contentSource.isGhpSite) {
+                    if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
+                  } else {
+                    if (pathElems[0] === contentSource.acct && pathElems[1] === contentSource.repo) pathElems = pathElems.slice(2)
+                  }
                   target = parsedUrl.hash === '' ? `/${pathElems.join('/')}/` : parsedUrl.hash.split('?')[0]
                 }
                 link.removeAttribute('href')
@@ -878,7 +905,7 @@
           // Matched text is wrapped with a span tag for reacting to hover and click actions
           // TODO: make this better!
           tagEntities() {
-            Array.from(this.$refs.essay.querySelectorAll('.segment')).forEach(segment => {
+            Array.from(this.$refs.essay.querySelectorAll('.segment p')).forEach(segment => {
               let segmentHTML = segment.innerHTML
               this.paramsInScope(segment).filter(param => param['ve-entity'] !== undefined && param.eid !== undefined).map(param => param.eid).forEach(eid => {
                 let entity = this.entities[eid]
@@ -1368,7 +1395,7 @@
       let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersion : contentSource.ref
       console.log(`getComponentsList: ref=${ref} junctureVersion=${junctureVersion}`)
       let componentsList = []
-      let ghToken = oauthAccessToken || ghUnscopedToken
+      let ghToken = window.location.hostname === 'localhost' ? ghUnscopedToken : (oauthAccessToken || ghUnscopedToken)
       if (window.location.hostname !== 'localhost' && contentSource.acct && contentSource.repo && contentSource.ref) {
         let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
                                ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
@@ -1453,7 +1480,7 @@
       if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
       console.log(`assetsBaseUrl=${contentSource.assetsBaseUrl}`)
       converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
-      console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
+      // console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
       return converted
     }
 

@@ -216,19 +216,17 @@ div.segment p {
   }
 
   .popup {
-    display: grid;
-    grid-template-columns: minmax(auto, 200px) auto;
-    grid-auto-rows: auto;
-    grid-column-gap: 12px;
-    grid-template-areas: 
-      "p-label       p-image"
-      "p-description p-image";
     font-size: 1em;
     padding: 6px;
+    max-width: 500px;
+    min-height: 250px;
+  }
+
+  .popup p {
+    padding: 0;
   }
 
   .popup .label {
-    grid-area: p-label;
     font-size: 1.4em;
     font-weight: 500;
     color: #333;
@@ -236,18 +234,19 @@ div.segment p {
   }
 
   .popup .description {
-    grid-area: p-description;
     padding-top: .3em;
     line-height: 1.2em;
   }
 
   .popup .summary {
-    grid-area: p-summary;
+    text-align: justify;
   }
 
   .popup .image {
-    grid-area: p-image;
     max-width: 200px;
+    max-height: 200px;
+    float: right;
+    padding-left: 12px;
   }
 
   section.cards {
