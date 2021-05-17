@@ -170,7 +170,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
-    const junctureVersion = 'v0.0.78'
+    const junctureVersion = 'v0.0.79'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -603,6 +603,7 @@
             }
             this.active = null
             let essayElem = this.markdownToElem(this.markdown)
+            Array.from(this.$refs.essay.classList).forEach(cls => this.$refs.essay.classList.remove(cls))
             this.convertResourceUrls(essayElem, path)
             this.html = this.doCustomFormatting(essayElem)
             this.$nextTick(() => {
@@ -1169,7 +1170,7 @@
             this.viewerIsOpen = false
             if (config) {
               if (config.layout) this.layouts = config.layout.split(',').map(layout => layout === 'vtl' ? 'vertical' : layout)
-              if (config.style) config.style.split(',').forEach(cls => this.$refs.app.classList.add(cls))
+              if (config.class) config.class.replace(/,/,' ').split(' ').forEach(cls => this.$refs.essay.classList.add(cls))
             }
           },
 
