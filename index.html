@@ -592,7 +592,10 @@
                 break
               }
             }
-            if (ga) ga('send', 'pageview', `${contentSource.basePath}${path}`)
+            if (ga) {
+              console.log('ga', 'send', 'pageview', `${contentSource.basePath}${path}`)
+              ga('send', 'pageview', `${contentSource.basePath}${path}`)
+            }
 
             let browserPath = `${contentSource.basePath}${path}${this.anchor ? '#'+this.anchor : ''}`
             if (qargs.ref) browserPath += `?ref=${qargs.ref}`
