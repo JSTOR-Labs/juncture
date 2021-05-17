@@ -275,7 +275,7 @@
     let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
     
     // GLobal variables used to initialize Vue
-    let siteConfig, contentSource, componentsList, ghUnscopedToken, oauthAccessToken, gcApiKey, gcAuthDomain
+    let siteConfig, contentSource, componentsList, ghUnscopedToken, oauthAccessToken, gcApiKey, gcAuthDomain, gaPropertyID
     let loginsEnabled = false
     let authenticatedUser = null
     
@@ -317,11 +317,8 @@
         if (!contentSource.isGhpSite && contentSource.acct) contentSource.assetsBaseUrl = `https://gitcdn.link/cdn/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`;
         ['banner', 'favicon', 'customCSS'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       //}
-      if (isJuncture && siteConfig.gaPropertyID) {
-        ga('create', siteConfig.gaPropertyID, 'auto')
-      } else {
-        ga = null
-      }
+      if (gaPropertyID) ga('create', gaPropertyID, 'auto')
+
       contentSource.ref = qargs.ref || contentSource.ref
       return config
     })
@@ -592,7 +589,7 @@
                 break
               }
             }
-            if (ga) {
+            if (gaPropertyID) {
               console.log('ga', 'send', 'pageview', `${contentSource.basePath}${path}`)
               ga('send', 'pageview', `${contentSource.basePath}${path}`)
             }
@@ -1373,6 +1370,7 @@
       if (config.ghUnscopedToken) ghUnscopedToken = atob(config.ghUnscopedToken)
       if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
       if (config.gcAuthDomain) gcAuthDomain = atob(config.gcAuthDomain)
+      if (config.gaPropertyID) gaPropertyID = config.gaPropertyID
       loginsEnabled = gcApiKey !== undefined && gcAuthDomain !== undefined
       return config
     }
