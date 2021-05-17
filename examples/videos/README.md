@@ -6,6 +6,8 @@
        layout="vtl"
        author="JSTOR Labs team">
 
+<a class="nav" href="/examples"><i class="fas fa-arrow-circle-left"></i>Back to examples</a>
+
 ## Introduction
 The video viewer is used to associate and display a video with a text element. Youtube videos are supported in the current version of the visual essay tool. Other streaming services may be added in future versions.
 The basic tag for video requires an `id` attribute for the URL of the video. 

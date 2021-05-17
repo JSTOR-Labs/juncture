@@ -6,6 +6,8 @@
        layout="vtl"
        author="JSTOR Labs team">
 
+<a class="nav" href="/examples"><i class="fas fa-arrow-circle-left"></i>Back to examples</a>
+
 ## Introduction
 
 This sample essay provides examples showing how maps can be incorporated into an essay.  Various features are used in the examples.

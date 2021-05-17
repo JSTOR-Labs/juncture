@@ -1,5 +1,7 @@
 <param ve-config title="Image compare examples" layout="vertical">
 
+<a class="nav" href="/examples"><i class="fas fa-arrow-circle-left"></i>Back to examples</a>
+
 # Canterbury High Street
 
 ## Curtain mode

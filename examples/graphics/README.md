@@ -6,6 +6,8 @@
        layout="vtl"
        author="JSTOR Labs team">
 
+<a class="nav" href="/examples"><i class="fas fa-arrow-circle-left"></i>Back to examples</a>
+
 ## Introduction
 The Graphic viewer is used to display images, GIFs, and SVGs. This component is used to display graphics that do not require IIIF capabilites. The basic tag is
 ```html

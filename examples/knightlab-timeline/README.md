@@ -1,6 +1,7 @@
 <a href="https://juncture-digital.org"><img src="https://gitcdn.link/repo/jstor-labs/juncture/main/images/ve-button.png"></a>
 
 <param ve-config title="Knightlab Timeline examples" layout="vertical">
+<a class="nav" href="/examples"><i class="fas fa-arrow-circle-left"></i>Back to examples</a>
 
 # Knightlab Timeline
 

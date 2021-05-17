@@ -830,6 +830,9 @@
               } else if (el.tagName === 'P') {
                 if (el.innerHTML.indexOf('ve-button.png') >= 0) {
                   el = null
+                } else if (el.innerHTML.indexOf('class="nav"') >= 0) {
+                  console.log(el)
+                  currentSection.innerHTML += el.innerHTML
                 } else {
                   segment = new DOMParser().parseFromString('<div></div>', 'text/html').children[0].children[1].children[0]
                   segment.setAttribute('data-id', `${currentSection.dataset.id}.${segments.length + 1}`)

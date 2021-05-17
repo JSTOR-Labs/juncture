@@ -6,6 +6,8 @@
        layout="vtl"
        author="JSTOR Labs team">
 
+<a class="nav" href="/examples"><i class="fas fa-arrow-circle-left"></i>Back to examples</a>
+
 ## Introduction
 
 This sample essay provides examples of different netowork graphs that can be incorporated into an essay.  There are 3 variations of networks currently supported:
