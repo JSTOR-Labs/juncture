@@ -33,15 +33,17 @@
    </video>
   </div>
   -->
-  <div class="plyr__video-embed" id="player">
-    <iframe
-      :src="`https://www.youtube.com/embed/${videoId}`"
-      allowfullscreen
-      allowtransparency
-      allow="autoplay"
-      :width="playerWidth - 12"
-    ></iframe>
-  </div>
+  <div :style="containerStyle">
+    <div class="plyr__video-embed" id="player">
+      <iframe
+        :src="`https://www.youtube.com/embed/${videoId}`"
+        allowfullscreen
+        allowtransparency
+        allow="autoplay"
+        :width="playerWidth - 12"
+      ></iframe>
+    </div>
+  <div>
   
 </template>
 
@@ -57,7 +59,8 @@ const dependencies = [
 module.exports = {
   name: 've-video',
   props: {
-    items: { type: Array, default: () => ([]) }
+    items: { type: Array, default: () => ([]) },
+    active: Boolean
   },
   data: () => ({
     viewerLabel,
@@ -77,6 +80,7 @@ module.exports = {
   computed: {
     videoItems() { return this.items.filter(item => item[this.componentName]) },
     videoId() { return this.videoItems.length > 0 ? this.videoItems[0].vid || this.videoItems[0].id : null },
+    containerStyle() { return { display: this.active ? '' : 'none', height: this.active ? '100%' : '0' } }
   },
   mounted() {
     this.loadDependencies(dependencies, 0, this.init)

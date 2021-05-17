@@ -715,7 +715,7 @@
 
           // Finds all entity references in param tags
           findEntities() {
-            return new Set(Array.from(this.$refs.essay.querySelectorAll('param'))
+            return new Set(Array.from(this.$refs.essay.querySelectorAll('param, span'))
                            .filter(el => el.attributes.eid || (el.attributes.center && isEntityID(el.attributes.center.value)))
                            .map(el => (el.attributes.eid || el.attributes.center).value))
           },
@@ -932,6 +932,13 @@
                 }
               })
               segment.innerHTML = segmentHTML
+            })
+            Array.from(this.$refs.essay.querySelectorAll('p span')).forEach(span => {
+              if (span.attributes.eid) {
+                console.log(span.attributes.eid.value)
+                span.setAttribute('data-eid', span.attributes.eid.value)
+                span.classList.add('entity', 'tagged')
+              }
             })
             Array.from(this.$refs.essay.querySelectorAll('span.entity'))
               .forEach(el => el.addEventListener('click', (e) => {
