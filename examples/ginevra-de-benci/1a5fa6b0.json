@@ -1,0 +1,22 @@
+[
+  {
+    "type": "Annotation",
+    "body": [
+      {
+        "type": "TextualBody",
+        "value": "Leonardo da Vinci fingerprint.",
+        "purpose": "commenting"
+      }
+    ],
+    "target": {
+      "source": "https://free.iiifhosting.com/iiif/3c9ef89db894c1acc1bbb235020c0f4661d8a259ec27de3c80973620924aecda",
+      "selector": {
+        "type": "FragmentSelector",
+        "conformsTo": "http://www.w3.org/TR/media-frags/",
+        "value": "xywh=pixel:16764.884765625,13646.1640625,1016.013671875,876.662109375"
+      }
+    },
+    "@context": "http://www.w3.org/ns/anno.jsonld",
+    "id": "#69100574-9f31-456c-9f05-9e5cb960257d"
+  }
+]
