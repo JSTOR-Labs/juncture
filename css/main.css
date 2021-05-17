@@ -215,6 +215,14 @@ div.segment p {
     max-width: unset !important;
   }
 
+  a.nav {
+    font-weight: bold;
+    color: #0164b9 !important;
+  }
+  a.nav i {
+    margin-right: 6px;
+  }
+
   .popup {
     font-size: 1em;
     padding: 6px;
