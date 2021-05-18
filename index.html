@@ -108,7 +108,7 @@
       <form v-on:submit.prevent>
         <h1>Add new page</h1>
         <input :value="authenticatedUser && authenticatedUser.acct" class="form-name" type="text" readonly>
-        <input v-if="contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture" :value="contentSource.repo" class="form-name" type="text" readonly>
+        <input v-if="contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture'" :value="contentSource.repo" class="form-name" type="text" readonly>
         <select v-else v-model="selectedRepo" class="form-name">
           <option v-for="repo in reposForAcct" :key="repo.name" :value="repo.name" v-text="repo.name"></option>
         </select>
@@ -184,7 +184,7 @@
         const referrerPath = referrer.pathname.slice(1).split('/')
         const ghAcct = referrerPath[0]
         const ghRepo = referrerPath[1]
-        const ghBranch = referrerPath.length > 2 ? referrerPath[3] : 'main'
+        const ghBranch = referrerPath.length > 2 ? referrerPath[2] : 'main'
         const pathStart = 4
         const pathEnd = referrerPath[referrerPath.length-1] === 'README.md' || referrerPath[referrerPath.length-1] === 'index.md' ? referrerPath.length-1 : referrerPath.length
         const ghPath = referrerPath.slice(pathStart, pathEnd).join('/').replace(/\.md$/, '')
@@ -1148,7 +1148,7 @@
             console.log(`addPage: acct=${acct} repo=${repo} ref=${ref} path=${path}`)
             let replacementValues = {'<<acct>>': acct, '<<repo>>': repo, '<<display-name>>': authenticatedUser.displayName, '<<email>>': authenticatedUser.email}
             resp = await this.getFile('/page-templates/new-page-readme.md', 'jstor-labs', 'juncture', 'main')
-            toReplace = {...replacementValues, ...{'<<edit-url>>': `https://github.com/${acct}/${repo}/edit/main${path}/README.md`}}
+            toReplace = {...replacementValues, ...{'<<edit-url>>': `https://github.com/${acct}/${repo}/edit/${ref}${path}/README.md`}}
             await this.putFile(`${path}/README.md`, this.replaceValues(resp.content, toReplace), acct, repo, ref)
           },
 
