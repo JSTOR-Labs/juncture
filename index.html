@@ -174,7 +174,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
-    const junctureVersion = 'v0.0.86'
+    const junctureVersion = 'v0.0.87'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -343,7 +343,7 @@
 
       let head = document.querySelector('head')
       if (window.location.hostname === 'localhost') {
-        head.appendChild(makeLink('/css/main.css'))
+        head.appendChild(makeLink('/juncture/css/main.css'))
       } else {
         head.appendChild(makeLink(`https://gitcdn.link/cdn/jstor-labs/juncture/${junctureVersion}/css/main.css`))
       }
