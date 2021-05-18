@@ -108,7 +108,7 @@
       <form v-on:submit.prevent>
         <h1>Add new page</h1>
         <input :value="authenticatedUser && authenticatedUser.acct" class="form-name" type="text" readonly>
-        <input v-if="contentSource.acct !=== 'jstor-labs' && contentSource.repo !=== 'juncture" :value="contentSource.repo" class="form-name" type="text" readonly>
+        <input v-if="contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture" :value="contentSource.repo" class="form-name" type="text" readonly>
         <select v-else v-model="selectedRepo" class="form-name">
           <option v-for="repo in reposForAcct" :key="repo.name" :value="repo.name" v-text="repo.name"></option>
         </select>
