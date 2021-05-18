@@ -1,5 +1,8 @@
 <a href="https://juncture-digital.org"><img src="https://gitcdn.link/cdn/jstor-labs/juncture/main/images/ve-button.png"></a>
 
+This is a pre-release version of the Juncture site used for development, testing and evaluation.  The site is in active development
+and may be unstable until it is officially launched in early June 2021. {.notification}
+
 # Welcome to Juncture
 
 **Juncture** is a framework for converting simple text files into an engaging **visual essay**.  A visual essay is an interactive web page that augments a text narrative with visual elements to provide depth and context.

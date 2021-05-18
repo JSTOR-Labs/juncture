@@ -415,3 +415,10 @@ p code {
 .active .essay-interaction, .active .essay-interaction {
   background-color: yellowgreen;
 }
+
+.notification {
+  border: 2px solid red;
+  padding: 12px !important;
+  background-color: #ffeeec;
+  font-weight: bold;
+}

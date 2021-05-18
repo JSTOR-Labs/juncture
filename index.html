@@ -343,7 +343,7 @@
 
       let head = document.querySelector('head')
       if (window.location.hostname === 'localhost') {
-        head.appendChild(makeLink('/css/main.css'))
+        head.appendChild(makeLink('/juncture/css/main.css'))
       } else {
         head.appendChild(makeLink(`https://gitcdn.link/cdn/jstor-labs/juncture/${junctureVersion}/css/main.css`))
       }

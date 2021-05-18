@@ -5,13 +5,6 @@
 <script>
 /* global OpenSeadragon */
 
-const viewerLabel = 'Image Viewer'
-const viewerIcon = 'far fa-file-image'
-const dependencies= [
-  'https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js'
-]
-const prefixUrl = 'https://openseadragon.github.io/openseadragon/images/'
-
 module.exports = {
   name: 've-simple-image',
   props: {
@@ -19,10 +12,10 @@ module.exports = {
     active: Boolean
   },
   data: () => ({
-    viewerLabel,
-    viewerIcon,
-    dependencies,
-    osdElem: null,
+    viewerLabel: 'Simple Image Viewer',
+    viewerIcon: 'far fa-file-image',
+    dependencies: ['https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js'],
+    viewer: null,
     tileSources: []
   }),
   computed: {
@@ -31,47 +24,16 @@ module.exports = {
   mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
   methods: {
     init() {
-      console.log(this.$options.name, this.items)
-      this.osdElem = document.getElementById('osd')
       this.initViewer()
       if (this.items) this.loadTileSources()
     },
     initViewer() {
-      if (this.viewer) {
-        this.viewer.destroy()
-      }
+      if (this.viewer) this.viewer.destroy()
       this.$nextTick(() => {
-        let options = {
+        this.viewer = OpenSeadragon({
           id: 'osd',
-          prefixUrl,
-          // toolbar:        'osd-toolbar',
-          zoomInButton:   'zoom-in',
-          zoomOutButton:  'zoom-out',
-          homeButton:     'go-home',
-          // infoButton: 'info-box',
-          // fullPageButton: 'full-page',
-          // nextButton:     'next',
-          // previousButton: 'previous',
-          visibilityRatio: 1.0,
-          constrainDuringPan: true,
-          // minZoomImageRatio: 0, 
-          minZoomImageRatio: 0.6,
-          // maxZoomPixelRatio: Infinity,
-          maxZoomPixelRatio: 10,
-          homeFillsViewer: true,
-          viewportMargins: {left:0, top:0, bottom:0, right:0},
-          sequenceMode: true,
-          showReferenceStrip: true,
-          showNavigationControl: true,
-          showHomeControl: true,
-          showZoomControl: true,
-          showFullPageControl: false,
-          showSequenceControl: false,
-          showNavigator: false
-        }
-        this.viewer = OpenSeadragon(options)
-        // if (this.items) this.viewer.open([{ url: this.items[0].url, type: 'image', buildPyramid: true }])
-
+          prefixUrl: 'https://openseadragon.github.io/openseadragon/images/',
+        })
       })
     },
     async loadTileSources() {
@@ -95,19 +57,9 @@ module.exports = {
     }
   },     
   watch: {
-    items: {
-      handler: function (items) {
-        if (items) this.loadTileSources()
-      },
-      immediate: false
-    },
-    active: {
-      handler: function (isActive) { console.log(`${this.$options.name}.isActive=${isActive}`) },
-      immediate: true
-    },
+    items (items) { if (items) this.loadTileSources() },
     tileSources: {
       handler: function () {
-        console.log(`${this.$options.name}.tileSources=${this.tileSources.length}`)      
         if (this.viewer) this.viewer.open(this.tileSources)
       },
       immediate: true

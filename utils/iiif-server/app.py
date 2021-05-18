@@ -55,6 +55,8 @@ def connect_db():
 
 def get_image_size(url, **kwargs):
     '''Image size required for IIIF Hosting ingest'''
+    url = url.replace('https://iiif-v2.visual-essays.app', 'http://localhost:8080')
+    logger.info(f'get_image_size: url={url}')
     size = None
     try:
         resp = requests.head(url, )
@@ -216,6 +218,7 @@ def update_manifest(mdb, manifest, image_data, **kwargs):
 @app.route('/gp-proxy/<path:path>', methods=['GET', 'HEAD'])
 def gp_proxy(path):
     gp_url = f'https://plants.jstor.org/seqapp/adore-djatoka/resolver?url_ver=Z39.88-2004&svc_id=info:lanl-repo/svc/getRegion&svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&svc.format=image/jpeg&rft_id=/{path}'
+    logger.info(f'gp_url={gp_url}')
     if request.method in ('HEAD'):
         resp = requests.get(gp_url, headers = {'User-Agent': 'JSTOR Labs'})
         _cache[gp_url] = resp.content
@@ -243,10 +246,10 @@ def manifest(path=None):
     elif request.method in ('HEAD', 'GET'):
         mid = path
         args = dict([(k, request.args.get(k)) for k in request.args])
-        service = args.get('service')
         refresh = args.get('refresh', 'false').lower() in ('', 'true')
         mdb = connect_db()
         manifest = mdb['manifests'].find_one({'_id': mid})
+        logger.info(f'manifest: method={request.method} mid={mid} refresh={refresh} found={manifest is not None}')
         if manifest:
             etag = hashlib.md5(json.dumps(manifest.get('metadata',{}), sort_keys=True).encode()).hexdigest()
             # headers = {**cors_headers, **{'ETag': etag}}
@@ -265,8 +268,6 @@ def manifest(path=None):
         referrer = urlparse(request.referrer).netloc if request.referrer else None
         can_mutate = referrer in referrer_whitelist
         logger.info(f'referrer={referrer} can_mutate={can_mutate}')
-
-
 
         mdb = connect_db()
         input_data = request.json
