@@ -108,7 +108,7 @@
       <form v-on:submit.prevent>
         <h1>Add new page</h1>
         <input :value="authenticatedUser && authenticatedUser.acct" class="form-name" type="text" readonly>
-        <input v-if="contentSource.repo" :value="contentSource.repo" class="form-name" type="text" readonly>
+        <input v-if="contentSource.acct !=== 'jstor-labs' && contentSource.repo !=== 'juncture" :value="contentSource.repo" class="form-name" type="text" readonly>
         <select v-else v-model="selectedRepo" class="form-name">
           <option v-for="repo in reposForAcct" :key="repo.name" :value="repo.name" v-text="repo.name"></option>
         </select>
@@ -541,7 +541,7 @@
 
           gotoAddedPage() {
             this.hideForm()
-            this.loadEssay(`/${this.newPage}`)
+            this.loadEssay(this.newPage)
           },
 
           async doSiteUpdate() {
@@ -556,9 +556,16 @@
           async doPageAdd() {
             let targetRepo = this.reposForAcct.find(repo => repo.name === this.selectedRepo)
             if (targetRepo) {
+              if (this.newPage[0] !== '/') this.newPage = `/${this.newPage}`
+              if (this.newPage[this.newPage.length-1] === '/') this.newPage = this.newPage.slice(0,-1)
               this.formProcessingStatus = 'processing'
               this.formProcessingMessage = `Adding essay ${this.newPage} to ${targetRepo.name}...`             
               await this.addPage(this.authenticatedUser.acct, targetRepo.name, targetRepo.default_branch, this.newPage)
+              this.contentSource.acct = this.authenticatedUser.acct
+              this.contentSource.repo = targetRepo.name
+              this.contentSource.ref = targetRepo.default_branch
+              this.contentSource.basePath = `/${this.authenticatedUser.acct}/${targetRepo.name}`
+              this.contentSource.assetsBaseUrl = `https://gitcdn.link/cdn/${this.authenticatedUser.acct}/${targetRepo.name}/${targetRepo.default_branch}`
               this.formProcessingMessage = `New page added`
               this.formProcessingStatus = 'done'
             }
@@ -1138,8 +1145,6 @@
           },
 
           async addPage(acct, repo, ref, path) {
-            if (path[0] !== '/') path = `/${path}`
-            if (path[path.length-1] === '/') path = path.slice(0,-1)
             console.log(`addPage: acct=${acct} repo=${repo} ref=${ref} path=${path}`)
             let replacementValues = {'<<acct>>': acct, '<<repo>>': repo, '<<display-name>>': authenticatedUser.displayName, '<<email>>': authenticatedUser.email}
             resp = await this.getFile('/page-templates/new-page-readme.md', 'jstor-labs', 'juncture', 'main')
