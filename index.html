@@ -108,6 +108,10 @@
       <form v-on:submit.prevent>
         <h1>Add new page</h1>
         <input :value="authenticatedUser && authenticatedUser.acct" class="form-name" type="text" readonly>
+        <input v-if="contentSource.repo" :value="contentSource.repo" class="form-name" type="text" readonly>
+        <select v-else v-model="selectedRepo" class="form-name">
+          <option v-for="repo in reposForAcct" :key="repo.name" :value="repo.name" v-text="repo.name"></option>
+        </select>
         <input v-model="newPage" placeholder="Name of new page" class="form-email" required>
         <div v-html="formProcessingMessage"></div>
         <div class="form-controls">
@@ -339,7 +343,7 @@
 
       let head = document.querySelector('head')
       if (window.location.hostname === 'localhost') {
-        head.appendChild(makeLink('/juncture/css/main.css'))
+        head.appendChild(makeLink('/css/main.css'))
       } else {
         head.appendChild(makeLink(`https://gitcdn.link/cdn/jstor-labs/juncture/${junctureVersion}/css/main.css`))
       }
@@ -391,7 +395,9 @@
           formProcessingMessage: '',
           formProcessingStatus: 'ready',
           releaseTags: [],
-          updateVersion: 'main'
+          updateVersion: 'main',
+          reposForAcct: [],
+          selectedRepo: null
         }),
         computed: {
           essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
@@ -466,6 +472,8 @@
             } else if (action === 'editMarkdown') {
               this.editMarkdown()
             } else if (action === 'addPage') {
+              this.reposForAcct = await this.listRepositories()
+              this.selectedRepo = this.reposForAcct.length > 0 ? this.reposForAcct[0].name : null
               this.showForm('add-page-form')
             } else if (action === '/contact-us') {
               this.showForm('contact-form')
@@ -546,11 +554,14 @@
           },
 
           async doPageAdd() {
-            this.formProcessingStatus = 'processing'
-            this.formProcessingMessage = 'Adding page...'
-            await this.addPage()
-            this.formProcessingMessage = `New page added`
-            this.formProcessingStatus = 'done'
+            let targetRepo = this.reposForAcct.find(repo => repo.name === this.selectedRepo)
+            if (targetRepo) {
+              this.formProcessingStatus = 'processing'
+              this.formProcessingMessage = `Adding essay ${this.newPage} to ${targetRepo.name}...`             
+              await this.addPage(this.authenticatedUser.acct, targetRepo.name, targetRepo.default_branch, this.newPage)
+              this.formProcessingMessage = `New page added`
+              this.formProcessingStatus = 'done'
+            }
           },
 
           gotoSite(url) { 
@@ -1116,15 +1127,24 @@
               let toReplace = {...replacementValues, ...{'<<edit-url>>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/README.md`}}
               await this.putFile('/README.md', this.replaceValues(resp.content, toReplace), targetAcct, targetRepo, 'main')
 
-              resp = await this.getFile('/page-templates/new-page-readme.md', 'jstor-labs', 'juncture', fromRef)
-              toReplace = {...replacementValues, ...{'<<edit-url>>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/about/README.md`}}
-              await this.putFile('/about/README.md', this.replaceValues(resp.content, toReplace), targetAcct, targetRepo, 'main')
+              await this.addPage(targetAcct, targetRepo, fromRef, '/about')
             }
 
           },
 
-          async addPage() {
-            console.log('addPage')
+          async listRepositories() {
+            let resp = await fetch(`https://api.github.com/users/${authenticatedUser.acct}/repos?per_page=100&sort=created`, { headers: {Authorization: `Token ${this.ghToken}`}} )
+            return resp.ok ? await resp.json() : []
+          },
+
+          async addPage(acct, repo, ref, path) {
+            if (path[0] !== '/') path = `/${path}`
+            if (path[path.length-1] === '/') path = path.slice(0,-1)
+            console.log(`addPage: acct=${acct} repo=${repo} ref=${ref} path=${path}`)
+            let replacementValues = {'<<acct>>': acct, '<<repo>>': repo, '<<display-name>>': authenticatedUser.displayName, '<<email>>': authenticatedUser.email}
+            resp = await this.getFile('/page-templates/new-page-readme.md', 'jstor-labs', 'juncture', 'main')
+            toReplace = {...replacementValues, ...{'<<edit-url>>': `https://github.com/${acct}/${repo}/edit/main${path}/README.md`}}
+            await this.putFile(`${path}/README.md`, this.replaceValues(resp.content, toReplace), acct, repo, ref)
           },
 
           async createSite(targetAcct, targetRepo, fromRef) {

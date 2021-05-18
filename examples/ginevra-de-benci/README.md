@@ -29,7 +29,8 @@ The imagery and text on the reverse of the panel further support the identificat
        url="https://upload.wikimedia.org/wikipedia/commons/1/12/Leonardo_da_Vinci_-_Wreath_of_Laurel%2C_Palm%2C_and_Juniper_with_a_Scroll_inscribed_Virtutem_Forum_Decorat_%28reverse%29_-_Google_Art_Project.jpg"
        label="Wreath of Laurel, Palm, and Juniper with a Scroll inscribed Virtutem Forum Decorat (reverse)"
        description="Ginevra de' Benci is a portrait painting by Leonardo da Vinci of the 15th-century Florentine aristocrat Ginevra de' Benci."
-       license="Public domain">
+       license="Public domain"
+       fit="contain">
 
 The Latin motto Virtvtem Forma Decorat on the reverse of the portrait, is understood as symbolizing the intricate relationship between Ginevra's intellectual and moral virtue on the one hand, and her physical beauty on the other. The sprig of juniper, encircled by laurel and palm, suggests her name. The laurel and palm are in the personal emblem of Bernardo Bembo, a Venetian ambassador to Florence whose platonic relationship with Ginevra is revealed in poems exchanged between them. Infrared examination has revealed Bembo's motto "Virtue and Honor" beneath Ginevra's, making it likely that Bembo was somehow involved in the commission of the portrait.
 <param ve-image manifest="https://iiif.juncture-digital.org/manifest/d579fb3241f37032a5986c666421cb984e04d390c4b152aa8b62ca9ca816dc57">
