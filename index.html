@@ -184,13 +184,12 @@
         const referrerPath = referrer.pathname.slice(1).split('/')
         const ghAcct = referrerPath[0]
         const ghRepo = referrerPath[1]
-        const ghBranch = referrerPath.length > 2 ? referrerPath[2] : 'main'
+        const ghBranch = referrerPath.length > 3 ? referrerPath[3] : 'main'
         const pathStart = 4
         const pathEnd = referrerPath[referrerPath.length-1] === 'README.md' || referrerPath[referrerPath.length-1] === 'index.md' ? referrerPath.length-1 : referrerPath.length
         const ghPath = referrerPath.slice(pathStart, pathEnd).join('/').replace(/\.md$/, '')
         const redirect = `${window.location.origin}/${ghAcct}/${ghRepo}/${ghPath}${ghBranch === 'master' || ghBranch === 'main' ? '' : '?ref=' + ghBranch}`
-        console.log(referrerPath, redirect)
-        // window.location = redirect
+        window.location = redirect
       }
     }
     
@@ -287,7 +286,7 @@
     const componentsRoot = 'components'
     const componentPrefix = 've-'
     const availableViewers = new Set()
-    const knownGhAccts = {'jstor-labs': 'main', 'rsnyder': 'main', 'kent-map': 'main'}
+    const knownGhAccts = {'jstor-labs': 'main', 'kent-map': 'main'}
 
     async function gcOauth() {
       if (gcApiKey && gcAuthDomain) {
