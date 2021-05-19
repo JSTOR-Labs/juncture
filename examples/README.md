@@ -13,3 +13,4 @@ Below are some sample essays:
 - [Plant Specimens](plant-specimens)
 - [Knightlab Timeline](knightlab-timeline)
 - [More image examples using IIIF](ginevra-de-benci)
+- [Entities](entities)
