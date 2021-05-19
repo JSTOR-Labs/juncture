@@ -838,7 +838,7 @@ module.exports = {
     .map-label {
       /* row-start / column-start / row-end / column-end */
       grid-area: mapcite;
-      z-index: 2;
+      z-index: 1;
       justify-self: stretch;
       align-self: stretch;
       /* background-color: rgba(255, 255, 255, 0.8); */
