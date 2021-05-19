@@ -12,4 +12,4 @@ Below are some sample essays:
 - [Tabulator](tabulator)
 - [Plant Specimens](plant-specimens)
 - [Knightlab Timeline](knightlab-timeline)
-- [Peony](peony)
+- [More image examples using IIIF](ginevra-de-benci)

@@ -29,6 +29,8 @@ Select **Login** from the site menu.  The site menu is accessed by the menu butt
 
 Select **New Visual Essay** from the site menu.  _More info needed here..._
 
+Explore the [example essays](examples).  These examples demonstrate key features provided by the standard viewer components. 
+
 ## Create a Juncture site
 
 Select **Create Site** from the site menu.  _More info needed here..._

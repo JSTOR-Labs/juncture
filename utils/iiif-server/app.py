@@ -140,9 +140,12 @@ def add_image_data_to_manifest(manifest, image_data):
 
 def update_manifests_with_image_data(mdb, image_data):
     image_data['url'] = image_data['url'].replace('http:', 'https:')
-    _filter = {'sequences.canvases.images.resource.@id': {'$eq': unquote(image_data['external_id'])}}
+    # _filter = {'sequences.canvases.images.resource.@id': {'$eq': unquote(image_data['external_id'])}}
+    _filter = {'sequences.canvases.images.resource.@id': {'$eq': image_data['external_id']}}
     cursor = mdb['manifests'].find(_filter)
+    logger.info(f'update_manifests_with_image_data: {unquote(image_data["external_id"])} {cursor}')
     for manifest in cursor:
+        logger.info(json.dumps(manifest, indent=2))
         manifest['thumbnail'] = f'{image_data["url"]}full/150,/0/default.jpg'
         manifest = add_image_data_to_manifest(manifest, image_data)
         mdb['manifests'].replace_one({'_id': manifest['_id']}, manifest)   
@@ -345,7 +348,8 @@ def iiifhosting_webhook():
                     'width': image_data['width']
                 }
             })
-            update_manifests_with_image_data(mdb, image_data)
+            manifest = update_manifests_with_image_data(mdb, image_data)
+            logger.info(f'iiifhosting-webhook: manifest={json.dumps(manifest)}')
         logger.info(f'iiifhosting-webhook: image_data={json.dumps(image_data)}')
     return 'OK', 200
 
