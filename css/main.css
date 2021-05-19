@@ -4,17 +4,19 @@ html {
 }
 
 body {
+  font-family: Roboto, sans-serif;
   margin: 0;
   background-color: white;
   color: #444;
 }
 
 #app {
-    display: grid;
-    width: 100%;
-    height: 100vh;
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
+  display: grid;
+  width: 100%;
+  height: 100vh;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+
 }
 #app.vertical {
     grid-template-columns: 1fr 1fr;
@@ -27,7 +29,6 @@ body {
 }
 #essay {
     grid-area: 1 / 1 / 3 / 2;
-    font-family: Roboto, sans-serif;
     font-size: 1.3rem;
     padding: 24px;
     overflow-y: scroll;
@@ -251,8 +252,8 @@ div.segment p {
   }
 
   .popup .label {
-    font-size: 1.4em;
-    font-weight: 500;
+    font-size: 1.5em;
+    font-weight: bold;
     color: #333;
     padding-bottom: 12px;
   }
@@ -260,6 +261,8 @@ div.segment p {
   .popup .description {
     padding-top: .3em;
     line-height: 1.2em;
+    font-weight: bold;
+    font-style: italic;
   }
 
   .popup .summary {
