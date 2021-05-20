@@ -1520,7 +1520,7 @@
         pathElems = [...pathElems, ...current.split('/').filter(elem => elem !== '')]
       }
       if (isJuncture && pathElems.length >= 2) {
-        if (contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture' && pathElems[0] === contentSource.acct && pathElems[1] === contentSource.repo) pathElems = pathElems.slice(2)
+        if ((contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs') && pathElems[0] === contentSource.acct && pathElems[1] === contentSource.repo) pathElems = pathElems.slice(2)
       } else if (pathElems[0] === contentSource.repo) {
         pathElems = pathElems.slice(1)
       }
