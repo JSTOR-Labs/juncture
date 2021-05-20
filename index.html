@@ -1393,7 +1393,7 @@
       } else if (contentSource.acct && (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs')) {
         config = {}
         let ghToken = oauthAccessToken || ghUnscopedToken
-        resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=${contentSource.ref}`,
+        resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=juncture`,
                                ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
         if (resp.ok) {
           resp = await resp.json()
