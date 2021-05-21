@@ -174,7 +174,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
-    const junctureVersion = 'v0.0.98'
+    const junctureVersion = 'v0.0.99'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -874,7 +874,11 @@
                   currentSection.appendChild(new DOMParser().parseFromString('<section class="cards"></section>', 'text/html').children[0].children[1].children[0])
                 } else {
                   currentSection.classList.add(...elClasses)
-                  parent = parent.querySelector(':scope > .cards') || parent
+                  let cardsWrapper = parent.querySelector(':scope > .cards')
+                  if (cardsWrapper) {
+                    currentSection.classList.add('card')
+                    parent = cardsWrapper
+                  }
                 }
 
                 parent.appendChild(currentSection)
