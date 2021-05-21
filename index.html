@@ -874,7 +874,11 @@
                   currentSection.appendChild(new DOMParser().parseFromString('<section class="cards"></section>', 'text/html').children[0].children[1].children[0])
                 } else {
                   currentSection.classList.add(...elClasses)
-                  parent = parent.querySelector(':scope > .cards') || parent
+                  let cardsWrapper = parent.querySelector(':scope > .cards')
+                  if (cardsWrapper) {
+                    currentSection.classList.add('card')
+                    parent = cardsWrapper
+                  }
                 }
 
                 parent.appendChild(currentSection)

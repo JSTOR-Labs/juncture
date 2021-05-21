@@ -276,14 +276,14 @@ div.segment p {
     padding-left: 12px;
   }
 
-  section.cards {
+  .cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr) );
     grid-auto-rows: 1fr;
     grid-gap: 1.8rem;
   }
 
-  section.cards > section {
+  .card {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto 1fr 0px;
@@ -297,7 +297,7 @@ div.segment p {
     padding: .5rem;
   }
 
-  section.cards > section a, section.cards > section strong {
+  .card > a, .card > strong {
     grid-area: title;
     font-weight: bold;
     font-size: 1.5rem;
@@ -307,11 +307,11 @@ div.segment p {
     text-decoration: none;
 }
 
-section.cards > section a:hover {
+.card a:hover {
   text-decoration: underline;
 }
 
-section.cards > section img {
+.card img {
     grid-area: image;
     justify-self: stretch;
     object-fit: cover;
@@ -319,20 +319,8 @@ section.cards > section img {
     width: 100%;
     height: 250px;
 }
-/*
-section.cards > section div {
-grid-area: image;
-max-height: 250px;
-overflow: hidden;
-}
-section.cards > section div img {
-    border: 0;
-    max-width: 100%;
-    vertical-align: top;
-}
-*/
 
-section.cards > section ul {
+.card ul {
     grid-area: metadata;
     list-style-type: none;
     padding: 12px 0;
@@ -345,18 +333,18 @@ section.cards > section ul {
   font-size: 0.9em;
   /*font-style: italic;*/
   /* height: 200px;*/
-  margin: 0 16px 16px 0;
+  /* margin: 0 16px 16px 0; */
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;  
 }
 
-section.cards p {
+.card p {
     background-color: unset;
 }
 
-section.cards a {
+.card a {
   cursor: pointer;
   color: #0164b9;
 }
@@ -433,13 +421,14 @@ p code {
 
 .collapsible {
   border-radius: 4px;
-  padding: 0.2em 0.6em;
+  margin-top: 0.4em;
+  padding: 0.2em 0.4em;
   border: 1px solid #605C2A;
   background-color: #605C2A;
   opacity: 0.8;
   color: #fff;
   font-size: 0.8em;
-  height: 40px;
-  width: 120px;
+  /* height: 40px;
+  width: 120px; */
   cursor: pointer;
 }
