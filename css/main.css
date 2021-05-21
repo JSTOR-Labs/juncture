@@ -286,7 +286,7 @@ div.segment p {
   section.cards > section {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto auto auto 1fr 0px;
     grid-template-areas:
         "image"
         "title"
@@ -297,7 +297,7 @@ div.segment p {
     padding: .5rem;
   }
 
-  section.cards > section a {
+  section.cards > section a, section.cards > section strong {
     grid-area: title;
     font-weight: bold;
     font-size: 1.5rem;
@@ -335,16 +335,21 @@ section.cards > section div img {
 section.cards > section ul {
     grid-area: metadata;
     list-style-type: none;
-    padding: 0;
+    padding: 12px 0;
     margin: 0;
 }
 
-section.cards section div {
-    grid-area: abstract;
-    height: 100px;
-    overflow-y: scroll;
-    padding: 9px 0 0 0;
-    line-height: 1.2;
+.abstract-text {
+  grid-area: abstract;
+  line-height: 1.4;
+  font-size: 0.9em;
+  /*font-style: italic;*/
+  /* height: 200px;*/
+  margin: 0 16px 16px 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;  
 }
 
 section.cards p {
@@ -424,4 +429,17 @@ p code {
   padding: 12px !important;
   background-color: #ffeeec;
   font-weight: bold;
+}
+
+.collapsible {
+  border-radius: 4px;
+  padding: 0.2em 0.6em;
+  border: 1px solid #605C2A;
+  background-color: #605C2A;
+  opacity: 0.8;
+  color: #fff;
+  font-size: 0.8em;
+  height: 40px;
+  width: 120px;
+  cursor: pointer;
 }

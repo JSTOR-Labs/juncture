@@ -623,8 +623,10 @@
             let essayElem = this.markdownToElem(this.markdown)
             Array.from(this.$refs.essay.classList).forEach(cls => this.$refs.essay.classList.remove(cls))
             this.convertResourceUrls(essayElem, path)
+            Array.from(document.getElementById('essay').querySelectorAll('.collapsible')).forEach(el =>el.removeEventListener('click', this.toggleExpandCollapse))
             this.html = this.doCustomFormatting(essayElem)
             this.$nextTick(() => {
+              Array.from(document.getElementById('essay').querySelectorAll('.collapsible')).forEach(el =>el.addEventListener('click', this.toggleExpandCollapse))
               let segments = [...document.getElementById('essay').querySelectorAll('.segment')]
               this.getEntityData([...this.findEntities()]).then(entities => {
                 this.entities = entities
@@ -682,9 +684,11 @@
           doCustomFormatting(elem) {
             Array.from(elem.querySelectorAll('section.cards')).forEach(cardsSection => {
               Array.from(cardsSection.querySelectorAll('section')).forEach(card => {
-                ['img', 'a', 'ul'].forEach(selector => {
+                ['img', 'a', 'strong', 'ul'].forEach(selector => {
                   let el = card.querySelector(selector)
-                  if (el) card.appendChild(el)
+                  if (el) {
+                    if (selector !== 'strong' || el.parentElement.tagName !== 'A') card.appendChild(el)
+                  }
                 })
                 let segments = []
                 Array.from(card.querySelectorAll('.segment')).forEach(seg => {
@@ -695,13 +699,33 @@
                   }
                 })
                 if (segments.length > 0) {
-                  let segsDiv = document.createElement('div')
-                  card.appendChild(segsDiv)
-                  segments.forEach(seg => segsDiv.appendChild(seg))
+                  let abstractWrapper = document.createElement('div')
+                  abstractWrapper.classList.add('abstract')
+                  card.appendChild(abstractWrapper)
+                  let abstractDiv = document.createElement('div')
+                  abstractDiv.classList.add('abstract-text')
+                  abstractWrapper.appendChild(abstractDiv)
+                  segments.forEach(seg => abstractDiv.appendChild(seg))
+                  abstractWrapper.innerHTML += '<button class="collapsible">read more</button>'
                 }
               })
+
             })
             return elem.innerHTML
+          },
+
+          toggleExpandCollapse(e) {
+            let button = e.target
+            let textDiv = button.previousElementSibling
+            console.log('expandCollapse', button, textDiv)
+            if (button.innerText == 'read more') {
+              button.innerText = 'read less'
+              textDiv.style['-webkit-line-clamp'] = 'unset'
+            }
+            else if (button.innerText == 'read less') {
+              button.innerText = 'read more'
+              textDiv.style['-webkit-line-clamp'] = 5
+            }
           },
 
           // Adds tippy popups to tagged entity text
@@ -834,23 +858,31 @@
                   segments = []
                 }
                 currentSection = new DOMParser().parseFromString('<section></section>', 'text/html').children[0].children[1].children[0]
-                let sectionClasses = Array.from(el.classList)
-                currentSection.classList.add(...sectionClasses)
-                el.classList.remove(...sectionClasses)
+                let elClasses = Array.from(el.classList)
+                el.classList.remove(...elClasses)
                 if (!el.innerHTML) el.style.display = 'none'
                 currentSection.innerHTML += el.outerHTML
+
                 let headings = [...essay.querySelectorAll(`H${sectionLevel-1}`)]
                 let parent = sectionLevel === 1 || headings.length === 0 ? essay : headings.pop().parentElement
-                parent.appendChild(currentSection)
                 let parentDataID = parent.dataset.id || ''
                 let sectionSeq = parent.querySelectorAll(`H${sectionLevel}`).length
                 let currentDataID = parentDataID ? `${parentDataID}.${sectionSeq}` : sectionSeq
                 currentSection.setAttribute('data-id', currentDataID)
+
+                if (elClasses.indexOf('cards') >= 0) {
+                  currentSection.appendChild(new DOMParser().parseFromString('<section class="cards"></section>', 'text/html').children[0].children[1].children[0])
+                } else {
+                  currentSection.classList.add(...elClasses)
+                  parent = parent.querySelector(':scope > .cards') || parent
+                }
+
+                parent.appendChild(currentSection)
+
               } else if (el.tagName === 'P') {
                 if (el.innerHTML.indexOf('ve-button.png') >= 0) {
                   el = null
                 } else if (el.innerHTML.indexOf('class="nav"') >= 0) {
-                  console.log(el)
                   currentSection.innerHTML += el.innerHTML
                 } else {
                   segment = new DOMParser().parseFromString('<div></div>', 'text/html').children[0].children[1].children[0]
