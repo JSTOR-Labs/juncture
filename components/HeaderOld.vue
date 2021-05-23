@@ -1,7 +1,6 @@
 
 <template>
   <div ref="header" id="header" class="header" :style="containerStyle">
-    
     <nav>
       <div id="menuToggle">
         <input type="checkbox" />
@@ -9,62 +8,63 @@
         <span></span>
         <span></span>
         <ul id="menu">
-
-          <li @click="doMenuAction('menu-item-clicked', '/')"><i :class="`fas fa-home`"></i>Home</li>
-
-          <!--  Adds menu items defined in site config.yaml -->
+          <li @click="nav('/')">
+            <i :class="`fas fa-home`"></i>Home
+          </li>
           <template v-for="item in siteConfig.nav">
-            <li :key="item.path" @click="doMenuAction('menu-item-clicked', item.path)"><i :class="`fas fa-${item.icon}`"></i>{{item.label}}</li>
+            <li :key="item.path" @click="nav(item.path)">
+              <i :class="`fas fa-${item.icon}`"></i>{{item.label}}
+            </li>
           </template>
 
           <template v-if="isJuncture">
             <hr>
 
             <li v-if="loginsEnabled">
-              <a v-if="isAuthenticated" @click="doMenuAction('logout')"><i :class="`fas fa-user`"></i>Logout</a>
-              <a v-else @click="doMenuAction('authenticate')"><i :class="`fas fa-user`"></i>Login</a>
+              <a v-if="isAuthenticated" @click="logout">
+                <i :class="`fas fa-user`"></i>Logout
+              </a>
+              <a v-else @click="authenticate">
+                <i :class="`fas fa-user`"></i>Login
+              </a>
             </li>
 
-            <template v-if="isAuthenticated">
-              <li @click="doMenuAction('viewMarkdown')"><i class="fas fa-file-code"></i>View page markdown</li>
-              <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="doMenuAction('editMarkdown')">
-                <i class="fas fa-edit"></i>Edit this page
-              </li>
-              <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="doMenuAction('addPage')">
-                <i class="fas fa-file-medical"></i>Add a page
-              </li>
-              <li @click="doMenuAction('gotoGitHub')"><i class="fab fa-github"></i>Goto to GitHub</li>
-                          
-              <hr>
-              <li v-if="isAuthenticated" @click="doMenuAction('createSite')"><i class="fas fa-plus-circle"></i>Create new site</li>
-              <li v-if="isAdmin" @click="doMenuAction('updateSite')"><i class="fas fa-wrench"></i>Software update</li>
-            </template>
+            <li v-if="isAuthenticated" @click="nav('viewMarkdown')">
+              <i class="fas fa-file-code"></i>View page markdown
+            </li>
+            <li v-if="isAuthenticated && ((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="nav('editMarkdown')">
+              <i class="fas fa-edit"></i>Edit this page
+            </li>
+            <li v-if="isAuthenticated && ((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="nav('addPage')">
+              <i class="fas fa-file-medical"></i>Add a page
+            </li>
+            <li v-if="isAuthenticated" @click="nav('gotoGitHub')">
+              <i class="fab fa-github"></i>Goto to GitHub
+            </li>
+                        
+            <hr>
+            <li v-if="isAuthenticated" @click="nav('createSite')">
+              <i class="fas fa-plus-circle"></i>Create new site
+            </li>
+            <li v-if="isAdmin" @click="nav('updateSite')">
+              <i class="fas fa-wrench"></i>Software update
+            </li>
 
           </template>
 
-          <li v-if="version"> <br><div class="version">Version: {{version}}</div></li>
+          <li v-if="version">
+            <br>
+            <div class="version">Version: {{version}}</div>
+          </li>
         </ul>
       </div>
     </nav>
 
-    <template v-if="path === '/'">
+    <div class="title-bar">
+      <div class="title" v-html="title"></div>
+      <div class="author" v-html="author"></div>
+    </div>
 
-      <div class="title-bar">
-        <div class="title" v-html="title"></div>
-        <div class="author" v-html="author"></div>
-      </div>
-    
-    </template>
-
-    <template v-else>
-
-      <div class="title-bar">
-        <div class="title" v-html="title"></div>
-        <div class="author" v-html="author"></div>
-      </div>
-    
-    </template>
-    
   </div>
 </template>
 
@@ -75,7 +75,6 @@
     name: 've-header',
     props: {
       active: { type: Boolean, default: true },
-      path: { type: String, default: '/' },
       scrollTop: { type: Number, default: 0 },
       essayConfig: { type: Object, default: () => ({}) },
       siteConfig: { type: Object, default: () => ({}) },
@@ -102,10 +101,22 @@
     },
     mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
     methods: {
-      doMenuAction(action, options) {
-        document.querySelector('#menuToggle input').checked = false
-        this.$emit(action, options)
-      }
+      closeDrawer() { document.querySelector('#menuToggle input').checked = false },
+      nav(item) {
+        this.closeDrawer()
+        this.$emit('menu-item-clicked', item)
+      },
+      authenticate(e) {
+        console.log('header.authenticate')
+        e.preventDefault()
+        this.closeDrawer()
+        this.$emit('authenticate')
+      },
+      logout(e) {
+        e.preventDefault()
+        this.closeDrawer()
+        this.$emit('logout')
+      },
     },
     watch: {}
   }

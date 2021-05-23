@@ -4,3 +4,4 @@ iiifhosting: ronald.snyder@ithaka.org:f518f50dde078a319b6bce286d85fa0f6fdfc2429e
 referrer_whitelist:
 - juncture-digital.org
 - localhost:8080
+- kent-maps.online

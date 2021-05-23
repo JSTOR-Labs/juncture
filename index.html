@@ -19,6 +19,7 @@
                  :site-config="siteConfig"
                  :essay-config="essayConfig"
                  :content-source="contentSource"
+                 :path="path"
                  :logins-enabled="loginsEnabled"
                  :is-juncture="isJuncture"
                  :is-authenticated="authenticatedUser !== null && loginsEnabled"
@@ -364,6 +365,7 @@
           junctureVersion,
           params: [],
           markdown: null,
+          path: '/',
           mdpath: '',
           mdDir: '/',
           markdownViewer: null,
@@ -596,6 +598,7 @@
           async loadEssay(path, replace, anchor) {
             path = path || window.location.pathname.slice(contentSource.basePath.length) || '/'
             if (path.slice(-1) !== '/') path += '/'
+            this.path = path 
             console.log(`loadEssay: basePath=${contentSource.basePath} path=${path} anchor=${this.anchor}`)
             let pathsToTry = [`${path}README.md`, `${path.slice(0,-1)}.md`, `${path}index.md`]
             for (let i = 0; i < pathsToTry.length; i++) {
