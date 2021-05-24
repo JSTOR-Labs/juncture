@@ -25,8 +25,9 @@
                  :is-authenticated="authenticatedUser !== null && loginsEnabled"
                  :is-admin="isAdminUser"
                  :version="junctureVersion"
+                 :do-action-callback="doActionCallback"
                  component-name="ve-header"
-                 @menu-item-clicked="menuItemClicked"
+                 @do-action="doAction"
                  @authenticate="authenticate"
                  @logout="logout"
       ></component>
@@ -74,21 +75,6 @@
           <pre v-highlightjs="markdown"><code class="markdown"></code></pre>
         </div>
       </div>
-    </div>
-
-    <div id="contact-form" class="modal-form" style="display: none;">
-      <form v-on:submit.prevent>
-        <h1>Contact us</h1>
-        <input v-model="contactName" name="name" placeholder="Name" class="form-name" type="text" required>
-        <input v-model="contactEmail" placeholder="Email" class="form-email" type="email" required>
-        <textarea v-model="contactMessage" placeholder="Your message here" class="form-message" type="text" required></textarea>
-        <div v-html="formProcessingMessage"></div>
-        <div class="form-controls">
-          <button v-if="formProcessingStatus === 'ready'" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
-          <button v-if="formProcessingStatus === 'ready'" class="form-submit" @click="submitContactForm">Send</button>
-          <button v-if="formProcessingStatus === 'done'" class="form-submit" @click="hideForm">Close</button>
-        </div>
-      </form>
     </div>
 
     <div id="create-site-form" class="modal-form" style="display: none;">
@@ -377,7 +363,6 @@
           availableViewers,
           // viewers: [],
           selectedViewer: null,
-          contactForm: null,
           viewerData: {},
           scrollTop: 0,
           forceHorizontalLayout: window.matchMedia('only screen and (max-width: 1000px)').matches,
@@ -389,9 +374,6 @@
           authenticatedUser,
           loginsEnabled,
           externalWindow: null,
-          contactName: null,
-          contactEmail: null,
-          contactMessage: null, 
           newRepo: null,
           newPage: null,
           formProcessingMessage: '',
@@ -399,7 +381,8 @@
           releaseTags: [],
           updateVersion: 'main',
           reposForAcct: [],
-          selectedRepo: null
+          selectedRepo: null,
+          doActionCallback: {}
         }),
         computed: {
           essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
@@ -468,8 +451,13 @@
             this.scrollTop = e.target.scrollTop
           }, 5),
 
-          async menuItemClicked(action) {
-            if (action === 'viewMarkdown') {
+          async doAction(action, options) {
+            console.log(`doAction`, action, options)
+            if (action === 'send-email') {
+              this.doActionCallback = {status: 'processing', message: 'Processing request'}
+              await sendEmail(options)
+              this.doActionCallback = {status: 'done', message: 'Email sent'}
+            } else if (action === 'viewMarkdown') {
               this.markdownViewer.show()
             } else if (action === 'editMarkdown') {
               this.editMarkdown()
@@ -477,8 +465,6 @@
               this.reposForAcct = await this.listRepositories()
               this.selectedRepo = this.reposForAcct.length > 0 ? this.reposForAcct[0].name : null
               this.showForm('add-page-form')
-            } else if (action === '/contact-us') {
-              this.showForm('contact-form')
             } else if (action === 'createSite') {
               this.showForm('create-site-form')
             } else if (action === 'updateSite') {
@@ -491,8 +477,8 @@
               window.open(`https://github.com/${contentSource.acct}/${contentSource.repo}/tree/${contentSource.ref}`, '_blank')
             } else if (action === 'viewSiteOnJuncture') {
               window.location.href = `https://juncture-digital.org/${contentSource.acct}/${contentSource.repo}`
-            } else {
-              this.loadEssay(action)
+            } else if (action === 'loadEssay') {
+              this.loadEssay(options)
             }
           },
 
@@ -510,20 +496,6 @@
             form.classList.remove('visible-form')
             this.formProcessingMessage = ''
             this.formProcessingStatus = 'ready'
-          },
-
-          async submitContactForm() {
-            let contactData = {
-              fromAddress: `${this.contactName} <${this.contactEmail}>`,
-              toAddress: this.siteConfig.contactForm.toEmail,
-              messageSubject: this.siteConfig.contactForm.subject,
-              messageBodyText: `${this.contactMessage}\n\r[Sent by: ${this.contactName} <${this.contactEmail}>]`,
-            }
-            console.log('submitContactForm', contactData)
-            let resp = await sendEmail(contactData)
-            console.log('sendEmail response', resp)
-            this.formProcessingStatus = 'done'
-            this.formProcessingMessage = 'Contact email sent'
           },
 
           async doSiteCreate() {

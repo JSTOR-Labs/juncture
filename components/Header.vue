@@ -64,6 +64,21 @@
       </div>
     
     </template>
+
+    <div id="contact-form" class="modal-form" style="display: none;">
+      <form v-on:submit.prevent>
+        <h1>Contact us</h1>
+        <input v-model="contactName" name="name" placeholder="Name" class="form-name" type="text" required>
+        <input v-model="contactEmail" placeholder="Email" class="form-email" type="email" required>
+        <textarea v-model="contactMessage" placeholder="Your message here" class="form-message" type="text" required></textarea>
+        <div v-html="doActionResponse.message"></div>
+        <div class="form-controls">
+          <button v-if="!doActionResponse.status" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
+          <button v-if="!doActionResponse.status" class="form-submit" @click="submitContactForm">Send</button>
+          <button v-if="doActionResponse.status === 'done'" class="form-submit" @click="hideForm">Close</button>
+        </div>
+      </form>
+    </div>
     
   </div>
 </template>
@@ -82,12 +97,19 @@
       isJuncture: { type: Boolean, default: false },
       isAuthenticated: { type: Boolean, default: false },
       isAdmin: { type: Boolean, default: false },
+      doActionCallback: { type: Object, default: () => ({}) },
       loginsEnabled: { type: Boolean, default: false },
       contentSource: { type: Object, default: () => ({}) },
       version: { type: String, default: '' },
     },    
     data: () => ({
       dependencies: [],
+      doActionResponse: {},
+
+      // for contact-us email
+      contactName: null,
+      contactEmail: null,
+      contactMessage: null
     }),    
     computed: {
       containerStyle() { return { 
@@ -103,11 +125,44 @@
     mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
     methods: {
       doMenuAction(action, options) {
+        console.log(`doMenuAction=${action}`, options)
         document.querySelector('#menuToggle input').checked = false
-        this.$emit(action, options)
+        if (action === 'menu-item-clicked' && options === '/contact-us') {
+          this.showForm('contact-form')
+        } else {
+          this.$emit('loadEssay', action, options)
+        }
+      },
+
+      showForm(formId) {
+        document.getElementById('app').classList.add('dimmed')
+        let form = document.getElementById(formId)
+        form.style.display = 'unset'
+        form.classList.add('visible-form')
+      },
+
+      hideForm() {
+        document.getElementById('app').classList.remove('dimmed')
+        let form = document.querySelector('.visible-form')
+        form.style.display = 'none'
+        form.classList.remove('visible-form')
+        this.doActionResponse = {}
+      },
+
+      submitContactForm() {
+        this.$emit('do-action', 'send-email', {
+          fromAddress: `${this.contactName} <${this.contactEmail}>`,
+          toAddress: this.siteConfig.contactForm.toEmail,
+          messageSubject: this.siteConfig.contactForm.subject,
+          messageBodyText: `${this.contactMessage}\n\r[Sent by: ${this.contactName} <${this.contactEmail}>]`,
+        })
       }
+
     },
-    watch: {}
+  
+    watch: {
+      doActionCallback(resp) { this.doActionResponse = resp },
+    }
   }
 </script>
 
