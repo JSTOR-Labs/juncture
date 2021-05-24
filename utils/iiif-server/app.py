@@ -128,14 +128,20 @@ def add_image_data_to_manifest(manifest, image_data):
             '@id': image_data['external_id'],
             '@type': 'dctypes:Image',
             'format': 'image/jpeg',
-            'service': {
-                '@context': 'http://iiif.io/api/image/2/context.json',
-                '@id': image_data['url'][:-1],
-                'profile': 'https://iiif.io/api/image/2/level2.json'
-            },
             'height': image_data['height'],
             'width': image_data['width']
         }
+        if image_data['status'] == 'done':
+            manifest['service'] = {
+                '@context': 'http://iiif.io/api/image/2/context.json',
+                '@id': image_data['url'][:-1],
+                'profile': 'https://iiif.io/api/image/2/level2.json'
+            }
+            manifest['thumbnail'] = f'{image_data["url"]}full/150,/0/default.jpg'
+        else:
+            if 'thumbnail' in manifest:
+                del manifest['thumbnail']
+
     return manifest
 
 def update_manifests_with_image_data(mdb, image_data):
@@ -146,7 +152,6 @@ def update_manifests_with_image_data(mdb, image_data):
     logger.info(f'update_manifests_with_image_data: {unquote(image_data["external_id"])} {cursor}')
     for manifest in cursor:
         logger.info(json.dumps(manifest, indent=2))
-        manifest['thumbnail'] = f'{image_data["url"]}full/150,/0/default.jpg'
         manifest = add_image_data_to_manifest(manifest, image_data)
         mdb['manifests'].replace_one({'_id': manifest['_id']}, manifest)   
 
@@ -335,21 +340,21 @@ def iiifhosting_webhook():
         logger.info(f'iiifhosting-webhook: qargs={kwargs}')
     if request.method == 'POST':
         image_data = request.json
-        if image_data['status'] == 'done':
-            mdb = connect_db()
-            mdb['images'].update_one(
-                {'_id': image_data['external_id']},
-                {'$set': {
-                    'status': 'done',
-                    'created': datetime.utcnow().isoformat(),
-                    'image_id': image_data['image_id'],
-                    'url': image_data['url'],
-                    'height': image_data['height'],
-                    'width': image_data['width']
-                }
-            })
-            manifest = update_manifests_with_image_data(mdb, image_data)
-            logger.info(f'iiifhosting-webhook: manifest={json.dumps(manifest)}')
+        # if image_data['status'] == 'done':
+        mdb = connect_db()
+        mdb['images'].update_one(
+            {'_id': image_data['external_id']},
+            {'$set': {
+                'status': image_data['status'],
+                'created': datetime.utcnow().isoformat(),
+                'image_id': image_data['image_id'] if 'image_id' in image_data else image_data['external_id'],
+                'url': image_data['url'],
+                'height': image_data['height'],
+                'width': image_data['width']
+            }
+        })
+        manifest = update_manifests_with_image_data(mdb, image_data)
+        logger.info(f'iiifhosting-webhook: manifest={json.dumps(manifest)}')
         logger.info(f'iiifhosting-webhook: image_data={json.dumps(image_data)}')
     return 'OK', 200
 
