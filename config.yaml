@@ -1,7 +1,7 @@
 title: Juncture
 tagline: Your Visual Essays tool
 banner: https://picsum.photos/id/403/1000/400?blur=1
-# favicon: /images/favicon.svg
+favicon: /images/favicon.svg
 
 # When using a custom domain these fields must be updated to match
 # the account and repository name
@@ -27,7 +27,8 @@ nav:
 # A valid toEmail address is required. Other fields are optional
 contactForm:
   toEmail:
-  - labs@ithakaorg.onmicrosoft.com
+  #- labs@ithakaorg.onmicrosoft.com
+  - Ron.Snyder@ithaka.org
   subject: Juncture Contact Form
 
 #######################################################
