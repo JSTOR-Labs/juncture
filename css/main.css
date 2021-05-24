@@ -1,18 +1,27 @@
-body { padding: 0; margin:0; font-family: "Roboto",sans-serif; font-size: 1.1rem;}
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+body {
+  font-family: Roboto, sans-serif;
+  margin: 0;
+  background-color: white;
+  color: #444;
+}
 
 #app {
-    display: grid;
-    width: 100%;
-    height: 100vh;
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
+  display: grid;
+  width: 100%;
+  height: 100vh;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+
 }
 #app.vertical {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto 1fr;
 }
-
-/* row-start column-start row-end column-end */
 
 #header {
     grid-area: 1 / 1 / 2 / 3;
@@ -20,13 +29,16 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif; font-size: 1.1rem
 }
 #essay {
     grid-area: 1 / 1 / 3 / 2;
-    padding: 12px;
+    font-size: 1.3rem;
+    padding: 24px;
     overflow-y: scroll;
+    scroll-behavior: smooth;
     z-index: 1;
     padding-top: 420px;
     background-color: #f8f8f8;
     overflow-wrap: break-word;
     word-wrap: break-word;
+    line-height: 1.3;
 }
 #essay > section:last-of-type {
     padding-bottom: 80vh; /* Enables srolling all content through active paragraph region at top*/
@@ -43,6 +55,11 @@ body { padding: 0; margin:0; font-family: "Roboto",sans-serif; font-size: 1.1rem
 .vertical div.segment {
     padding: 8px 24px 8px 16px;
     line-height: 1.6;
+}
+
+.vertical p {
+  padding: 8px 24px 8px 16px;
+  line-height: 1.6;
 }
 
 .vertical div.segment.active {
@@ -215,6 +232,14 @@ div.segment p {
     max-width: unset !important;
   }
 
+  a.nav {
+    font-weight: bold;
+    color: #0164b9 !important;
+  }
+  a.nav i {
+    margin-right: 6px;
+  }
+
   .popup {
     font-size: 1em;
     padding: 6px;
@@ -227,8 +252,8 @@ div.segment p {
   }
 
   .popup .label {
-    font-size: 1.4em;
-    font-weight: 500;
+    font-size: 1.5em;
+    font-weight: bold;
     color: #333;
     padding-bottom: 12px;
   }
@@ -236,6 +261,8 @@ div.segment p {
   .popup .description {
     padding-top: .3em;
     line-height: 1.2em;
+    font-weight: bold;
+    font-style: italic;
   }
 
   .popup .summary {
@@ -249,17 +276,17 @@ div.segment p {
     padding-left: 12px;
   }
 
-  section.cards {
+  .cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr) );
     grid-auto-rows: 1fr;
     grid-gap: 1.8rem;
   }
 
-  section.cards > section {
+  .card {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto auto auto 1fr 0px;
     grid-template-areas:
         "image"
         "title"
@@ -270,7 +297,7 @@ div.segment p {
     padding: .5rem;
   }
 
-  section.cards > section a {
+  .card > a, .card > strong {
     grid-area: title;
     font-weight: bold;
     font-size: 1.5rem;
@@ -280,11 +307,11 @@ div.segment p {
     text-decoration: none;
 }
 
-section.cards > section a:hover {
+.card a:hover {
   text-decoration: underline;
 }
 
-section.cards > section img {
+.card img {
     grid-area: image;
     justify-self: stretch;
     object-fit: cover;
@@ -292,39 +319,32 @@ section.cards > section img {
     width: 100%;
     height: 250px;
 }
-/*
-section.cards > section div {
-grid-area: image;
-max-height: 250px;
-overflow: hidden;
-}
-section.cards > section div img {
-    border: 0;
-    max-width: 100%;
-    vertical-align: top;
-}
-*/
 
-section.cards > section ul {
+.card ul {
     grid-area: metadata;
     list-style-type: none;
-    padding: 0;
+    padding: 12px 0;
     margin: 0;
 }
 
-section.cards section div {
-    grid-area: abstract;
-    height: 100px;
-    overflow-y: scroll;
-    padding: 9px 0 0 0;
-    line-height: 1.2;
+.abstract-text {
+  grid-area: abstract;
+  line-height: 1.4;
+  font-size: 0.9em;
+  /*font-style: italic;*/
+  /* height: 200px;*/
+  /* margin: 0 16px 16px 0; */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;  
 }
 
-section.cards p {
+.card p {
     background-color: unset;
 }
 
-section.cards a {
+.card a {
   cursor: pointer;
   color: #0164b9;
 }
@@ -390,4 +410,25 @@ p code {
 
 .active .essay-interaction, .active .essay-interaction {
   background-color: yellowgreen;
+}
+
+.notification {
+  border: 2px solid red;
+  padding: 12px !important;
+  background-color: #ffeeec;
+  font-weight: bold;
+}
+
+.collapsible {
+  border-radius: 4px;
+  margin-top: 0.4em;
+  padding: 0.2em 0.4em;
+  border: 1px solid #605C2A;
+  background-color: #605C2A;
+  opacity: 0.8;
+  color: #fff;
+  font-size: 0.8em;
+  /* height: 40px;
+  width: 120px; */
+  cursor: pointer;
 }
