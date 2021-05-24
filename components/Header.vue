@@ -130,7 +130,7 @@
         if (action === 'menu-item-clicked' && options === '/contact-us') {
           this.showForm('contact-form')
         } else {
-          this.$emit('loadEssay', action, options)
+          this.$emit('do-action', 'loadEssay', options)
         }
       },
 
