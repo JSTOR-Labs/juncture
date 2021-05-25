@@ -1,5 +1,5 @@
 <template>
-  <div class="osd" id="osd" :style="containerStyle"></div>
+  <div class="osd" id="ps-osd" :style="containerStyle"></div>
 </template>
 
 <script>
@@ -19,7 +19,6 @@ const sparql = `
   PREFIX schema: <http://schema.org/>
 
   CONSTRUCT {
-  
     ?specimen jwdt:P1660 ?specimenOf ;
               schema:description ?description ;
               rdf:type jwd:Q14316 ;
@@ -31,15 +30,10 @@ const sparql = `
               jwdt:P501 ?taxonName ;
               jwdt:P1666 ?availableAt ;
               jp:P1467 ?img .
-
     ?img jps:P1467 ?url ; jpq:P1669 ?imgSize .
-
     ?availableAt jps:P1666 ?wdID ; rdfs:label ?herbariumName .
-
     ?locationCollected jps:P1665 ?locId ; rdfs:label ?locationName ; wdt:P6766 ?wofId .
-
   } WHERE {
-
     ?specimen jwdt:P17 jwd:Q14316 ;
             <<SELECTOR>>
             schema:description ?description ;
@@ -47,6 +41,7 @@ const sparql = `
             jwdt:P501 ?taxonName ;
             jp:P1467 [ jps:P1467 ?img ;
                        jpq:P1669 ?imgSize ] .
+    FILTER(?imgSize = 'best')
     OPTIONAL { ?specimen jwdt:P1661 ?specimenType . }
     OPTIONAL { ?specimen jwdt:P1660 ?specimenOf . }
     OPTIONAL { ?specimen jwdt:P1663 ?collectionDate . }
@@ -66,8 +61,8 @@ const sparql = `
             FILTER(LANG(?herbariumName) = 'en')
         }
     }
-
   }
+  LIMIT <<LIMIT>>
 `
 
 const context = {
@@ -158,6 +153,10 @@ module.exports = {
   }),
   computed: {
     specimenItems() { return this.items.filter(item => item[this.componentName]) },
+    max() {
+      let withMax = this.specimenItems.filter(item => item.max)
+      return withMax.length > 0 ? parseInt(withMax[0].max) : 10
+    },
     containerStyle() { return { height: this.active ? '100%' : '0' } }
   },
   mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
@@ -170,12 +169,13 @@ module.exports = {
     },
 
     async findSpecimens() {
+      console.log('findSpecimens', this.specimenItems)
       let promises = this.specimenItems.map(item => {
         let selector
         if (item.jpid) selector = `jwdt:P1106 "${item.jpid}" ;`
-        else if (item.wdid) selector = `jwdt:P1660 "${item.wdid}" ;`
+        else if (item.eid || item.wdid) selector = `jwdt:P1660 <http://www.wikidata.org/entity/${item.eid || item.wdid}> ;`
         else selector = `jwdt:P501 "${item['taxon-name']}" ;`
-        return this.doSparqlQuery(sparql.replace(/<<SELECTOR>>/, selector))
+        return this.doSparqlQuery(sparql.replace(/<<SELECTOR>>/, selector).replace(/<<LIMIT>>/, this.max))
       })
       let foundForItems = await Promise.all(promises)
       let flattened = []
@@ -202,7 +202,7 @@ module.exports = {
       if (this.viewer) this.viewer.destroy()
       this.$nextTick(() => {
         this.viewer = OpenSeadragon({
-          id: 'osd', prefixUrl: 'https://openseadragon.github.io/openseadragon/images/',
+          id: 'ps-osd', prefixUrl: 'https://openseadragon.github.io/openseadragon/images/',
           sequenceMode: true,
           showReferenceStrip: true,
           // homeFillsViewer: true,

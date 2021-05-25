@@ -372,12 +372,13 @@ module.exports = {
           this.manifests = manifests.map((manifest, idx) => {return {...manifest, ...items[idx]}})
           this.tileSources = this.manifests.map((manifest, idx) => {
             const opacity = idx === 0 ? 1 : this.mode === 'layers' ? 0 : 1
-            const tileSource = !manifest.static && manifest.sequences[0].canvases[manifest.seq || 0].images[0].resource.service
+            const tileSource = manifest.sequences[0].canvases[manifest.seq || 0].images[0].resource.service
               ? `${manifest.sequences[0].canvases[manifest.seq || 0].images[0].resource.service['@id']}/info.json`
               : { url: manifest.sequences[0].canvases[manifest.seq || 0].images[0].resource['@id'] || manifest.metadata.find(md => md.label === 'source').value,
                  type: 'image', buildPyramid: true }
             return { tileSource, opacity }
           })
+          console.log('tileSources', this.tileSources)
           this.loadTileSources()
           this.displayInfoBox()
         })
@@ -388,7 +389,7 @@ module.exports = {
         this.$nextTick(() => {
           // console.log(`positionImage: fit=${this.fit} region=${this.currentItem.region}`)
           if (this.currentItem.region) {
-            this.viewer.viewport.fitBounds(this.parseRegionString(this.currentItem.region), immediately)
+            // this.viewer.viewport.fitBounds(this.parseRegionString(this.currentItem.region), immediately)
           } else {
             const scaleX = this.osdElem.clientHeight/this.imageSize.y
             const scaleY = this.osdElem.clientWidth/this.imageSize.x
