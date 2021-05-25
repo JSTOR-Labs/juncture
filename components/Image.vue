@@ -389,7 +389,7 @@ module.exports = {
         this.$nextTick(() => {
           // console.log(`positionImage: fit=${this.fit} region=${this.currentItem.region}`)
           if (this.currentItem.region) {
-            this.viewer.viewport.fitBounds(this.parseRegionString(this.currentItem.region), immediately)
+            // this.viewer.viewport.fitBounds(this.parseRegionString(this.currentItem.region), immediately)
           } else {
             const scaleX = this.osdElem.clientHeight/this.imageSize.y
             const scaleY = this.osdElem.clientWidth/this.imageSize.x

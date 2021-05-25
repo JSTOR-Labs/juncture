@@ -1,5 +1,5 @@
 <template>
-  <div class="osd" id="osd" :style="containerStyle"></div>
+  <div class="osd" id="ps-osd" :style="containerStyle"></div>
 </template>
 
 <script>
@@ -202,7 +202,7 @@ module.exports = {
       if (this.viewer) this.viewer.destroy()
       this.$nextTick(() => {
         this.viewer = OpenSeadragon({
-          id: 'osd', prefixUrl: 'https://openseadragon.github.io/openseadragon/images/',
+          id: 'ps-osd', prefixUrl: 'https://openseadragon.github.io/openseadragon/images/',
           sequenceMode: true,
           showReferenceStrip: true,
           // homeFillsViewer: true,

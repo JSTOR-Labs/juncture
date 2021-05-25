@@ -56,7 +56,6 @@ def connect_db():
 def get_image_size(url, **kwargs):
     '''Image size required for IIIF Hosting ingest'''
     url = url.replace('https://iiif-v2.visual-essays.app', 'http://localhost:8080')
-    logger.info(f'get_image_size: url={url}')
     size = None
     try:
         resp = requests.head(url, )
@@ -121,7 +120,7 @@ def to_isodate(s):
     return s # TODO: ensure date is in proper ISO format
 
 def add_image_data_to_manifest(manifest, image_data):
-    logger.debug('add_image_data_to_manifest')
+    logger.debug(f'add_image_data_to_manifest: image_data={image_data}')
     if 'url' in image_data:
         image_data['url'] = image_data['url'].replace('http:', 'https:')
         manifest['sequences'][0]['canvases'][0]['images'][0]['resource'] = {
@@ -132,7 +131,7 @@ def add_image_data_to_manifest(manifest, image_data):
             'width': image_data['width']
         }
         if image_data['status'] == 'done':
-            manifest['service'] = {
+            manifest['sequences'][0]['canvases'][0]['images'][0]['resource']['service'] = {
                 '@context': 'http://iiif.io/api/image/2/context.json',
                 '@id': image_data['url'][:-1],
                 'profile': 'https://iiif.io/api/image/2/level2.json'
@@ -141,7 +140,7 @@ def add_image_data_to_manifest(manifest, image_data):
         else:
             if 'thumbnail' in manifest:
                 del manifest['thumbnail']
-
+    logger.debug(json.dumps(manifest, indent=2))
     return manifest
 
 def update_manifests_with_image_data(mdb, image_data):
@@ -149,9 +148,7 @@ def update_manifests_with_image_data(mdb, image_data):
     # _filter = {'sequences.canvases.images.resource.@id': {'$eq': unquote(image_data['external_id'])}}
     _filter = {'sequences.canvases.images.resource.@id': {'$eq': image_data['external_id']}}
     cursor = mdb['manifests'].find(_filter)
-    logger.info(f'update_manifests_with_image_data: {unquote(image_data["external_id"])} {cursor}')
     for manifest in cursor:
-        logger.info(json.dumps(manifest, indent=2))
         manifest = add_image_data_to_manifest(manifest, image_data)
         mdb['manifests'].replace_one({'_id': manifest['_id']}, manifest)   
 
@@ -226,7 +223,6 @@ def update_manifest(mdb, manifest, image_data, **kwargs):
 @app.route('/gp-proxy/<path:path>', methods=['GET', 'HEAD'])
 def gp_proxy(path):
     gp_url = f'https://plants.jstor.org/seqapp/adore-djatoka/resolver?url_ver=Z39.88-2004&svc_id=info:lanl-repo/svc/getRegion&svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&svc.format=image/jpeg&rft_id=/{path}'
-    logger.info(f'gp_url={gp_url}')
     if request.method in ('HEAD'):
         resp = requests.get(gp_url, headers = {'User-Agent': 'JSTOR Labs'})
         _cache[gp_url] = resp.content
@@ -247,8 +243,8 @@ def gp_proxy(path):
 @app.route('/manifest/<path:path>', methods=['GET'])
 @app.route('/manifest/', methods=['OPTIONS', 'POST', 'PUT'])
 def manifest(path=None):
-    logger.info(f'manifest: method={request.method} referrer={request.referrer}')
-
+    referrer = urlparse(request.referrer).netloc if request.referrer else None
+    can_mutate = referrer in referrer_whitelist
     if request.method == 'OPTIONS':
         return ('', 204)
     elif request.method in ('HEAD', 'GET'):
@@ -257,7 +253,7 @@ def manifest(path=None):
         refresh = args.get('refresh', 'false').lower() in ('', 'true')
         mdb = connect_db()
         manifest = mdb['manifests'].find_one({'_id': mid})
-        logger.info(f'manifest: method={request.method} mid={mid} refresh={refresh} found={manifest is not None}')
+        logger.info(f'manifest: method={request.method} mid={mid} found={manifest is not None} refresh={refresh} referrer={referrer} can_mutate={can_mutate}')
         if manifest:
             etag = hashlib.md5(json.dumps(manifest.get('metadata',{}), sort_keys=True).encode()).hexdigest()
             # headers = {**cors_headers, **{'ETag': etag}}
@@ -273,9 +269,6 @@ def manifest(path=None):
         else:
             return 'Not found', 404
     elif request.method == 'POST':
-        referrer = urlparse(request.referrer).netloc if request.referrer else None
-        can_mutate = referrer in referrer_whitelist
-        logger.info(f'referrer={referrer} can_mutate={can_mutate}')
 
         mdb = connect_db()
         input_data = request.json
@@ -287,16 +280,14 @@ def manifest(path=None):
 
         refresh = str(input_data.pop('refresh', False)).lower() in ('', 'true')
 
-        logger.info(f'manifest: mid={mid} refresh={refresh}')
+        logger.info(f'manifest: method={request.method} mid={mid} found={manifest is not None} refresh={refresh} referrer={referrer} can_mutate={can_mutate}')
 
         if manifest:
             manifest_md_hash = hashlib.md5(json.dumps(manifest.get('metadata',{}), sort_keys=True).encode()).hexdigest()
             input_data_md_hash = hashlib.md5(json.dumps(metadata(**input_data), sort_keys=True).encode()).hexdigest()
-            logger.info(f'manifest found: manifest_md_hash={manifest_md_hash} input_data_md_hash={input_data_md_hash}')
             if can_mutate:
                 if refresh or 'service' not in manifest['sequences'][0]['canvases'][0]['images'][0]['resource']:
                     image_data = get_image_data(mdb, input_data['url'])
-                    logger.info(json.dumps(image_data, indent=2))
                     if refresh or image_data is None or image_data['status'] != 'done':
                         make_iiif_image(mdb, manifest, **input_data)
                 else:
@@ -354,8 +345,7 @@ def iiifhosting_webhook():
             }
         })
         manifest = update_manifests_with_image_data(mdb, image_data)
-        logger.info(f'iiifhosting-webhook: manifest={json.dumps(manifest)}')
-        logger.info(f'iiifhosting-webhook: image_data={json.dumps(image_data)}')
+        logger.debug(f'iiifhosting-webhook: image_data={json.dumps(image_data)}')
     return 'OK', 200
 
 def usage():
