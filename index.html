@@ -162,7 +162,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
-    const junctureVersion = 'v0.0.110'
+    const junctureVersion = 'v0.0.111'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -957,8 +957,9 @@
                 if (entity) {
                   let toMatch = [...[entity.label], ...entity.aliases.filter(alias => alias.length > 3)]
                   for (let i = 0; i < toMatch.length; i++) {
-                    let re = new RegExp(`(${toMatch[i]})`)
+                    let re = new RegExp(`(${toMatch[i]})`, 'i')
                     if (toMatch[i], re.test(paraHTML)) {
+                      console.log()
                       paraHTML = paraHTML.replace(re, `<span class="entity inferred" data-eid="${eid}">$1</span>`)
                       entity.foundIn.add(para.parentElement.dataset.id)
                       break
