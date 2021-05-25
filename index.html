@@ -162,7 +162,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
-    const junctureVersion = 'v0.0.111'
+    const junctureVersion = 'v0.0.112'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -736,7 +736,7 @@
               Array.from(this.$refs.essay.querySelectorAll('param, span'))
                 .filter(el => el.attributes.eid || (el.attributes.center && isEntityID(el.attributes.center.value)))
                 .map(el => attrsToObject(el))
-                .map(entity => [entity.eid, entity]))
+                .map(entity => [entity.eid || entity.center, entity]))
           },
 
           // Finds all param tags in elements between top-level app element and element in para arg
