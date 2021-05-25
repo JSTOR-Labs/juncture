@@ -140,7 +140,7 @@ module.exports = {
   name: 've-plant-specimen',
   props: {
     items: { type: Array, default: () => ([]) },
-    active: Boolean
+    viewerIsActive: Boolean
   },
   data: () => ({
     viewerLabel: 'Plant Specimen',
@@ -157,7 +157,7 @@ module.exports = {
       let withMax = this.specimenItems.filter(item => item.max)
       return withMax.length > 0 ? parseInt(withMax[0].max) : 10
     },
-    containerStyle() { return { height: this.active ? '100%' : '0' } }
+    containerStyle() { return { height: this.viewerIsActive ? '100%' : '0' } }
   },
   mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
   methods: {

@@ -19,6 +19,7 @@ module.exports = {
     name: 've-d3plus-network',
     props: {
       items: Array,
+      viewerIsActive: Boolean,
       width: Number,
       height: Number
     },
@@ -28,7 +29,7 @@ module.exports = {
     dependencies,
     }),
     computed: {
-      containerStyle() { return { width: `${this.width}px`, height: `${this.height}px`, overflowY: 'auto !important', marginLeft: '24px' } },
+      containerStyle() { return { width: `${this.width}px`, height: this.viewerIsActive ? '100%' : '0', overflowY: 'auto !important', marginLeft: '24px' } },
       item() { return this.items.length > 0 ? this.items[0] : {} }
     },
     mounted() {

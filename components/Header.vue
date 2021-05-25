@@ -89,7 +89,7 @@
   module.exports = {
     name: 've-header',
     props: {
-      active: { type: Boolean, default: true },
+      viewerIsActive: { type: Boolean, default: true },
       path: { type: String, default: '/' },
       scrollTop: { type: Number, default: 0 },
       essayConfig: { type: Object, default: () => ({}) },
@@ -113,7 +113,7 @@
     }),    
     computed: {
       containerStyle() { return { 
-        height: this.active ? `${this.scrollTop < 400 ? 400 - this.scrollTop : 0}px` : '0',
+        height: this.viewerIsActive ? `${this.scrollTop < 400 ? 400 - this.scrollTop : 0}px` : '0',
         backgroundColor: 'white',
         backgroundImage: `url(${this.essayConfig.banner || this.siteConfig.banner || defaultBanner})`
       } },

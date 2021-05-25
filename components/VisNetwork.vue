@@ -23,6 +23,7 @@ module.exports = {
   name: "ve-vis-network",
   props: {
     items: { type: Array, default: () => [] },
+    viewerIsActive: Boolean,
     selected: String,
     width: Number,
     height: Number,
@@ -48,7 +49,7 @@ module.exports = {
     containerStyle() {
       return {
         width: `${this.width}px`,
-        height: `${this.height}px`,
+        height: this.viewerIsActive ? '100%' : '0',
         overflowY: "auto !important",
         backgroundColor: this.items[0] ? this.items[0].background || 'white' : 'white',
       };

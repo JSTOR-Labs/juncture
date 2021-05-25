@@ -20,6 +20,7 @@ module.exports = {
     name: 've-graphic',
     props: {
       items: Array,
+      viewerIsActive: Boolean,
       width: Number,
       height: Number,
     },
@@ -34,10 +35,10 @@ module.exports = {
     computed: {
         containerStyle() {
             return {
-                width: `${this.width}px`,
-                height: `${this.height}px`,
-                maxHeight: `${this.height}px` ? `${this.height}px` : '',
-                overflowY: "auto !important",
+                // width: `${this.width}px`,
+                height: this.viewerIsActive ? '100%' : '0',
+                // maxHeight: `${this.height}px` ? `${this.height}px` : '',
+                overflowY: 'auto !important',
             }
         },
         graphicItems() { return this.items.filter(item => item[this.componentName]) },

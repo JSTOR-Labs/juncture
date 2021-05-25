@@ -74,7 +74,8 @@ module.exports = {
     props: {
         items: { type: Array, default: () => ([]) },
         entities: { type: Object, default: () => ({}) },
-        active: Boolean,
+        viewerIsActive: Boolean,
+        activeSegment: String,
 
         // actions: { type: Array, default: () => ([]) },
         actions: { type: Object, default: () => ({}) },
@@ -119,7 +120,7 @@ module.exports = {
                     : this.mapDef.center.split(',').map(coordStr => parseFloat(coordStr))
             : defaults.center },
         itemsWithCoords() { return this.items
-            .filter(item => item.coords || (item.eid && this.entities[item.eid] && this.entities[item.eid].coords))
+            .filter(item => item.coords || (item.eid && this.entities[item.eid] && this.entities[item.eid].coords && this.entities[item.eid].foundIn && this.entities[item.eid].foundIn.has(this.activeSegment)))
             .map(item => item['ve-entity'] !== undefined ? {...item, ...this.entities[item.eid]} : 
                          item['ve-map-marker'] !== undefined ? this.markers.push(item) : item )
         },
@@ -129,7 +130,7 @@ module.exports = {
                          item['ve-map-marker'] ? this.markers.push(item) : item  )
         },
         itemsWithGeojson() { return this.items
-            .filter(item => item.geojson || (item['ve-map-layer'] && item.geojson) || (item.eid && this.entities[item.eid] && this.entities[item.eid].geojson))
+            .filter(item => item.geojson || (item['ve-map-layer'] && item.geojson) || (item.eid && this.entities[item.eid] && this.entities[item.eid].geojson  && this.entities[item.eid].foundIn && this.entities[item.eid].foundIn.has(this.activeSegment)))
             .map(item => item['ve-entity'] ? {...item, ...this.entities[item.eid]} : item )
         },
         itemsWithGeojsonNoCoords() { return this.itemsWithGeojson
@@ -151,7 +152,7 @@ module.exports = {
         dateFormat() { return this.mapDef['date-format'] || defaults.dateFormat },
         mapStyle() {
             return {
-                height: this.active ? '100%' : '0',
+                height: this.viewerIsActive ? '100%' : '0',
                 width: '100%',
                 overflowY: 'auto !important',
                 marginLeft: '0',   
@@ -160,7 +161,7 @@ module.exports = {
         containerStyle() {
             return {
                 width: '100%',
-                height: this.active ? '100%' : '0'
+                height: this.viewerIsActive ? '100%' : '0'
             }
         },
         title() { return this.mapDef['title_formatted'] ? this.mapDef['title_formatted'] : this.mapDef['title'] }
@@ -172,7 +173,7 @@ module.exports = {
         init() {
             console.log(this.$options.name, this.mapDef, this.items)
             
-            if (this.active) {
+            if (this.viewerIsActive) {
                 this.$nextTick(() => {
                     this.createMap()
                     this.syncLayers()
@@ -810,7 +811,7 @@ module.exports = {
         position: absolute;
         font-size: 14px;
         line-height: 0px;
-        left: 9px;
+        left: 10px;
         top: 16px;
         display: inline-block;
     }

@@ -18,6 +18,7 @@ module.exports = {
     name: 've-tabulator',
     props: {
       items: Array,
+      viewerIsActive: Boolean,
       width: Number,
       height: Number
     },
@@ -27,7 +28,7 @@ module.exports = {
         dependencies
     }),
     computed: {
-        containerStyle() { return { width: `${this.width}px`, height: `${this.height}px`} },
+        containerStyle() { return { width: `${this.width}px`, height: this.viewerIsActive ? '100%' : '0'} },
         input() { return this.items[0].data || this.items[0].url }
     },
     mounted() {

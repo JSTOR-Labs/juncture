@@ -90,7 +90,7 @@ module.exports = {
   name: 've-image',
   props: {
     items: Array,
-    active: Boolean,
+    viewerIsActive: Boolean,
     actions: { type: Object, default: () => ({}) },
     contentSource:  { type: Object, default: () => ({}) },
     mdDir: String,
@@ -145,8 +145,8 @@ module.exports = {
       return {
         backgroundColor: this.currentItem ? this.currentItem.background || 'black' : 'black',
         textAlign: 'center',
-        height: this.active ? '100%' : '0',
-        display: this.active ? 'grid' : 'none',
+        height: this.viewerIsActive ? '100%' : '0',
+        display: this.viewerIsActive ? 'grid' : 'none',
         width: `${this.width}px`,
         maxHeight: this.showAnnotations ? `${this.width}px` : '',
         position: 'relative'
@@ -231,7 +231,7 @@ module.exports = {
   },
   methods: {
     init() {
-      console.log(this.$options.name, this.viewerItems, this.active, this.width, this.height, this.selected)
+      console.log(this.$options.name, this.viewerItems, this.viewerIsActive, this.width, this.height, this.selected)
       // console.log(`acct=${this.acct} repo=${this.repo} path=${this.path}`)
       this.initViewer()
       this.loadManifests(this.viewerItems)

@@ -22,6 +22,7 @@ module.exports = {
     name: 've-d3plus-ring-network',
     props: {
       items: Array,
+      viewerIsActive: Boolean,
       width: Number,
       height: Number
     },
@@ -35,7 +36,7 @@ module.exports = {
       item() { return this.filteredItems.length > 0 ? this.filteredItems[0] : {} },
       containerStyle() { return { 
           width: `${this.width}px`,
-          height: `${this.height}px`,
+          height: this.viewerIsActive ? '100%' : '0',
           overflowY: 'auto !important', 
           marginLeft: '24px',
           backgroundColor: this.items[0] ? this.items[0].background || 'white' : 'white'

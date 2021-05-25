@@ -9,7 +9,7 @@
 module.exports = {
   props: {
     items: { type: Array, default: () => ([]) },
-    active: Boolean
+    viewerIsActive: Boolean
   },
   data: () => ({
     viewerLabel: 'Custom Component',
@@ -17,7 +17,7 @@ module.exports = {
     dependencies: []
   }),
   computed: {
-    containerStyle() { return { height: this.active ? '100%' : '0' } }
+    containerStyle() { return { height: this.viewerIsActive ? '100%' : '0' } }
   },
   mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
   methods: {

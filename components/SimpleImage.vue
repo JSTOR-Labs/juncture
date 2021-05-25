@@ -9,7 +9,7 @@ module.exports = {
   name: 've-simple-image',
   props: {
     items: Array,
-    active: Boolean
+    viewerIsActive: Boolean
   },
   data: () => ({
     viewerLabel: 'Simple Image Viewer',
@@ -19,7 +19,7 @@ module.exports = {
     tileSources: []
   }),
   computed: {
-    containerStyle() { return { height: this.active ? '100%' : '0' } }
+    containerStyle() { return { height: this.viewerIsActive ? '100%' : '0' } }
   },
   mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
   methods: {

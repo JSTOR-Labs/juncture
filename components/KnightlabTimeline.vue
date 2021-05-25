@@ -17,7 +17,7 @@ module.exports = {
   name: 'TimelineViewer',
   props: { 
     items: { type: Array, default: () => ([]) },
-    active: Boolean
+    viewerIsActive: Boolean
   },
   data: () => ({
     viewerLabel: 'Knightlab Timeline',
@@ -28,7 +28,7 @@ module.exports = {
   computed: {
     containerStyle() { return { 
       position: 'relative',
-      height: this.active ? '100%' : '0', 
+      height: this.viewerIsActive ? '100%' : '0', 
       overflowY: 'auto !important' 
     }},
     filteredItems() { return this.items.filter(item => item[this.componentName]) },

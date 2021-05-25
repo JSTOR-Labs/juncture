@@ -15,7 +15,7 @@ module.exports = {
   name: 've-compare',
   props: {
     items: { type: Array, default: () => ([]) },
-    active: Boolean
+    viewerIsActive: Boolean
   },
   data: () => ({
     viewerLabel: 'Image Compare',
@@ -26,7 +26,7 @@ module.exports = {
     viewer: null
   }),
   computed: {
-    containerStyle() { return { height: this.active ? '100%' : '0' } },
+    containerStyle() { return { height: this.viewerIsActive ? '100%' : '0' } },
     compareItems() { return this.items.filter(item => item[this.$options.name]) },
     mode() { let itemsWithMode = this.compareItems.filter(item => item.sync || item.curtain).map(item => item.sync ? 'sync' : 'curtain') 
              return itemsWithMode.length > 0 ? itemsWithMode[0] : 'curtain'
@@ -40,7 +40,7 @@ module.exports = {
   methods: {
     init() { this.loadManifests() },
     initViewer() {
-      if (this.active) {
+      if (this.viewerIsActive) {
       let main = document.getElementById('main')
       let container = document.getElementById('osd')
       if (container) {

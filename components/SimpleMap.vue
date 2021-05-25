@@ -60,20 +60,20 @@ module.exports = {
 
     mapStyle() { return {
       width: `${this.width}px`,
-      height: this.active ? '100%' : '0',
+      height: this.viewerIsActive ? '100%' : '0',
       overflowY: 'auto !important',
       marginLeft: '0' }
     },
     containerStyle() { return {
       width: `${this.width}px`,
-      height: this.active ? '100%' : '0' }
+      height: this.viewerIsActive ? '100%' : '0' }
     }
   },
   mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
   methods: {
     init() {
       console.log(this.$options.name, this.mapDef)
-      if (this.active) this.createMap()
+      if (this.viewerIsActive) this.createMap()
     },
     createMap(reload) {
       if (reload && this.map) {
@@ -162,8 +162,8 @@ module.exports = {
   watch: {
     active: {
       handler: function () { 
-        console.log(`${this.$options.name}.active=${this.active}`) 
-        if (this.active && !this.map) this.createMap()
+        console.log(`${this.$options.name}.active=${this.viewerIsActive}`) 
+        if (this.viewerIsActive && !this.map) this.createMap()
       },
       immediate: false
     },

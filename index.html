@@ -46,7 +46,8 @@
       <component v-for="viewer in viewersEnabled" :key="viewer" v-bind:is="viewer" 
                  :items="items"
                  :entities="entities"
-                 :active="viewer === selectedViewer"
+                 :viewer-is-active="viewer === selectedViewer"
+                 :active-segment="active"
                  :height="viewerHeight"
                  :actions="actions"
                  :hover-item="hoverItem"
@@ -300,7 +301,7 @@
     })
     .then(config => {
       siteConfig = config
-      if (!window.location.hostname === 'localhost') {
+      if (window.location.hostname !== 'localhost') {
         contentSource = {...contentSource, ...{
             acct: config.acct || contentSource.acct, 
             repo: config.repo || contentSource.repo, 
@@ -308,8 +309,8 @@
         }}
         // if (!contentSource.isGhpSite && contentSource.acct) 
         contentSource.assetsBaseUrl = `https://gitcdn.link/cdn/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`;
-        ['banner', 'favicon', 'customCSS'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       }
+      ['banner', 'favicon', 'customCSS'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       if (gaPropertyID) ga('create', gaPropertyID, 'auto')
 
       contentSource.ref = qargs.ref || contentSource.ref
@@ -946,27 +947,26 @@
           // Matched text is wrapped with a span tag for reacting to hover and click actions
           // TODO: make this better!
           tagEntities() {
-            Array.from(this.$refs.essay.querySelectorAll('.segment p')).forEach(segment => {
-              let segmentHTML = segment.innerHTML
-              this.paramsInScope(segment).filter(param => param['ve-entity'] !== undefined && param.eid !== undefined).map(param => param.eid).forEach(eid => {
+            Array.from(this.$refs.essay.querySelectorAll('.segment p')).forEach(para => {
+              let paraHTML = para.innerHTML
+              this.paramsInScope(para).filter(param => param['ve-entity'] !== undefined && param.eid !== undefined).map(param => param.eid).forEach(eid => {
                 let entity = this.entities[eid]
                 if (entity) {
                   let toMatch = [...[entity.label], ...entity.aliases]
                   for (let i = 0; i < toMatch.length; i++) {
                     let re = new RegExp(`(${toMatch[i]})`)
-                    if (toMatch[i], re.test(segmentHTML)) {
-                      segmentHTML = segmentHTML.replace(re, `<span class="entity inferred" data-eid="${eid}">$1</span>`)
-                      entity.foundIn.add(segment.dataset.id)
+                    if (toMatch[i], re.test(paraHTML)) {
+                      paraHTML = paraHTML.replace(re, `<span class="entity inferred" data-eid="${eid}">$1</span>`)
+                      entity.foundIn.add(para.parentElement.dataset.id)
                       break
                     }
                   }
                 }
               })
-              segment.innerHTML = segmentHTML
+              para.innerHTML = paraHTML
             })
             Array.from(this.$refs.essay.querySelectorAll('p span')).forEach(span => {
               if (span.attributes.eid) {
-                console.log(span.attributes.eid.value)
                 span.setAttribute('data-eid', span.attributes.eid.value)
                 span.classList.add('entity', 'tagged')
               }
@@ -1544,9 +1544,9 @@
       } else if (pathElems[0] === contentSource.repo) {
         pathElems = pathElems.slice(1)
       }
-      console.log(`assetsBaseUrl=${contentSource.assetsBaseUrl}`)
+      //console.log(`assetsBaseUrl=${contentSource.assetsBaseUrl}`)
       converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
-      console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
+      //console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
       return converted
     }
 
