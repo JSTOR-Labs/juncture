@@ -300,7 +300,7 @@
     })
     .then(config => {
       siteConfig = config
-      //if (!contentSource.isGhpSite) {
+      if (!window.location.hostname === 'localhost') {
         contentSource = {...contentSource, ...{
             acct: config.acct || contentSource.acct, 
             repo: config.repo || contentSource.repo, 
@@ -309,7 +309,7 @@
         // if (!contentSource.isGhpSite && contentSource.acct) 
         contentSource.assetsBaseUrl = `https://gitcdn.link/cdn/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`;
         ['banner', 'favicon', 'customCSS'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
-      //}
+      }
       if (gaPropertyID) ga('create', gaPropertyID, 'auto')
 
       contentSource.ref = qargs.ref || contentSource.ref

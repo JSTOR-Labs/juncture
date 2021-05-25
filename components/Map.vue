@@ -120,8 +120,8 @@ module.exports = {
             : defaults.center },
         itemsWithCoords() { return this.items
             .filter(item => item.coords || (item.eid && this.entities[item.eid] && this.entities[item.eid].coords))
-            .map(item => item['ve-entity'] ? {...item, ...this.entities[item.eid]} : 
-                         item['ve-map-marker'] ? this.markers.push(item) : item )
+            .map(item => item['ve-entity'] !== undefined ? {...item, ...this.entities[item.eid]} : 
+                         item['ve-map-marker'] !== undefined ? this.markers.push(item) : item )
         },
         itemsWithCoordsNoGeojson() { return this.itemsWithCoords
             .filter(item => !item.geojson && (!item.eid || !this.entities[item.eid] || !this.entities[item.eid].geojson))
@@ -345,14 +345,15 @@ module.exports = {
                 .then(geoJSON => this.addGeoJSONLayer(geoJSON))
             } else {
                 const itemsWithCoords = this.preferGeoJSON ? this.itemsWithCoordsNoGeojson : this.itemsWithCoords
+                console.log('itemsWithCoords', itemsWithCoords)
                 if (itemsWithCoords.length > 0) {
                     this.addGeoJSONLayer(this.itemsWithCoordsToGeoJSON(itemsWithCoords))
                 }
                 const itemsWithGeojson = this.preferGeoJSON ? this.itemsWithGeojson : this.itemsWithGeojsonNoCoords
                 console.log('itemsWithGeojson', itemsWithGeojson)
                 if (itemsWithGeojson.length > 0) {
-                    this.itemsWithGeojson.forEach(item => {
-                        this.getGeoJSON(item.geojson && typeof item.geojson === 'string' ? item.geojson :  item.url)
+                    itemsWithGeojson.forEach(item => {
+                        this.getGeoJSON(item.geojson && typeof item.geojson === 'string' ? item.geojson : item.url)
                         .then(geoJSON => {
                             if (!geoJSON.properties) geoJSON.properties = {}
                             geoJSON.properties.id = item.id || item.qid || item.eid
@@ -577,6 +578,7 @@ module.exports = {
             return geoJSON
         },
         itemsWithCoordsToGeoJSON(items) {
+            console.log(items)
             const geoJSON = { type: 'FeatureCollection', features: [] }
             items.filter(item => item.coords)
             .forEach(item => {
@@ -586,6 +588,7 @@ module.exports = {
                     geometry: { type: 'Point', coordinates: [...item.coords].reverse() }
                 })
             })
+            console.log('itemsWithCoordsToGeoJSON', geoJSON)
             return geoJSON
         },
         asDateString(s) {
@@ -808,7 +811,7 @@ module.exports = {
         font-size: 14px;
         line-height: 0px;
         left: 9px;
-        top: 10px;
+        top: 16px;
         display: inline-block;
     }
 

@@ -80,6 +80,19 @@ used for Rome on the map instead of a marker.
 <param ve-map center="Q220" zoom="10" prefer-geojson>
 ```
 
+Example map with a map title, custom base layer, 2 GeoJSON layers and an auto-generated marker with a Fontawesome icon and custom color.
+<param title="Nicaragua" eid="Q811" fill="#92086D" marker-symbol="user">
+<param ve-map title="Girolamo Benzoni's Accounts Refer to Cacao Being Grown in Nicaragua" center="12.316683, -84.946184" zoom="5" basemap="Esri_WorldPhysical">
+<param ve-map-layer geojson active title="Central American Neotropics" url="Neotropics.geojson">
+<param ve-map-layer geojson active title="Nicaragua" url="Nicaragua.geojson">
+
+```markdown
+<param title="Nicaragua" eid="Q811" fill="#92086D" marker-symbol="user">
+<param ve-map title="Girolamo Benzoni's Accounts Refer to Cacao Being Grown in Nicaragua" center="12.316683, -84.946184" zoom="5" basemap="Esri_WorldPhysical">
+<param ve-map-layer geojson active title="Central American Neotropics" url="Neotropics.geojson">
+<param ve-map-layer geojson active title="Nicaragua" url="Nicaragua.geojson">
+```
+
 ## Using custom GeoJSON map layer 
 
 One or more external GeoJSON files can be used as map layers.  Each file is specified in a separate `ve-map-layer` tag.  
