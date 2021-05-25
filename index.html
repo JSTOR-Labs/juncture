@@ -957,8 +957,9 @@
                 if (entity) {
                   let toMatch = [...[entity.label], ...entity.aliases.filter(alias => alias.length > 3)]
                   for (let i = 0; i < toMatch.length; i++) {
-                    let re = new RegExp(`(${toMatch[i]})`)
+                    let re = new RegExp(`(${toMatch[i]})`, 'i')
                     if (toMatch[i], re.test(paraHTML)) {
+                      console.log()
                       paraHTML = paraHTML.replace(re, `<span class="entity inferred" data-eid="${eid}">$1</span>`)
                       entity.foundIn.add(para.parentElement.dataset.id)
                       break
