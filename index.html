@@ -606,7 +606,8 @@
             this.$nextTick(() => {
               Array.from(document.getElementById('essay').querySelectorAll('.collapsible')).forEach(el =>el.addEventListener('click', this.toggleExpandCollapse))
               let segments = [...document.getElementById('essay').querySelectorAll('.segment')]
-              this.getEntityData([...this.findEntities()]).then(entities => {
+              this.entities = this.findEntities()
+              this.getEntityData().then(entities => {
                 this.entities = entities
                 this.tagEntities()
                 this.addPopups()
@@ -642,11 +643,7 @@
                   while (prior && prior.tagName !== 'P' && prior.tagName[0] !== 'H') {
                     prior = prior.previousElementSibling
                   }
-                  return { 
-                    ...{ elem: prior ? prior.parentElement : this.$refs.essay },
-                    ...Object.fromEntries(Array.from(param.attributes).map(attr => 
-                      [attr.nodeName, attr.value === '' || attr.value === 'true' ? true : attr.value === 'false' ? false : attr.value] )) 
-                  }
+                  return { ...{ elem: prior ? prior.parentElement : this.$refs.essay }, ...attrsToObject(param) }
                 })
                 .map(param => {
                   let viewerTag = Object.keys(param).find(attr => !attr.value && this.availableViewers.has(attr))
@@ -735,9 +732,11 @@
 
           // Finds all entity references in param tags
           findEntities() {
-            return new Set(Array.from(this.$refs.essay.querySelectorAll('param, span'))
-                           .filter(el => el.attributes.eid || (el.attributes.center && isEntityID(el.attributes.center.value)))
-                           .map(el => (el.attributes.eid || el.attributes.center).value))
+            return Object.fromEntries(
+              Array.from(this.$refs.essay.querySelectorAll('param, span'))
+                .filter(el => el.attributes.eid || (el.attributes.center && isEntityID(el.attributes.center.value)))
+                .map(el => attrsToObject(el))
+                .map(entity => [entity.eid, entity]))
           },
 
           // Finds all param tags in elements between top-level app element and element in para arg
@@ -772,8 +771,8 @@
           },
 
           // Gets labels, aliases, images and geo coords for referenced Wikdata entities
-          async getEntityData(eids) {
-            let values = eids.map(eid => `(<http://www.wikidata.org/entity/${eid}>)`).join(' ')
+          async getEntityData() {
+            let values = Object.keys(this.entities).map(eid => `(<http://www.wikidata.org/entity/${eid}>)`).join(' ')
             let query = `SELECT ?item ?label ?aliases ?description ?images ?coords ?whosOnFirst WHERE {
                            VALUES (?item) { ${values} }
                            ?item rdfs:label ?label . FILTER(LANG(?label) = 'en')
@@ -792,17 +791,20 @@
             resp.results.bindings.forEach(rec => {
               let eid = rec.item.value.split('/').pop()
               if (!entities[eid]) entities[eid] = {
-                eid, 
-                label: rec.label.value, 
-                aliases: [],
-                description: rec.description && rec.description.value,
-                geojson: rec.whosOnFirst && rec.whosOnFirst.value && this.whosOnFirstUrl(rec.whosOnFirst.value),
-                images: [],
-                thumbnails: [],
-                coords: rec.coords && rec.coords.value.replace(/Point\(/,'').replace(/\)/,'').split(' ').reverse().map(coord => parseFloat(coord)),
-                foundIn: new Set(),
+                ...this.entities[eid], 
+                ...{
+                  eid, 
+                  label: rec.label.value, 
+                  aliases: new Set(this.entities[eid].aliases ? this.entities[eid].aliases.split('|').map(alias => alias.trim()) : []),
+                  description: rec.description && rec.description.value,
+                  geojson: rec.whosOnFirst && rec.whosOnFirst.value && this.whosOnFirstUrl(rec.whosOnFirst.value),
+                  images: [],
+                  thumbnails: [],
+                  coords: rec.coords && rec.coords.value.replace(/Point\(/,'').replace(/\)/,'').split(' ').reverse().map(coord => parseFloat(coord)),
+                  foundIn: new Set(),
+                }
               }
-              if (rec.aliases && entities[eid].aliases.indexOf(rec.aliases.value) < 0) entities[eid].aliases.push(rec.aliases.value)
+              if (rec.aliases && !entities[eid].aliases.has(rec.aliases.value)) entities[eid].aliases.add(rec.aliases.value)
               if (rec.images && entities[eid].images.indexOf(rec.images.value) < 0) {
                 entities[eid].images.push(rec.images.value)
                 entities[eid].thumbnails.push(this.commonsImageUrl(rec.images.value, 160))
@@ -817,7 +819,8 @@
             })
             resp = await resp.json()
             resp.results.bindings.forEach(rec => entities[rec.item.value.split('/').pop()]['mwPage'] = rec.mwPage.value)
-            return entities
+            this.entities = entities
+            return this.entities
           },
 
           // Convert essay Markdown into HTML.  Markdown headings are used to infer content heirarchy
@@ -952,7 +955,7 @@
               this.paramsInScope(para).filter(param => param['ve-entity'] !== undefined && param.eid !== undefined).map(param => param.eid).forEach(eid => {
                 let entity = this.entities[eid]
                 if (entity) {
-                  let toMatch = [...[entity.label], ...entity.aliases]
+                  let toMatch = [...[entity.label], ...entity.aliases.filter(alias => alias.length > 3)]
                   for (let i = 0; i < toMatch.length; i++) {
                     let re = new RegExp(`(${toMatch[i]})`)
                     if (toMatch[i], re.test(paraHTML)) {
@@ -1386,6 +1389,8 @@
     function kebabToCamel(input) { return input.replace(/-([a-z])/g, function (g) {return g[1].toUpperCase()})}
     function isNumeric(arg) { return !isNaN(arg) }
     function isEntityID(arg) { return typeof arg === 'string' && arg.split(':').slice(-1).find(val => val.length > 1 && val[0] === 'Q' && isNumeric(val.slice(1))) !== undefined }
+    function attrsToObject(el) { return Object.fromEntries(Array.from(el.attributes).map(attr => 
+                      [attr.nodeName, attr.value === '' || attr.value === 'true' ? true : attr.value === 'false' ? false : attr.value] )) }
 
     // Gets site config
     async function getSiteConfig() {
