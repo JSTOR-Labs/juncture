@@ -736,7 +736,7 @@
               Array.from(this.$refs.essay.querySelectorAll('param, span'))
                 .filter(el => el.attributes.eid || (el.attributes.center && isEntityID(el.attributes.center.value)))
                 .map(el => attrsToObject(el))
-                .map(entity => [entity.eid, entity]))
+                .map(entity => [entity.eid || entity.center, entity]))
           },
 
           // Finds all param tags in elements between top-level app element and element in para arg
