@@ -155,7 +155,8 @@ module.exports = {
                 height: this.viewerIsActive ? '100%' : '0',
                 width: '100%',
                 overflowY: 'auto !important',
-                marginLeft: '0',   
+                marginLeft: '0',
+                
             }
         },
         containerStyle() {
@@ -833,6 +834,7 @@ module.exports = {
 
     #map {
         grid-area: map-main;
+        z-index: 1;
     }
 
     .map-label {
