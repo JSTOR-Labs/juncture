@@ -687,7 +687,7 @@ module.exports = {
             },
             immediate: true
         },
-        active: {
+        viewerIsActive: {
             handler: function (isActive) { 
                 console.log(`${this.$options.name}.active=${isActive}`) 
                 if (isActive) {

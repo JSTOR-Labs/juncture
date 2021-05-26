@@ -78,11 +78,13 @@ def get(path=''):
             with open(content_path, 'r') as fp:
                 return fp.read(), 200
 
+    '''
     elif os.path.exists(f'{content_path}.md'):
         content_path = f'{root}{"/" + path_elems[0] if len(path_elems) > 0 else ""}/index.html'
         logger.info(content_path)
         with open(content_path, 'r') as fp:
             return fp.read(), 200
+    '''
 
     if len(path_elems) > 0 and path_elems[-1].split('.')[-1] not in ('ico', 'svg', 'yaml', 'json', 'md'):
         # content_path = f'{root}/index.html'
