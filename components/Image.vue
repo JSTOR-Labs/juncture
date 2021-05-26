@@ -233,8 +233,10 @@ module.exports = {
     init() {
       console.log(this.$options.name, this.viewerItems, this.viewerIsActive, this.width, this.height, this.selected)
       // console.log(`acct=${this.acct} repo=${this.repo} path=${this.path}`)
+      if (this.viewerIsActive) {
       this.initViewer()
       this.loadManifests(this.viewerItems)
+      }
       //this.displayInfoBox()
     },
     sha256(s) {
@@ -242,7 +244,7 @@ module.exports = {
     },
     initViewer() {
       if (this.viewer) {
-        this.viewer.destroy()
+        this.viewer = this.viewer.destroy()
       }
       this.$nextTick(() => {
         let options = {
@@ -333,9 +335,7 @@ module.exports = {
       })
     },
     loadTileSources() {
-      if (this.tileSources.length > 0) {
-        this.viewer.open(this.tileSources)
-      }
+      if (this.tileSources.length > 0) this.viewer.open(this.tileSources)
     },
     toggleShowAnnotations() {
       this.showAnnotations = !this.showAnnotations
@@ -378,7 +378,6 @@ module.exports = {
                  type: 'image', buildPyramid: true }
             return { tileSource, opacity }
           })
-          console.log('tileSources', this.tileSources)
           this.loadTileSources()
           this.displayInfoBox()
         })
@@ -801,6 +800,12 @@ module.exports = {
         })
       }
     },
+    viewerIsActive(isActive) {
+      if (isActive) {
+        if (!this.viewer) this.initViewer()
+        this.loadManifests(this.viewerItems)
+      }
+    },
     viewerItems (current, previous) {
       console.log('viewerItems', current)
       /*
@@ -815,7 +820,7 @@ module.exports = {
       */
       const cur = current.map(item => this.stringifyKeysInOrder(item))
       const prev = previous ? previous.map(item => this.stringifyKeysInOrder(item)) : []
-      if (this.viewer) {
+      if (this.viewer && this.viewerIsActive) {
         if (cur.join() !== prev.join()) {
           this.loadManifests(this.viewerItems)
         } else {

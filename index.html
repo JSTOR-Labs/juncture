@@ -731,8 +731,9 @@
           },
 
           // Finds all entity references in param tags
-          findEntities() {
+          findEntities(root) {
             let entities = Object.fromEntries(
+              // Array.from(root.querySelectorAll('param, span'))
               Array.from(this.$refs.essay.querySelectorAll('param, span'))
                 .filter(el => el.attributes.eid)
                 .map(el => attrsToObject(el))
@@ -740,7 +741,7 @@
               Array.from(this.$refs.essay.querySelectorAll('param'))
                 .filter(el => el.attributes.center && isEntityID(el.attributes.center.value))
                 .filter(el => !entities[el.attributes.center.value])
-                .map(el => attrsToObject(el))
+                .map(el => { return {...attrsToObject(el), ...{eid: el.attributes.center.value }} })
                 .forEach(entity => entities[entity.eid] = entity)
             return entities
           },
@@ -833,6 +834,7 @@
           markdownToElem(markdown) {
             let essay = document.createElement('div')
             let tmp = new DOMParser().parseFromString(md.render(markdown), 'text/html').children[0].children[1]
+            // this.entities = this.findEntities(tmp)
             let currentSection = essay
             let segments = []
             let segment
@@ -843,6 +845,7 @@
                 if (segments) {
                   segments.forEach(segment => currentSection.innerHTML += segment.outerHTML)
                   segments = []
+                  segment = null
                 }
                 currentSection = new DOMParser().parseFromString('<section></section>', 'text/html').children[0].children[1].children[0]
                 let elClasses = Array.from(el.classList)
