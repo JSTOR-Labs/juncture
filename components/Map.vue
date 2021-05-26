@@ -209,18 +209,16 @@ module.exports = {
                     })
                     this.map.on('layeradd', e => {
                         if (e.layer.feature) {
-                            if (e.layer.feature) {
-                                if (e.layer.feature.properties.label) {
-                                    const featureType = e.layer.feature.geometry.type
-                                    const latLng = featureType === 'Polygon' || featureType === 'MultiPolygon' || featureType === 'LineString'
-                                        ? e.layer.getBounds().getCenter()
-                                        : e.layer.getLatLng()
-                                    const labelOffset = e.layer.feature.properties['marker-type'] === 'circle' ? -6 : -30
-                                    this.addPopup(e.layer.feature.properties.eid || e.layer.feature.properties.id, e.layer.feature.properties.label, latLng, labelOffset)
-                                }
-                                this.features.push(e.layer.feature)
-                                this.layersUpdated()
+                            if (e.layer.feature.properties.label) {
+                                const featureType = e.layer.feature.geometry.type
+                                const latLng = featureType === 'Polygon' || featureType === 'MultiPolygon' || featureType === 'LineString'
+                                    ? e.layer.getBounds().getCenter()
+                                    : e.layer.getLatLng()
+                                const labelOffset = e.layer.feature.properties['marker-type'] === 'circle' ? -6 : -30
+                                this.addPopup(e.layer.feature.properties.eid || e.layer.feature.properties.id, e.layer.feature.properties.label, latLng, labelOffset)
                             }
+                            this.features.push(e.layer.feature)
+                            this.layersUpdated()
                         }
                     })
                 //})
@@ -279,7 +277,7 @@ module.exports = {
             this.syncTileLayers()
             this.map.flyTo(this.center, this.zoom)
             
-            const markers = this.itemsWithMarkers;
+            const markers = this.itemsWithMarkers
             markers.forEach(marker => {
                 if (marker) this.addCustomMarker(marker)
             })
@@ -618,7 +616,7 @@ module.exports = {
         layersUpdated: _.debounce(function () {
             const activeFeatures = new Set(this.features.map(feature => feature.properties.id))
             Object.keys(this.popups).forEach(id => {
-                if (!activeFeatures.has(id)) this.map.closePopup(this.popups[id])
+                if (!this.showLabels && !activeFeatures.has(id)) this.map.closePopup(this.popups[id])
             })
             if (this.autoFit) {
                 const coords = this.features.map(feature => feature.geometry.coordinates)
@@ -726,10 +724,10 @@ module.exports = {
         },
         hoverItem: {
             handler: function (itemID, prior) {
-                if (itemID) console.log(`${this.$options.name}.watch.hoverItem=${itemID}`)
+                if (itemID) console.log(`${this.$options.name}.watch.hoverItem=${itemID} showLabels=${this.showLabels}`)
                 if (this.showLabels) {
                     if (prior) {
-                        let popup = document.querySelector(`h1[data-eid="${prior}"]`)
+                        let popup = document.querySelector(`div[data-eid="${prior}"]`)
                         if (popup) {
                             popup = popup.parentElement.parentElement.parentElement                        
                             popup.childNodes[0].classList.remove('popup-invert')
@@ -737,7 +735,7 @@ module.exports = {
                         }
                     }
                     if (itemID) {
-                        let popup = document.querySelector(`h1[data-eid="${itemID}"]`)
+                        let popup = document.querySelector(`div[data-eid="${itemID}"]`)
                         if (popup) {
                             popup = popup.parentElement.parentElement.parentElement
                             popup.childNodes[0].classList.add('popup-invert')
@@ -786,8 +784,6 @@ module.exports = {
     }
     .popup-invert {
         background-color: #444 !important;
-    }
-    .popup-invert h1 {
         color: white !important;
     }
 

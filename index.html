@@ -732,11 +732,17 @@
 
           // Finds all entity references in param tags
           findEntities() {
-            return Object.fromEntries(
+            let entities = Object.fromEntries(
               Array.from(this.$refs.essay.querySelectorAll('param, span'))
-                .filter(el => el.attributes.eid || (el.attributes.center && isEntityID(el.attributes.center.value)))
+                .filter(el => el.attributes.eid)
                 .map(el => attrsToObject(el))
-                .map(entity => [entity.eid || entity.center, entity]))
+                .map(entity => [entity.eid, entity]))
+              Array.from(this.$refs.essay.querySelectorAll('param'))
+                .filter(el => el.attributes.center && isEntityID(el.attributes.center.value))
+                .filter(el => !entities[el.attributes.center.value])
+                .map(el => attrsToObject(el))
+                .forEach(entity => entities[entity.eid] = entity)
+            return entities
           },
 
           // Finds all param tags in elements between top-level app element and element in para arg
@@ -957,7 +963,7 @@
                 if (entity) {
                   let toMatch = [...[entity.label], ...entity.aliases.filter(alias => alias.length > 3)]
                   for (let i = 0; i < toMatch.length; i++) {
-                    let re = new RegExp(`(${toMatch[i]})`, 'i')
+                    let re = new RegExp(`(${toMatch[i].replace(/'/, "'?")})`, 'i')
                     if (toMatch[i], re.test(paraHTML)) {
                       console.log()
                       paraHTML = paraHTML.replace(re, `<span class="entity inferred" data-eid="${eid}">$1</span>`)
