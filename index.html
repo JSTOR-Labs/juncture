@@ -819,7 +819,7 @@
               if (rec.aliases && !entities[eid].aliases.has(rec.aliases.value)) entities[eid].aliases.add(rec.aliases.value)
               if (rec.images && entities[eid].images.indexOf(rec.images.value) < 0) {
                 entities[eid].images.push(rec.images.value)
-                entities[eid].thumbnails.push(this.commonsImageUrl(rec.images.value, 160))
+                entities[eid].thumbnails.push(this.commonsImageUrl(rec.images.value, 200))
               }
             })
             query = `SELECT ?item ?mwPage WHERE {
