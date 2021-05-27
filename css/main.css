@@ -427,8 +427,11 @@ p code {
   font-weight: bold;
 }
 
-.active .essay-interaction, .active .essay-interaction {
-  background-color: yellowgreen;
+.active .essay-interaction {
+  background-color: #e1ecbe;
+}
+.active .essay-interaction:hover {
+  border-bottom: 2px solid #444A1E;
 }
 
 .notification {
