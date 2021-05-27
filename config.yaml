@@ -37,6 +37,9 @@ iiifServer: https://iiif.juncture-digital.org
 siteAdmins:
 - <<acct>>
 
+# Optional URL for using non-free version of Fontawesome
+#fontawesome: <<kit.fontawesome.com/12345abcde.js>>
+
 ######################################################
 # Optional credentials used for GitHub API and OAuth integration
 ######################################################

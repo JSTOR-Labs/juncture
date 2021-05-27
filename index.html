@@ -268,7 +268,7 @@
     let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
     
     // GLobal variables used to initialize Vue
-    let siteConfig, contentSource, componentsList, ghUnscopedToken, oauthAccessToken, gcApiKey, gcAuthDomain, gaPropertyID
+    let siteConfig, contentSource, componentsList, ghUnscopedToken, oauthAccessToken, gcApiKey, gcAuthDomain, gaPropertyID, fontawesome
     let loginsEnabled = false
     let authenticatedUser = null
     
@@ -340,6 +340,7 @@
       if (siteConfig.favicon ) head.appendChild(makeLink(siteConfig.favicon, 'icon'))
       if (siteConfig.customCSS) head.appendChild(makeLink(siteConfig.customCSS))
       if (siteConfig.title) document.title = siteConfig.title
+      if (fontawesome) document.querySelector('body').appendChild(makeScriptTag(fontawesome, 'anonymous'))
 
       new Vue({
         el: '#app',
@@ -1411,6 +1412,7 @@
       let resp = await fetch(`https://gitcdn.link/cdn/jstor-labs/juncture/juncture/config.yaml`)
       resp = YAML.parse(await resp.text())
       ghUnscopedToken = atob(resp.ghUnscopedToken)
+      fontawesome = resp.fontawesome
       if (isJuncture) {
         config = resp
         gcApiKey = atob(config.gcApiKey)
@@ -1437,6 +1439,7 @@
       if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
       if (config.gcAuthDomain) gcAuthDomain = atob(config.gcAuthDomain)
       if (config.gaPropertyID) gaPropertyID = config.gaPropertyID
+      if (config.fontawesome) fontawesome = config.fontawesome
       loginsEnabled = gcApiKey !== undefined && gcAuthDomain !== undefined
       return config
     }
@@ -1539,6 +1542,13 @@
       link.href = href
       link.rel = rel || 'stylesheet'
       return link
+    }
+
+    function makeScriptTag(src, crossorigin) {
+      let el = document.createElement('script')
+      el.src = `https://${src}`
+      if (crossorigin) el.setAttribute('crossorigin', crossorigin)
+      return el
     }
 
     function convertURL(current, path, pathIsDir) {
