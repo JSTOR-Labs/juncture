@@ -166,7 +166,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
-    const junctureVersion = 'v0.0.122'
+    const junctureVersion = 'v0.0.123'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -819,7 +819,7 @@
               if (rec.aliases && !entities[eid].aliases.has(rec.aliases.value)) entities[eid].aliases.add(rec.aliases.value)
               if (rec.images && entities[eid].images.indexOf(rec.images.value) < 0) {
                 entities[eid].images.push(rec.images.value)
-                entities[eid].thumbnails.push(this.commonsImageUrl(rec.images.value, 160))
+                entities[eid].thumbnails.push(this.commonsImageUrl(rec.images.value, 200))
               }
             })
             query = `SELECT ?item ?mwPage WHERE {
