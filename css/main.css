@@ -115,7 +115,7 @@ body {
 }
 
 #contact-form {
-  max-height: 400px;
+  
 }
 
 #create-site-form, #update-site-form, #add-page-form {
@@ -431,4 +431,8 @@ p code {
   /* height: 40px;
   width: 120px; */
   cursor: pointer;
+}
+
+.hover {
+  text-decoration: underline;
 }
