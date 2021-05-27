@@ -60,6 +60,10 @@
                  @set-hover-item="hoverItem = $event"
       ></component>
     </div>
+    <div v-if="path === '/'" id="footer" ref="footer">            
+      <component v-bind:is="'ve-footer'" :site-config="siteConfig" :content-source="contentSource"></component>
+    </div>
+
     <div style="display:none;">
       <div ref="popup" class="popup" v-if="hoverEntity">
         <div v-if="hoverEntity.thumbnails" class="image"><img :src="hoverEntity.thumbnails[0]"></div>
@@ -1546,7 +1550,7 @@
 
     function makeScriptTag(src, crossorigin) {
       let el = document.createElement('script')
-      el.src = `https://${src}`
+      el.src = src
       if (crossorigin) el.setAttribute('crossorigin', crossorigin)
       return el
     }
@@ -1554,11 +1558,8 @@
     function convertURL(current, path, pathIsDir) {
       let pathElems = []
       if (current.indexOf('http') === 0) {
-        if (current.indexOf(window.location.origin) === 0) {
-          pathElems = current.split('/').slice(3)
-        } else {
-          return current
-        }
+        if (current.indexOf(window.location.origin) === 0) pathElems = current.split('/').slice(3)
+        else return current
       } else if (current.indexOf('/') === 0) {
         pathElems = current.split('/').filter(elem => elem !== '')
       } else {
