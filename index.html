@@ -966,10 +966,10 @@
                 if (entity) {
                   let toMatch = [...[entity.label], ...entity.aliases.filter(alias => alias.length > 3)]
                   for (let i = 0; i < toMatch.length; i++) {
-                    let re = new RegExp(`(${toMatch[i].replace(/'/, "'?")})`, 'i')
-                    if (toMatch[i], re.test(paraHTML)) {
-                      console.log()
-                      paraHTML = paraHTML.replace(re, `<span class="entity inferred" data-eid="${eid}">$1</span>`)
+                    let re = new RegExp(`[\\s(](${toMatch[i].replace(/'/, "'?")})[\\s);:,.]`, 'i')
+                    let match = re.exec(paraHTML)
+                    if (match) {
+                      paraHTML = paraHTML.replace(match[1], `<span class="entity inferred" data-eid="${eid}">${match[1]}</span>`)
                       entity.foundIn.add(para.parentElement.dataset.id)
                       break
                     }
@@ -1271,8 +1271,10 @@
           segments (segments) { console.log('segments', segments) },
           selectedViewer (selectedViewer) { console.log('selectedViewer', selectedViewer) },
           selectedItem (eid) { console.log(`selectedItem=${eid}`) },
-          hoverItem (eid) { console.log(`index.hoverItem=${eid}`) },
-
+          hoverItem (eid) {
+            document.querySelectorAll('.hover').forEach(el => el.classList.remove('hover'))
+            document.querySelectorAll(`[data-eid="${eid}"]`).forEach(el => el.classList.add('hover'))        
+          }
         }
       })
     })

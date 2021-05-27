@@ -358,7 +358,7 @@ module.exports = {
                             if (!geoJSON.properties) geoJSON.properties = {}
                             geoJSON.properties.id = item.id || item.qid || item.eid
                             geoJSON.properties.label = item.label
-                            this.addGeoJSONLayer(geoJSON)
+                            this.addGeoJSONLayer(geoJSON, item)
                         })
                     })
                 }
@@ -366,7 +366,7 @@ module.exports = {
             }
         },
         addGeoJSONLayer(geoJSON, layerDef) {
-            console.log('addGeoJSONLayer', geoJSON)
+            console.log('addGeoJSONLayer', geoJSON, layerDef)
             if (!geoJSON.properties) geoJSON.properties = {}
             let layerLabel = geoJSON.properties.label = geoJSON.properties.title || geoJSON.properties.label || geoJSON.properties.name
             if (!layerLabel) {

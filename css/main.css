@@ -432,3 +432,7 @@ p code {
   width: 120px; */
   cursor: pointer;
 }
+
+.hover {
+  text-decoration: underline;
+}
