@@ -1413,7 +1413,8 @@
     async function getSiteConfig() {
       let config = {}
       // let resp = await fetch(`https://gitcdn.link/cdn/jstor-labs/juncture/${junctureVersion}/config.yaml`)
-      let resp = await fetch(`https://gitcdn.link/cdn/jstor-labs/juncture/juncture/config.yaml`)
+      let junctureConfigUrl = isJuncture ? `${window.location.origin}/config.yaml` : 'https://gitcdn.link/cdn/jstor-labs/juncture/juncture/config.yaml'
+      let resp = await fetch(junctureConfigUrl)
       resp = YAML.parse(await resp.text())
       ghUnscopedToken = atob(resp.ghUnscopedToken)
       fontawesome = resp.fontawesome
@@ -1435,7 +1436,7 @@
           resp = await resp.json()
           config = YAML.parse(atob(resp.content))
         }
-      } else {
+      } else if (!isJuncture) {
         resp = await fetch(`${window.location.origin}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
       }
