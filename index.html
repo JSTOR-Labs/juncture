@@ -1546,7 +1546,7 @@
 
     function makeScriptTag(src, crossorigin) {
       let el = document.createElement('script')
-      el.src = `https://${src}`
+      el.src = src
       if (crossorigin) el.setAttribute('crossorigin', crossorigin)
       return el
     }
