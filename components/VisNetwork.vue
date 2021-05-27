@@ -49,7 +49,7 @@ module.exports = {
     containerStyle() {
       return {
         width: `${this.width}px`,
-        height: this.viewerIsActive ? '100%' : '0',
+        height: this.viewerIsActive ? `${this.height}px` : '0',
         overflowY: "auto !important",
         backgroundColor: this.items[0] ? this.items[0].background || 'white' : 'white',
       };
