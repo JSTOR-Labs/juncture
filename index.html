@@ -166,7 +166,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
-    const junctureVersion = 'v0.0.121'
+    const junctureVersion = 'v0.0.122'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -1413,7 +1413,8 @@
     async function getSiteConfig() {
       let config = {}
       // let resp = await fetch(`https://gitcdn.link/cdn/jstor-labs/juncture/${junctureVersion}/config.yaml`)
-      let resp = await fetch(`https://gitcdn.link/cdn/jstor-labs/juncture/juncture/config.yaml`)
+      let junctureConfigUrl = isJuncture ? `${window.location.origin}/config.yaml` : 'https://gitcdn.link/cdn/jstor-labs/juncture/juncture/config.yaml'
+      let resp = await fetch(junctureConfigUrl)
       resp = YAML.parse(await resp.text())
       ghUnscopedToken = atob(resp.ghUnscopedToken)
       fontawesome = resp.fontawesome
@@ -1435,7 +1436,7 @@
           resp = await resp.json()
           config = YAML.parse(atob(resp.content))
         }
-      } else {
+      } else if (!isJuncture) {
         resp = await fetch(`${window.location.origin}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
       }
