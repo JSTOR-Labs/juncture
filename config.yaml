@@ -39,7 +39,7 @@ iiifServer: https://iiif.juncture-digital.org
 siteAdmins:
 - rsnyder
 
-fontawesome: kit.fontawesome.com/19541ddce8.js
+fontawesome: https://kit.fontawesome.com/19541ddce8.js
 
 ghUnscopedToken: Z2hwX05lcnV2RUYzRmx6M3o5YnFjQWZuOGpJQnJMR3lEMTNmYjYyVw==
 gcAuthDomain: anVuY3R1cmUtZGlnaXRhbC5maXJlYmFzZWFwcC5jb20=
