@@ -910,6 +910,7 @@
           // Converts link tags to elements with click listeners enabling intra-app navigation without page loading
           convertLinks(root) {
             root.querySelectorAll('a').forEach(link => {
+              console.log(link.href, window.location.host)
               if ((!link.href && link.dataset.target) || link.href.indexOf(window.location.host) > 0) {
                 // If internal link
                 let target = link.dataset.target
