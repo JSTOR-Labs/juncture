@@ -257,7 +257,6 @@
           let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
           if (pathElems.length >= 2) {
             let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
-            console.log('ghRepoInfo', ghRepoInfo)
             if (ghRepoInfo) contentSource = {...contentSource, ...ghRepoInfo}
           }
 
@@ -460,7 +459,6 @@
           }, 5),
 
           async doAction(action, options) {
-            console.log(`doAction`, action, options)
             if (action === 'send-email') {
               this.doActionCallback = {status: 'processing', message: 'Processing request'}
               await sendEmail(options)
@@ -476,7 +474,6 @@
             } else if (action === 'createSite') {
               this.showForm('create-site-form')
             } else if (action === 'updateSite') {
-              console.log('updateSite')
               let releaseTags = await getReleaseTags()
               this.updateVersion = releaseTags[0]
               this.releaseTags = releaseTags
@@ -590,10 +587,7 @@
                 break
               }
             }
-            if (gaPropertyID) {
-              console.log('ga', 'send', 'pageview', `${contentSource.basePath}${path}`)
-              ga('send', 'pageview', `${contentSource.basePath}${path}`)
-            }
+            if (gaPropertyID) ga('send', 'pageview', `${contentSource.basePath}${path}`)
 
             let browserPath = `${contentSource.basePath}${path}${this.anchor ? '#'+this.anchor : ''}`
             if (qargs.ref) browserPath += `?ref=${qargs.ref}`
@@ -697,7 +691,6 @@
           toggleExpandCollapse(e) {
             let button = e.target
             let textDiv = button.previousElementSibling
-            console.log('expandCollapse', button, textDiv)
             if (button.innerText == 'read more') {
               button.innerText = 'read less'
               textDiv.style['-webkit-line-clamp'] = 'unset'
@@ -794,12 +787,9 @@
                            OPTIONAL { ?item wdt:P625 ?coords . }
                            OPTIONAL { ?item wdt:P6766 ?whosOnFirst . }
                          }`
-            let resp = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}`, {
-              method: 'POST',
-              headers: { 
-                Accept: 'application/sparql-results+json',
-                // 'User-agent': 'Juncture web client' 
-              }
+            let resp = await fetch('https://query.wikidata.org/sparql', {
+              method: 'POST', body: `query=${encodeURIComponent(query)}`, 
+              headers: { Accept: 'application/sparql-results+json', 'Content-Type': 'application/x-www-form-urlencoded' }
             })
             resp = await resp.json()
             let entities = {}
@@ -829,12 +819,9 @@
                         VALUES (?item) { ${values} }
                         ?mwPage schema:about ?item .
                         ?mwPage schema:isPartOf <https://en.wikipedia.org/> . }`
-            resp = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}`, {
-              method: 'POST', 
-              headers: {
-                Accept: 'application/sparql-results+json', 
-                // 'User-agent': 'Juncture web client' 
-              }
+            resp = await fetch('https://query.wikidata.org/sparql', {
+              method: 'POST', body: `query=${encodeURIComponent(query)}`, 
+              headers: { Accept: 'application/sparql-results+json', 'Content-Type': 'application/x-www-form-urlencoded' }
             })
             resp = await resp.json()
             resp.results.bindings.forEach(rec => entities[rec.item.value.split('/').pop()]['mwPage'] = rec.mwPage.value)
@@ -930,7 +917,6 @@
                   }
                   target = parsedUrl.hash === '' ? `/${pathElems.join('/')}/` : parsedUrl.hash.split('?')[0]
                 }
-                console.log(link.href, target)
                 link.removeAttribute('href')
                 link.setAttribute('data-target', target)
 
@@ -1116,7 +1102,6 @@
             let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs/heads`, {
                   headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.v3+json'} })
             let heads = resp.ok ? await resp.json() : null
-            console.log(`waitForRepoInit: i=${i} resp.ok=${resp.ok} heads=${heads !== null}`)
             if (heads === null && i < 2) setTimeout(this.waitForRepoInit(acct, repo, ++i), 500)
             return heads
           },
@@ -1396,7 +1381,6 @@
             let ghToken = oauthAccessToken || ghUnscopedToken
             let existing = await this.getFile(path, acct, repo, branch)
             let payload = { message, branch, content: btoa(content) }
-            console.log(`existing=${existing ? existing.sha : 'none'}`)
             if (existing) payload.sha = existing.sha
             let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${branch}`
             let resp = await fetch(url, { method: 'PUT', body: JSON.stringify(payload), headers: {Authorization: `Token ${ghToken}`} })
@@ -1483,7 +1467,7 @@
     // Gets a list of available components
     async function getComponentsList() {
       let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersion : contentSource.ref
-      console.log(`getComponentsList: ref=${ref} junctureVersion=${junctureVersion}`)
+      // console.log(`getComponentsList: ref=${ref} junctureVersion=${junctureVersion}`)
       let componentsList = []
       let ghToken = window.location.hostname === 'localhost' ? ghUnscopedToken : (oauthAccessToken || ghUnscopedToken)
       if (window.location.hostname !== 'localhost' && contentSource.acct && contentSource.repo && contentSource.ref) {

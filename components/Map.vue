@@ -511,13 +511,8 @@ module.exports = {
                     ?item wdt:P625 ?coords .
                 }`
             let resp = await fetch('https://query.wikidata.org/sparql', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    // 'User-agent': 'JSTOR Labs client',
-                    Accept: 'application/sparql-results+json'
-                },
-                body: `query=${encodeURIComponent(sparql)}`
+                method: 'POST', body: `query=${encodeURIComponent(sparql)}`,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/sparql-results+json' },
             })
             let wdResp = await resp.json()
             const coordsMap = {}

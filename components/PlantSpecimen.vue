@@ -212,13 +212,8 @@ module.exports = {
 
     async doSparqlQuery(query) {
       let resp = await fetch(sparqlEndpoint, {
-        method: 'POST',
-        headers: {
-          Accept: 'text/plain',
-          'Content-type': 'application/x-www-form-urlencoded',
-          // 'User-agent': 'JSTOR Labs client'
-        },
-        body: new URLSearchParams({query})
+        method: 'POST', body: new URLSearchParams({query}),
+        headers: { Accept: 'text/plain', 'Content-type': 'application/x-www-form-urlencoded' }
       })
       let rdf = await resp.text()
       let jld = await jsonld.fromRDF(rdf, { format: 'application/n-quads' })
