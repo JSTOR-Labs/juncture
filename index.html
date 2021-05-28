@@ -795,8 +795,11 @@
                            OPTIONAL { ?item wdt:P6766 ?whosOnFirst . }
                          }`
             let resp = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}`, {
-              method: 'GET',
-              headers: { Accept: 'application/sparql-results+json', 'User-agent': 'Juncture web client' }
+              method: 'POST',
+              headers: { 
+                Accept: 'application/sparql-results+json',
+                // 'User-agent': 'Juncture web client' 
+              }
             })
             resp = await resp.json()
             let entities = {}
@@ -827,7 +830,11 @@
                         ?mwPage schema:about ?item .
                         ?mwPage schema:isPartOf <https://en.wikipedia.org/> . }`
             resp = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}`, {
-              method: 'GET', headers: { Accept: 'application/sparql-results+json', 'User-agent': 'Juncture web client' }
+              method: 'POST', 
+              headers: {
+                Accept: 'application/sparql-results+json', 
+                // 'User-agent': 'Juncture web client' 
+              }
             })
             resp = await resp.json()
             resp.results.bindings.forEach(rec => entities[rec.item.value.split('/').pop()]['mwPage'] = rec.mwPage.value)
@@ -910,7 +917,6 @@
           // Converts link tags to elements with click listeners enabling intra-app navigation without page loading
           convertLinks(root) {
             root.querySelectorAll('a').forEach(link => {
-              console.log(link.href, window.location.host)
               if ((!link.href && link.dataset.target) || link.href.indexOf(window.location.host) > 0) {
                 // If internal link
                 let target = link.dataset.target
@@ -924,7 +930,7 @@
                   }
                   target = parsedUrl.hash === '' ? `/${pathElems.join('/')}/` : parsedUrl.hash.split('?')[0]
                 }
-                console.log(link.href, pathElems, target)
+                console.log(link.href, target)
                 link.removeAttribute('href')
                 link.setAttribute('data-target', target)
 
