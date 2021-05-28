@@ -923,7 +923,7 @@
                   }
                   target = parsedUrl.hash === '' ? `/${pathElems.join('/')}/` : parsedUrl.hash.split('?')[0]
                 }
-                console.log(ink.href, pathElems, target)
+                console.log(link.href, pathElems, target)
                 link.removeAttribute('href')
                 link.setAttribute('data-target', target)
 
