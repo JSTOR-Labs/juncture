@@ -457,6 +457,7 @@
           }, 5),
 
           async doAction(action, options) {
+            console.log('doAction', action, options)
             if (action === 'send-email') {
               this.doActionCallback = {status: 'processing', message: 'Processing request'}
               await sendEmail(options)
@@ -480,6 +481,10 @@
               window.open(`https://github.com/${contentSource.acct}/${contentSource.repo}/tree/${contentSource.ref}`, '_blank')
             } else if (action === 'viewSiteOnJuncture') {
               window.location.href = `https://juncture-digital.org/${contentSource.acct}/${contentSource.repo}`
+            } else if (action === 'authenticate') {
+              this.authenticate()
+            } else if (action === 'logout') {
+              this.logout()
             } else if (action === 'loadEssay') {
               this.loadEssay(options)
             }
