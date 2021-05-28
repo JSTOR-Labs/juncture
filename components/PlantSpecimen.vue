@@ -216,7 +216,7 @@ module.exports = {
         headers: {
           Accept: 'text/plain',
           'Content-type': 'application/x-www-form-urlencoded',
-          'User-agent': 'JSTOR Labs client'
+          // 'User-agent': 'JSTOR Labs client'
         },
         body: new URLSearchParams({query})
       })

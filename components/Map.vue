@@ -514,7 +514,7 @@ module.exports = {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'User-agent': 'JSTOR Labs client',
+                    // 'User-agent': 'JSTOR Labs client',
                     Accept: 'application/sparql-results+json'
                 },
                 body: `query=${encodeURIComponent(sparql)}`

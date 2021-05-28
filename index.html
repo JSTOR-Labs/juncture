@@ -723,7 +723,7 @@
                 if (this.hoverEntity.mwPage && !this.hoverEntity.summary) {
                   let page = this.hoverEntity.mwPage.replace(/\/w\//, '/wiki/').split('/wiki/').pop()
                   let resp = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${page}`, {
-                    headers: {'User-agent': 'JSTOR Labs client'}
+                    // headers: {'User-agent': 'JSTOR Labs client'}
                   })
                   resp = await resp.json()
                   this.entities[instance.reference.dataset.eid].summary = resp.extract_html
@@ -795,8 +795,11 @@
                            OPTIONAL { ?item wdt:P6766 ?whosOnFirst . }
                          }`
             let resp = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}`, {
-              method: 'GET',
-              headers: { Accept: 'application/sparql-results+json', 'User-agent': 'Juncture web client' }
+              method: 'POST',
+              headers: { 
+                Accept: 'application/sparql-results+json',
+                // 'User-agent': 'Juncture web client' 
+              }
             })
             resp = await resp.json()
             let entities = {}
@@ -827,7 +830,11 @@
                         ?mwPage schema:about ?item .
                         ?mwPage schema:isPartOf <https://en.wikipedia.org/> . }`
             resp = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}`, {
-              method: 'GET', headers: { Accept: 'application/sparql-results+json', 'User-agent': 'Juncture web client' }
+              method: 'POST', 
+              headers: {
+                Accept: 'application/sparql-results+json', 
+                // 'User-agent': 'Juncture web client' 
+              }
             })
             resp = await resp.json()
             resp.results.bindings.forEach(rec => entities[rec.item.value.split('/').pop()]['mwPage'] = rec.mwPage.value)
@@ -923,6 +930,7 @@
                   }
                   target = parsedUrl.hash === '' ? `/${pathElems.join('/')}/` : parsedUrl.hash.split('?')[0]
                 }
+                console.log(link.href, target)
                 link.removeAttribute('href')
                 link.setAttribute('data-target', target)
 
