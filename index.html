@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- <link href="https://juncture-digital.org/images/favicon.svg" rel="icon"/> -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
   <link href="https://unpkg.com/tippy.js@6/dist/tippy.css" rel="stylesheet"/>
   <link href="https://unpkg.com/tippy.js@6/themes/light-border.css" rel="stylesheet"/>
-  <!-- <link href="https://juncture-digital.org/css/main.css" rel="stylesheet"/> -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
   <title>Juncture</title>
 </head>
@@ -120,8 +118,8 @@
         <input :value="contentSource.acct" class="form-name" type="text" readonly>
         <input :value="contentSource.repo" class="form-name" type="text" readonly>
         <div style="display:float; padding:6px 0"><span>Version:</span>
-          <select v-model="updateVersion">
-            <option v-for="tag in releaseTags" :key="tag" :value="tag" selected v-text="tag"></option>
+          <select v-model="selectedRelease">
+            <option v-for="release in releases" :key="release.name" :value="release" selected v-text="release.name"></option>
           </select>
         </div>
         <div v-html="formProcessingMessage"></div>
@@ -166,7 +164,7 @@
   <script>
     console.log(window.location)
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
-    const junctureVersion = 'v0.0.128'
+    const junctureVersion = 'v0.1.0'
     console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} referrer=${document.referrer}`)
 
     const referrerUrl = document.referrer
@@ -336,7 +334,7 @@
 
       let head = document.querySelector('head')
       if (window.location.hostname === 'localhost') {
-        head.appendChild(makeLink('/juncture/css/main.css'))
+        head.appendChild(makeLink(`${contentSource.basePath}/css/main.css`))
       } else {
         head.appendChild(makeLink(`https://gitcdn.link/cdn/jstor-labs/juncture/${junctureVersion}/css/main.css`))
       }
@@ -385,8 +383,8 @@
           newPage: null,
           formProcessingMessage: '',
           formProcessingStatus: 'ready',
-          releaseTags: [],
-          updateVersion: 'main',
+          releases: [],
+          selectedRelease: null,
           reposForAcct: [],
           selectedRepo: null,
           doActionCallback: {}
@@ -474,9 +472,9 @@
             } else if (action === 'createSite') {
               this.showForm('create-site-form')
             } else if (action === 'updateSite') {
-              let releaseTags = await getReleaseTags()
-              this.updateVersion = releaseTags[0]
-              this.releaseTags = releaseTags
+              let releases = await getGHReleases()
+              this.selectedRelease = releases[0]
+              this.releases = releases
               this.showForm('update-site-form')
             } else if (action === 'gotoGitHub') {
               window.open(`https://github.com/${contentSource.acct}/${contentSource.repo}/tree/${contentSource.ref}`, '_blank')
@@ -525,10 +523,10 @@
 
           async doSiteUpdate() {
             this.formProcessingStatus = 'processing'
-            this.formProcessingMessage = `Updating site to version ${this.updateVersion === 'main' ? 'Latest' : this.updateVersion}...`
-            await this.updateSite(this.updateVersion)
+            this.formProcessingMessage = `Updating site to version ${this.selectedRelease.name}...`
+            await this.updateSite(this.selectedRelease)
             let siteUrl = `https://${this.contentSource.acct}.github.io/${this.contentSource.repo}`
-            this.formProcessingMessage = `Site <a href="${siteUrl}">${siteUrl}</a> updated to version ${this.updateVersion === 'main' ? 'Latest' : this.updateVersion}`
+            this.formProcessingMessage = `Site <a href="${siteUrl}">${siteUrl}</a> updated to version ${this.selectedRelease.name}`
             this.formProcessingStatus = 'done'
           },
 
@@ -1196,9 +1194,9 @@
             await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
           },
 
-          async updateSite(fromRef) {
-            console.log(`updateSite: fromRef=${fromRef}`)
-            this.syncFiles(contentSource.acct, contentSource.repo, fromRef, false)
+          async updateSite(release) {
+            console.log(`updateSite: release=${release.name} tag=${release.tag_name}`)
+            this.syncFiles(contentSource.acct, contentSource.repo, release.tag_name, false)
           }
     
         },
@@ -1405,7 +1403,7 @@
     async function getSiteConfig() {
       let config = {}
       // let resp = await fetch(`https://gitcdn.link/cdn/jstor-labs/juncture/${junctureVersion}/config.yaml`)
-      let junctureConfigUrl = isJuncture ? `${window.location.origin}/config.yaml` : 'https://gitcdn.link/cdn/jstor-labs/juncture/juncture/config.yaml'
+      let junctureConfigUrl = isJuncture && window.location.host !== 'localhost:8088' ? `${window.location.origin}/config.yaml` : 'https://gitcdn.link/cdn/jstor-labs/juncture/juncture/config.yaml'
       let resp = await fetch(junctureConfigUrl)
       resp = YAML.parse(await resp.text())
       ghUnscopedToken = atob(resp.ghUnscopedToken)
@@ -1441,10 +1439,15 @@
       return config
     }
 
-    async function getReleaseTags() {
+    async function getGHTags() {
       let resp = await fetch('https://api.github.com/repos/jstor-labs/juncture/tags')
       resp = await resp.json()
       return resp.map(tag => tag.name)
+    }
+
+    async function getGHReleases() {
+      let resp = await fetch('https://api.github.com/repos/jstor-labs/juncture/releases')
+      return await resp.json()
     }
 
     // Determines if Github repo exists
