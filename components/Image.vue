@@ -442,6 +442,8 @@ module.exports = {
       this.getFile(annosPath).then(annos => {
         if (annos && annos.content && annos.content.length > 0) {
           this.annotations = JSON.parse(annos.content)
+          console.log(this.annotations)
+          if (!Array.isArray(this.annotations) && this.annotations.items) this.annotations = this.annotations.items
           this.annotations.forEach(anno => this.annotator.addAnnotation(anno))
         } else {
           this.annotations = []
