@@ -1,7 +1,7 @@
 <template>
   <div class="grid-container" :style="containerStyle">
     <div id="mynetwork" :style="networkStyle"></div>
-    <div class="citation">
+    <div class="footerBar">
     <span class="title">{{this.items[0].title}}</span>
     </div>
   </div>
@@ -298,7 +298,7 @@ module.exports = {
         "footer";
     }
 
-  .citation {
+  .footerBar {
       /* row-start / column-start / row-end / column-end */
       grid-area: footer;
       z-index: 2;
