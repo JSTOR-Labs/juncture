@@ -86,7 +86,7 @@ def get(path=''):
             return fp.read(), 200
     '''
 
-    if len(path_elems) > 0 and path_elems[-1].split('.')[-1] not in ('ico', 'svg', 'yaml', 'json', 'md'):
+    if len(path_elems) == 0 or (len(path_elems) > 0 and path_elems[-1].split('.')[-1] not in ('ico', 'svg', 'yaml', 'json', 'md')):
         # content_path = f'{root}/index.html'
         content_path = f'{BASEDIR}/index.html'
         logger.info(content_path)

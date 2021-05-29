@@ -226,7 +226,7 @@
       let contentSource
       // For local dev in GHP mode
       if (window.location.host === 'localhost:8080' || window.location.hostname.indexOf('gitpod') >= 0) {
-        let repo = window.location.pathname.split('/').filter(elem => elem !== '')[0]
+        let repo = window.location.pathname.split('/').filter(elem => elem !== '')[0] || 'juncture'
         contentSource = {acct: 'jstor-labs', repo, ref: 'main', baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true,
                          assetsBaseUrl: `${window.location.origin}/${repo}`}
 
