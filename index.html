@@ -356,7 +356,7 @@
     .then(config => gcOauth())
     .then(resp => headRef('jstor-labs', 'juncture', junctureVersion))
     .then(hash => {
-      junctureVersionHash = hash
+      junctureVersionHash = hash.slice(0,7)
       console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} junctureVersionHash=${junctureVersionHash} referrer=${document.referrer}`)
       return getComponentsList()
     })
@@ -371,17 +371,20 @@
         }
       })
 
-      let head = document.querySelector('head')
-      if (ENV === 'DEV') {
-        head.appendChild(makeLink(`${contentSource.basePath}/css/main.css`))
-      } else {
-        head.appendChild(makeLink(`https://raw.githubusercontent.com/jstor-labs/juncture/${junctureVersionHash}/css/main.css`))
-      }
-      if (siteConfig.favicon ) head.appendChild(makeLink(siteConfig.favicon, 'icon'))
+      let cssPromise = ENV === 'DEV'
+        ? fetch(`${contentSource.assetsBaseUrl}/css/main.css`).then(resp => resp.text())
+        : getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
+        cssPromise.then(css => {
+      let style = document.createElement('style')
+        style.innerHTML = css
+        document.querySelector('head').appendChild(style)
+      })
+
+      if (siteConfig.favicon ) document.querySelector('head').appendChild(makeLink(siteConfig.favicon, 'icon'))
       if (siteConfig.title) document.title = siteConfig.title
       if (fontawesome) document.querySelector('body').appendChild(makeScriptTag(fontawesome, 'anonymous'))
       
-      let cssPromise = ENV === 'DEV'
+      cssPromise = ENV === 'DEV'
         ? fetch(`${contentSource.assetsBaseUrl}/css/custom.css`).then(resp => resp.text())
         : getFile(contentSource.acct, contentSource.repo, contentSource.ref, '/css/custom.css')
       cssPromise.then(css => {
