@@ -280,7 +280,7 @@
     const knownGhAccts = {'jstor-labs': 'main', 'kent-map': 'main'}
 
     async function headRef(acct, repo, ref, token) {  
-      token = token || ghUnscopedToken
+      token = token || oauthAccessToken || ghUnscopedToken
       let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs/heads`, {
         headers: {Authorization: `Token ${token}`, Accept: 'application/vnd.github.v3+json'} })
       if (resp.ok) {
@@ -354,7 +354,7 @@
       return config
     })
     .then(config => gcOauth())
-    .then(resp => headRef('jstor-labs', 'juncture', junctureVersion))
+    .then(resp => headRef('jstor-labs', 'juncture', junctureVersion, ghUnscopedToken))
     .then(hash => {
       junctureVersionHash = hash.slice(0,7)
       console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} junctureVersionHash=${junctureVersionHash} referrer=${document.referrer}`)
