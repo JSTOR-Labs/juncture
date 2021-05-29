@@ -281,7 +281,7 @@
 
     async function headRef(acct, repo, ref, token) {  
       token = token || oauthAccessToken || ghUnscopedToken
-      console.log(`headRef: token=${token} oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`)
+      console.log(`headRef: acct=${acct} repo=${repo} ref=${ref} token=${token} oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`)
       let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs/heads`, {
         headers: {Authorization: `Token ${token}`, Accept: 'application/vnd.github.v3+json'} })
       if (resp.ok) {
@@ -1524,8 +1524,8 @@
         }
       }
       if (ghInfo) {
-        let refHash = await headRef(ghInfo.acct, ghInfo.repo, ghInfo.ref)
-        ghInfo.assetsBaseUrl = `https://raw.githubusercontent.com/${ghInfo.acct}/${ghInfo.repo}/${refHash}`
+        // let refHash = await headRef(ghInfo.acct, ghInfo.repo, ghInfo.ref)
+        // ghInfo.assetsBaseUrl = `https://raw.githubusercontent.com/${ghInfo.acct}/${ghInfo.repo}/${refHash}`
       }
       return ghInfo
 
