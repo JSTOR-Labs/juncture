@@ -2,7 +2,6 @@ title: Juncture
 tagline: A Visual Essay Site
 banner: https://picsum.photos/id/164/1000/400
 favicon: /images/favicon.svg
-customCSS: /css/custom.css
 
 # When using a custom domain these fields must be updated to match
 # the account and repository name
