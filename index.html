@@ -342,14 +342,14 @@
         }}
       }
     
-      ['banner', 'favicon'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       if (gaPropertyID) ga('create', gaPropertyID, 'auto')
 
       contentSource.ref = qargs.ref || contentSource.ref
       headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
         if (headHash) {
           contentSource.ref = headHash.slice(0,7)
-          contentSource.assetsBaseUrl = `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`
+          contentSource.assetsBaseUrl = `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`;
+          ['banner', 'favicon'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
         }
       })
       return config
