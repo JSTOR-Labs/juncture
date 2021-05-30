@@ -334,24 +334,28 @@
     })
     .then(config => {
       siteConfig = config
-      if (ENV === 'PROD') {
+      //if (ENV === 'PROD') {
         contentSource = {...contentSource, ...{
             acct: config.acct || contentSource.acct, 
             repo: config.repo || contentSource.repo, 
             ref: qargs.ref || config.ref || contentSource.ref
         }}
-      }
+      //}
     
       if (gaPropertyID) ga('create', gaPropertyID, 'auto')
+      let attrsWithUrls = ['banner', 'favicon']
 
-      contentSource.ref = qargs.ref || contentSource.ref
-      headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
-        if (headHash) {
-          contentSource.ref = headHash.slice(0,7)
-          contentSource.assetsBaseUrl = `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`;
-          ['banner', 'favicon'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
-        }
-      })
+      if (ENV === 'PROD') {
+        headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
+          if (headHash) {
+            contentSource.ref = headHash.slice(0,7)
+            contentSource.assetsBaseUrl = `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`
+            attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
+          }
+        })
+      } else {
+        attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
+      }
       return config
     })
     .then(config => gcOauth())
