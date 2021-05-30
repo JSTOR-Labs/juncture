@@ -280,7 +280,8 @@
     const knownGhAccts = {'jstor-labs': 'main', 'kent-map': 'main'}
 
     async function headRef(acct, repo, ref, token) {  
-      token = token || ghUnscopedToken
+      token = token || oauthAccessToken || ghUnscopedToken
+      console.log(`headRef: acct=${acct} repo=${repo} ref=${ref} token=${token} oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`)
       let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs/heads`, {
         headers: {Authorization: `Token ${token}`, Accept: 'application/vnd.github.v3+json'} })
       if (resp.ok) {
@@ -333,30 +334,34 @@
     })
     .then(config => {
       siteConfig = config
-      if (ENV === 'PROD') {
+      //if (ENV === 'PROD') {
         contentSource = {...contentSource, ...{
             acct: config.acct || contentSource.acct, 
             repo: config.repo || contentSource.repo, 
             ref: qargs.ref || config.ref || contentSource.ref
         }}
-      }
+      //}
     
-      ['banner', 'favicon'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       if (gaPropertyID) ga('create', gaPropertyID, 'auto')
+      let attrsWithUrls = ['banner', 'favicon']
 
-      contentSource.ref = qargs.ref || contentSource.ref
-      headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
-        if (headHash) {
-          contentSource.ref = headHash.slice(0,7)
-          contentSource.assetsBaseUrl = `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`
-        }
-      })
+      if (ENV === 'PROD') {
+        headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
+          if (headHash) {
+            contentSource.ref = headHash.slice(0,7)
+            contentSource.assetsBaseUrl = `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`
+            attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
+          }
+        })
+      } else {
+        attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
+      }
       return config
     })
     .then(config => gcOauth())
-    .then(resp => headRef('jstor-labs', 'juncture', junctureVersion))
+    .then(resp => headRef('jstor-labs', 'juncture', junctureVersion, ghUnscopedToken))
     .then(hash => {
-      junctureVersionHash = hash
+      junctureVersionHash = hash.slice(0,7)
       console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} junctureVersionHash=${junctureVersionHash} referrer=${document.referrer}`)
       return getComponentsList()
     })
@@ -371,17 +376,20 @@
         }
       })
 
-      let head = document.querySelector('head')
-      if (ENV === 'DEV') {
-        head.appendChild(makeLink(`${contentSource.basePath}/css/main.css`))
-      } else {
-        head.appendChild(makeLink(`https://raw.githubusercontent.com/jstor-labs/juncture/${junctureVersionHash}/css/main.css`))
-      }
-      if (siteConfig.favicon ) head.appendChild(makeLink(siteConfig.favicon, 'icon'))
+      let cssPromise = ENV === 'DEV'
+        ? fetch(`${contentSource.assetsBaseUrl}/css/main.css`).then(resp => resp.text())
+        : getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
+        cssPromise.then(css => {
+      let style = document.createElement('style')
+        style.innerHTML = css
+        document.querySelector('head').appendChild(style)
+      })
+
+      if (siteConfig.favicon ) document.querySelector('head').appendChild(makeLink(siteConfig.favicon, 'icon'))
       if (siteConfig.title) document.title = siteConfig.title
       if (fontawesome) document.querySelector('body').appendChild(makeScriptTag(fontawesome, 'anonymous'))
       
-      let cssPromise = ENV === 'DEV'
+      cssPromise = ENV === 'DEV'
         ? fetch(`${contentSource.assetsBaseUrl}/css/custom.css`).then(resp => resp.text())
         : getFile(contentSource.acct, contentSource.repo, contentSource.ref, '/css/custom.css')
       cssPromise.then(css => {
@@ -1520,8 +1528,8 @@
         }
       }
       if (ghInfo) {
-        let refHash = await headRef(ghInfo.acct, ghInfo.repo, ghInfo.ref)
-        ghInfo.assetsBaseUrl = `https://raw.githubusercontent.com/${ghInfo.acct}/${ghInfo.repo}/${refHash}`
+        // let refHash = await headRef(ghInfo.acct, ghInfo.repo, ghInfo.ref)
+        // ghInfo.assetsBaseUrl = `https://raw.githubusercontent.com/${ghInfo.acct}/${ghInfo.repo}/${refHash}`
       }
       return ghInfo
 
@@ -1628,9 +1636,9 @@
       } else if (pathElems[0] === contentSource.repo) {
         pathElems = pathElems.slice(1)
       }
-      //console.log(`assetsBaseUrl=${contentSource.assetsBaseUrl}`)
+      // console.log(`assetsBaseUrl=${contentSource.assetsBaseUrl}`)
       converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
-      //console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
+      // console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
       return converted
     }
 

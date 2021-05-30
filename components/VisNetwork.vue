@@ -68,12 +68,7 @@ module.exports = {
     },
     input() { 
       return this.items[0] && this.items[0].file || this.items[0].url
-    },
-    componentsBaseURL() {
-      return window.location.hostname === "localhost"
-        ? ""
-        : "https://jstor-labs.github.io/visual-essays";
-    },
+    }
   },
   mounted() {
     console.log(this.$options.name, this.items);
@@ -82,29 +77,24 @@ module.exports = {
   },
   methods: {
     init() {
-      var nodeslist = [];
-      var edgeslist = [];
-      console.log(this.items[0].url)
+      var nodeslist = []
+      var edgeslist = []
       //get input data here from file
       this.getInput(this.input)
         .then((delimitedDataString) => {
           const delimiter = this.input.split(".").pop() == "tsv" ? "\t" : ",";
           const data = this.transformData(
             this.delimitedStringToObjArray(delimitedDataString, delimiter)
-          );
-          nodeslist = data.nodes;
-          edgeslist = data.edges;
+          )
+          edgeslist = data.edges
+          return this.getImages(data.nodes)
         })
-        .then((result) => this.getImages(nodeslist)) // eslint-disable-line no-unused-vars
-        .then(() => {
-          this.renderGraph(nodeslist, edgeslist);
-        });
+        .then(nodesWithImages => nodeslist = nodesWithImages)
+        .then(() => this.renderGraph(nodeslist, edgeslist))
     },
     renderGraph(nodeslist, edgeslist) {
       let nodes = new vis.DataSet(nodeslist);
       let edges = new vis.DataSet(edgeslist);
-      console.log("nodeslist", nodeslist);
-      console.log("edgeslist", edgeslist);
       var container = document.getElementById("mynetwork");
       var data = {
         nodes: nodes,
@@ -123,7 +113,7 @@ module.exports = {
           hierarchical: this.items[0].layout === "hierarchy" ? true : false,
         },
         edges: {
-          arrows: this.items[0].arrows,
+          arrows: this.items[0].arrows || 'to',
           //color: 'red',
           scaling: {
             label: true,
@@ -137,7 +127,6 @@ module.exports = {
       network.on("click", (properties) => {
         var ids = properties.nodes;
         var clickedNodes = nodes.get(ids);
-        console.log("clicked nodes:", clickedNodes);
         if (clickedNodes.length > 0) {
           this.setSelectedItemID(clickedNodes[0].qid);
         }
@@ -182,7 +171,6 @@ module.exports = {
       const transformed = { nodes: [], edges: [] };
       objArray.forEach((obj) => {
         ['source', 'target'].forEach((nodeType) => {
-          console.log('obj[nodeType].id', obj[nodeType].id, 'obj[nodeType].label', obj[nodeType].label);
           let nodeId = obj[nodeType].id || obj[nodeType].label;
           if (nodes[nodeId] === undefined) {
             let id = `${transformed.nodes.length}`;
@@ -203,7 +191,6 @@ module.exports = {
         });
       });
       objArray.forEach((obj) => {
-        console.log('obj', obj);
         if (obj.target.id !== ""){
           transformed.edges.push({
             from: nodes[obj.source.id || obj.source.label],
@@ -215,65 +202,59 @@ module.exports = {
       });
       return transformed;
     },
-    //get entity (image) for a single node
-    getImage(node) {
-      return this.getEntity(node.qid).then((result) => {
-        node.label = result.labels.en ? result.labels.en.value : ''
-        const imgSrc = result['summary info'] && result['summary info'].originalimage
-          ? result['summary info'].originalimage.source
-          : result.claims.image && result.claims.image.length > 0
-            ? `https://commons.wikimedia.org/w/thumb.php?f=${result.claims.image[0].value}&w=140`
-            : undefined
-        if (imgSrc) {
-          node.image = imgSrc;
-          node.shape = "circularImage";
-        }
-        return node;
-      });
-    },
-    getImages(nodeslist) {
-      const promises = nodeslist
-        .filter((node) => node.qid)
-        .map((node) => this.getImage(node));
-      return Promise.all(promises);
-    },
-    toQueryString(args) {
-      const parts = [];
-      Object.keys(args).forEach((key) => {
-        parts.push(`${key}=${encodeURIComponent(args[key])}`);
-      });
-      return parts.join("&");
-    },
-    getEntity(eid) {
-      let url = `https://visual-essays.app/entity/${encodeURIComponent(eid)}?refresh=false`;
-      const args = {};
-      if (this.context) args.context = this.context;
-      //if (this.entity.article) args.article = this.entity.article
-      if (Object.keys(args).length > 0) {
-        url += `?${this.toQueryString(args)}`;
-      }
-      console.log(`getEntity=${url}`);
-      return fetch(url).then((resp) => resp.json());
-    },
-    getSummaryInfo() {
-      console.log("getSummaryInfo", this.eid, this.entity);
-      if (
-        this.entity["summary info"] === undefined &&
-        !this.requested.has(this.entity.id)
-      ) {
-        this.requested.add(this.entity.id);
-        this.getEntity().then((updated) => {
-          if (!updated["summary info"]) {
-            updated["summary info"] = null;
-          }
-          updated.id = this.eid;
-          this.$store.dispatch("updateItem", updated);
-        });
-      }
-    },
-    addPositions(){
 
+    async getImages(nodeslist) {
+      let eids = nodeslist.filter(node => node.qid).map(node => node.qid)
+      let entities = await this.getEntityData(eids)
+      return nodeslist.map(node => {
+        if (node.qid) {
+          node.image = entities[node.qid].thumbnails[0]
+          node.shape = 'circularImage'
+        }
+        return node
+      })
+    },
+  
+    // Gets labels and images for referenced Wikdata entities
+    async getEntityData(eids) {
+      let values = eids.map(eid => `(<http://www.wikidata.org/entity/${eid}>)`).join(' ')
+      let query = `SELECT ?item ?label ?images WHERE {
+                      VALUES (?item) { ${values} }
+                      ?item rdfs:label ?label . FILTER(LANG(?label) = 'en')
+                      OPTIONAL { ?item wdt:P18 ?images . }
+                    }`
+      let resp = await fetch('https://query.wikidata.org/sparql', {
+        method: 'POST', body: `query=${encodeURIComponent(query)}`, 
+        headers: { Accept: 'application/sparql-results+json', 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
+      resp = await resp.json()
+      let entities = {}
+      resp.results.bindings.forEach(rec => {
+        let eid = rec.item.value.split('/').pop()
+        if (!entities[eid]) entities[eid] = {eid, label: rec.label.value, images: [], thumbnails: []}
+        if (rec.images && entities[eid].images.indexOf(rec.images.value) < 0) {
+          entities[eid].images.push(rec.images.value)
+          entities[eid].thumbnails.push(this.commonsImageUrl(rec.images.value, 200))
+        }
+      })
+      return entities
+    },
+
+    commonsImageUrl(url, width) {
+      // Converts Wikimedia commons File URL to an image link
+      //  If a width is provided a thumbnail is returned
+      let mwImg = url.indexOf('Special:FilePath') > 0 ? url.split('/Special:FilePath/').pop() :  url.split('/File:').pop()
+      mwImg = decodeURIComponent(mwImg).replace(/ /g,'_')
+      const ImgMD5 = md5(mwImg)
+      const extension = mwImg.slice(mwImg.length-4)
+      let imgUrl = `https://upload.wikimedia.org/wikipedia/commons/${width ? 'thumb/' : ''}`
+      imgUrl += `${ImgMD5.slice(0,1)}/${ImgMD5.slice(0,2)}/${mwImg}`
+      if (width) imgUrl += `/${width}px-${mwImg}`
+      if (extension === '.svg') imgUrl += '.png'
+      if (extension === '.tif') imgUrl += '.jpg'
+      return imgUrl
     }
+    
   },
   watch: {
     items() {

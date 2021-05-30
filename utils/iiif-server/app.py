@@ -55,7 +55,7 @@ def connect_db():
 
 def get_image_size(url, **kwargs):
     '''Image size required for IIIF Hosting ingest'''
-    url = url.replace('https://iiif-v2.visual-essays.app', 'http://localhost:8080')
+    url = url.replace('https://iiif.juncture-digital.org', 'http://localhost:8080')
     size = None
     try:
         resp = requests.head(url, )
