@@ -243,7 +243,7 @@ def gp_proxy(path):
 @app.route('/manifest/<path:path>', methods=['GET'])
 @app.route('/manifest/', methods=['OPTIONS', 'POST', 'PUT'])
 def manifest(path=None):
-    referrer = urlparse(request.referrer).netloc if request.referrer else None
+    referrer = '.'.join(urlparse(request.referrer).netloc.split('.')[-2:]) if request.referrer else None
     can_mutate = referrer in referrer_whitelist
     if request.method == 'OPTIONS':
         return ('', 204)

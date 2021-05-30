@@ -377,7 +377,7 @@
       })
 
       let cssPromise = ENV === 'DEV'
-        ? fetch(`${contentSource.assetsBaseUrl}/css/main.css`).then(resp => resp.text())
+        ? fetch(`/juncture/css/main.css`).then(resp => resp.text())
         : getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
         cssPromise.then(css => {
       let style = document.createElement('style')
@@ -719,7 +719,7 @@
           doCustomFormatting(elem) {
             Array.from(elem.querySelectorAll('section.cards')).forEach(cardsSection => {
               Array.from(cardsSection.querySelectorAll('section')).forEach(card => {
-                ['img', 'a', 'strong', 'ul'].forEach(selector => {
+                ['img', '.card > a', 'strong', 'ul'].forEach(selector => {
                   let el = card.querySelector(selector)
                   if (el) {
                     if (selector !== 'strong' || el.parentElement.tagName !== 'A') card.appendChild(el)
