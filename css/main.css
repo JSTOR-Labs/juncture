@@ -356,18 +356,6 @@ div.segment p {
   -webkit-box-orient: vertical;  
 }
 
-.card p {
-    background-color: unset;
-}
-
-.card a {
-  cursor: pointer;
-  color: #000 !important;
-  font-size: 1.5rem !important;
-  line-height: 1.3;
-  text-decoration: underline;
-}
-
 .tippy-content pre {
   overflow-x: auto;
   white-space: pre-wrap;

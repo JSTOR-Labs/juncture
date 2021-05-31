@@ -376,29 +376,31 @@
         }
       })
 
-      let cssPromise = ENV === 'DEV'
+      if (siteConfig.favicon ) document.querySelector('head').appendChild(makeLink(siteConfig.favicon, 'icon'))
+      if (siteConfig.title) document.title = siteConfig.title
+      if (fontawesome) document.querySelector('body').appendChild(makeScriptTag(fontawesome, 'anonymous'))
+      
+
+      let mainCssPromise = ENV === 'DEV'
         ? fetch(`/juncture/css/main.css`).then(resp => resp.text())
         : getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
-        cssPromise.then(css => {
+      mainCssPromise.then(css => {
       let style = document.createElement('style')
         style.innerHTML = css
         document.querySelector('head').appendChild(style)
       })
 
-      if (siteConfig.favicon ) document.querySelector('head').appendChild(makeLink(siteConfig.favicon, 'icon'))
-      if (siteConfig.title) document.title = siteConfig.title
-      if (fontawesome) document.querySelector('body').appendChild(makeScriptTag(fontawesome, 'anonymous'))
-      
-      cssPromise = ENV === 'DEV'
+      let customCssPromise = ENV === 'DEV'
         ? fetch(`${contentSource.assetsBaseUrl}/css/custom.css`).then(resp => resp.text())
         : getFile(contentSource.acct, contentSource.repo, contentSource.ref, '/css/custom.css')
-      cssPromise.then(css => {
+      customCssPromise.then(css => {
         if (css) {
           let style = document.createElement('style')
           style.innerHTML = css
           document.querySelector('head').appendChild(style)
         }
       })
+
 
       new Vue({
         el: '#app',
@@ -719,7 +721,7 @@
           doCustomFormatting(elem) {
             Array.from(elem.querySelectorAll('section.cards')).forEach(cardsSection => {
               Array.from(cardsSection.querySelectorAll('section')).forEach(card => {
-                ['img', '.card > a', 'strong', 'ul'].forEach(selector => {
+                ['img', '.card > .segment > p > a', '.card > .segment > p > strong', 'ul'].forEach(selector => {
                   let el = card.querySelector(selector)
                   if (el) {
                     if (selector !== 'strong' || el.parentElement.tagName !== 'A') card.appendChild(el)
@@ -744,7 +746,6 @@
                   abstractWrapper.innerHTML += '<button class="collapsible">read more</button>'
                 }
               })
-
             })
             return elem.innerHTML
           },
