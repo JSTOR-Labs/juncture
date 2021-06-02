@@ -1,5 +1,5 @@
 <template>
-  <div id="footer">
+  <div id="footer-component">
     Footer <img v-if="logo" :src="logo">
   </div>
 </template>
@@ -27,13 +27,13 @@
   
   [v-cloak] { display: none; }
 
-  #footer {
+  #footer-component {
     display: flex;
     align-items: center;
     height: 50px;
     background-color: #ffffff;
   } 
-  #footer img {
+  #footer-component img {
     height: 30px;
     margin: 0 12px;
   }

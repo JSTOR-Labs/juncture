@@ -299,7 +299,7 @@ module.exports = {
         this.viewer.addHandler('page', this.newPage)
         this.viewer.addHandler('viewport-change', this.viewportChange)
         this.viewer.world.addHandler('add-item', (e) => {
-          console.log('add-item', this.currentItem)
+          // console.log('add-item', this.currentItem)
 
           const numItems = this.viewer.world.getItemCount()
           // console.log('add-item', numItems, e, e.item)
@@ -352,7 +352,7 @@ module.exports = {
     },
     */
     loadManifests(items) {
-      console.log('loadManifests', items)
+      // ('loadManifests', items)
       let promises = items.map(item => {
         if (item.manifest) {
           return fetch(item.manifest).then(resp => resp.json())
@@ -386,7 +386,7 @@ module.exports = {
       immediately = immediately || false
       if (this.currentItem) {
         this.$nextTick(() => {
-          console.log(`positionImage: fit=${this.fit} region=${this.currentItem.region}`)
+          // console.log(`positionImage: fit=${this.fit} region=${this.currentItem.region}`)
           if (this.currentItem.region) {
             this.viewer.viewport.fitBounds(this.parseRegionString(this.currentItem.region), immediately)
           } else {
@@ -438,11 +438,11 @@ module.exports = {
     },
     async loadAnnotations() {
       let annosPath = `${this.mdDir}${this.currentItemSourceHash}.json`
-      console.log(`loadAnnotations: path=${annosPath}`)
+      // console.log(`loadAnnotations: path=${annosPath}`)
       this.getFile(annosPath).then(annos => {
         if (annos && annos.content && annos.content.length > 0) {
           this.annotations = JSON.parse(annos.content)
-          console.log(this.annotations)
+          // console.log(this.annotations)
           if (!Array.isArray(this.annotations) && this.annotations.items) this.annotations = this.annotations.items
           this.annotations.forEach(anno => this.annotator.addAnnotation(anno))
         } else {
@@ -452,7 +452,7 @@ module.exports = {
     },
     saveAnnotations() {
       this.annotations = this.annotator.getAnnotations()
-      console.log('saveAnnotations', this.annotations)
+      // console.log('saveAnnotations', this.annotations)
       this.putFile(`${this.mdDir}${this.currentItemSourceHash}.json`, JSON.stringify(this.annotations, null, 2))
     },
     annotationSelected(anno) {

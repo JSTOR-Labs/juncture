@@ -10,49 +10,57 @@ body {
   color: #444;
 }
 
+#essay {
+  font-size: 1.3rem;
+  padding: 24px;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  padding-top: 420px;
+  background-color: #f8f8f8;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  line-height: 1.3;
+}
+
+#essay > section:last-of-type {
+  padding-bottom: 80vh; /* Enables srolling all content through active paragraph region at top*/
+}
+
 #app {
   display: grid;
   width: 100%;
   height: 100vh;
   grid-template-columns: 1fr;
   grid-template-rows: auto 1fr auto;
-
-}
-#app.vertical {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto 1fr;
 }
 
 #header {
-    grid-area: 1 / 1 / 2 / 3;
-    z-index: 2;
+  grid-area: 1 / 1 / 2 / 3;
+  z-index: 2;
 }
+
 #essay {
-    grid-area: 1 / 1 / 3 / 2;
-    font-size: 1.3rem;
-    padding: 24px;
-    overflow-y: scroll;
-    scroll-behavior: smooth;
-    z-index: 1;
-    padding-top: 420px;
-    background-color: #f8f8f8;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    line-height: 1.3;
+  grid-area: 1 / 1 / 3 / 2;
+  z-index: 1;
 }
-#essay > section:last-of-type {
-    padding-bottom: 80vh; /* Enables srolling all content through active paragraph region at top*/
-}
+
 #viewer {
-    grid-area: 2 / 2 / 3 / 2;
-    position: relative;
+  grid-area: 2 / 2 / 3 / 2;
+  position: relative;
 }
+
+#footer {
+  grid-area: 3 / 1 / 4 / 3;
+}
+
 #essay a {
   cursor: pointer;
   color: #0164b9;
 }
-#footer {
-  grid-area: 3 / 1 / 4 / 3;
+
+#app.vertical {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
 }
 
 .vertical div.segment {

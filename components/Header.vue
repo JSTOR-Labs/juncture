@@ -1,6 +1,6 @@
 
 <template>
-  <div ref="header" id="header" class="header" :style="containerStyle">
+  <div ref="header" id="header-component" class="header" :style="containerStyle">
     
     <nav>
       <div id="menuToggle">
