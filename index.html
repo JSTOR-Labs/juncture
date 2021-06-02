@@ -266,7 +266,7 @@
             acct, repo, ref: qargs.ref || 'main', basePath: `/${repo}`, isGhpSite: true,
             baseUrl: window.location.origin
           }
-          let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
+          let ghRepoInfo = await githubRepoInfo(acct, repo)
           if (ghRepoInfo) {
             console.log('ghRepoInfo', ghRepoInfo)
             contentSource = {...contentSource, ...ghRepoInfo}
@@ -276,7 +276,7 @@
         } else if (isJuncture) {
           contentSource = {
             acct: 'jstor-labs', repo: 'juncture', ref: 'main', basePath: '', isGhpSite: false,
-            baseUrl: window.location.origin
+            baseUrl: window.location.origin, assetsBaseUrl: `https://raw.githubusercontent.com/jstor-labs/juncture/main`
           }
           let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
           if (pathElems.length >= 2) {
@@ -380,7 +380,7 @@
         headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
           if (headHash) {
             contentSource.hash = headHash.slice(0,7)
-            contentSource.assetsBaseUrl = `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${headHash}`
+            contentSource.assetsBaseUrl = `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.hash}`
             attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
           }
         })
@@ -1167,7 +1167,8 @@
                                ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
         if (resp.ok) {
           resp = await resp.json()
-          ghInfo = {acct, repo, branch: resp.default_branch, ref: qargs.ref || resp.default_branch, basePath: `/${acct}/${repo}`}
+          ghInfo = {acct, repo, branch: resp.default_branch, ref: qargs.ref || resp.default_branch, 
+                    basePath: resp.has_pages ? `/${repo}` : `/${acct}/${repo}`}
         }
       //}
       if (ghInfo) {
