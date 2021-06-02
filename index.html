@@ -1159,9 +1159,9 @@
     // Determines if Github repo exists
     async function githubRepoInfo(acct, repo) {
       let ghInfo
-      if (knownGhAccts[acct]) {
-        ghInfo = {acct, repo, ref: qargs.ref || knownGhAccts[acct], basePath: `/${acct}/${repo}`}
-      } else {
+      //if (knownGhAccts[acct]) {
+      //  ghInfo = {acct, repo, ref: qargs.ref || knownGhAccts[acct], basePath: `/${acct}/${repo}`}
+      //} else {
         let ghToken = oauthAccessToken || ghUnscopedToken
         let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`,
                                ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
@@ -1169,7 +1169,7 @@
           resp = await resp.json()
           ghInfo = {acct, repo, branch: resp.default_branch, ref: qargs.ref || resp.default_branch, basePath: `/${acct}/${repo}`}
         }
-      }
+      //}
       if (ghInfo) {
         // let refHash = await headRef(ghInfo.acct, ghInfo.repo, ghInfo.ref)
         // ghInfo.assetsBaseUrl = `https://raw.githubusercontent.com/${ghInfo.acct}/${ghInfo.repo}/${refHash}`
