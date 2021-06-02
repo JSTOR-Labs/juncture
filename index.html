@@ -175,7 +175,7 @@
     console.log(window.location)
     const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 ? 'DEV' : 'PROD'
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
-    const junctureVersion = 'v0.2.0'
+    const junctureVersion = 'main'
     let junctureVersionHash
 
     const referrerUrl = document.referrer
@@ -238,34 +238,53 @@
 
       if (window.location.host === 'localhost:8088') {
         // For local dev in custom domain mode
-        contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, basePath: '', isGhpSite: false,
-                        assetsBaseUrl: `${window.location.origin}`
+        contentSource = {
+          acct: null, repo: null, branch: null, ref: null, hash: null, basePath: '', isGhpSite: false,
+          baseUrl: window.location.origin, 
+          assetsBaseUrl: `${window.location.origin}`
       }
         let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
         if (pathElems.length >= 2) {
           let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
-          if (ghRepoInfo) contentSource = {...contentSource, ...ghRepoInfo}
+          if (ghRepoInfo) {
+            console.log('ghRepoInfo', ghRepoInfo)
+            contentSource = {...contentSource, ...ghRepoInfo}
+          }
         }
 
       } else if (ENV === 'DEV') {
         // For local dev in GHP mode
         let repo = window.location.pathname.split('/').filter(elem => elem !== '')[0] || 'juncture'
-        contentSource = {acct: 'jstor-labs', repo, ref: 'main', baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true,
+        contentSource = {acct: 'jstor-labs', repo, branch: 'main', ref: 'main', hash: null, baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true,
                          assetsBaseUrl: `${window.location.origin}/${repo}`}
 
       } else {
         // GHP deploy mode
         if (window.location.hostname.indexOf('github.io') > 0) {
           [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2, 4)
-          contentSource = {acct, repo, ref: qargs.ref || 'main', baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true}
+          contentSource = {
+            acct, repo, ref: qargs.ref || 'main', basePath: `/${repo}`, isGhpSite: true,
+            baseUrl: window.location.origin
+          }
+          let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
+          if (ghRepoInfo) {
+            console.log('ghRepoInfo', ghRepoInfo)
+            contentSource = {...contentSource, ...ghRepoInfo}
+          }
 
         // juncture-digital.org
         } else if (isJuncture) {
-          contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: 'https://raw.githubusercontent.com/jstor-labs/juncture/main', basePath: '', isGhpSite: false}
+          contentSource = {
+            acct: 'jstor-labs', repo: 'juncture', ref: 'main', basePath: '', isGhpSite: false,
+            baseUrl: window.location.origin
+          }
           let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
           if (pathElems.length >= 2) {
             let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
-            if (ghRepoInfo) contentSource = {...contentSource, ...ghRepoInfo}
+            if (ghRepoInfo) {
+              console.log('ghRepoInfo', ghRepoInfo)
+              contentSource = {...contentSource, ...ghRepoInfo}
+            }
           }
 
         // Deployed in a non juncture-digital.org custom domain
@@ -360,8 +379,8 @@
       if (ENV === 'PROD') {
         headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
           if (headHash) {
-            contentSource.ref = headHash.slice(0,7)
-            contentSource.assetsBaseUrl = `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`
+            contentSource.hash = headHash.slice(0,7)
+            // contentSource.assetsBaseUrl = `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`
             attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
           }
         })
@@ -1148,7 +1167,7 @@
                                ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
         if (resp.ok) {
           resp = await resp.json()
-          ghInfo = {acct, repo, ref: qargs.ref || resp.default_branch, basePath: `/${acct}/${repo}`}
+          ghInfo = {acct, repo, branch: resp.default_branch, ref: qargs.ref || resp.default_branch, basePath: `/${acct}/${repo}`}
         }
       }
       if (ghInfo) {
