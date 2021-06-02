@@ -301,7 +301,7 @@
         resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/tags`)
         if (resp.ok) {
           tags = await resp.json()
-          found = tags.find(head => tag.name === ref)
+          found = tags.find(tag => tag.name === ref)
           sha = found ? found.commit.sha : null
         }
       }
