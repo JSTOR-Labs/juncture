@@ -889,7 +889,7 @@
             this.viewerIsOpen = false
             if (config) {
               if (config.layout) this.layouts = config.layout.split(',').map(layout => layout === 'vtl' ? 'vertical' : layout)
-              Array.from(this.$refs.essay.$el.classList).forEach(cls => this.$refs.essay.classList.remove(cls))
+              Array.from(this.$refs.essay.classList).forEach(cls => this.$refs.essay.classList.remove(cls))
               if (config.class) config.class.replace(/,/,' ').split(' ').forEach(cls => this.$refs.essay.classList.add(cls))
             }
           },
