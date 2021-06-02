@@ -38,8 +38,8 @@
         <i v-if="viewerData[viewer]" :class="viewerData[viewer].icon"></i>
       </span>
     </div>
-    <div id="essay" @scroll="onScroll">
-      <component v-bind:is="mainComponent" ref="essay"
+    <div id="essay" ref="essay" @scroll="onScroll">
+      <component v-bind:is="mainComponent"
         :html="html"
         :path="path"
         :anchor="anchor"
