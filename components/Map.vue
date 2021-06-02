@@ -340,6 +340,7 @@ module.exports = {
             }
             this.geoJSONLayers = {}
             Object.values(this.popups).forEach(popup => this.map.closePopup(popup))
+            this.popups = {}
             if (this.mapDef.data) {
                 this.getGeoJSON(this.mapDef.data)
                 .then(geoJSON => this.addGeoJSONLayer(geoJSON))

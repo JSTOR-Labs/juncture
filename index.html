@@ -38,8 +38,8 @@
         <i v-if="viewerData[viewer]" :class="viewerData[viewer].icon"></i>
       </span>
     </div>
-    <div id="essay" @scroll="onScroll">
-      <component v-bind:is="mainComponent" ref="essay"
+    <div id="essay" ref="essay" @scroll="onScroll">
+      <component v-bind:is="mainComponent"
         :html="html"
         :path="path"
         :anchor="anchor"
@@ -47,10 +47,12 @@
         :params="params"
         :available-viewers="availableViewers"
         :scroll-top="scrollTop"
+        :content-source="contentSource"
         @set-entities="entities = $event"
         @set-params="params = $event"
         @set-items="items = $event"
         @set-active="active = $event"
+        @scroll-to-anchor="scrollToAnchor"
         @load-essay="loadEssay"
       ></component>
     </div>
@@ -288,21 +290,24 @@
 
     async function headRef(acct, repo, ref, token) {  
       token = token || oauthAccessToken || ghUnscopedToken
+      let heads, tags, found, sha
       console.log(`headRef: acct=${acct} repo=${repo} ref=${ref} token=${token} oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`)
       let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs/heads`, {
         headers: {Authorization: `Token ${token}`, Accept: 'application/vnd.github.v3+json'} })
       if (resp.ok) {
-        let heads = await resp.json()
-        let found = heads.find(head => head.ref === `refs/heads/${ref}`)
-        return found ? found.object.sha : null
-      } else {
+        heads = await resp.json()
+        found = heads.find(head => head.ref === `refs/heads/${ref}`)
+        sha = found ? found.object.sha : null
+      } 
+      if (!sha) {
         resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/tags`)
         if (resp.ok) {
-          let tags = await resp.json()
-          let found = tags.find(head => tag.name === ref)
-          return found ? found.commit.sha : null
+          tags = await resp.json()
+          found = tags.find(tag => tag.name === ref)
+          sha = found ? found.commit.sha : null
         }
       }
+      return sha
     }
 
     async function getFile(acct, repo, ref, path, token) {
@@ -658,7 +663,9 @@
                 this.html = md.render(markdown)
                 let tmp = new DOMParser().parseFromString(this.html, 'text/html').children[0].children[1]
                 let configParam = tmp.querySelector('param[ve-config]')
-                this.essayConfig = configParam ? attrsToObject(configParam) : {}
+                let essayConfig = configParam ? attrsToObject(configParam) : {}
+                if (essayConfig.banner) essayConfig.banner = convertURL(essayConfig.banner)
+                this.essayConfig = essayConfig
                 this.mdDir = i === 1 ? '/' : path
                 break
               }
@@ -673,6 +680,12 @@
               history.pushState({file: path || ''}, '', browserPath)
             }
 
+          },
+
+          scrollToAnchor() {
+            let anchorElem = document.getElementById(this.anchor)
+            if (anchorElem) this.scrollTop = anchorElem.offsetTop
+            this.anchor = null
           },
 
           addItemEventHandlers(elem) {
@@ -886,7 +899,7 @@
             this.viewerIsOpen = false
             if (config) {
               if (config.layout) this.layouts = config.layout.split(',').map(layout => layout === 'vtl' ? 'vertical' : layout)
-              Array.from(this.$refs.essay.$el.classList).forEach(cls => this.$refs.essay.classList.remove(cls))
+              Array.from(this.$refs.essay.classList).forEach(cls => this.$refs.essay.classList.remove(cls))
               if (config.class) config.class.replace(/,/,' ').split(' ').forEach(cls => this.$refs.essay.classList.add(cls))
             }
           },

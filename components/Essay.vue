@@ -30,6 +30,7 @@ module.exports = {
     params: { type: Array, default: () => ([]) },
     availableViewers: { type: Array, default: () => ([]) },
     scrollTop: { type: Number, default: 0 },
+    contentSource:  { type: Object, default: () => ({}) }
   },
   data: () => ({
     processedHtml: '',
@@ -90,11 +91,16 @@ module.exports = {
           } else if (el.innerHTML.indexOf('class="nav"') >= 0) {
             currentSection.innerHTML += el.innerHTML
           } else {
+            let segID = `${currentSection.dataset.id}.${segments.length + 1}`
             segment = new DOMParser().parseFromString('<div></div>', 'text/html').children[0].children[1].children[0]
-            segment.setAttribute('data-id', `${currentSection.dataset.id}.${segments.length + 1}`)
+            segment.setAttribute('data-id', segID)
+            segment.setAttribute('id', segID)
             segment.classList.add('segment')
             segment.innerHTML = el.outerHTML
             segments.push(segment)
+            let segLink = document.createElement('span')
+            segment.appendChild(segLink)
+            segLink.outerHTML = `<span class="seg-link" data-anchor="${this.contentSource.baseUrl}${this.contentSource.basePath}${this.path}#${segID}" title="${segID}"><i class="fas fa-link"></span>`
           }
         } else if (el.tagName === 'SECTION' && el.className === 'footnotes') {
           currentSection.innerHTML += el.outerHTML
@@ -115,7 +121,10 @@ module.exports = {
 
     async essayLoaded() {
       this.active = null
-      let essayElem = this.$refs.essay
+
+      // let essayElem = this.$refs.essay
+      let essayElem = document.getElementById('essay')
+      essayElem.querySelectorAll('.seg-link').forEach(el => el.addEventListener('click', () => navigator.clipboard.writeText(el.dataset.anchor)))
       Array.from(essayElem.querySelectorAll('.collapsible')).forEach(el =>el.addEventListener('click', this.toggleExpandCollapse))
       let params = Array.from(essayElem.querySelectorAll('param'))
         .map(param => {
@@ -143,10 +152,11 @@ module.exports = {
         if (this.anchor) {
           let anchorElem = document.getElementById(this.anchor)
           if (anchorElem) {
-            this.scrollTop = anchorElem.offsetTop
-            essayElem.scrollTop = this.scrollTop - 100
+            this.$emit('scroll-to-anchor')
+            // this.scrollTop = anchorElem.offsetTop
+            this.$nextTick(() => essayElem.scrollTop = this.scrollTop - 100)
           }
-          this.anchor = null
+          // this.anchor = null
         } else {
           essayElem.scrollTop = 0
           this.active = segments.length > 0 ? segments[0].dataset.id : null
