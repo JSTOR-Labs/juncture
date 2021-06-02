@@ -14,7 +14,7 @@ body {
   font-size: 1.3rem;
   padding: 24px;
   overflow-y: scroll;
-  scroll-behavior: smooth;
+  /*scroll-behavior: smooth;*/
   padding-top: 420px;
   background-color: #f8f8f8;
   overflow-wrap: break-word;
@@ -449,4 +449,21 @@ p code {
   /* height: 40px;
   width: 120px; */
   cursor: pointer;
+}
+
+span.seg-link {
+  position: absolute;
+  top: -4px;
+  left: 4px;
+  color: #ddd;
+}
+
+span.seg-link svg {
+  color: #ddd;
+  font-size: 1rem;
+}
+
+span.seg-link svg:hover {
+  color: #aaa;
+  cursor: copy;
 }
