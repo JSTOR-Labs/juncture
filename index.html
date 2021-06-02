@@ -288,23 +288,24 @@
 
     async function headRef(acct, repo, ref, token) {  
       token = token || oauthAccessToken || ghUnscopedToken
+      let heads, tags, found, sha
       console.log(`headRef: acct=${acct} repo=${repo} ref=${ref} token=${token} oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`)
       let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs/heads`, {
         headers: {Authorization: `Token ${token}`, Accept: 'application/vnd.github.v3+json'} })
       if (resp.ok) {
-        let heads = await resp.json()
-        console.log(heads)
-        let found = heads.find(head => head.ref === `refs/heads/${ref}`)
-        console.log(found)
-        return found ? found.object.sha : null
-      } else {
+        heads = await resp.json()
+        found = heads.find(head => head.ref === `refs/heads/${ref}`)
+        sha = found ? found.object.sha : null
+      } 
+      if (!sha) {
         resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/tags`)
         if (resp.ok) {
-          let tags = await resp.json()
-          let found = tags.find(head => tag.name === ref)
-          return found ? found.commit.sha : null
+          tags = await resp.json()
+          found = tags.find(head => tag.name === ref)
+          sha = found ? found.commit.sha : null
         }
       }
+      return sha
     }
 
     async function getFile(acct, repo, ref, path, token) {
