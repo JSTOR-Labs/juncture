@@ -293,7 +293,9 @@
         headers: {Authorization: `Token ${token}`, Accept: 'application/vnd.github.v3+json'} })
       if (resp.ok) {
         let heads = await resp.json()
+        console.log(heads)
         let found = heads.find(head => head.ref === `refs/heads/${ref}`)
+        console.log(found)
         return found ? found.object.sha : null
       } else {
         resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/tags`)
