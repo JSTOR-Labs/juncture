@@ -175,7 +175,7 @@
     console.log(window.location)
     const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 ? 'DEV' : 'PROD'
     const isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
-    const junctureVersion = 'v0.2.1'
+    const junctureVersion = 'main'
     let junctureVersionHash
 
     const referrerUrl = document.referrer
@@ -284,6 +284,7 @@
             if (ghRepoInfo) {
               console.log('ghRepoInfo', ghRepoInfo)
               contentSource = {...contentSource, ...ghRepoInfo}
+              contentSource.basePath = `/${contentSource.acct}/${contentSource.repo}`
             }
           }
 
@@ -1377,15 +1378,13 @@
                                ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
         if (resp.ok) {
           resp = await resp.json()
-          ghInfo = {acct, repo, branch: resp.default_branch, ref: qargs.ref || resp.default_branch, 
-                    basePath: resp.has_pages ? `/${repo}` : `/${acct}/${repo}`}
+          ghInfo = {acct, repo, branch: resp.default_branch, ref: qargs.ref || resp.default_branch}
         }
       //}
       if (ghInfo) {
         // let refHash = await headRef(ghInfo.acct, ghInfo.repo, ghInfo.ref)
         // ghInfo.assetsBaseUrl = `https://raw.githubusercontent.com/${ghInfo.acct}/${ghInfo.repo}/${refHash}`
       }
-      console.log('ghInfo', ghInfo)
       return ghInfo
 
     }
