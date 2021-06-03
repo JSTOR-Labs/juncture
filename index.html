@@ -284,6 +284,7 @@
             if (ghRepoInfo) {
               console.log('ghRepoInfo', ghRepoInfo)
               contentSource = {...contentSource, ...ghRepoInfo}
+              contentSource.basePath = `/${contentSource.acct}/${contentSource.repo}`
             }
           }
 
@@ -1377,8 +1378,7 @@
                                ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
         if (resp.ok) {
           resp = await resp.json()
-          ghInfo = {acct, repo, branch: resp.default_branch, ref: qargs.ref || resp.default_branch, 
-                    basePath: resp.has_pages ? `/${repo}` : `/${acct}/${repo}`}
+          ghInfo = {acct, repo, branch: resp.default_branch, ref: qargs.ref || resp.default_branch}
         }
       //}
       if (ghInfo) {
