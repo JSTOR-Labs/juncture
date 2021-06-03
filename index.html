@@ -478,7 +478,7 @@
           reposForAcct: [],
           selectedRepo: null,
           doActionCallback: {},
-          essayConfig: {}
+          essayConfig: null
         }),
         computed: {
           // essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
@@ -669,7 +669,7 @@
 
           // Loads essay Markdown file
           async loadEssay(path, replace, anchor) {
-
+            this.essayConfig = null
             path = path || window.location.pathname.slice(contentSource.basePath.length) || '/'
             if (path.slice(-1) !== '/') path += '/'
             this.path = path 
@@ -792,6 +792,11 @@
                 else if (!Object.keys(param).find(attr => attr.indexOf('ve-') === 0)) param['ve-entity'] = ''
                 return param
               })
+              .map(param => {
+                if (param.url) param.url = convertURL(param.url)
+                return param
+              })
+
             return [markdown, essay.innerHTML, params, entities]
           },
 

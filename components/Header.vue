@@ -115,12 +115,12 @@
       containerStyle() { return { 
         height: this.viewerIsActive ? `${this.scrollTop < 400 ? 400 - this.scrollTop : 0}px` : '0',
         backgroundColor: 'white',
-        backgroundImage: `url(${this.essayConfig.banner || this.siteConfig.banner || defaultBanner})`
+        backgroundImage: `url(${this.banner})`
       } },
-      banner() { return this.essayConfigLoaded ? (this.essayConfig.banner || this.siteConfig.banner) : null },
+      banner() { return this.essayConfig !== null ? (this.essayConfig.banner || this.siteConfig.banner) : null },
       bannerHeight() { return this.essayConfig && this.essayConfig.bannerHeight || this.siteConfig.bannerHeight || 400 },
-      title() { return this.essayConfig.title || this.siteConfig.title },
-      author() { return this.essayConfig.author || this.siteConfig.tagline },
+      title() { return this.essayConfig !== null ? this.essayConfig.title || this.siteConfig.title : null},
+      author() { return this.essayConfig !== null ? this.essayConfig.author || this.siteConfig.tagline : null },
     },
     mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
     methods: {
