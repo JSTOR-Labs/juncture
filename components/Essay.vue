@@ -38,125 +38,29 @@ module.exports = {
     active: null
   }),
   computed: {
-    items() { return this.active ? this.paramsInScope(document.querySelector(`[data-id="${this.active}"]`)) : [] },
+    items() { return this.active ? this.paramsInScope(document.querySelector(`[data-id="${this.active}"] p`)) : [] },
   },
   mounted() {},
   methods: {
 
-    // Convert essay Markdown into HTML.  Markdown headings are used to infer content heirarchy
-    toElem(html) {
-      let essay = document.createElement('div')
-      let tmp = new DOMParser().parseFromString(html, 'text/html').children[0].children[1]
-      let currentSection = essay
-      let segments = []
-      let segment
-
-      Array.from(tmp.children).forEach(el => {
-        if (el.tagName[0] === 'H' && isNumeric(el.tagName.slice(1))) {
-          let sectionLevel = parseInt(el.tagName.slice(1))
-          if (segments) {
-            segments.forEach(segment => currentSection.innerHTML += segment.outerHTML)
-            segments = []
-            segment = null
-          }
-          currentSection = new DOMParser().parseFromString('<section></section>', 'text/html').children[0].children[1].children[0]
-          let elClasses = Array.from(el.classList)
-          el.classList.remove(...elClasses)
-          if (!el.innerHTML) el.style.display = 'none'
-          currentSection.innerHTML += el.outerHTML
-
-          let headings = [...essay.querySelectorAll(`H${sectionLevel-1}`)]
-          let parent = sectionLevel === 1 || headings.length === 0 ? essay : headings.pop().parentElement
-          let parentDataID = parent.dataset.id || ''
-          let sectionSeq = parent.querySelectorAll(`H${sectionLevel}`).length
-          let currentDataID = parentDataID ? `${parentDataID}.${sectionSeq}` : sectionSeq
-          currentSection.setAttribute('data-id', currentDataID)
-
-          if (elClasses.indexOf('cards') >= 0) {
-            currentSection.appendChild(new DOMParser().parseFromString('<section class="cards"></section>', 'text/html').children[0].children[1].children[0])
-          } else {
-            currentSection.classList.add(...elClasses)
-            let cardsWrapper = parent.querySelector(':scope > .cards')
-            if (cardsWrapper) {
-              currentSection.classList.add('card')
-              parent = cardsWrapper
-            }
-          }
-
-          parent.appendChild(currentSection)
-
-        } else if (el.tagName === 'P') {
-          if (el.innerHTML.indexOf('ve-button.png') >= 0) {
-            el = null
-          } else if (el.innerHTML.indexOf('class="nav"') >= 0) {
-            currentSection.innerHTML += el.innerHTML
-          } else {
-            let segID = `${currentSection.dataset.id}.${segments.length + 1}`
-            segment = new DOMParser().parseFromString('<div></div>', 'text/html').children[0].children[1].children[0]
-            segment.setAttribute('data-id', segID)
-            segment.setAttribute('id', segID)
-            segment.classList.add('segment')
-            segment.innerHTML = el.outerHTML
-            segments.push(segment)
-            let segLink = document.createElement('span')
-            segment.appendChild(segLink)
-            segLink.outerHTML = `<span class="seg-link" data-anchor="${this.contentSource.baseUrl}${this.contentSource.basePath}${this.path}#${segID}" title="${segID}"><i class="fas fa-link"></span>`
-          }
-        } else if (el.tagName === 'SECTION' && el.className === 'footnotes') {
-          currentSection.innerHTML += el.outerHTML
-        } else {
-          if (segment) {
-            segment.innerHTML += el.outerHTML
-          } else {
-            currentSection.innerHTML += el.outerHTML
-          }
-        }
-      })
-      if (segments) {
-        segments.forEach(segment => currentSection.innerHTML += segment.outerHTML)
-        segments = []
-      }
-      return essay
-    },
-
     async essayLoaded() {
       this.active = null
-
-      // let essayElem = this.$refs.essay
       let essayElem = document.getElementById('essay')
       essayElem.querySelectorAll('.seg-link').forEach(el => el.addEventListener('click', () => navigator.clipboard.writeText(el.dataset.anchor)))
       Array.from(essayElem.querySelectorAll('.collapsible')).forEach(el =>el.addEventListener('click', this.toggleExpandCollapse))
-      let params = Array.from(essayElem.querySelectorAll('param'))
-        .map(param => {
-          let prior = param.previousElementSibling
-          while (prior && prior.tagName !== 'P' && prior.tagName[0] !== 'H') {
-            prior = prior.previousElementSibling
-          }
-          return { ...{ elem: prior ? prior.parentElement : essayElem }, ...attrsToObject(param) }
-        })
-        .map(param => {
-          let viewerTag = Object.keys(param).find(attr => !attr.value && this.availableViewers.indexOf(attr) >= 0)
-          if (viewerTag) param.viewer = viewerTag
-          else if (!Object.keys(param).find(attr => attr.indexOf('ve-') === 0)) param['ve-entity'] = ''
-          return param
-        })
-      this.$emit('set-params', params)
-      let entitiesFromElem = this.findEntities(essayElem)
-      let entities = await this.getEntityData(Object.keys(entitiesFromElem))
-      this.$emit('set-entities', entities)
+
+      this.tagEntities(essayElem)
+      this.$emit('set-entities', this.entities)
       this.$nextTick(() => {
-        this.tagEntities(essayElem)
-        this.addPopups(entities)
+        this.addPopups(this.entities)
         this.convertLinks(essayElem)
         let segments = [...essayElem.querySelectorAll('.segment')]
         if (this.anchor) {
           let anchorElem = document.getElementById(this.anchor)
           if (anchorElem) {
             this.$emit('scroll-to-anchor')
-            // this.scrollTop = anchorElem.offsetTop
             this.$nextTick(() => essayElem.scrollTop = this.scrollTop - 100)
           }
-          // this.anchor = null
         } else {
           essayElem.scrollTop = 0
           this.active = segments.length > 0 ? segments[0].dataset.id : null
@@ -275,98 +179,6 @@ module.exports = {
       return root
     },
 
-    // Finds all entity references in param tags
-    findEntities(root) {
-      let entities = Object.fromEntries(
-        Array.from(root.querySelectorAll('param, span'))
-          .filter(el => el.attributes.eid)
-          .map(el => attrsToObject(el))
-          .map(entity => [entity.eid, entity]))
-        Array.from(root.querySelectorAll('param'))
-          .filter(el => el.attributes.center && isEntityID(el.attributes.center.value))
-          .filter(el => !entities[el.attributes.center.value])
-          .map(el => { return {...attrsToObject(el), ...{eid: el.attributes.center.value }} })
-          .forEach(entity => entities[entity.eid] = entity)
-      return entities
-    },
-
-    // Gets labels, aliases, images and geo coords for referenced Wikdata entities
-    async getEntityData(entityIds) {
-      let values = entityIds.map(eid => `(<http://www.wikidata.org/entity/${eid}>)`).join(' ')
-      let query = `SELECT ?item ?label ?aliases ?description ?images ?coords ?whosOnFirst WHERE {
-                      VALUES (?item) { ${values} }
-                      ?item rdfs:label ?label . FILTER(LANG(?label) = 'en')
-                      OPTIONAL { ?item schema:description ?description . FILTER(LANG(?description) = 'en') }
-                      OPTIONAL { ?item skos:altLabel ?aliases . FILTER(LANG(?aliases) = 'en') }
-                      OPTIONAL { ?item wdt:P18 ?images . }
-                      OPTIONAL { ?item wdt:P625 ?coords . }
-                      OPTIONAL { ?item wdt:P6766 ?whosOnFirst . }
-                    }`
-      let resp = await fetch('https://query.wikidata.org/sparql', {
-        method: 'POST', body: `query=${encodeURIComponent(query)}`, 
-        headers: { Accept: 'application/sparql-results+json', 'Content-Type': 'application/x-www-form-urlencoded' }
-      })
-      resp = await resp.json()
-      let entities = {}
-      resp.results.bindings.forEach(rec => {
-        let eid = rec.item.value.split('/').pop()
-        if (!entities[eid]) entities[eid] = {
-            ...this.entities[eid], 
-            ...{
-              eid, 
-              label: rec.label.value, 
-              aliases: new Set(this.entities[eid] ? Array.from(this.entities[eid].aliases) : []),
-              description: rec.description && rec.description.value,
-              geojson: rec.whosOnFirst && rec.whosOnFirst.value && this.whosOnFirstUrl(rec.whosOnFirst.value),
-              images: [],
-              thumbnails: [],
-              coords: rec.coords && rec.coords.value.replace(/Point\(/,'').replace(/\)/,'').split(' ').reverse().map(coord => parseFloat(coord)),
-              foundIn: new Set(),
-            }
-          }
-        if (rec.aliases && !entities[eid].aliases.has(rec.aliases.value)) entities[eid].aliases.add(rec.aliases.value)
-        if (rec.images && entities[eid].images.indexOf(rec.images.value) < 0) {
-          entities[eid].images.push(rec.images.value)
-          entities[eid].thumbnails.push(this.commonsImageUrl(rec.images.value, 200))
-        }
-      })
-      query = `SELECT ?item ?mwPage WHERE {
-                  VALUES (?item) { ${values} }
-                  ?mwPage schema:about ?item .
-                  ?mwPage schema:isPartOf <https://en.wikipedia.org/> . }`
-      resp = await fetch('https://query.wikidata.org/sparql', {
-        method: 'POST', body: `query=${encodeURIComponent(query)}`, 
-        headers: { Accept: 'application/sparql-results+json', 'Content-Type': 'application/x-www-form-urlencoded' }
-      })
-      resp = await resp.json()
-      resp.results.bindings.forEach(rec => entities[rec.item.value.split('/').pop()]['mwPage'] = rec.mwPage.value)
-      return entities
-    },
-
-    // Creates a GeoJSON file URL from a Who's on First ID 
-    whosOnFirstUrl(wof) {
-      let wofParts = []
-      for (let i = 0; i < wof.length; i += 3) {
-        wofParts.push(wof.slice(i,i+3))
-      }
-      return `https://data.whosonfirst.org/${wofParts.join('/')}/${wof}.geojson`
-    },
-
-    commonsImageUrl(url, width) {
-      // Converts Wikimedia commons File URL to an image link
-      //  If a width is provided a thumbnail is returned
-      let mwImg = url.indexOf('Special:FilePath') > 0 ? url.split('/Special:FilePath/').pop() :  url.split('/File:').pop()
-      mwImg = decodeURIComponent(mwImg).replace(/ /g,'_')
-      const ImgMD5 = md5(mwImg)
-      const extension = mwImg.slice(mwImg.length-4)
-      let imgUrl = `https://upload.wikimedia.org/wikipedia/commons/${width ? 'thumb/' : ''}`
-      imgUrl += `${ImgMD5.slice(0,1)}/${ImgMD5.slice(0,2)}/${mwImg}`
-      if (width) imgUrl += `/${width}px-${mwImg}`
-      if (extension === '.svg') imgUrl += '.png'
-      if (extension === '.tif') imgUrl += '.jpg'
-      return imgUrl
-    },
-
     toggleExpandCollapse(e) {
       let button = e.target
       let textDiv = button.previousElementSibling
@@ -381,17 +193,18 @@ module.exports = {
     },
 
     // Finds all param tags in elements between top-level app element and element in para arg
-    paramsInScope(para) {
+    paramsInScope(root) {
       let paramTags = []
       let scope = []
-      let el = para
-      while (el && el.id !== 'app') {
+      let el = root
+      while (el && el.id !== 'essay-component') {
         scope.push(el)
         el = el.parentElement
       }
-      scope.forEach(elemInScope => 
-        paramTags = [...paramTags, ...this.params.filter(param => param.elem === elemInScope)]
-      )
+      scope.forEach(elemInScope =>{
+        let elemPath = getDomPath(elemInScope).slice(6).join('>') || 'body'
+        paramTags = [...paramTags, ...this.params.filter(param => param.path === elemPath)]
+        })
       return paramTags
     },
 
@@ -436,9 +249,9 @@ module.exports = {
     html: {
       handler: function (html) {
         if (html) {
-          let elem = this.toElem(html)
-          elem = this.convertResourceUrls(elem)
-          this.processedHtml = this.doCustomFormatting(elem)
+          let tmp = new DOMParser().parseFromString(html, 'text/html').children[0].children[1]
+          this.convertResourceUrls(tmp)
+          this.processedHtml = this.doCustomFormatting(tmp)
           this.$nextTick(() => this.essayLoaded())
         }
       },
@@ -459,7 +272,6 @@ module.exports = {
 
     items: {
       handler: function (items) {
-        console.log('Essay.items', items)
         this.$emit('set-items', items)
       },
       immediate: true

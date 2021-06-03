@@ -14,3 +14,4 @@ Below are some sample essays:
 - [Knightlab Timeline](knightlab-timeline)
 - [More image examples using IIIF](ginevra-de-benci)
 - [Entities](entities)
+- [Custom main](custom-main)
