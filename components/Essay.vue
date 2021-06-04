@@ -167,18 +167,6 @@ module.exports = {
       })
     },
 
-    convertResourceUrls(root) {
-      root.querySelectorAll('img').forEach(img => {
-        if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src))
-      })
-      root.querySelectorAll('param').forEach(param => {
-        ['url', 'banner'].forEach(attr => {
-          if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value, window.location.pathname, this.mdDir !== '/'))
-        })
-      })
-      return root
-    },
-
     toggleExpandCollapse(e) {
       let button = e.target
       let textDiv = button.previousElementSibling
@@ -250,7 +238,6 @@ module.exports = {
       handler: function (html) {
         if (html) {
           let tmp = new DOMParser().parseFromString(html, 'text/html').children[0].children[1]
-          this.convertResourceUrls(tmp)
           this.processedHtml = this.doCustomFormatting(tmp)
           this.$nextTick(() => this.essayLoaded())
         }

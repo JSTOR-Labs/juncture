@@ -332,9 +332,10 @@
 
     async function getFile(acct, repo, ref, path, token) {
       token = token || oauthAccessToken || ghUnscopedToken
+      console.log(`getFile: token=${token} oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`)
+      console.log(`getFile: acct=${acct} repo=${repo} ref=${ref} path=${path} token=${token}`)
       let content
-      let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`
-      let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`, {Authorization:`Token ${token}`})
+      let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`, {headers: {Authorization:`Token ${token}`}})
       if (resp.ok) {
         resp = await resp.json()
         content = decodeURIComponent(escape(atob(resp.content)))
@@ -704,7 +705,9 @@
 
           // Convert essay Markdown into HTML.  Markdown headings are used to infer content heirarchy
           async parseMarkdown(markdown) {
-            let tmp = new DOMParser().parseFromString(md.render(markdown), 'text/html').children[0].children[1]            
+            let tmp = new DOMParser().parseFromString(md.render(markdown), 'text/html').children[0].children[1]
+            this.convertResourceUrls(tmp)
+      
             let essay = document.createElement('div')
             let currentSection = essay
             let segments = []
@@ -792,10 +795,6 @@
                 else if (!Object.keys(param).find(attr => attr.indexOf('ve-') === 0)) param['ve-entity'] = ''
                 return param
               })
-              .map(param => {
-                if (param.url) param.url = convertURL(param.url)
-                return param
-              })
 
             return [markdown, essay.innerHTML, params, entities]
           },
@@ -866,6 +865,18 @@
             resp = await resp.json()
             resp.results.bindings.forEach(rec => entities[rec.item.value.split('/').pop()]['mwPage'] = rec.mwPage.value)
             return entities
+          },
+
+          convertResourceUrls(root) {
+            root.querySelectorAll('img').forEach(img => {
+              if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src))
+            })
+            root.querySelectorAll('param').forEach(param => {
+              ['url', 'banner'].forEach(attr => {
+                if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value, `${contentSource.basePath}${this.path}`, this.mdDir !== '/'))
+              })
+            })
+            return root
           },
 
           // Creates a GeoJSON file URL from a Who's on First ID 
@@ -1248,9 +1259,9 @@
           acct = acct || this.contentSource.acct
           repo = repo || this.contentSource.repo
           ref = ref || this.contentSource.ref
-          console.log(`getFile: path=${path} acct=${acct} repo=${repo} ref=${ref}`)
+          let ghToken = oauthAccessToken || ghUnscopedToken
+          console.log(`getFile: path=${path} acct=${acct} repo=${repo} ref=${ref} ghToken=${ghToken}`)
           if (ENV === 'PROD' && acct) {
-            let ghToken = oauthAccessToken || ghUnscopedToken
             let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`
             let resp = await fetch(url, ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
             if (resp.ok) {
@@ -1497,7 +1508,7 @@
       }
       // console.log(`assetsBaseUrl=${contentSource.assetsBaseUrl}`)
       converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
-      // console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
+      console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
       return converted
     }
 
