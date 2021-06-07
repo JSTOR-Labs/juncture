@@ -40,7 +40,10 @@ module.exports = {
   computed: {
     items() { return this.active ? this.paramsInScope(document.querySelector(`[data-id="${this.active}"] p`)) : [] },
   },
-  mounted() {},
+  mounted() {
+    console.log(`${this.$options.name}.mounted`)
+    document.getElementById('app').classList.add('visual-essay')
+  },
   methods: {
 
     async essayLoaded() {
@@ -266,8 +269,8 @@ module.exports = {
 
     scrollTop: {
       handler: function (pos) {
-        if (pos) {
-          let target = this.$refs.essay
+        let target = this.$refs.essay
+        if (pos && target) {
           let segments = Array.from(target.querySelectorAll('.segment'))
           let i
           for (i = 0; i < segments.length; i++) {

@@ -118,7 +118,6 @@
         backgroundImage: `url(${this.banner})`
       } },
       banner() { return this.essayConfig !== null ? (this.essayConfig.banner || this.siteConfig.banner) : null },
-      bannerHeight() { return this.essayConfig && this.essayConfig.bannerHeight || this.siteConfig.bannerHeight || 400 },
       title() { return this.essayConfig !== null ? this.essayConfig.title || this.siteConfig.title : null},
       author() { return this.essayConfig !== null ? this.essayConfig.author || this.siteConfig.tagline : null },
     },
