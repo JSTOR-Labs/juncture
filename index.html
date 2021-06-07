@@ -8,10 +8,14 @@
   <link href="https://unpkg.com/tippy.js@6/themes/light-border.css" rel="stylesheet"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
   <title>Juncture</title>
+  <style>
+    [v-cloak] { display: none; }
+    #header, #footer { display: none; }
+  </style>
 </head>
 <body>
 
-  <div id="app" ref="app" :class="layouts.join(' ')">
+  <div id="app" v-cloak ref="app" :class="layouts.join(' ')">
     <div id="header" ref="header">            
       <component v-bind:is="'ve-header'" :active="true" :scroll-top="scrollTop"
                  :site-config="siteConfig"
@@ -38,8 +42,27 @@
         <i v-if="viewerData[viewer]" :class="viewerData[viewer].icon"></i>
       </span>
     </div>
-    <div id="essay" ref="essay" v-html="html" @scroll="onScroll"></div>
-    <div id="viewer" ref="viewer" :style="viewerStyle">
+    <div id="essay" ref="essay" @scroll="onScroll">
+      <component v-bind:is="mainComponent"
+        :html="html"
+        :path="path"
+        :anchor="anchor"
+        :entities="entities"
+        :params="params"
+        :available-viewers="availableViewers"
+        :scroll-top="scrollTop"
+        :content-source="contentSource"
+        @set-entities="entities = $event"
+        @set-params="params = $event"
+        @set-items="items = $event"
+        @set-active="active = $event"
+        @scroll-to-anchor="scrollToAnchor"
+        @load-essay="loadEssay"
+        @do-action="doAction"
+      ></component>
+    </div>
+
+    <div v-if="essayConfig" id="viewer" ref="viewer" :style="viewerStyle">
       <i v-if="!isVerticalLayout && viewerIsOpen" class="far fa-times-circle" style="position:absolute; top:0; right:0; z-index:500; font-size:26px;" @click="viewerIsOpen = !viewerIsOpen"></i>
       <component v-for="viewer in viewersEnabled" :key="viewer" v-bind:is="viewer" 
                  :items="items"
@@ -58,17 +81,8 @@
                  @set-hover-item="hoverItem = $event"
       ></component>
     </div>
-    <div v-if="path === '/'" id="footer" ref="footer">            
+    <div v-if="essayConfig && path === '/'" id="footer" ref="footer">            
       <component v-bind:is="'ve-footer'" :site-config="siteConfig" :content-source="contentSource"></component>
-    </div>
-
-    <div style="display:none;">
-      <div ref="popup" class="popup" v-if="hoverEntity">
-        <div v-if="hoverEntity.thumbnails" class="image"><img :src="hoverEntity.thumbnails[0]"></div>
-        <div class="label" v-html="hoverEntity.label"></div>
-        <div v-if="hoverEntity.description" class="description" v-html="hoverEntity.description"></div>
-        <div v-if="hoverEntity.summary" class="summary" v-html="hoverEntity.summary"></div>
-      </div>
     </div>
 
     <div ref="markdownViewer" id="markdown-viewer" style="display: none;">
@@ -229,34 +243,54 @@
 
       if (window.location.host === 'localhost:8088') {
         // For local dev in custom domain mode
-        contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, basePath: '', isGhpSite: false,
-                        assetsBaseUrl: `${window.location.origin}`
+        contentSource = {
+          acct: null, repo: null, branch: null, ref: null, hash: null, basePath: '', isGhpSite: false,
+          baseUrl: window.location.origin, 
+          assetsBaseUrl: `${window.location.origin}`
       }
         let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
         if (pathElems.length >= 2) {
           let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
-          if (ghRepoInfo) contentSource = {...contentSource, ...ghRepoInfo}
+          if (ghRepoInfo) {
+            console.log('ghRepoInfo', ghRepoInfo)
+            contentSource = {...contentSource, ...ghRepoInfo}
+          }
         }
 
       } else if (ENV === 'DEV') {
         // For local dev in GHP mode
         let repo = window.location.pathname.split('/').filter(elem => elem !== '')[0] || 'juncture'
-        contentSource = {acct: 'jstor-labs', repo, ref: 'main', baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true,
+        contentSource = {acct: 'jstor-labs', repo, branch: 'main', ref: 'main', hash: null, baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true,
                          assetsBaseUrl: `${window.location.origin}/${repo}`}
 
       } else {
         // GHP deploy mode
         if (window.location.hostname.indexOf('github.io') > 0) {
           [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2, 4)
-          contentSource = {acct, repo, ref: qargs.ref || 'main', baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true}
+          contentSource = {
+            acct, repo, ref: qargs.ref || 'main', basePath: `/${repo}`, isGhpSite: true,
+            baseUrl: window.location.origin
+          }
+          let ghRepoInfo = await githubRepoInfo(acct, repo)
+          if (ghRepoInfo) {
+            console.log('ghRepoInfo', ghRepoInfo)
+            contentSource = {...contentSource, ...ghRepoInfo}
+          }
 
         // juncture-digital.org
         } else if (isJuncture) {
-          contentSource = {acct: 'jstor-labs', repo: 'juncture', ref: 'main', baseUrl: 'https://raw.githubusercontent.com/jstor-labs/juncture/main', basePath: '', isGhpSite: false}
+          contentSource = {
+            acct: 'jstor-labs', repo: 'juncture', ref: 'main', basePath: '', isGhpSite: false,
+            baseUrl: window.location.origin, assetsBaseUrl: `https://raw.githubusercontent.com/jstor-labs/juncture/main`
+          }
           let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
           if (pathElems.length >= 2) {
             let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
-            if (ghRepoInfo) contentSource = {...contentSource, ...ghRepoInfo}
+            if (ghRepoInfo) {
+              console.log('ghRepoInfo', ghRepoInfo)
+              contentSource = {...contentSource, ...ghRepoInfo}
+              contentSource.basePath = `/${contentSource.acct}/${contentSource.repo}`
+            }
           }
 
         // Deployed in a non juncture-digital.org custom domain
@@ -276,33 +310,37 @@
     
     const componentsRoot = 'components'
     const componentPrefix = 've-'
-    const availableViewers = new Set()
+    const availableViewers = []
     const knownGhAccts = {'jstor-labs': 'main', 'kent-map': 'main'}
 
     async function headRef(acct, repo, ref, token) {  
       token = token || oauthAccessToken || ghUnscopedToken
+      let heads, tags, found, sha
       console.log(`headRef: acct=${acct} repo=${repo} ref=${ref} token=${token} oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`)
       let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs/heads`, {
         headers: {Authorization: `Token ${token}`, Accept: 'application/vnd.github.v3+json'} })
       if (resp.ok) {
-        let heads = await resp.json()
-        let found = heads.find(head => head.ref === `refs/heads/${ref}`)
-        return found ? found.object.sha : null
-      } else {
+        heads = await resp.json()
+        found = heads.find(head => head.ref === `refs/heads/${ref}`)
+        sha = found ? found.object.sha : null
+      } 
+      if (!sha) {
         resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/tags`)
         if (resp.ok) {
-          let tags = await resp.json()
-          let found = tags.find(head => tag.name === ref)
-          return found ? found.commit.sha : null
+          tags = await resp.json()
+          found = tags.find(tag => tag.name === ref)
+          sha = found ? found.commit.sha : null
         }
       }
+      return sha
     }
 
     async function getFile(acct, repo, ref, path, token) {
       token = token || oauthAccessToken || ghUnscopedToken
+      console.log(`getFile: token=${token} oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`)
+      console.log(`getFile: acct=${acct} repo=${repo} ref=${ref} path=${path} token=${token}`)
       let content
-      let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`
-      let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`, {Authorization:`Token ${token}`})
+      let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`, {headers: {Authorization:`Token ${token}`}})
       if (resp.ok) {
         resp = await resp.json()
         content = decodeURIComponent(escape(atob(resp.content)))
@@ -334,24 +372,28 @@
     })
     .then(config => {
       siteConfig = config
-      if (ENV === 'PROD') {
+      //if (ENV === 'PROD') {
         contentSource = {...contentSource, ...{
             acct: config.acct || contentSource.acct, 
             repo: config.repo || contentSource.repo, 
             ref: qargs.ref || config.ref || contentSource.ref
         }}
-      }
+      //}
     
       if (gaPropertyID) ga('create', gaPropertyID, 'auto')
+      let attrsWithUrls = ['banner', 'favicon']
 
-      contentSource.ref = qargs.ref || contentSource.ref
-      headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
-        if (headHash) {
-          contentSource.ref = headHash.slice(0,7)
-          contentSource.assetsBaseUrl = `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.ref}`;
-          ['banner', 'favicon'].forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
-        }
-      })
+      if (ENV === 'PROD' || window.location.port === '8088') {
+        headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
+          if (headHash) {
+            contentSource.hash = headHash.slice(0,7)
+            contentSource.assetsBaseUrl = `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.hash}`
+            attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
+          }
+        })
+      } else {
+        attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
+      }
       return config
     })
     .then(config => gcOauth())
@@ -366,29 +408,30 @@
       componentsList.forEach(componentUrl => {
         let httpComponent = httpVueLoader(componentUrl)
         let componentName = `${componentPrefix}${camelToKebab(componentUrl.split('/').pop().split('.')[0])}`
-        if (!availableViewers.has(componentName)) {
-          availableViewers.add(componentName)
+        if (availableViewers.indexOf(componentName) <0) {
+          availableViewers.push(componentName)
           Vue.component(componentName, httpComponent)
         }
-      })
-
-      let cssPromise = ENV === 'DEV'
-        ? fetch(`${contentSource.assetsBaseUrl}/css/main.css`).then(resp => resp.text())
-        : getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
-        cssPromise.then(css => {
-      let style = document.createElement('style')
-        style.innerHTML = css
-        document.querySelector('head').appendChild(style)
       })
 
       if (siteConfig.favicon ) document.querySelector('head').appendChild(makeLink(siteConfig.favicon, 'icon'))
       if (siteConfig.title) document.title = siteConfig.title
       if (fontawesome) document.querySelector('body').appendChild(makeScriptTag(fontawesome, 'anonymous'))
       
-      cssPromise = ENV === 'DEV'
+
+      let mainCssPromise = ENV === 'DEV'
+        ? fetch(`${window.location.port === '8088' ? '' : '/juncture'}/css/main.css`).then(resp => resp.text())
+        : getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
+      mainCssPromise.then(css => {
+      let style = document.createElement('style')
+        style.innerHTML = css
+        document.querySelector('head').appendChild(style)
+      })
+
+      let customCssPromise = ENV === 'DEV'
         ? fetch(`${contentSource.assetsBaseUrl}/css/custom.css`).then(resp => resp.text())
         : getFile(contentSource.acct, contentSource.repo, contentSource.ref, '/css/custom.css')
-      cssPromise.then(css => {
+      customCssPromise.then(css => {
         if (css) {
           let style = document.createElement('style')
           style.innerHTML = css
@@ -399,7 +442,13 @@
       new Vue({
         el: '#app',
         data: () => ({
+          html: null,
+          entities: {},
+          params: [],
           anchor: null,
+          items: [],
+          active: null,
+
           qargs,
           layouts: [],
           siteConfig,
@@ -407,19 +456,13 @@
           componentsList,
           isJuncture,
           junctureVersion,
-          params: [],
-          markdown: null,
           path: '/',
           mdpath: '',
           mdDir: '/',
+          markdown: null,
           markdownViewer: null,
-          html: null,
-          active: null,
           viewerHeight: 0,
-          segments: {},
-          entities: {},
           availableViewers,
-          // viewers: [],
           selectedViewer: null,
           viewerData: {},
           scrollTop: 0,
@@ -440,10 +483,12 @@
           selectedRelease: null,
           reposForAcct: [],
           selectedRepo: null,
-          doActionCallback: {}
+          doActionCallback: {},
+          essayConfig: null
         }),
         computed: {
-          essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
+          // essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
+          mainComponent() { return this.essayConfig && this.essayConfig.component ? `ve-${this.essayConfig.component.toLowerCase()}` : null},
           isAdminUser() { return authenticatedUser !== null && (authenticatedUser.isAdmin || contentSource.acct === authenticatedUser.acct) },
           ghToken() { return oauthAccessToken || ghUnscopedToken },
           viewerStyle() { return { 
@@ -455,10 +500,9 @@
             } 
           },
           isVerticalLayout() { return !this.forceHorizontalLayout && this.layouts.indexOf('vertical') >= 0 },
-          items() { return this.active ? this.paramsInScope(document.querySelector(`[data-id="${this.active}"]`)) : [] },
           viewersEnabled() { 
-              let viewers = this.items.filter(item => this.availableViewers.has(item.viewer)).map(item => item.viewer)
-              return viewers.filter((viewer, index) => viewers.indexOf(viewer) === index)
+            let viewers = this.items.filter(item => this.availableViewers.indexOf(item.viewer) >= 0).map(item => item.viewer)
+            return viewers.filter((viewer, index) => viewers.indexOf(viewer) === index)
           }
         },
         mounted() {
@@ -509,6 +553,7 @@
             this.scrollTop = e.target.scrollTop
           }, 5),
 
+          // Handles menu actions from header
           async doAction(action, options) {
             console.log('doAction', action, options)
             if (action === 'send-email') {
@@ -613,7 +658,7 @@
           },
 
           async getMarkdown(path) {
-            if (ENV === 'PROD' && contentSource.acct) {
+            if ((ENV === 'PROD' || window.location.port === '8088') && contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
               let resp = await fetch(url, this.ghToken ? {cache: 'no-cache', headers: {Authorization:`Token ${this.ghToken}`}} : {})
               if (resp.ok) {
@@ -630,19 +675,28 @@
 
           // Loads essay Markdown file
           async loadEssay(path, replace, anchor) {
+            // Array.from(this.$refs.app.classList).forEach(cls => this.$refs.app.classList.remove(cls))
+            this.essayConfig = null
             path = path || window.location.pathname.slice(contentSource.basePath.length) || '/'
             if (path.slice(-1) !== '/') path += '/'
             this.path = path 
             console.log(`loadEssay: basePath=${contentSource.basePath} path=${path} anchor=${this.anchor}`)
             let pathsToTry = [`${path}README.md`, `${path.slice(0,-1)}.md`, `${path}index.md`]
+            let markdown
             for (let i = 0; i < pathsToTry.length; i++) {
-              let markdown = await this.getMarkdown(pathsToTry[i])
+              markdown = await this.getMarkdown(pathsToTry[i])
               if (markdown) {
-                this.mdPath = pathsToTry[i]
-                this.markdown = markdown
                 this.mdDir = i === 1 ? '/' : path
                 break
               }
+              this.mdPath = pathsToTry[i]
+            }
+            if (markdown) {
+              ([this.markdown, this.html, this.params, this.entities] = await this.parseMarkdown(markdown))
+              let essayConfig = this.params.find(param => param['ve-config']) || {}
+              if (essayConfig.banner) essayConfig.banner = convertURL(essayConfig.banner)
+              essayConfig.component = essayConfig.component || 'essay'
+              this.essayConfig = essayConfig
             }
             if (gaPropertyID) ga('send', 'pageview', `${contentSource.basePath}${path}`)
 
@@ -653,147 +707,133 @@
             } else {
               history.pushState({file: path || ''}, '', browserPath)
             }
-            this.active = null
-            let essayElem = this.markdownToElem(this.markdown)
-            Array.from(this.$refs.essay.classList).forEach(cls => this.$refs.essay.classList.remove(cls))
-            this.convertResourceUrls(essayElem, path)
-            Array.from(document.getElementById('essay').querySelectorAll('.collapsible')).forEach(el =>el.removeEventListener('click', this.toggleExpandCollapse))
-            this.html = this.doCustomFormatting(essayElem)
-            this.$nextTick(() => {
-              Array.from(document.getElementById('essay').querySelectorAll('.collapsible')).forEach(el =>el.addEventListener('click', this.toggleExpandCollapse))
-              let segments = [...document.getElementById('essay').querySelectorAll('.segment')]
-              this.entities = this.findEntities()
-              this.getEntityData().then(entities => {
-                this.entities = entities
-                this.tagEntities()
-                this.addPopups()
-                this.convertLinks(this.$refs.essay)
-                if (this.anchor) {
-                  let anchorElem = document.getElementById(this.anchor)
-                  if (anchorElem) {
-                    this.scrollTop = anchorElem.offsetTop
-                    this.$refs.essay.scrollTop = this.scrollTop - 100
-                  }
-                  this.anchor = null
+
+          },
+
+          // Convert essay Markdown into HTML.  Markdown headings are used to infer content heirarchy
+          async parseMarkdown(markdown) {
+            let tmp = new DOMParser().parseFromString(md.render(markdown), 'text/html').children[0].children[1]
+            this.convertResourceUrls(tmp)
+      
+            let essay = document.createElement('div')
+            let currentSection = essay
+            let segments = []
+            let segment
+
+            let entities = await this.getEntityData(Object.keys(this.findEntities(tmp)))
+
+            tmp.querySelectorAll('param').forEach(param => {
+              if (param.id || param.classList.length > 0) {
+                let prior = param.previousElementSibling
+                if (param.id) {
+                  prior.id = param.id
+                  param.removeAttribute('id')
+                }
+                if (param.classList.length > 0) prior.classList.add(param.classList)
+                param.parentElement.removeChild(param)
+              }
+            })
+
+            Array.from(tmp.children).forEach(el => {
+              if (el.tagName[0] === 'H' && isNumeric(el.tagName.slice(1))) {
+                let sectionLevel = parseInt(el.tagName.slice(1))
+                if (segments) {
+                  segments.forEach(segment => currentSection.innerHTML += segment.outerHTML)
+                  segments = []
+                  segment = null
+                }
+                currentSection = new DOMParser().parseFromString('<section></section>', 'text/html').children[0].children[1].children[0]
+                let elClasses = Array.from(el.classList)
+                el.removeAttribute('class')
+                if (el.id) {
+                  currentSection.id = el.id
+                  el.removeAttribute('id')
+                }
+                if (!el.innerHTML) el.style.display = 'none'
+                currentSection.innerHTML += el.outerHTML
+
+                let headings = [...essay.querySelectorAll(`H${sectionLevel-1}`)]
+                let parent = sectionLevel === 1 || headings.length === 0 ? essay : headings.pop().parentElement
+                let parentDataID = parent.dataset.id || ''
+                let sectionSeq = parent.querySelectorAll(`H${sectionLevel}`).length + 1
+                let currentDataID = parentDataID ? `${parentDataID}.${sectionSeq}` : sectionSeq
+                currentSection.setAttribute('data-id', currentDataID)
+
+                if (elClasses.indexOf('cards') >= 0) {
+                  let wrapper = new DOMParser().parseFromString('<section class="cards"></section>', 'text/html').children[0].children[1].children[0]
+                  currentSection.appendChild(wrapper)
                 } else {
-                  this.$refs.essay.scrollTop = 0
-                  this.active = segments.length > 0 ? segments[0].dataset.id : null
+                  currentSection.classList.add(...elClasses)
+                  let wrapper = parent.querySelector(':scope > .cards')
+                  if (wrapper) {
+                    currentSection.classList.add('card')
+                    parent = wrapper
+                  }
                 }
-              })
-              // Load custom components declared in essay
-              Array.from(document.getElementById('essay').querySelectorAll('param'))
-                .filter(param => param.attributes['ve-component'])
-                .map(param => param.attributes.url.value)
-                .forEach(customComponentUrl => {
-                  let httpComponent = httpVueLoader(customComponentUrl)
-                  let componentName = `${componentPrefix}${camelToKebab(customComponentUrl.split('/').pop().split('.')[0])}`
-                  if (!availableViewers.has(componentName)) {
-                    availableViewers.add(componentName)
-                    Vue.component(componentName, httpComponent)
-                  }
-              })
-              
-              this.params = Array.from(document.getElementById('essay').querySelectorAll('param'))
-                .map(param => {
-                  let prior = param.previousElementSibling
-                  while (prior && prior.tagName !== 'P' && prior.tagName[0] !== 'H') {
-                    prior = prior.previousElementSibling
-                  }
-                  return { ...{ elem: prior ? prior.parentElement : this.$refs.essay }, ...attrsToObject(param) }
-                })
-                .map(param => {
-                  let viewerTag = Object.keys(param).find(attr => !attr.value && this.availableViewers.has(attr))
-                  if (viewerTag) param.viewer = viewerTag
-                  else if (!Object.keys(param).find(attr => attr.indexOf('ve-') === 0)) param['ve-entity'] = ''
-                  return param
-                })
-              this.segments = this.paramsForSegments()
-            })
 
-          },
+                parent.appendChild(currentSection)
 
-          doCustomFormatting(elem) {
-            Array.from(elem.querySelectorAll('section.cards')).forEach(cardsSection => {
-              Array.from(cardsSection.querySelectorAll('section')).forEach(card => {
-                ['img', 'a', 'strong', 'ul'].forEach(selector => {
-                  let el = card.querySelector(selector)
-                  if (el) {
-                    if (selector !== 'strong' || el.parentElement.tagName !== 'A') card.appendChild(el)
-                  }
-                })
-                let segments = []
-                Array.from(card.querySelectorAll('.segment')).forEach(seg => {
-                  if (seg.textContent.trim() === '') {
-                    card.removeChild(seg)
-                  } else {
-                    segments.push(seg)
-                  }
-                })
-                if (segments.length > 0) {
-                  let abstractWrapper = document.createElement('div')
-                  abstractWrapper.classList.add('abstract')
-                  card.appendChild(abstractWrapper)
-                  let abstractDiv = document.createElement('div')
-                  abstractDiv.classList.add('abstract-text')
-                  abstractWrapper.appendChild(abstractDiv)
-                  segments.forEach(seg => abstractDiv.appendChild(seg))
-                  abstractWrapper.innerHTML += '<button class="collapsible">read more</button>'
+              } else if (el.tagName === 'P') {
+                if (el.innerHTML.indexOf('ve-button.png') >= 0) {
+                  el = null
+                } else if (el.innerHTML.indexOf('class="nav"') >= 0) {
+                  currentSection.innerHTML += el.innerHTML
+                } else {
+                  let segID = `${currentSection.dataset.id}.${segments.length + 1}`
+                  segment = new DOMParser().parseFromString('<div></div>', 'text/html').children[0].children[1].children[0]
+                  segment.setAttribute('data-id', segID)
+                  segment.setAttribute('id', segID)
+                  segment.classList.add('segment')
+                  segment.innerHTML = el.outerHTML
+                  segments.push(segment)
+
+                  /*
+                  let segLink = document.createElement('span')
+                  segment.appendChild(segLink)
+                  segLink.outerHTML = `<span class="seg-link" data-anchor="${this.contentSource.baseUrl}${this.contentSource.basePath}${this.path}#${segID}" title="${segID}"><i class="fas fa-link"></span>`
+                  */
                 }
-              })
-
+              } else if (el.tagName === 'SECTION' && el.className === 'footnotes') {
+                currentSection.innerHTML += el.outerHTML
+              } else {
+                if (segment) {
+                  segment.innerHTML += el.outerHTML
+                } else {
+                  currentSection.innerHTML += el.outerHTML
+                }
+              }
             })
-            return elem.innerHTML
-          },
-
-          toggleExpandCollapse(e) {
-            let button = e.target
-            let textDiv = button.previousElementSibling
-            if (button.innerText == 'read more') {
-              button.innerText = 'read less'
-              textDiv.style['-webkit-line-clamp'] = 'unset'
+            if (segments) {
+              segments.forEach(segment => currentSection.innerHTML += segment.outerHTML)
+              segments = []
             }
-            else if (button.innerText == 'read less') {
-              button.innerText = 'read more'
-              textDiv.style['-webkit-line-clamp'] = 5
-            }
-          },
 
-          // Adds tippy popups to tagged entity text
-          addPopups() {
-            tippy('.entity', {
-              allowHTML: true,
-              interactive: true,
-              appendTo: document.body,
-              delay: [null, null],
-              placement: 'right',
-              theme: 'light-border',
-              onShow: async (instance) => {
-                // this.hoverEntity = null
-                this.hoverEntity = this.entities[instance.reference.dataset.eid]
-                if (this.hoverEntity.mwPage && !this.hoverEntity.summary) {
-                  let page = this.hoverEntity.mwPage.replace(/\/w\//, '/wiki/').split('/wiki/').pop()
-                  let resp = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${page}`, {
-                    // headers: {'User-agent': 'JSTOR Labs client'}
-                  })
-                  resp = await resp.json()
-                  this.entities[instance.reference.dataset.eid].summary = resp.extract_html
-                  this.hoverEntity = {...this.entities[instance.reference.dataset.eid]}
+            let params = Array.from(essay.querySelectorAll('param'))
+              .map(param => {
+                let prior = param.previousElementSibling
+                while (prior && prior.tagName !== 'P' && prior.tagName[0] !== 'H') {
+                  prior = prior.previousElementSibling
                 }
-                this.$nextTick(() => instance.setContent(this.$refs.popup.outerHTML))
-              },
-              onHide: () => {}
-            })
+                return { ...{ path: getDomPath(prior || tmp).join('>') }, ...attrsToObject(param) }
+              })
+              .map(param => {
+                let viewerTag = Object.keys(param).find(attr => !attr.value && this.availableViewers.indexOf(attr) >= 0)
+                if (viewerTag) param.viewer = viewerTag
+                else if (!Object.keys(param).find(attr => attr.indexOf('ve-') === 0)) param['ve-entity'] = ''
+                return param
+              })
+
+            return [markdown, essay.innerHTML, params, entities]
           },
 
           // Finds all entity references in param tags
           findEntities(root) {
             let entities = Object.fromEntries(
-              // Array.from(root.querySelectorAll('param, span'))
-              Array.from(this.$refs.essay.querySelectorAll('param, span'))
+              Array.from(root.querySelectorAll('param, span'))
                 .filter(el => el.attributes.eid)
                 .map(el => attrsToObject(el))
                 .map(entity => [entity.eid, entity]))
-              Array.from(this.$refs.essay.querySelectorAll('param'))
+              Array.from(root.querySelectorAll('param'))
                 .filter(el => el.attributes.center && isEntityID(el.attributes.center.value))
                 .filter(el => !entities[el.attributes.center.value])
                 .map(el => { return {...attrsToObject(el), ...{eid: el.attributes.center.value }} })
@@ -801,49 +841,18 @@
             return entities
           },
 
-          // Finds all param tags in elements between top-level app element and element in para arg
-          paramsInScope(segment) {
-            let paramTags = []
-            let scope = []
-            let el = segment
-            while (el && el.id !== 'app') {
-              scope.push(el)
-              el = el.parentElement
-            }
-            scope.forEach(elemInScope => 
-              paramTags = [...paramTags, ...this.params.filter(param => param.elem === elemInScope)]
-            )
-            return paramTags
-          },
-  
-          // Creates an object mapping paragraph data-id to all params found in para scope
-          paramsForSegments() {
-            return Object.fromEntries(
-              Array.from(this.$refs.essay.querySelectorAll('.segment'))
-              .map(segment => [segment.dataset.id, this.paramsInScope(segment)]))
-          },
-
-          // Creates a GeoJSON file URL from a Who's on First ID 
-          whosOnFirstUrl(wof) {
-            let wofParts = []
-            for (let i = 0; i < wof.length; i += 3) {
-              wofParts.push(wof.slice(i,i+3))
-            }
-            return `https://data.whosonfirst.org/${wofParts.join('/')}/${wof}.geojson`
-          },
-
           // Gets labels, aliases, images and geo coords for referenced Wikdata entities
-          async getEntityData() {
-            let values = Object.keys(this.entities).map(eid => `(<http://www.wikidata.org/entity/${eid}>)`).join(' ')
+          async getEntityData(entityIds) {
+            let values = entityIds.map(eid => `(<http://www.wikidata.org/entity/${eid}>)`).join(' ')
             let query = `SELECT ?item ?label ?aliases ?description ?images ?coords ?whosOnFirst WHERE {
-                           VALUES (?item) { ${values} }
-                           ?item rdfs:label ?label . FILTER(LANG(?label) = 'en')
-                           OPTIONAL { ?item schema:description ?description . FILTER(LANG(?description) = 'en') }
-                           OPTIONAL { ?item skos:altLabel ?aliases . FILTER(LANG(?aliases) = 'en') }
-                           OPTIONAL { ?item wdt:P18 ?images . }
-                           OPTIONAL { ?item wdt:P625 ?coords . }
-                           OPTIONAL { ?item wdt:P6766 ?whosOnFirst . }
-                         }`
+                            VALUES (?item) { ${values} }
+                            ?item rdfs:label ?label . FILTER(LANG(?label) = 'en')
+                            OPTIONAL { ?item schema:description ?description . FILTER(LANG(?description) = 'en') }
+                            OPTIONAL { ?item skos:altLabel ?aliases . FILTER(LANG(?aliases) = 'en') }
+                            OPTIONAL { ?item wdt:P18 ?images . }
+                            OPTIONAL { ?item wdt:P625 ?coords . }
+                            OPTIONAL { ?item wdt:P6766 ?whosOnFirst . }
+                          }`
             let resp = await fetch('https://query.wikidata.org/sparql', {
               method: 'POST', body: `query=${encodeURIComponent(query)}`, 
               headers: { Accept: 'application/sparql-results+json', 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -853,19 +862,19 @@
             resp.results.bindings.forEach(rec => {
               let eid = rec.item.value.split('/').pop()
               if (!entities[eid]) entities[eid] = {
-                ...this.entities[eid], 
-                ...{
-                  eid, 
-                  label: rec.label.value, 
-                  aliases: new Set(this.entities[eid].aliases ? this.entities[eid].aliases.split('|').map(alias => alias.trim()) : []),
-                  description: rec.description && rec.description.value,
-                  geojson: rec.whosOnFirst && rec.whosOnFirst.value && this.whosOnFirstUrl(rec.whosOnFirst.value),
-                  images: [],
-                  thumbnails: [],
-                  coords: rec.coords && rec.coords.value.replace(/Point\(/,'').replace(/\)/,'').split(' ').reverse().map(coord => parseFloat(coord)),
-                  foundIn: new Set(),
+                  ...this.entities[eid], 
+                  ...{
+                    eid, 
+                    label: rec.label.value, 
+                    aliases: new Set(this.entities[eid] ? Array.from(this.entities[eid].aliases) : []),
+                    description: rec.description && rec.description.value,
+                    geojson: rec.whosOnFirst && rec.whosOnFirst.value && this.whosOnFirstUrl(rec.whosOnFirst.value),
+                    images: [],
+                    thumbnails: [],
+                    coords: rec.coords && rec.coords.value.replace(/Point\(/,'').replace(/\)/,'').split(' ').reverse().map(coord => parseFloat(coord)),
+                    foundIn: new Set(),
+                  }
                 }
-              }
               if (rec.aliases && !entities[eid].aliases.has(rec.aliases.value)) entities[eid].aliases.add(rec.aliases.value)
               if (rec.images && entities[eid].images.indexOf(rec.images.value) < 0) {
                 entities[eid].images.push(rec.images.value)
@@ -882,169 +891,28 @@
             })
             resp = await resp.json()
             resp.results.bindings.forEach(rec => entities[rec.item.value.split('/').pop()]['mwPage'] = rec.mwPage.value)
-            this.entities = entities
-            return this.entities
+            return entities
           },
 
-          // Convert essay Markdown into HTML.  Markdown headings are used to infer content heirarchy
-          markdownToElem(markdown) {
-            let essay = document.createElement('div')
-            let tmp = new DOMParser().parseFromString(md.render(markdown), 'text/html').children[0].children[1]
-            // this.entities = this.findEntities(tmp)
-            let currentSection = essay
-            let segments = []
-            let segment
-    
-            Array.from(tmp.children).forEach(el => {
-              if (el.tagName[0] === 'H' && isNumeric(el.tagName.slice(1))) {
-                let sectionLevel = parseInt(el.tagName.slice(1))
-                if (segments) {
-                  segments.forEach(segment => currentSection.innerHTML += segment.outerHTML)
-                  segments = []
-                  segment = null
-                }
-                currentSection = new DOMParser().parseFromString('<section></section>', 'text/html').children[0].children[1].children[0]
-                let elClasses = Array.from(el.classList)
-                el.classList.remove(...elClasses)
-                if (!el.innerHTML) el.style.display = 'none'
-                currentSection.innerHTML += el.outerHTML
-
-                let headings = [...essay.querySelectorAll(`H${sectionLevel-1}`)]
-                let parent = sectionLevel === 1 || headings.length === 0 ? essay : headings.pop().parentElement
-                let parentDataID = parent.dataset.id || ''
-                let sectionSeq = parent.querySelectorAll(`H${sectionLevel}`).length
-                let currentDataID = parentDataID ? `${parentDataID}.${sectionSeq}` : sectionSeq
-                currentSection.setAttribute('data-id', currentDataID)
-
-                if (elClasses.indexOf('cards') >= 0) {
-                  currentSection.appendChild(new DOMParser().parseFromString('<section class="cards"></section>', 'text/html').children[0].children[1].children[0])
-                } else {
-                  currentSection.classList.add(...elClasses)
-                  let cardsWrapper = parent.querySelector(':scope > .cards')
-                  if (cardsWrapper) {
-                    currentSection.classList.add('card')
-                    parent = cardsWrapper
-                  }
-                }
-
-                parent.appendChild(currentSection)
-
-              } else if (el.tagName === 'P') {
-                if (el.innerHTML.indexOf('ve-button.png') >= 0) {
-                  el = null
-                } else if (el.innerHTML.indexOf('class="nav"') >= 0) {
-                  currentSection.innerHTML += el.innerHTML
-                } else {
-                  segment = new DOMParser().parseFromString('<div></div>', 'text/html').children[0].children[1].children[0]
-                  segment.setAttribute('data-id', `${currentSection.dataset.id}.${segments.length + 1}`)
-                  segment.classList.add('segment')
-                  segment.innerHTML = el.outerHTML
-                  segments.push(segment)
-                }
-              } else if (el.tagName === 'SECTION' && el.className === 'footnotes') {
-                currentSection.innerHTML += el.outerHTML
-              } else {
-                if (segment) {
-                  segment.innerHTML += el.outerHTML
-                } else {
-                  currentSection.innerHTML += el.outerHTML
-                }
-              }
-            })
-            if (segments) {
-              segments.forEach(segment => currentSection.innerHTML += segment.outerHTML)
-              segments = []
-            }
-            return essay
-          },
-   
-          // Converts link tags to elements with click listeners enabling intra-app navigation without page loading
-          convertLinks(root) {
-            root.querySelectorAll('a').forEach(link => {
-              if ((!link.href && link.dataset.target) || link.href.indexOf(window.location.host) > 0) {
-                // If internal link
-                let target = link.dataset.target
-                if (!target) { 
-                  const parsedUrl = parseUrl(link.href)
-                  let pathElems = parsedUrl.pathname.split('/').filter(elem => elem !== '')
-                  if (contentSource.isGhpSite) {
-                    if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
-                  } else {
-                    if (pathElems[0] === contentSource.acct && pathElems[1] === contentSource.repo) pathElems = pathElems.slice(2)
-                  }
-                  target = parsedUrl.hash === '' ? `/${pathElems.join('/')}/` : parsedUrl.hash.split('?')[0]
-                }
-                link.removeAttribute('href')
-                link.setAttribute('data-target', target)
-
-                // Add click handler for internal links
-                link.addEventListener('click', (e) => {
-                  let target = e.target
-                  while (!target.dataset.target && target.parentElement) { target = target.parentElement }
-                  let path = target.dataset.target
-                  if (path[0] === '#') {
-                    let anchorElem = document.getElementById(path.slice(1))
-                    if (anchorElem) {
-                      this.scrollTop = anchorElem.offsetTop
-                      this.$refs.essay.scrollTop = this.scrollTop - 100
-                    }
-                  } else {
-                    this.loadEssay(path)
-                  }
-                })
-              } else {
-                // If external link, add external link icon to text and force opening in new tab
-                link.innerHTML += '<sup><i class="fa fa-external-link-square-alt" style="margin-left:3px;margin-right:2px;font-size:0.7em;color:#219653;"></i></sup>'
-                link.setAttribute('target', '_blank')
-              }
-            })
-          },
-
-          convertResourceUrls(root, path) {
+          convertResourceUrls(root) {
             root.querySelectorAll('img').forEach(img => {
               if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src))
             })
             root.querySelectorAll('param').forEach(param => {
               ['url', 'banner'].forEach(attr => {
-                if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value, window.location.pathname, this.mdDir !== '/'))
+                if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value, `${contentSource.basePath}${this.path}`, this.mdDir !== '/'))
               })
             })
+            return root
           },
 
-          // Finds words/phrases in content paragraphs that match labels or aliases for entities in scope
-          // Matched text is wrapped with a span tag for reacting to hover and click actions
-          // TODO: make this better!
-          tagEntities() {
-            Array.from(this.$refs.essay.querySelectorAll('.segment p')).forEach(para => {
-              let paraHTML = para.innerHTML
-              this.paramsInScope(para).filter(param => param['ve-entity'] !== undefined && param.eid !== undefined).map(param => param.eid).forEach(eid => {
-                let entity = this.entities[eid]
-                if (entity) {
-                  let toMatch = [...[entity.label], ...entity.aliases.filter(alias => alias.length > 3)]
-                  for (let i = 0; i < toMatch.length; i++) {
-                    let re = new RegExp(`[\\s(](${toMatch[i].replace(/'/, "'?")})[\\s);:,.]`, 'i')
-                    let match = re.exec(paraHTML)
-                    if (match) {
-                      paraHTML = paraHTML.replace(match[1], `<span class="entity inferred" data-eid="${eid}">${match[1]}</span>`)
-                      entity.foundIn.add(para.parentElement.dataset.id)
-                      break
-                    }
-                  }
-                }
-              })
-              para.innerHTML = paraHTML
-            })
-            Array.from(this.$refs.essay.querySelectorAll('p span')).forEach(span => {
-              if (span.attributes.eid) {
-                span.setAttribute('data-eid', span.attributes.eid.value)
-                span.classList.add('entity', 'tagged')
-              }
-            })
-            Array.from(this.$refs.essay.querySelectorAll('span.entity'))
-              .forEach(el => el.addEventListener('click', (e) => {
-                console.log('entity selected', e.target.dataset.eid)
-              })
-            )
+          // Creates a GeoJSON file URL from a Who's on First ID 
+          whosOnFirstUrl(wof) {
+            let wofParts = []
+            for (let i = 0; i < wof.length; i += 3) {
+              wofParts.push(wof.slice(i,i+3))
+            }
+            return `https://data.whosonfirst.org/${wofParts.join('/')}/${wof}.geojson`
           },
 
           commonsImageUrl(url, width) {
@@ -1060,6 +928,12 @@
             if (extension === '.svg') imgUrl += '.png'
             if (extension === '.tif') imgUrl += '.jpg'
             return imgUrl
+          },
+
+          scrollToAnchor() {
+            let anchorElem = document.getElementById(this.anchor)
+            if (anchorElem) this.scrollTop = anchorElem.offsetTop
+            this.anchor = null
           },
 
           addItemEventHandlers(elem) {
@@ -1195,7 +1069,6 @@
               }
 
             // At this point we have a juncture branch and it is configured as the Github Pages source
-
             resp = await this.getFile('/index.html', 'jstor-labs', 'juncture', fromRef)
             await this.putFile('/index.html', resp.content.replace(/const junctureVersion = '.*'/, `const junctureVersion = '${fromRef}'`), targetAcct, targetRepo, 'juncture')
 
@@ -1264,14 +1137,6 @@
           scrollTop: {
             handler: function (scrollTop) { 
               this.viewerHeight = this.$refs.viewer.clientHeight
-              // console.log(`scroll-top=${scrollTop} viewer=${this.viewerHeight}`)
-              let target = this.$refs.essay
-              let segments = Array.from(target.querySelectorAll('.segment'))
-              let i
-              for (i = 0; i < segments.length; i++) {
-                if (target.scrollTop <= segments[i].offsetTop + segments[i].clientHeight - 200) break
-              }
-              if (i < segments.length && this.active !== segments[i].dataset.id ) this.active = segments[i].dataset.id
             },
             immediate: false
           },
@@ -1282,23 +1147,21 @@
             this.viewerIsOpen = false
             if (config) {
               if (config.layout) this.layouts = config.layout.split(',').map(layout => layout === 'vtl' ? 'vertical' : layout)
-              if (config.class) config.class.replace(/,/,' ').split(' ').forEach(cls => this.$refs.essay.classList.add(cls))
+              // Array.from(this.$refs.app.classList).forEach(cls => this.$refs.app.classList.remove(cls))
+              if (config.class) config.class.replace(/,/,' ').split(' ').forEach(cls => this.$refs.app.classList.add(cls))
             }
           },
 
           // Watcher that updates various data elements when the active paragraph changes
           active(current, prior) {
-            console.log(`activeSegment=${current}`)
             let activeSegment = document.querySelector(`[data-id="${current}"]`)
             if (activeSegment) {
               if (this.$refs.tabsBar) activeSegment.appendChild(this.$refs.tabsBar)
-              activeSegment.classList.add('active')
               this.addItemEventHandlers(activeSegment)
               this.addInteractionHandlers(activeSegment)
             }
             let priorSegment = document.querySelector(`[data-id="${prior}"]`)
             if (priorSegment) {
-              priorSegment.classList.remove('active')
               this.removeItemEventHandlers(priorSegment)
               this.removeInteractionHandlers(priorSegment)
             }
@@ -1320,9 +1183,22 @@
           },
 
           // logging watchers
-          params (params) { console.log('params', params) },
+          params (params) {
+            console.log('params', params)
+            // Load custom components declared in page markdown
+            params
+              .filter(param => param['ve-component'] !== undefined)
+              .map(param => param.url)
+              .forEach(customComponentUrl => {
+                let httpComponent = httpVueLoader(customComponentUrl)
+                let componentName = `${componentPrefix}${camelToKebab(customComponentUrl.split('/').pop().split('.')[0])}`
+                if (availableViewers.indexOf(componentName) < 0) {
+                  availableViewers.push(componentName)
+                  Vue.component(componentName, httpComponent)
+                }
+            })
+          },
           entities (entities) { console.log('entities', entities) },
-          segments (segments) { console.log('segments', segments) },
           selectedViewer (selectedViewer) { console.log('selectedViewer', selectedViewer) },
           selectedItem (eid) { console.log(`selectedItem=${eid}`) },
           hoverItem (eid) {
@@ -1410,9 +1286,9 @@
           acct = acct || this.contentSource.acct
           repo = repo || this.contentSource.repo
           ref = ref || this.contentSource.ref
-          console.log(`getFile: path=${path} acct=${acct} repo=${repo} ref=${ref}`)
+          let ghToken = oauthAccessToken || ghUnscopedToken
+          console.log(`getFile: path=${path} acct=${acct} repo=${repo} ref=${ref} ghToken=${ghToken}`)
           if (ENV === 'PROD' && acct) {
-            let ghToken = oauthAccessToken || ghUnscopedToken
             let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`
             let resp = await fetch(url, ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
             if (resp.ok) {
@@ -1456,6 +1332,31 @@
     function isEntityID(arg) { return typeof arg === 'string' && arg.split(':').slice(-1).find(val => val.length > 1 && val[0] === 'Q' && isNumeric(val.slice(1))) !== undefined }
     function attrsToObject(el) { return Object.fromEntries(Array.from(el.attributes).map(attr => 
                       [attr.nodeName, attr.value === '' || attr.value === 'true' ? true : attr.value === 'false' ? false : attr.value] )) }
+    function getDomPath(el) {
+      var stack = []
+      while ( el.parentNode != null ) {
+        let sibCount = 0
+        let sibIndex = 0
+        for ( var i = 0; i < el.parentNode.childNodes.length; i++ ) {
+          let sib = el.parentNode.childNodes[i];
+          if ( sib.nodeName == el.nodeName ) {
+            if ( sib === el ) {
+              sibIndex = sibCount;
+            }
+            sibCount++
+          }
+        }
+        if ( el.hasAttribute('id') && el.id != '' ) {
+          stack.unshift(el.nodeName.toLowerCase() + `#${el.id}`)
+        } else if ( sibCount > 1 ) {
+          stack.unshift(el.nodeName.toLowerCase() + (sibIndex > 0 ? `[${sibIndex}]` : ''))
+        } else {
+          stack.unshift(el.nodeName.toLowerCase())
+        }
+        el = el.parentNode
+      }
+      return stack.slice(1) // removes the html element
+    }
 
     // Gets site config
     async function getSiteConfig() {
@@ -1512,17 +1413,17 @@
     // Determines if Github repo exists
     async function githubRepoInfo(acct, repo) {
       let ghInfo
-      if (knownGhAccts[acct]) {
-        ghInfo = {acct, repo, ref: qargs.ref || knownGhAccts[acct], basePath: `/${acct}/${repo}`}
-      } else {
+      //if (knownGhAccts[acct]) {
+      //  ghInfo = {acct, repo, ref: qargs.ref || knownGhAccts[acct], basePath: `/${acct}/${repo}`}
+      //} else {
         let ghToken = oauthAccessToken || ghUnscopedToken
         let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`,
                                ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
         if (resp.ok) {
           resp = await resp.json()
-          ghInfo = {acct, repo, ref: qargs.ref || resp.default_branch, basePath: `/${acct}/${repo}`}
+          ghInfo = {acct, repo, branch: resp.default_branch, ref: qargs.ref || resp.default_branch}
         }
-      }
+      //}
       if (ghInfo) {
         // let refHash = await headRef(ghInfo.acct, ghInfo.repo, ghInfo.ref)
         // ghInfo.assetsBaseUrl = `https://raw.githubusercontent.com/${ghInfo.acct}/${ghInfo.repo}/${refHash}`
