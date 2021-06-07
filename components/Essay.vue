@@ -114,13 +114,26 @@ module.exports = {
         theme: 'light-border',
         onShow: async (instance) => {
           this.hoverEntity = this.entities[instance.reference.dataset.eid]
-          if (this.hoverEntity.mwPage && !this.hoverEntity.summary) {
-            let page = this.hoverEntity.mwPage.replace(/\/w\//, '/wiki/').split('/wiki/').pop()
-            let resp = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${page}`)
-            resp = await resp.json()
-            entities[instance.reference.dataset.eid].summary = resp.extract_html
-            this.$emit('set-entities', entities)
-            this.hoverEntity = {...entities[instance.reference.dataset.eid]}
+          if (!this.hoverEntity.summary) {
+            let label, summary
+            if (this.hoverEntity.article) {
+              let resp = await fetch(this.hoverEntity.article)
+              let articleMarkdown = await resp.text()
+              let tmp = new DOMParser().parseFromString(md.render(articleMarkdown), 'text/html').children[0].children[1]
+              label = tmp.querySelector('h1, h2, h3, h4, h5, h6').innerHTML
+              summary = Array.from(tmp.querySelectorAll('p')).map(p => p.outerHTML).join('')
+            } else if (this.hoverEntity.mwPage) {
+              let page = this.hoverEntity.mwPage.replace(/\/w\//, '/wiki/').split('/wiki/').pop()
+              let resp = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${page}`)
+              resp = await resp.json()
+              summary = resp.extract_html
+            }
+            if (label || summary) {
+              entities[instance.reference.dataset.eid].summary = summary
+              entities[instance.reference.dataset.eid].label = entities[instance.reference.dataset.eid].label || label
+              this.$emit('set-entities', entities)
+              this.hoverEntity = {...entities[instance.reference.dataset.eid]}
+            }
           }
           this.$nextTick(() => instance.setContent(this.$refs.popup.outerHTML))
         },
@@ -204,21 +217,26 @@ module.exports = {
     tagEntities(root) {
       Array.from(root.querySelectorAll('.segment p')).forEach(para => {
         let paraHTML = para.innerHTML
-        this.paramsInScope(para, this.params).filter(param => param['ve-entity'] !== undefined && param.eid !== undefined).map(param => param.eid).forEach(eid => {
-          let entity = this.entities[eid]
-          if (entity) {
-            let toMatch = [...[entity.label], ...entity.aliases.filter(alias => alias.length > 3)]
-            for (let i = 0; i < toMatch.length; i++) {
-              let re = new RegExp(`[\\s(](${toMatch[i].replace(/'/, "'?")})[\\s);:,.]`, 'i')
-              let match = re.exec(paraHTML)
-              if (match) {
-                paraHTML = paraHTML.replace(match[1], `<span class="entity inferred" data-eid="${eid}">${match[1]}</span>`)
-                entity.foundIn.add(para.parentElement.dataset.id)
-                break
+        this.paramsInScope(para, this.params)
+          .filter(param => param['ve-entity'] !== undefined || param.eid !== undefined)
+          .map(param => param.id)
+          .forEach(id => {
+            let entity = this.entities[id]
+            if (entity) {
+              let toMatch = [...[entity.label], ...entity.aliases.filter(alias => alias.length > 2)]
+              for (let i = 0; i < toMatch.length; i++) {
+                if (toMatch[i]) {
+                  let re = new RegExp(`[\\s(](${toMatch[i].replace(/'/, "'?")})[\\s);:,.]`, 'i')
+                  let match = re.exec(paraHTML)
+                  if (match) {
+                    paraHTML = paraHTML.replace(match[1], `<span class="entity inferred" data-eid="${id}">${match[1]}</span>`)
+                    entity.foundIn.add(para.parentElement.dataset.id)
+                    break
+                  }
+                }
               }
             }
-          }
-        })
+          })
         para.innerHTML = paraHTML
       })
       Array.from(root.querySelectorAll('p span')).forEach(span => {

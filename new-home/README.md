@@ -1,7 +1,15 @@
-<param ve-config component="home">
+<param ve-config component="home" fixed-header>
+<param nav label="About" path="/about" icon="fas fa-info">
+<param nav label="Contact Us" path="/contact-us" icon="fas fa-envelope">
+
+# 
+<param id="heading" class="heading">
+
+Easy to build interactive essays using free and open web resources
+[Get started](get-started)
 
 #
-<param id="about-juncture">
+<param id="about">
 
 ## About Juncture
 

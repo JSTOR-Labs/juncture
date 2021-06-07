@@ -3,17 +3,25 @@
 
     <!-- Pure CSS hamburger menu - https://codepen.io/mutedblues/pen/MmPNPG -->
     <header>
-      <a href="" class="logo">Juncture</a>
+      <span class="logo" @click="doMenuAction('loadEssay', '/')">Juncture</span>
       <input class="menu-btn" type="checkbox" id="menu-btn" />
       <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
       <ul class="menu">
-        <li @click="doMenuAction('loadEssay', '/about')"><i :class="`fas fa-info`"></i>About</li>
-        <li @click="doMenuAction('toggleContactForm')"><i :class="`fas fa-envelope`"></i>Contact us</li>
+        <li v-for="navItem in nav" :key="navItem.path" @click="doMenuAction('loadEssay', navItem.path)">
+          <i v-if="navItem.icon" :class="navItem.icon"></i>{{navItem.label}}
+        </li>
       </ul>
     </header>
 
     <main>
-      <section v-for="(section, sidx) in content" :key="sidx">
+
+      <section v-for="(section, sidx) in content" :key="sidx" :class="section.classes.join(' ')">
+        <template v-if="section.classes.has('heading')">
+          <div class="heading">
+            Heading
+          </div>
+        </template>
+        <template v-else>
         <h1 v-if="section.heading" v-html="section.heading"></h1>
         <div class="home-cards">
           <div v-for="(card, cidx) in section.cards" :key="`${sidx}-${cidx}`" 
@@ -25,6 +33,7 @@
             </div>
           </div>
         </div>
+        </template>
       </section>
     </main>
 
@@ -58,16 +67,19 @@ module.exports = {
   name: 'juncture-home',
   props: {
     html: { type: String, default: '' },
+    params: { type: Array, default: () => ([]) }
   },
   data: () => ({
-    fixedHeader: true,
     content: {},
     doActionResponse: {},
     contactName: '',
     contactEmail: '',
     contactMessage: ''
   }),
-  computed: {},
+  computed: {
+    nav() { return this.params.filter(param => param.nav) },
+    fixedHeader() { return this.params.filter(param => param['ve-config'] && param['fixed-header'] == true).length > 0 }
+  },
   mounted() {
     let app = document.getElementById('app')
     Array.from(app.classList).forEach(cls => app.classList.remove(cls))
@@ -87,6 +99,7 @@ module.exports = {
         return {
           id: section.id,
           heading: section.querySelector('h1, h2, h3, h4, h5, h6').innerHTML,
+          classes: new Set(section.classList),
           cards: Array.from(section.querySelectorAll(':scope > section')).map(el => {
             let card = {}
             Object.entries({
@@ -172,6 +185,12 @@ module.exports = {
 
   #home section h1 {
     text-align: center;
+  }
+
+  #home section.heading {
+    padding: 0;
+    min-height: 400px;
+    background-color: maroon;
   }
 
   .home-cards {

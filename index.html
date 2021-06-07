@@ -252,7 +252,6 @@
         if (pathElems.length >= 2) {
           let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
           if (ghRepoInfo) {
-            console.log('ghRepoInfo', ghRepoInfo)
             contentSource = {...contentSource, ...ghRepoInfo}
           }
         }
@@ -273,7 +272,6 @@
           }
           let ghRepoInfo = await githubRepoInfo(acct, repo)
           if (ghRepoInfo) {
-            console.log('ghRepoInfo', ghRepoInfo)
             contentSource = {...contentSource, ...ghRepoInfo}
           }
 
@@ -287,7 +285,6 @@
           if (pathElems.length >= 2) {
             let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
             if (ghRepoInfo) {
-              console.log('ghRepoInfo', ghRepoInfo)
               contentSource = {...contentSource, ...ghRepoInfo}
               contentSource.basePath = `/${contentSource.acct}/${contentSource.repo}`
             }
@@ -720,8 +717,6 @@
             let segments = []
             let segment
 
-            let entities = await this.getEntityData(Object.keys(this.findEntities(tmp)))
-
             tmp.querySelectorAll('param').forEach(param => {
               if (param.id || param.classList.length > 0) {
                 let prior = param.previousElementSibling
@@ -808,42 +803,59 @@
               segments = []
             }
 
+            let assignedId = 0
             let params = Array.from(essay.querySelectorAll('param'))
-              .map(param => {
-                let prior = param.previousElementSibling
+              .map(paramEl => {
+                let prior = paramEl.previousElementSibling
                 while (prior && prior.tagName !== 'P' && prior.tagName[0] !== 'H') {
                   prior = prior.previousElementSibling
                 }
-                return { ...{ path: getDomPath(prior || tmp).join('>') }, ...attrsToObject(param) }
+                return { ...{ path: getDomPath(prior || tmp).join('>') }, ...attrsToObject(paramEl) }
               })
-              .map(param => {
-                let viewerTag = Object.keys(param).find(attr => !attr.value && this.availableViewers.indexOf(attr) >= 0)
-                if (viewerTag) param.viewer = viewerTag
-                else if (!Object.keys(param).find(attr => attr.indexOf('ve-') === 0)) param['ve-entity'] = ''
-                return param
+              .map(paramObj => {
+                let viewerTag = Object.keys(paramObj).find(attr => !attr.value && this.availableViewers.indexOf(attr) >= 0)
+                if (viewerTag) paramObj.viewer = viewerTag
+                else if (!Object.keys(paramObj).find(attr => attr.indexOf('ve-') === 0)) paramObj['ve-entity'] = ''
+                return paramObj
               })
+              .map(paramObj => {
+                if (!paramObj.id) paramObj.id = paramObj.eid || `P${++assignedId}`
+                return paramObj
+              })
+
+              let entities = await this.getEntityData(this.findEntities(tmp, params))
 
             return [markdown, essay.innerHTML, params, entities]
           },
 
           // Finds all entity references in param tags
-          findEntities(root) {
+          findEntities(root, params) {
+
             let entities = Object.fromEntries(
-              Array.from(root.querySelectorAll('param, span'))
-                .filter(el => el.attributes.eid)
-                .map(el => attrsToObject(el))
-                .map(entity => [entity.eid, entity]))
-              Array.from(root.querySelectorAll('param'))
-                .filter(el => el.attributes.center && isEntityID(el.attributes.center.value))
-                .filter(el => !entities[el.attributes.center.value])
-                .map(el => { return {...attrsToObject(el), ...{eid: el.attributes.center.value }} })
-                .forEach(entity => entities[entity.eid] = entity)
+              params.filter(param => param.eid || param['ve-entity'] !== undefined)
+              .map(entity => { return {...entity, ...{
+                id: entity.eid || entity.id, 
+                aliases: new Set(entity.aliases ? entity.aliases.split('|') : []),
+                foundIn: new Set()
+              }} })
+              .map(entity => [entity.id, entity]))
+            
+            Array.from(root.querySelectorAll('span'))
+              .filter(el => el.attributes.eid)
+              .map(el => attrsToObject(el))
+              .map(entity => { return {...entity, ...{id: entity.eid || entity.id} } })
+              .forEach(entity => { if (!entities[entity.eid]) entities[entity.eid] = entity })
+
+            params.filter(param => param.center && isEntityID(param.center))
+              .map(param => { return {...param, ...{id: param.center, eid: param.center} } })
+              .forEach(entity => { if (!entities[entity.eid]) entities[entity.eid] = entity })
+
             return entities
           },
 
           // Gets labels, aliases, images and geo coords for referenced Wikdata entities
-          async getEntityData(entityIds) {
-            let values = entityIds.map(eid => `(<http://www.wikidata.org/entity/${eid}>)`).join(' ')
+          async getEntityData(entities) {
+            let values = Object.values(entities).filter(entity => entity.eid).map(entity => `(<http://www.wikidata.org/entity/${entity.eid}>)`).join(' ')
             let query = `SELECT ?item ?label ?aliases ?description ?images ?coords ?whosOnFirst WHERE {
                             VALUES (?item) { ${values} }
                             ?item rdfs:label ?label . FILTER(LANG(?label) = 'en')
@@ -858,15 +870,15 @@
               headers: { Accept: 'application/sparql-results+json', 'Content-Type': 'application/x-www-form-urlencoded' }
             })
             resp = await resp.json()
-            let entities = {}
+            // let enrichedEntities = {}
             resp.results.bindings.forEach(rec => {
               let eid = rec.item.value.split('/').pop()
-              if (!entities[eid]) entities[eid] = {
-                  ...this.entities[eid], 
+              if (!entities[eid].images) entities[eid] = {
+                  ...entities[eid], 
                   ...{
                     eid, 
                     label: rec.label.value, 
-                    aliases: new Set(this.entities[eid] ? Array.from(this.entities[eid].aliases) : []),
+                    aliases: new Set(entities[eid].aliases ? Array.from(entities[eid].aliases) : []),
                     description: rec.description && rec.description.value,
                     geojson: rec.whosOnFirst && rec.whosOnFirst.value && this.whosOnFirstUrl(rec.whosOnFirst.value),
                     images: [],
@@ -899,7 +911,7 @@
               if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src))
             })
             root.querySelectorAll('param').forEach(param => {
-              ['url', 'banner'].forEach(attr => {
+              ['url', 'banner', 'article'].forEach(attr => {
                 if (param.attributes[attr]) param.setAttribute(attr, convertURL(param.attributes[attr].value, `${contentSource.basePath}${this.path}`, this.mdDir !== '/'))
               })
             })
