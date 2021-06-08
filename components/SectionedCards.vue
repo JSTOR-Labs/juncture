@@ -2,8 +2,8 @@
   <div id="home" :class="{'fixed-header': fixedHeader}">
 
     <!-- Pure CSS hamburger menu - https://codepen.io/mutedblues/pen/MmPNPG -->
-    <header>
-      <span class="logo" @click="doMenuAction('loadEssay', '/')">Juncture</span>
+    <header v-if="fixedHeader">
+      <img class="logo" @click="doMenuAction('loadEssay', '/')" :src="logo">
       <input class="menu-btn" type="checkbox" id="menu-btn" />
       <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
       <ul class="menu">
@@ -16,11 +16,23 @@
     <main>
 
       <section v-for="(section, sidx) in content" :key="sidx" :class="section.classes.join(' ')">
+
         <template v-if="section.classes.has('heading')">
-          <div class="heading">
-            Heading
+          <header v-if="!fixedHeader">
+            <img class="logo" @click="doMenuAction('loadEssay', '/')" :src="logo">
+            <input class="menu-btn" type="checkbox" id="menu-btn" />
+            <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
+            <ul class="menu">
+              <li v-for="navItem in nav" :key="navItem.path" @click="doMenuAction('loadEssay', navItem.path)">
+                <i v-if="navItem.icon" :class="navItem.icon"></i>{{navItem.label}}
+              </li>
+            </ul>
+          </header>
+          <div class="card-text" :style="`backgroundImage: url(${section.backgroundImage})`">
+            <p v-for="(para, pidx) in section.cards[0].content" :key="pidx" :class="para.classes.join(' ')" v-html="para.text"></p>
           </div>
         </template>
+
         <template v-else>
         <h1 v-if="section.heading" v-html="section.heading"></h1>
         <div class="home-cards">
@@ -29,7 +41,7 @@
             <img v-if="card.image" :src="card.image">
             <h2 v-if="card.heading" v-html="card.heading"></h2>
             <div class="card-text">
-              <p v-for="(para, pidx) in card.text" :key="`${sidx}-${cidx}-${pidx}`" v-html="para"></p>
+              <p v-for="(para, pidx) in card.content" :key="`${sidx}-${cidx}-${pidx}`" :class="para.classes.join(' ')" v-html="para.text"></p>
             </div>
           </div>
         </div>
@@ -64,7 +76,7 @@
 const dependencies = []
 
 module.exports = {  
-  name: 'juncture-home',
+  name: 'SectionedCards',
   props: {
     html: { type: String, default: '' },
     params: { type: Array, default: () => ([]) }
@@ -78,7 +90,9 @@ module.exports = {
   }),
   computed: {
     nav() { return this.params.filter(param => param.nav) },
-    fixedHeader() { return this.params.filter(param => param['ve-config'] && param['fixed-header'] == true).length > 0 }
+    config() { return this.params.find(param => param['ve-config']) || {} },
+    fixedHeader() { return this.config['fixed-header'] === true },
+    logo() { return this.config.logo }
   },
   mounted() {
     let app = document.getElementById('app')
@@ -96,9 +110,12 @@ module.exports = {
     parseHtml(html) {
       let root = new DOMParser().parseFromString(html, 'text/html').children[0].children[1]
       return Array.from(root.querySelectorAll(':scope > section')).map(section => {
+        console.log(section)
+        let backgroundImage = section.querySelector('p.background-image > img')
         return {
           id: section.id,
           heading: section.querySelector('h1, h2, h3, h4, h5, h6').innerHTML,
+          backgroundImage: backgroundImage ? backgroundImage.src : '',
           classes: new Set(section.classList),
           cards: Array.from(section.querySelectorAll(':scope > section')).map(el => {
             let card = {}
@@ -110,7 +127,9 @@ module.exports = {
               let found = el.querySelector(selector)
               if (found) card[fld] = found.tagName === 'IMG' ? found.src : found.innerHTML
             })
-            card.text = Array.from(el.querySelectorAll('p')).filter(p => p.textContent).map(p => p.innerHTML)
+            card.content = Array.from(el.querySelectorAll('p'))
+              .filter(p => p.textContent)
+              .map(p => { return { text: p.innerHTML, id: p.id, classes: Array.from(p.classList) } })
             return card
           })
         }
@@ -119,10 +138,12 @@ module.exports = {
 
     doMenuAction(action, options) {
       console.log(`doMenuAction=${action}`, options)
-      if (action === 'toggleContactForm') {
-        this.toggleContactForm()
-      } else {
-        // this.$emit('do-action', action, options)
+      if (action === 'loadEssay') {
+        if (options === '/contact-us') {
+          this.toggleContactForm()
+        } else {
+          this.$emit('do-action', action, options)
+        }
       }
     },
 
@@ -174,7 +195,6 @@ module.exports = {
   }
 
   #home section {
-    border: 1px solid red;
     padding: 12px;
     background-color: white;
   }
@@ -188,9 +208,65 @@ module.exports = {
   }
 
   #home section.heading {
+    display: grid;
+    grid-template-rows: 58px 1fr;
     padding: 0;
     min-height: 400px;
-    background-color: maroon;
+  }
+
+  #home section.heading header {
+    grid-area: 1 / 1 / 2 / 2 ;
+  }
+
+  #home section.heading div {
+    grid-area: 1 / 1 / 3 / 2 ;
+    /* padding-top: 58px; */
+    align-self: center;
+    justify-self: stretch;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+  }
+
+  #home section.heading p {
+    font-size: 2em;
+    padding: 0;
+    margin-left: 20%;
+    margin-right: 20%;
+    text-align: center;
+    color: white;
+  }
+
+  .heading header, .heading header ul, .heading header li {
+    background-color: transparent;
+    color: white;
+    border-right: none;
+  }
+
+  .heading header li:hover {
+    background-color: transparent;
+    text-decoration: underline;
+  }
+
+  p.button {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .button a {
+    color: #000 !important;
+    background-color: #FFE55A;
+    font-family: roboto;
+    padding: 10px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 30px;
   }
 
   .home-cards {
@@ -310,6 +386,11 @@ header .logo {
   font-size: 2em;
   padding: 10px 20px;
   text-decoration: none;
+}
+
+img.logo {
+  height: 60px;
+  width: auto;
 }
 
 /* menu */

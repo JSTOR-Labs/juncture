@@ -1,12 +1,19 @@
-<param ve-config component="home" fixed-header>
+<param ve-config component="sectioned-cards" fixed-header="false" logo="logo-juncture.png">
 <param nav label="About" path="/about" icon="fas fa-info">
 <param nav label="Contact Us" path="/contact-us" icon="fas fa-envelope">
 
 # 
 <param id="heading" class="heading">
 
+![](hero-juncture.png)
+<param class="background-image">
+
+##
+
 Easy to build interactive essays using free and open web resources
+
 [Get started](get-started)
+<param id="controls" class="button">
 
 #
 <param id="about">
