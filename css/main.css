@@ -464,3 +464,22 @@ span.seg-link svg:hover {
   color: #aaa;
   cursor: copy;
 }
+
+
+#essay p img {
+  max-width: 33%;
+}
+
+.left { 
+  float: left !important;
+  margin: 8px 18px 0 0 !important;
+}
+
+.right {
+  float: right !important;
+  margin: 8px 0 0 18px !important;
+}
+
+.border {
+  border: 1px solid #aaa;
+}
