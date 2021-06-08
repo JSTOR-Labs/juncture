@@ -31,6 +31,20 @@
           <div class="card-text" :style="`backgroundImage: url(${section.backgroundImage})`">
             <p v-for="(para, pidx) in section.cards[0].content" :key="pidx" :class="para.classes.join(' ')" v-html="para.text"></p>
           </div>
+          <div v-if="section.classes.has('carousel')">
+            <div class="card-text glide" :style="`backgroundImage: url(${section.backgroundImage})`">
+              <p v-for="(para, pidx) in section.cards[0].content" :key="pidx" :class="para.classes.join(' ')" v-html="para.text"></p>
+              
+              <div data-glide-el="track" class="glide__track">
+                <ul class="glide__slides">
+                  <li class="glide__slide"></li>
+                  <li class="glide__slide"></li>
+                  <li class="glide__slide"></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
         </template>
 
         <template v-else>
@@ -48,6 +62,45 @@
         </template>
       </section>
     </main>
+    <div class="slideshow-container">
+      <div class="mySlides fade">
+        <a class="prev" @click="plusSlides(-1)">&#10094;</a>
+        <div class="float-child">
+          <img class="slideshow-img" src="https://www.w3schools.com/howto/img_nature_wide.jpg">
+        </div>
+        <div class="float-child">
+          <div class="slideshow-title">Plant Humanities Lab</div>
+          <div class="slideshow-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+          <p class="button">Visit Site</p>
+        </div>
+        <a class="next" @click="plusSlides(1)">&#10095;</a>
+      </div>
+
+      <div class="mySlides fade">
+        <a class="prev" @click="plusSlides(-1)">&#10094;</a>
+        <div class="float-child">
+          <img class="slideshow-img" src="https://www.w3schools.com/howto/img_nature_wide.jpg">
+        </div>
+        <div class="float-child">
+          <div class="slideshow-title">Kent Maps</div>
+          <div class="slideshow-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+          <div class="slideshow-button"><p class="button">Visit Site</p></div>
+        </div>
+        <a class="next" @click="plusSlides(1)">&#10095;</a>
+      </div>
+
+    </div>
+          <!-- Next and previous buttons -->
+      <a class="prev" @click="plusSlides(-1)">&#10094;</a>
+      <a class="next" @click="plusSlides(1)">&#10095;</a>
+    <br>
+
+    <!-- The dots/circles -->
+    <div style="text-align:center">
+      <span class="dot" @click="currentSlide(1)"></span>
+      <span class="dot" @click="currentSlide(2)"></span>
+      <span class="dot" @click="currentSlide(3)"></span>
+    </div>
 
     <footer>
       Footer
@@ -73,7 +126,9 @@
 
 <script>
 
-const dependencies = []
+const dependencies = ['https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.2.0/glide.min.js',
+'https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.0.2/css/glide.core.css',
+'https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.0.2/css/glide.theme.css']
 
 module.exports = {  
   name: 'SectionedCards',
@@ -86,7 +141,8 @@ module.exports = {
     doActionResponse: {},
     contactName: '',
     contactEmail: '',
-    contactMessage: ''
+    contactMessage: '',
+    slideIndex: 1,
   }),
   computed: {
     nav() { return this.params.filter(param => param.nav) },
@@ -98,11 +154,13 @@ module.exports = {
     let app = document.getElementById('app')
     Array.from(app.classList).forEach(cls => app.classList.remove(cls))
     this.loadDependencies(dependencies, 0, this.init)
+    this.showSlides(this.slideIndex);
   },
   methods: {
     init() {},
     loadPage() {
       console.log('loadPage')
+      //this.showSlides(this.slideIndex);
       this.$emit('do-action', 'loadEssay', '/examples')
     },
     
@@ -170,7 +228,39 @@ module.exports = {
 
     submitContactForm() {
       console.log('submitContactForm')
+    },
+
+    glider(){
+      new Glide('.glide').mount()
+    },
+
+    // Next/previous controls
+    plusSlides(n) {
+      this.showSlides(this.slideIndex += n);
+    },
+
+    // Thumbnail image controls
+    currentSlide(n) {
+      this.showSlides(this.slideIndex = n);
+    },
+
+    showSlides(n) {
+      var i;
+      var slides = document.getElementsByClassName("mySlides");
+      var dots = document.getElementsByClassName("dot");
+      if (n > slides.length) {this.slideIndex = 1}
+      if (n < 1) {this.slideIndex = slides.length}
+      for (i = 0; i < slides.length; i++) {
+          slides[i].style.display = "none";
+      }
+      for (i = 0; i < dots.length; i++) {
+          dots[i].className = dots[i].className.replace(" active", "");
+      }
+      slides[this.slideIndex-1].style.display = "block";
+      dots[this.slideIndex-1].className += " active";
     }
+
+
   
   },
   watch: {
@@ -487,6 +577,146 @@ header .menu-btn:checked ~ .menu-icon:not(.steps) .navicon:after {
   header .menu-icon {
     display: none;
   }
+}
+
+.wrap {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.glide__slide {
+  border: 1px solid black;
+  line-height: 100px;
+  margin: 0;
+  text-align: center;
+}
+
+* {box-sizing:border-box}
+
+/* Slideshow container */
+.slideshow-container {
+  max-width: 95%;
+  position: relative;
+  margin: auto;
+  padding-left: 2%;
+  padding-right: 2%;
+}
+
+.slideshow-title {
+  text-align: left;
+  font-size: 2vw;
+  font-weight: bold;
+  padding: 2%;
+}
+
+.slideshow-description {
+  text-align: left;
+  font-size: 1.3vw;
+  padding: 2%;
+}
+
+.slideshow-img {
+  margin-left: 3%;
+  width: 100%;
+}
+
+.prev-button {
+  float:left;
+  width:5%
+}
+.next-button {
+  float:left;
+  width:5%;
+}
+/* Hide the images by default */
+.mySlides {
+  display: flex;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  margin-top: -22px;
+  padding: 16px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover, .next:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+.float-child{
+  width: 45%;
+  float: left;
+  margin:2%;  
+}
+
+/* Caption text */
+.text {
+  color: #f2f2f2;
+  font-size: 15px;
+  padding: 8px 12px;
+  position: absolute;
+  bottom: 8px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Number text (1/3 etc) */
+.numbertext {
+  color: #f2f2f2;
+  font-size: 12px;
+  padding: 8px 12px;
+  position: absolute;
+  top: 0;
+}
+
+/* The dots/bullets/indicators */
+.dot {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease;
+}
+
+.active, .dot:hover {
+  background-color: #717171;
+}
+
+/* Fading animation */
+.fade {
+  -webkit-animation-name: fade;
+  -webkit-animation-duration: 1.5s;
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@-webkit-keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
+}
+
+@keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
 }
 
 </style>
