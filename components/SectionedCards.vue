@@ -1,7 +1,6 @@
 <template>
   <div id="home" :class="{'fixed-header': fixedHeader}">
 
-    <!-- Pure CSS hamburger menu - https://codepen.io/mutedblues/pen/MmPNPG -->
     <header v-if="fixedHeader">
       <img class="logo" @click="doMenuAction('loadEssay', '/')" :src="logo">
       <input class="menu-btn" type="checkbox" id="menu-btn" />
@@ -13,27 +12,33 @@
       </ul>
     </header>
 
-    <main>
+    <section v-for="(section, sidx) in content" :key="sidx" :class="section.classes.join(' ')">
 
-      <section v-for="(section, sidx) in content" :key="sidx" :class="section.classes.join(' ')">
+      <template v-if="section.classes.has('heading')">
+        <header v-if="!fixedHeader">
+          <img class="logo" @click="doMenuAction('loadEssay', '/')" :src="logo">
+          <input class="menu-btn" type="checkbox" id="menu-btn" />
+          <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
+          <ul class="menu">
+            <li v-for="navItem in nav" :key="navItem.path" @click="doMenuAction('loadEssay', navItem.path)">
+              <i v-if="navItem.icon" :class="navItem.icon"></i>{{navItem.label}}
+            </li>
+          </ul>
+        </header>
+        <div class="card-text" :style="`backgroundImage: url(${section.backgroundImage})`">
+          <p v-for="(para, pidx) in section.cards[0].content" :key="pidx" :class="para.classes.join(' ')" v-html="para.text"></p>
+        </div>
+      </template>
 
-        <template v-if="section.classes.has('heading')">
-          <header v-if="!fixedHeader">
-            <img class="logo" @click="doMenuAction('loadEssay', '/')" :src="logo">
-            <input class="menu-btn" type="checkbox" id="menu-btn" />
-            <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
-            <ul class="menu">
-              <li v-for="navItem in nav" :key="navItem.path" @click="doMenuAction('loadEssay', navItem.path)">
-                <i v-if="navItem.icon" :class="navItem.icon"></i>{{navItem.label}}
-              </li>
-            </ul>
-          </header>
-          <div class="card-text" :style="`backgroundImage: url(${section.backgroundImage})`">
-            <p v-for="(para, pidx) in section.cards[0].content" :key="pidx" :class="para.classes.join(' ')" v-html="para.text"></p>
-          </div>
-        </template>
+      <template v-else-if="section.classes.has('carousel')">
+        Carousel
+      </template>
 
-        <template v-else>
+      <template v-else-if="section.classes.has('footer')">
+        <div v-html="section.content"></div>
+      </template>
+
+      <template v-else>
         <h1 v-if="section.heading" v-html="section.heading"></h1>
         <div class="home-cards">
           <div v-for="(card, cidx) in section.cards" :key="`${sidx}-${cidx}`" 
@@ -45,13 +50,9 @@
             </div>
           </div>
         </div>
-        </template>
-      </section>
-    </main>
+      </template>
 
-    <footer>
-      Footer
-    </footer>
+    </section>
 
     <div id="home-contact-form" class="modal-form" style="display: none;">
       <form v-on:submit.prevent>
@@ -109,29 +110,39 @@ module.exports = {
     // Creates content object from input HTML
     parseHtml(html) {
       let root = new DOMParser().parseFromString(html, 'text/html').children[0].children[1]
+      console.log(root)
       return Array.from(root.querySelectorAll(':scope > section')).map(section => {
         console.log(section)
         let backgroundImage = section.querySelector('p.background-image > img')
-        return {
-          id: section.id,
-          heading: section.querySelector('h1, h2, h3, h4, h5, h6').innerHTML,
-          backgroundImage: backgroundImage ? backgroundImage.src : '',
-          classes: new Set(section.classList),
-          cards: Array.from(section.querySelectorAll(':scope > section')).map(el => {
-            let card = {}
-            Object.entries({
-              image: 'p img',
-              heading: 'h1, h2, h3, h4, h5, h6'
-            }).forEach(entry => {
-              let [fld, selector] = entry
-              let found = el.querySelector(selector)
-              if (found) card[fld] = found.tagName === 'IMG' ? found.src : found.innerHTML
+        let classes = new Set(section.classList)
+        console.log(classes)
+        if (classes.has('raw')) {
+          return {
+            id: section.id, classes,
+            content: Array.from(section.querySelectorAll('p, ul')).filter(el => el.textContent).map(el => el.outerHTML).join(' ')
+          }
+        } else {
+          return {
+            id: section.id,
+            heading: section.querySelector('h1, h2, h3, h4, h5, h6').innerHTML,
+            backgroundImage: backgroundImage ? backgroundImage.src : '',
+            classes,
+            cards: Array.from(section.querySelectorAll(':scope > section')).map(el => {
+              let card = {}
+              Object.entries({
+                image: 'p img',
+                heading: 'h1, h2, h3, h4, h5, h6'
+              }).forEach(entry => {
+                let [fld, selector] = entry
+                let found = el.querySelector(selector)
+                if (found) card[fld] = found.tagName === 'IMG' ? found.src : found.innerHTML
+              })
+              card.content = Array.from(el.querySelectorAll('p'))
+                .filter(p => p.textContent)
+                .map(p => { return { text: p.innerHTML, id: p.id, classes: Array.from(p.classList) } })
+              return card
             })
-            card.content = Array.from(el.querySelectorAll('p'))
-              .filter(p => p.textContent)
-              .map(p => { return { text: p.innerHTML, id: p.id, classes: Array.from(p.classList) } })
-            return card
-          })
+          }
         }
       })
     },
@@ -487,6 +498,39 @@ header .menu-btn:checked ~ .menu-icon:not(.steps) .navicon:after {
   header .menu-icon {
     display: none;
   }
+}
+
+section.footer {
+  padding: 0 !important;
+}
+
+.footer div {
+  background-color: #555;
+}
+
+.footer img {
+  height: 30px;
+  width: auto;
+  border-radius: unset;
+}
+
+.footer ul {
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  justify-content: left;
+  list-style-type: none;
+  margin: 0 0 0 12px;
+  padding: 2px 0 0 0;
+  height: 48px;
+}
+
+.footer ul li {
+  margin-right: 40px;
+}
+
+.footer ul li a {
+  color: white !important;
 }
 
 </style>

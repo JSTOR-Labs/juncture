@@ -3,7 +3,7 @@
 <param nav label="Contact Us" path="/contact-us" icon="fas fa-envelope">
 
 # 
-<param id="heading" class="heading">
+<param class="heading">
 
 ![](hero-juncture.png)
 <param class="background-image">
@@ -86,8 +86,16 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
 # Showcase
-<param id="showcase">
+<param id="showcase" class="carousel">
 
 ![](https://picsum.photos/400/250)
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+#
+<param class="footer raw">
+
+- [![JSTOR labs](Labs_logo_knockout.svg "JSTOR Labs")](https://labs.jstor.org)
+- [About](about)
+- [Terms and conditions](terms-and-conditions)
+

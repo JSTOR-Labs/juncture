@@ -724,7 +724,7 @@
                   prior.id = param.id
                   param.removeAttribute('id')
                 }
-                if (param.classList.length > 0) prior.classList.add(param.classList)
+                if (param.classList.length > 0) prior.className = param.className
                 param.parentElement.removeChild(param)
               }
             })
