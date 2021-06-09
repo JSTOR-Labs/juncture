@@ -336,6 +336,10 @@ module.exports = {
     border-right: none;
   }
 
+  .heading header {
+    box-shadow: none;
+  }
+
   .heading header li:hover {
     background-color: transparent;
     text-decoration: underline;
@@ -653,22 +657,25 @@ section.footer {
 }
 
 .slideshow-title {
+  font-family: Georgia,'serif';
+  font-size: 30px;
+  font-weight: normal;
   text-align: left;
-  font-size: 2vw;
-  font-weight: bold;
   padding: 2%;
 }
 
 .slideshow-description {
-  text-align: left;
-  font-size: 1.3vw;
+  font-weight: 300;
+  line-height: 1.4;
   padding: 2%;
 }
 
 .slideshow-img {
   margin-left: 3%;
   width: 100%;
-  box-shadow: 0px 3px 40px rgba(0, 0, 0, 0.25);
+  height: 420px;
+  border: 1px solid #8a8a8a;
+  background-size: cover;
 }
 
 .prev-button {
@@ -702,7 +709,7 @@ section.footer {
 
   .carousel .button {
     margin-top: 60px;
-    text-align: center;
+    text-align: left !important;
   }
 
   .carousel .button a {
@@ -712,7 +719,7 @@ section.footer {
     text-decoration: none;
     font-size: 24px;
     font-family: Roboto, 'sans-serif';
-    padding: 8px 36px;
+    padding: 12px 48px;
     box-shadow: 0px 3px 40px rgba(0, 0, 0, 0.25);
   }
 
