@@ -47,12 +47,12 @@
             </div>
             <a class="next" @click="plusSlides(1)">&#10095;</a>
           </div>
-        </div>
 
-        <br>
-        <!-- The dots/circles -->
-        <div style="text-align:center">
-          <span v-for="(card, idx) in section.cards" :key="`carousel-dot-${idx}`" class="dot" @click="currentSlide(idx)"></span>
+           <br>
+          <!-- The dots/circles -->
+          <div style="position: absolute; bottom: 0; right: 47%;">
+            <span v-for="(card, idx) in section.cards" :key="`carousel-dot-${idx}`" class="dot" @click="currentSlide(idx)"></span>
+          </div>
         </div>
       </template>
 
@@ -698,7 +698,7 @@ section.footer {
   top: 50%;
   width: auto;
   margin-top: -22px;
-  padding: 16px;
+  padding: 11px;
   color: white;
   font-weight: bold;
   font-size: 18px;
@@ -731,7 +731,7 @@ section.footer {
 
 /* On hover, add a black background color with a little bit see-through */
 .prev:hover, .next:hover {
-  background-color: rgba(0,0,0,0.8);
+  background-color: rgba(116, 116, 116, 0.8);
 }
 
 .float-child{
@@ -766,14 +766,16 @@ section.footer {
   height: 15px;
   width: 15px;
   margin: 0 2px;
-  background-color: #bbb;
+  /*background-color: #bbb;*/
+  background-color: #717171;
   border-radius: 50%;
   display: inline-block;
   transition: background-color 0.6s ease;
 }
 
 .active, .dot:hover {
-  background-color: #717171;
+  /*background-color: #717171;*/
+  background-color: #bbb;
 }
 
 /* Fading animation */
