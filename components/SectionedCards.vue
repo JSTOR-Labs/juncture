@@ -32,41 +32,28 @@
 
 
       <template v-else-if="section.classes.has('carousel')">
-          <div class="slideshow-container">
-            <div class="mySlides fade">
-              <a class="prev" @click="plusSlides(-1)">&#10094;</a>
-              <div class="float-child">
-                <img class="slideshow-img" src="https://www.w3schools.com/howto/img_nature_wide.jpg">
-              </div>
-              <div class="float-child">
-                <div class="slideshow-title">Plant Humanities Lab</div>
-                <div class="slideshow-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
-                <p class="button">Visit Site</p>
-              </div>
-              <a class="next" @click="plusSlides(1)">&#10095;</a>
+        <div class="slideshow-container">
+          <h1 v-if="section.heading" v-html="section.heading"></h1>
+          <div v-for="(card, idx) in section.cards" :key="`carousel-image-${idx}`" class="mySlides fade">
+            <a class="prev" @click="plusSlides(-1)">&#10094;</a>
+            <div class="float-child">
+              <img class="slideshow-img" :src="card.image">
             </div>
-
-            <div class="mySlides fade">
-              <a class="prev" @click="plusSlides(-1)">&#10094;</a>
-              <div class="float-child">
-                <img class="slideshow-img" src="https://www.w3schools.com/howto/img_nature_wide.jpg">
+            <div class="float-child">
+              <div class="slideshow-title" v-html="card.heading"></div>
+              <div class="slideshow-description">
+                <p v-for="(para, pidx) in card.content" :key="`carousel-text-${pidx}`" :class="para.classes.join(' ')" v-html="para.text"></p>
               </div>
-              <div class="float-child">
-                <div class="slideshow-title">Kent Maps</div>
-                <div class="slideshow-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
-                <div class="slideshow-button"><p class="button">Visit Site</p></div>
-              </div>
-              <a class="next" @click="plusSlides(1)">&#10095;</a>
             </div>
+            <a class="next" @click="plusSlides(1)">&#10095;</a>
           </div>
+        </div>
 
-          <br>
-          <!-- The dots/circles -->
-          <div style="text-align:center">
-            <span class="dot" @click="currentSlide(1)"></span>
-            <span class="dot" @click="currentSlide(2)"></span>
-          </div>
-          
+        <br>
+        <!-- The dots/circles -->
+        <div style="text-align:center">
+          <span v-for="(card, idx) in section.cards" :key="`carousel-dot-${idx}`" class="dot" @click="currentSlide(idx)"></span>
+        </div>
       </template>
 
       <template v-else-if="section.classes.has('footer')">
@@ -662,6 +649,7 @@ section.footer {
   margin: auto;
   padding-left: 2%;
   padding-right: 2%;
+  height: 100%;
 }
 
 .slideshow-title {
@@ -680,6 +668,7 @@ section.footer {
 .slideshow-img {
   margin-left: 3%;
   width: 100%;
+  box-shadow: 0px 3px 40px rgba(0, 0, 0, 0.25);
 }
 
 .prev-button {
@@ -710,6 +699,22 @@ section.footer {
   border-radius: 0 3px 3px 0;
   user-select: none;
 }
+
+  .carousel .button {
+    margin-top: 60px;
+    text-align: center;
+  }
+
+  .carousel .button a {
+    color: #fff !important;
+    background-color: #5B152E;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 24px;
+    font-family: Roboto, 'sans-serif';
+    padding: 8px 36px;
+    box-shadow: 0px 3px 40px rgba(0, 0, 0, 0.25);
+  }
 
 /* Position the "next button" to the right */
 .next {
