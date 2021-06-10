@@ -380,6 +380,14 @@ p.button {
   gap: 1.8em;
 }
 
+@media (min-width: 55em) {
+  .home-cards {
+    grid-auto-flow: column !important;
+    grid-template-columns: auto;
+    align-items: start;
+  }
+}
+
 .card-n {
   display: flex;
   flex-direction: column;
@@ -403,9 +411,26 @@ p.button {
   grid-template-rows: auto auto;
   grid-template-columns: 50% 50%;
   align-items: flex-start;
-  grid-template-areas:
+}
+
+@media (min-width: 55em) {
+  .card-1 {
+    grid-template-rows: auto auto;
+    grid-template-columns: 50% 50%;
+    grid-column: 1/4;
+    grid-template-areas:
         "card-heading card-image"
         "card-text    card-image";
+  }
+
+  .card-n {
+    grid-template-rows: auto;
+    grid-template-columns: 100%;
+    grid-template-areas:
+      "card-image"
+      "card-heading"
+      "card-text";
+  }
 }
 
 .card-1 h2 {
@@ -417,7 +442,6 @@ p.button {
 
 .card-1 img {
   grid-area: card-image;
-  align-self: center;
   border-radius: 8px;
   width: 100%;
   background-size: cover;
@@ -428,37 +452,6 @@ p.button {
   line-height: 1.4;
 }
 
-@media (min-width: 55em) {
-  .home-cards {
-    grid-auto-flow: column !important;
-  }
-}
-
-@media (max-width: 55em) {
-  .card-1 {
-    grid-template-areas:
-          "card-image"
-          "card-heading"
-          "card-text";
-    grid-template-columns: unset;
-    grid-template-rows: unset;
-  }
-
-  .mySlides {
-    grid-template-areas:unset !important;
-  }
-
-  .float-image, .float-image img {
-    height: 300px;
-    object-fit: cover;
-    object-position: top;
-  }
-
-  .prev, .next {
-    top: 25% !important;
-  }
-
-}
 
 body {
   margin: 0;
@@ -786,6 +779,23 @@ section.footer {
 /* On hover, add a black background color with a little bit see-through */
 .prev:hover, .next:hover {
   background-color: rgba(116, 116, 116, 0.8);
+}
+
+@media (max-width: 55em) {
+  .mySlides {
+    grid-template-areas:unset !important;
+  }
+
+  .float-image, .float-image img {
+    height: 300px;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  .prev, .next {
+    top: 25% !important;
+  }
+
 }
 
 .float-child {
