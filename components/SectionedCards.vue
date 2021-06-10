@@ -402,6 +402,7 @@ p.button {
   display: grid;
   grid-template-rows: auto auto;
   grid-template-columns: 50% 50%;
+  grid-column: 1/span3;
   align-items: flex-start;
   grid-template-areas:
         "card-heading card-image"
@@ -428,9 +429,14 @@ p.button {
   line-height: 1.4;
 }
 
+.juncture-can .home-cards {
+  grid-template-columns: 1fr 1fr;
+}
+
 @media (min-width: 55em) {
   .home-cards {
     grid-auto-flow: column !important;
+    grid-template-columns: 1fr 1fr 1fr;
   }
 }
 
@@ -442,6 +448,10 @@ p.button {
           "card-text";
     grid-template-columns: unset;
     grid-template-rows: unset;
+  }
+
+  .juncture-can .home-cards {
+    grid-template-columns: unset!important;
   }
 
   .mySlides {
