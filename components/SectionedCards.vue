@@ -444,6 +444,35 @@ p.button {
   grid-template-columns: 1fr 1fr;
 }
 
+.juncture-documentation .home-cards {
+  display: block!important;
+}
+
+.juncture-documentation .home-cards .card-1 {
+  display: block!important;
+}
+
+.juncture-documentation .card-text {
+  margin: auto;
+}
+
+.juncture-documentation .card-text p {
+  text-align: center;
+  margin: 40px;
+}
+
+.juncture-documentation .button a {
+  color: #fff !important;
+  background-color: #5B152E;
+  border-radius: 50px;
+  text-decoration: none;
+  font-size: 24px;
+  font-family: Roboto, 'sans-serif';
+  padding: 12px 48px;
+  box-shadow: 0px 3px 40px rgba(0, 0, 0, 0.25);
+}
+
+
 @media (min-width: 55em) {
   .home-cards {
     grid-auto-flow: column !important;

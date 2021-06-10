@@ -54,7 +54,7 @@ Because it uses open standards like Markdown, IIIF, GeoJSON, D3, Timeline.js and
 
 ![](/images/github-login.png)
 
-If you don't have a Github account, create a free one at github.com. Login using the Juncture menu.
+If you don't have a Github account, create a free one at [github.com](https://github.com). Login using the Juncture menu.
 
 ## 2. Create a new site
 
@@ -102,6 +102,16 @@ Explore the cultural histories of plants and their influence on human societies.
 Explore themed essays about Kent, a county in South East England. Kent has a rich history and provided inspiration for a number of writers and artists including Charles Dickens.
 
 [Visit Site](https://kent-maps.online)
+<param class="button">
+
+# Documentation
+<param class="juncture-documentation">
+
+##
+
+The team behind Juncture has created ample documentation and sample files to help you create new essays and sites.  Have a question or a suggestion?  Tell us how we can make Juncture better at [labs@ithaka.org](mailto:labs@ithaka.org).
+
+[View Documentation](https://docs.visual-essays.app/)
 <param class="button">
 
 #
