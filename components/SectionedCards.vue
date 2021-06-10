@@ -340,6 +340,16 @@ module.exports = {
   color: white;
 }
 
+@media (max-width: 55em) {
+  #home section.heading p {
+    font-size: 2em;
+  }
+  .button a {
+    font-size: 24px !important;
+    padding: 12px 56px !important;
+  }
+}
+
 .heading header, .heading header ul, .heading header li {
   background-color: transparent;
   color: white;
@@ -372,6 +382,7 @@ p.button {
   font-size: 30px;
   font-family: Roboto, 'sans-serif';
   padding: 16px 72px;
+  box-shadow: 0px 3px 40px rgba(0, 0, 0, 0.25);
 }
 
 .home-cards {
@@ -569,7 +580,7 @@ header .menu-icon {
 }
 
 header .menu-icon .navicon {
-  background: #333;
+  background: #ffffff;
   display: block;
   height: 2px;
   position: relative;
@@ -579,7 +590,7 @@ header .menu-icon .navicon {
 
 header .menu-icon .navicon:before,
 header .menu-icon .navicon:after {
-  background: #333;
+  background: #ffffff;
   content: '';
   display: block;
   height: 100%;
@@ -650,11 +661,10 @@ header .menu-btn:checked ~ .menu-icon:not(.steps) .navicon:after {
 }
 
 section.footer {
-  padding: 0 !important;
-}
-
-.footer div {
-  background-color: #555;
+  color: white !important;
+  align-content: center !important;
+  background-color: #222029 !important;
+  padding: 24px !important;
 }
 
 .footer img {
@@ -669,9 +679,11 @@ section.footer {
   align-items: center;
   justify-content: left;
   list-style-type: none;
-  margin: 0 0 0 12px;
-  padding: 2px 0 0 0;
-  height: 48px;
+  padding-inline-start: 0;
+}
+
+.footer ul li:first-child {
+  margin-right: 8px;
 }
 
 .footer ul li {
@@ -850,7 +862,7 @@ section.footer {
 }
 
 .modal-form {
-  padding: 8px 16px 16px;
+  padding: 16px;
 }
 
 .form-wrapper {
@@ -869,6 +881,10 @@ section.footer {
 .form-message {
   height: 150px;
   font-size: 1rem;
+}
+
+.form-controls {
+  padding: 24px;
 }
 
 .form-submit {

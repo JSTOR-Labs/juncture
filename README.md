@@ -87,7 +87,7 @@ Since it runs out of Github, your Juncture site can be kept private, used for yo
 <param id="showcase" class="carousel">
 
 ## Plant Humanities Lab
-
+______
 ![](/images/phl-screenshot.png)
 
 Explore the cultural histories of plants and their influence on human societies.  The flagship use of Juncture, Plant Humanities Lab was developed as a Dumbarton Oaks and JSTOR Labs collaboration.
@@ -107,6 +107,7 @@ Explore themed essays about Kent, a county in South East England. Kent has a ric
 #
 <param class="footer raw">
 
+- Brought to you by:
 - [![JSTOR labs](/images/Labs_logo_knockout.svg "JSTOR Labs")](https://labs.jstor.org)
 - [About](about)
 - [Terms and conditions](terms-and-conditions)
