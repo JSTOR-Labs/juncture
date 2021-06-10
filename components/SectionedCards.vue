@@ -275,6 +275,10 @@ module.exports = {
 
 <style>
 
+a:hover {
+  color: black !important;
+}
+
 #home {
   display: flex;
   flex-direction: column;
@@ -385,6 +389,11 @@ p.button {
   box-shadow: 0px 3px 40px rgba(0, 0, 0, 0.25);
 }
 
+.button a:hover {
+  background-color: #ffb55a;
+  box-shadow: 0 3px 40px rgba(0, 0, 0, 0.4); ;
+}
+
 .home-cards {
   display: grid;
   grid-auto-flow: row;
@@ -469,9 +478,13 @@ p.button {
   font-size: 24px;
   font-family: Roboto, 'sans-serif';
   padding: 12px 48px;
-  box-shadow: 0px 3px 40px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 3px 40px rgba(0, 0, 0, 0.25);
 }
 
+.juncture-documentation .button a:hover {
+  background-color: #290312;
+  box-shadow: 0 3px 40px rgba(0, 0, 0, 0.4); ;
+}
 
 @media (min-width: 55em) {
   .home-cards {
@@ -820,7 +833,12 @@ section.footer {
   font-size: 24px;
   font-family: Roboto, 'sans-serif';
   padding: 12px 48px;
-  box-shadow: 0px 3px 40px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 3px 40px rgba(0, 0, 0, 0.25);
+}
+
+.carousel .button a:hover {
+  background-color: #290312;
+  box-shadow: 0 3px 40px rgba(0, 0, 0, 0.4); ;
 }
 
 /* Position the "next button" to the right */
