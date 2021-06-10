@@ -69,7 +69,7 @@ Select “Create a new site” from the Juncture menu. This will build a new sit
 Browse to your new site and add a new essay by selecting a template.  Add images, maps, and other components by following Juncture’s examples and documentation.
 
 # Public or private uses
-<param id="juncture-can">
+<param id="juncture-can" class="juncture-can">
 
 ## Create a public site
 
