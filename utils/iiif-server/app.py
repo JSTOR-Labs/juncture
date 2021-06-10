@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 import os
 import sys
-import re
+import math
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 
 import json
@@ -16,15 +16,13 @@ import hashlib
 from hashlib import sha256
 import traceback
 import getopt
-from datetime import datetime, timedelta
+from datetime import datetime
 from urllib.parse import urlparse, unquote
-from copy import deepcopy
 
 import requests
-from requests.auth import HTTPBasicAuth
 logging.getLogger('requests').setLevel(logging.INFO)
 
-from flask import Flask, request, make_response, Response
+from flask import Flask, request, Response, redirect
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -41,6 +39,7 @@ referrer_whitelist = set(config['referrer_whitelist'])
 baseurl = config['baseurl']
 
 ingest_endpoint_iiifhosting = 'https://admin.iiifhosting.com/api/v1/ingest/'
+placeholder_image = 'https://upload.wikimedia.org/wikipedia/commons/e/e0/PlaceholderLC.png'
 
 from expiringdict import ExpiringDict
 _cache = ExpiringDict(max_len=100, max_age_seconds=3600)
@@ -55,7 +54,6 @@ def connect_db():
 
 def get_image_size(url, **kwargs):
     '''Image size required for IIIF Hosting ingest'''
-    url = url.replace('https://iiif.juncture-digital.org', 'http://localhost:8080')
     size = None
     try:
         resp = requests.head(url, )
@@ -73,33 +71,34 @@ def get_image_size(url, **kwargs):
     return size
 
 def queue_image_for_iiifhosting(mdb, **kwargs):
+    _id = unquote(kwargs['url'])
     url = kwargs['url'].replace(' ', '%20')
     name = sha256(url.encode('utf-8')).hexdigest()
     size = get_image_size(url)
     logger.info(f'queue_image_for_iiifhosting: url={url} name={name} size={size}')
     if size:
-        image_data = mdb['images'].find_one({'_id': url})
+        image_data = mdb['images'].find_one({'_id': _id})
         if image_data:
             image_data['source_size'] = size
         else:
             mdb['images'].insert_one({
-                '_id': url,
+                '_id': _id,
                 'status': 'submitted',
                 'source_size': size,
                 'submitted': datetime.utcnow().isoformat(),
-                'external_id': url
+                'external_id': kwargs['url']
             })
     data = {
         'email': iiifhosting_user,
         'secure_payload': iiifhosting_token,
         'files': [{
-            'id': url, 
+            'id': _id, 
             'url': url, 
             # 'name': unquote(url.split('/')[-1]), 
             'name': name,
             'size': size}]
     }
-    logger.debug(json.dumps(data, indent=2))
+    logger.info(json.dumps(data, indent=2))
     resp = requests.post(
         ingest_endpoint_iiifhosting,
         headers = {
@@ -220,6 +219,17 @@ def update_manifest(mdb, manifest, image_data, **kwargs):
     mdb['manifests'].replace_one({'_id': manifest['_id']}, manifest)        
     return mdb['manifests'].find_one({'_id': manifest['_id']})
 
+def _source(url):
+    _url = urlparse(url)
+    if _url.hostname == 'raw.githubusercontent.com':
+        path_elems = [elem for elem in _url.path.split('/') if elem]
+        acct, repo, ref = path_elems[:3]
+        path = f'/{"/".join(path_elems[3:])}'
+        logger.info(f'GitHub image: hostname={_url.hostname} acct={acct} repo={repo} ref={ref} path={path}')
+        return f'https://{_url.hostname}/{acct}/{repo}/main{path}'
+    else:
+        return url
+
 @app.route('/gp-proxy/<path:path>', methods=['GET', 'HEAD'])
 def gp_proxy(path):
     gp_url = f'https://plants.jstor.org/seqapp/adore-djatoka/resolver?url_ver=Z39.88-2004&svc_id=info:lanl-repo/svc/getRegion&svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&svc.format=image/jpeg&rft_id=/{path}'
@@ -272,9 +282,10 @@ def manifest(path=None):
 
         mdb = connect_db()
         input_data = request.json
+        source = _source(input_data['url'])
 
         # make manifest id using hash of url
-        mid = hashlib.sha256(input_data['url'].encode()).hexdigest()
+        mid = hashlib.sha256(source.encode()).hexdigest()
 
         manifest = mdb['manifests'].find_one({'_id': mid})
 
@@ -287,7 +298,7 @@ def manifest(path=None):
             input_data_md_hash = hashlib.md5(json.dumps(metadata(**input_data), sort_keys=True).encode()).hexdigest()
             if can_mutate:
                 if refresh or 'service' not in manifest['sequences'][0]['canvases'][0]['images'][0]['resource']:
-                    image_data = get_image_data(mdb, input_data['url'])
+                    image_data = get_image_data(mdb, source)
                     if refresh or image_data is None or image_data['status'] != 'done':
                         make_iiif_image(mdb, manifest, **input_data)
                 else:
@@ -298,8 +309,8 @@ def manifest(path=None):
             if not can_mutate:
                 return ('Not authorized', 403)
 
-            image_data = get_image_data(mdb, input_data['url'])
-            if image_data is None and input_data['url'].endswith('/info.json'):
+            image_data = get_image_data(mdb, source)
+            if image_data is None and source.endswith('/info.json'):
                 resp = requests.get(input_data['url'], headers = {'Accept': 'application/json'})
                 if resp.status_code == 200:
                     iiif_info = resp.json()
@@ -321,8 +332,10 @@ def manifest(path=None):
 
         mdb = connect_db()
         input_data = request.json
-        manifest = update_manifest(mdb, manifest, **input_data)
-        return manifest, 200
+        source = _source(input_data['url'])
+        mid = hashlib.sha256(source.encode()).hexdigest()
+        manifest = mdb['manifests'].find_one({'_id': mid})
+        return update_manifest(mdb, manifest, **input_data), 200
 
 @app.route('/iiifhosting-webhook', methods=['GET', 'POST'])
 def iiifhosting_webhook():
@@ -350,6 +363,105 @@ def iiifhosting_webhook():
             })
         update_manifests_with_image_data(mdb, image_data)
     return 'OK', 200
+
+def _calc_region_and_size(image_data, args, type='thumbnail'):
+        
+    im_width = int(image_data['width'])
+    im_height = int(image_data['height'])
+
+    width = height = None
+
+    if 'size' in args:
+        size = args.get('size', 'full').replace('x',',').replace('X',',')
+        if ',' not in size:
+            size = f'{size},'
+        width, height = [int(arg) if arg.isdecimal() else None for arg in size.split(',')]
+    else:
+        if 'width' in args: width = int(args['width'])
+        if 'height' in args: height = int(args['height'])
+
+    if width == None and height == None:
+        width = 400 if type == 'thumbnail' else 1000
+        height = 260 if type == 'thumbnail' else 400
+    else:
+        if not width: width = round(im_height/height * im_width)
+        if not height: height = round(width/im_width * im_height)
+    aspect = width / height
+
+    if aspect > 1:
+        x = 0
+        w = im_width
+        h = math.ceil(im_width / aspect)
+        y = math.ceil((im_height-h) / 2)
+    else:
+        y = 0
+        h = im_height
+        w = math.ceil(im_height * aspect)
+        x = math.ceil((im_width-w) / 2)
+
+    region = f'{x},{y},{w},{h}'
+    size = f'{width},{height}'
+
+    logger.info(f'_calc_region_and_size: width={width} height={height} aspect={aspect} im_width={im_width} im_height={im_height} region={region} size={size}')
+    return region, size
+
+@app.route('/thumbnail/', methods=['GET'])
+@app.route('/thumbnail/', methods=['OPTIONS', 'POST', 'PUT'])
+@app.route('/banner/', methods=['GET'])
+@app.route('/banner/', methods=['OPTIONS', 'POST', 'PUT'])
+def thumbnail():
+    action = request.path.split('/')[1]
+    referrer = '.'.join(urlparse(request.referrer).netloc.split('.')[-2:]) if request.referrer else None
+    can_mutate = referrer is None or referrer in referrer_whitelist
+    if request.method == 'OPTIONS':
+        return ('', 204)
+    elif request.method in ('HEAD', 'GET'):
+        args = dict([(k, request.args.get(k)) for k in request.args])
+        refresh = args.get('refresh', 'false').lower() in ('', 'true')
+        region = args.get('region', 'full')
+        size = args.get('size', 'full')
+        rotation = args.get('rotation', '0')
+        quality = args.get('quality', 'default')
+        format = args.get('format', 'jpg')
+
+        logger.info(f'thumbnail: method={request.method} action={action} region={region} size={size} referrer={referrer} can_mutate={can_mutate} args={args}')
+        if 'url' in args:
+            source = _source(args['url'])
+            mdb = connect_db()
+            image_data = get_image_data(mdb, source)
+            if image_data and not refresh:
+                if region == 'full':
+                    region, size = _calc_region_and_size(image_data, args, action)
+                # logger.info(json.dumps(image_data, indent=2))
+                thumbnail_url = f'{image_data["url"].replace("http:","https:")}{region}/{size}/{rotation}/{quality}.{format}'
+                logger.info(thumbnail_url)
+                return redirect(thumbnail_url)
+                '''
+                resp = requests.get(thumbnail_url)
+                if resp.status_code == 200:
+                    content = resp.content
+                    if content:
+                        return (content, 200, {'Content-Type': 'image/jpeg', 'Content-Length': len(content)})
+                '''
+            else:
+                if can_mutate:
+                    queue_image_for_iiifhosting(mdb, url=source)
+                    placeholder = get_image_data(mdb, placeholder_image)
+                    if region == 'full':
+                        region, size = _calc_region_and_size(placeholder, args, action)
+                    thumbnail_url = f'{placeholder["url"].replace("http:","https:")}{region}/{size}/{rotation}/{quality}.{format}'
+                    logger.info(thumbnail_url)
+                    return redirect(thumbnail_url)
+                    '''
+                    resp = requests.get(thumbnail_url)
+                    if resp.status_code == 200:
+                        content = resp.content
+                        if content:
+                            return (content, 200, {'Content-Type': 'image/jpeg', 'Content-Length': len(content)})
+                    '''
+                else:
+                    return 'Not found', 404
+    return 'Bad Request', 400
 
 def usage():
     print('%s [hl:]' % sys.argv[0])
