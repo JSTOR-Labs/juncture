@@ -122,12 +122,17 @@ h1 {
     top: 25vh;
     left: 25vw;
     width: 50vw;
-    height: 50vh;
+    height: 55vh;
     background-color: white;
     z-index: 1000;
     box-shadow: 0 0 3px 1px rgb(0 0 0 / 25%);
     border-radius: 10px;
     padding: 12px;
+}
+
+.visible-form {
+  padding: 8px 16px 16px;
+  height: auto;
 }
 
 #create-site-form, #update-site-form, #add-page-form {

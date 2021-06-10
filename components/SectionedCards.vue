@@ -81,7 +81,7 @@
 
 
     <div id="home-contact-form" class="modal-form" style="display: none;">
-      <form v-on:submit.prevent>
+      <form v-on:submit.prevent class="form-wrapper">
         <h1>Contact us</h1>
         <input v-model="contactName" name="name" placeholder="Name" class="form-name" type="text" required>
         <input v-model="contactEmail" placeholder="Email" class="form-email" type="email" required>
@@ -89,8 +89,8 @@
                   required></textarea>
         <div v-html="doActionResponse.message"></div>
         <div class="form-controls">
+          <button v-if="!doActionResponse.status" class="form-submit" @click="submitContactForm"><a>Send</a></button>
           <button v-if="!doActionResponse.status" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
-          <button v-if="!doActionResponse.status" class="form-submit" @click="submitContactForm">Send</button>
           <button v-if="doActionResponse.status === 'done'" class="form-submit" @click="hideForm">Close</button>
         </div>
       </form>
@@ -837,6 +837,55 @@ section.footer {
   -webkit-animation-duration: 1.5s;
   animation-name: fade;
   animation-duration: 1.5s;
+}
+
+.modal-form {
+  padding: 8px 16px 16px;
+}
+
+.form-wrapper {
+  margin-top: 16px;
+  margin-left: 10px;
+}
+
+.form-name, .form-email, .form-message{
+    width: calc(100% - 24px);
+    height: 40px;
+    margin: 10px 0;
+    padding: 8px;
+    font-size: 1rem;
+}
+
+.form-message {
+  height: 150px;
+  font-size: 1rem;
+}
+
+.form-submit {
+  margin-top: 1px;
+  text-align: left !important;
+  border: none;
+  background: none;
+  margin-bottom: 12px;
+}
+
+.form-submit a {
+  color: #fff !important;
+  background-color: #5B152E;
+  border-radius: 50px;
+  text-decoration: none;
+  font-size: 20px;
+  font-family: Roboto, 'sans-serif';
+  padding: 10px 30px;
+  box-shadow: 0px 3px 40px rgba(0, 0, 0, 0.25);
+}
+
+.form-cancel {
+  font-size: 20px;
+  font-family: Roboto, 'sans-serif';
+  border: none;
+  background: none;
+  text-decoration: underline;
 }
 
 @-webkit-keyframes fade {

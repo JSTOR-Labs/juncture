@@ -120,6 +120,7 @@ module.exports = {
           },
           shadow: true,
           smooth: true,
+          length: 300,
         },
       };
       //init network
