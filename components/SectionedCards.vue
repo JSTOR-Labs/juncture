@@ -349,7 +349,7 @@ a:hover {
   color: white;
 }
 
-@media (max-width: 55em) {
+@media (max-width: 48em) {
   #home section.heading p {
     font-size: 2em;
   }
