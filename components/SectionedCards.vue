@@ -116,7 +116,8 @@ module.exports = {
     params: {type: Array, default: () => ([])},
     isAuthenticated: { type: Boolean, default: false },
     doActionCallback: { type: Object, default: () => ({}) },
-    loginsEnabled: { type: Boolean, default: false }
+    loginsEnabled: { type: Boolean, default: false },
+    siteConfig: { type: Object, default: function(){ return {}} },
   },
   data: () => ({
     content: {},
@@ -228,7 +229,13 @@ module.exports = {
     },
 
     submitContactForm() {
-      console.log('submitContactForm')
+      let body = `${this.contactMessage}\n\r[Sent by: ${this.contactName} <${this.contactEmail}>]`
+
+      this.$emit('do-action', 'send-email', {
+        fromAddress: `${this.contactName} <${this.contactEmail}>`,
+        toAddress: this.siteConfig.contactForm.toEmail,
+        messageBodyText: body,
+      })
     },
 
     glider() {
