@@ -349,7 +349,7 @@ a:hover {
   color: white;
 }
 
-@media (max-width: 55em) {
+@media (max-width: 48em) {
   #home section.heading p {
     font-size: 2em;
   }
@@ -491,7 +491,7 @@ p.button {
   box-shadow: 0 3px 40px rgba(0, 0, 0, 0.4); ;
 }
 
-@media (min-width: 48) {
+@media (min-width: 48em) {
   .home-cards {
     grid-auto-flow: column !important;
     grid-template-columns: 1fr 1fr 1fr;
