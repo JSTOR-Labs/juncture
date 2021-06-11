@@ -723,6 +723,7 @@
       
             let essay = document.createElement('div')
             let currentSection = essay
+            currentSection.setAttribute('data-id', '1')
             let segments = []
             let segment
 
@@ -819,7 +820,7 @@
                 while (prior && prior.tagName !== 'P' && prior.tagName[0] !== 'H') {
                   prior = prior.previousElementSibling
                 }
-                return { ...{ path: getDomPath(prior || tmp).join('>') }, ...attrsToObject(paramEl) }
+                return { ...{ path: getDomPath(prior || tmp).filter(elem => elem !== 'html' && elem !== 'body').join('>') }, ...attrsToObject(paramEl) }
               })
               .map(paramObj => {
                 let viewerTag = Object.keys(paramObj).find(attr => !attr.value && this.availableViewers.indexOf(attr) >= 0)
@@ -1376,7 +1377,7 @@
         }
         el = el.parentNode
       }
-      return stack.slice(1) // removes the html element
+      return stack
     }
 
     // Gets site config

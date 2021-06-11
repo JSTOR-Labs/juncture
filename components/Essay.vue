@@ -201,12 +201,12 @@ module.exports = {
       let paramTags = []
       let scope = []
       let el = root
-      while (el && el.id !== 'essay-component') {
+      while (el) {
         scope.push(el)
-        el = el.parentElement
+        el = el.id !== 'essay-component' ? el.parentElement : null
       }
       scope.forEach(elemInScope =>{
-        let elemPath = getDomPath(elemInScope).slice(6).join('>') || 'body'
+        let elemPath = getDomPath(elemInScope).slice(6).join('>')
         paramTags = [...paramTags, ...this.params.filter(param => param.path === elemPath)]
         })
       return paramTags
