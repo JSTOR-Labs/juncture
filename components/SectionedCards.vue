@@ -85,7 +85,7 @@
 
 
     <div id="home-contact-form" class="modal-form" style="display: none;">
-      <form v-on:submit.prevent>
+      <form v-on:submit.prevent class="form-wrapper">
         <h1>Contact us</h1>
         <input v-model="contactName" name="name" placeholder="Name" class="form-name" type="text" required>
         <input v-model="contactEmail" placeholder="Email" class="form-email" type="email" required>
@@ -93,8 +93,8 @@
                   required></textarea>
         <div v-html="doActionResponse.message"></div>
         <div class="form-controls">
+          <button v-if="!doActionResponse.status" class="form-submit" @click="submitContactForm"><a>Send</a></button>
           <button v-if="!doActionResponse.status" class="form-cancel" formnovalidate @click="hideForm">Cancel</button>
-          <button v-if="!doActionResponse.status" class="form-submit" @click="submitContactForm">Send</button>
           <button v-if="doActionResponse.status === 'done'" class="form-submit" @click="hideForm">Close</button>
         </div>
       </form>
@@ -280,6 +280,10 @@ module.exports = {
 
 <style>
 
+a:hover {
+  color: black !important;
+}
+
 #home {
   display: flex;
   flex-direction: column;
@@ -345,6 +349,16 @@ module.exports = {
   color: white;
 }
 
+@media (max-width: 55em) {
+  #home section.heading p {
+    font-size: 2em;
+  }
+  .button a {
+    font-size: 24px !important;
+    padding: 12px 56px !important;
+  }
+}
+
 .heading header, .heading header ul, .heading header li {
   background-color: transparent;
   color: white;
@@ -377,6 +391,12 @@ p.button {
   font-size: 30px;
   font-family: Roboto, 'sans-serif';
   padding: 16px 72px;
+  box-shadow: 0px 3px 40px rgba(0, 0, 0, 0.25);
+}
+
+.button a:hover {
+  background-color: #ffb55a;
+  box-shadow: 0 3px 40px rgba(0, 0, 0, 0.4); ;
 }
 
 .home-cards {
@@ -407,6 +427,7 @@ p.button {
   display: grid;
   grid-template-rows: auto auto;
   grid-template-columns: 50% 50%;
+  grid-column: 1/span3;
   align-items: flex-start;
   grid-template-areas:
         "card-heading card-image"
@@ -433,9 +454,47 @@ p.button {
   line-height: 1.4;
 }
 
-@media (min-width: 48em) {
+.juncture-can .home-cards {
+  grid-template-columns: 1fr 1fr;
+}
+
+.juncture-documentation .home-cards {
+  display: block!important;
+}
+
+.juncture-documentation .home-cards .card-1 {
+  display: block!important;
+}
+
+.juncture-documentation .card-text {
+  margin: auto;
+}
+
+.juncture-documentation .card-text p {
+  text-align: center;
+  margin: 40px;
+}
+
+.juncture-documentation .button a {
+  color: #fff !important;
+  background-color: #5B152E;
+  border-radius: 50px;
+  text-decoration: none;
+  font-size: 24px;
+  font-family: Roboto, 'sans-serif';
+  padding: 12px 48px;
+  box-shadow: 0 3px 40px rgba(0, 0, 0, 0.25);
+}
+
+.juncture-documentation .button a:hover {
+  background-color: #290312;
+  box-shadow: 0 3px 40px rgba(0, 0, 0, 0.4); ;
+}
+
+@media (min-width: 48) {
   .home-cards {
     grid-auto-flow: column !important;
+    grid-template-columns: 1fr 1fr 1fr;
   }
 }
 
@@ -447,6 +506,10 @@ p.button {
           "card-text";
     grid-template-columns: unset;
     grid-template-rows: unset;
+  }
+
+  .juncture-can .home-cards {
+    grid-template-columns: unset!important;
   }
 
   .mySlides {
@@ -564,7 +627,7 @@ header .menu-icon {
 }
 
 header .menu-icon .navicon {
-  background: #fff;
+  background: #ffffff;
   display: block;
   height: 2px;
   position: relative;
@@ -574,7 +637,7 @@ header .menu-icon .navicon {
 
 header .menu-icon .navicon:before,
 header .menu-icon .navicon:after {
-  background: #fff;
+  background: #ffffff;
   content: '';
   display: block;
   height: 100%;
@@ -645,11 +708,10 @@ header .menu-btn:checked ~ .menu-icon:not(.steps) .navicon:after {
 }
 
 section.footer {
-  padding: 0 !important;
-}
-
-.footer div {
-  background-color: #555;
+  color: white !important;
+  align-content: center !important;
+  background-color: #222029 !important;
+  padding: 24px !important;
 }
 
 .footer img {
@@ -664,9 +726,11 @@ section.footer {
   align-items: center;
   justify-content: left;
   list-style-type: none;
-  margin: 0 0 0 12px;
-  padding: 2px 0 0 0;
-  height: 48px;
+  padding-inline-start: 0;
+}
+
+.footer ul li:first-child {
+  margin-right: 8px;
 }
 
 .footer ul li {
@@ -774,7 +838,12 @@ section.footer {
   font-size: 24px;
   font-family: Roboto, 'sans-serif';
   padding: 12px 48px;
-  box-shadow: 0px 3px 40px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 3px 40px rgba(0, 0, 0, 0.25);
+}
+
+.carousel .button a:hover {
+  background-color: #290312;
+  box-shadow: 0 3px 40px rgba(0, 0, 0, 0.4); ;
 }
 
 /* Position the "next button" to the right */
@@ -842,6 +911,59 @@ section.footer {
   -webkit-animation-duration: 1.5s;
   animation-name: fade;
   animation-duration: 1.5s;
+}
+
+.modal-form {
+  padding: 16px;
+}
+
+.form-wrapper {
+  margin-top: 16px;
+  margin-left: 10px;
+}
+
+.form-name, .form-email, .form-message{
+    width: calc(100% - 24px);
+    height: 40px;
+    margin: 10px 0;
+    padding: 8px;
+    font-size: 1rem;
+}
+
+.form-message {
+  height: 150px;
+  font-size: 1rem;
+}
+
+.form-controls {
+  padding: 24px;
+}
+
+.form-submit {
+  margin-top: 1px;
+  text-align: left !important;
+  border: none;
+  background: none;
+  margin-bottom: 12px;
+}
+
+.form-submit a {
+  color: #fff !important;
+  background-color: #5B152E;
+  border-radius: 50px;
+  text-decoration: none;
+  font-size: 20px;
+  font-family: Roboto, 'sans-serif';
+  padding: 10px 30px;
+  box-shadow: 0px 3px 40px rgba(0, 0, 0, 0.25);
+}
+
+.form-cancel {
+  font-size: 20px;
+  font-family: Roboto, 'sans-serif';
+  border: none;
+  background: none;
+  text-decoration: underline;
 }
 
 @-webkit-keyframes fade {
