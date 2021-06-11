@@ -20,6 +20,10 @@
           <input class="menu-btn" type="checkbox" id="menu-btn"/>
           <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
           <ul class="menu">
+            <template v-if="loginsEnabled">
+              <li v-if="isAuthenticated" @click="doMenuAction('logout')"><i :class="`fas fa-user`"></i>Logout</li>
+              <li v-else @click="doMenuAction('authenticate')"><i :class="`fas fa-user`"></i>Login</li>
+            </template>
             <li v-for="navItem in nav" :key="navItem.path" @click="doMenuAction('loadEssay', navItem.path)">
               <i v-if="navItem.icon" :class="navItem.icon"></i>{{ navItem.label }}
             </li>
@@ -109,7 +113,10 @@ module.exports = {
   name: 'SectionedCards',
   props: {
     html: {type: String, default: ''},
-    params: {type: Array, default: () => ([])}
+    params: {type: Array, default: () => ([])},
+    isAuthenticated: { type: Boolean, default: false },
+    doActionCallback: { type: Object, default: () => ({}) },
+    loginsEnabled: { type: Boolean, default: false }
   },
   data: () => ({
     content: {},
@@ -143,7 +150,6 @@ module.exports = {
     init() {
     },
     loadPage() {
-      console.log('loadPage')
       //this.showSlides(this.slideIndex);
       this.$emit('do-action', 'loadEssay', '/examples')
     },
@@ -151,12 +157,9 @@ module.exports = {
     // Creates content object from input HTML
     parseHtml(html) {
       let root = new DOMParser().parseFromString(html, 'text/html').children[0].children[1]
-      console.log(root)
       return Array.from(root.querySelectorAll(':scope > section')).map(section => {
-        console.log(section)
         let backgroundImage = section.querySelector('p.background-image > img')
         let classes = new Set(section.classList)
-        console.log(classes)
         if (classes.has('raw')) {
           return {
             id: section.id, classes,
@@ -196,8 +199,10 @@ module.exports = {
         if (options === '/contact-us') {
           this.toggleContactForm()
         } else {
-          this.$emit('do-action', action, options)
+          this.$emit('do-action', 'loadEssay', options)
         }
+      } else {
+        this.$emit('do-action', action, options)
       }
     },
 
@@ -310,7 +315,7 @@ module.exports = {
   grid-area: 1 / 1 / 2 / 2;
 }
 
-#home section.heading div {
+#home section.heading > div {
   grid-area: 1 / 1 / 3 / 2;
   /* padding-top: 58px; */
   align-self: center;
@@ -428,13 +433,13 @@ p.button {
   line-height: 1.4;
 }
 
-@media (min-width: 55em) {
+@media (min-width: 48em) {
   .home-cards {
     grid-auto-flow: column !important;
   }
 }
 
-@media (max-width: 55em) {
+@media (max-width: 48em) {
   .card-1 {
     grid-template-areas:
           "card-image"
@@ -559,7 +564,7 @@ header .menu-icon {
 }
 
 header .menu-icon .navicon {
-  background: #333;
+  background: #fff;
   display: block;
   height: 2px;
   position: relative;
@@ -569,7 +574,7 @@ header .menu-icon .navicon {
 
 header .menu-icon .navicon:before,
 header .menu-icon .navicon:after {
-  background: #333;
+  background: #fff;
   content: '';
   display: block;
   height: 100%;
