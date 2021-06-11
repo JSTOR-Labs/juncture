@@ -1,5 +1,7 @@
 <a href="https://juncture-digital.org"><img src="https://gitcdn.link/cdn/jstor-labs/juncture/main/images/ve-button.png"></a>
 
+<param ve-config title="Juncture site admin" author=" ">
+
 This is a pre-release version of the Juncture site used for development, testing and evaluation.  The site is in active development
 and may be unstable until it is officially launched in early June 2021. {.notification}
 
