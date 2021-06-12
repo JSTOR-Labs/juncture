@@ -1549,7 +1549,7 @@
         pathElems = current.split('/').filter(elem => elem !== '')
       } else {
         pathElems = (path || window.location.pathname).split('/').filter(elem => elem !== '')
-        if (!pathIsDir) pathElems = pathElems.slice(0, -1)
+        // if (!pathIsDir) pathElems = pathElems.slice(0, -1)
         pathElems = [...pathElems, ...current.split('/').filter(elem => elem !== '')]
       }
       if (isJuncture && pathElems.length >= 2) {
