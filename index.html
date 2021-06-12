@@ -692,7 +692,8 @@
             for (let i = 0; i < pathsToTry.length; i++) {
               markdown = await this.getMarkdown(pathsToTry[i])
               if (markdown) {
-                this.mdDir = i === 1 ? '/' : path
+                let mdFile = path.split('/').pop()
+                this.mdDir = mdFile !== 'README.md' && mdFile !== 'index.md' && mdFile !== 'admin.md' ? path : '/'
                 break
               }
               this.mdPath = pathsToTry[i]
@@ -1549,7 +1550,7 @@
         pathElems = current.split('/').filter(elem => elem !== '')
       } else {
         pathElems = (path || window.location.pathname).split('/').filter(elem => elem !== '')
-        // if (!pathIsDir) pathElems = pathElems.slice(0, -1)
+        if (!pathIsDir) pathElems = pathElems.slice(0, -1)
         pathElems = [...pathElems, ...current.split('/').filter(elem => elem !== '')]
       }
       if (isJuncture && pathElems.length >= 2) {
