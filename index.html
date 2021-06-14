@@ -540,6 +540,7 @@
           },
 
           editMarkdown() {
+            console.log('editMarkdown', this.mdPath)
             this.openWindow(`https://github.com/${this.contentSource.acct}/${this.contentSource.repo}/edit/${this.contentSource.ref}${this.mdPath}`) 
           },
           openWindow(url, options) {
