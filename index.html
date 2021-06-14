@@ -266,7 +266,7 @@
         let repo = window.location.pathname.split('/').filter(elem => elem !== '')[0] || 'juncture'
         contentSource = {acct: 'jstor-labs', repo, branch: 'main', ref: 'main', hash: null, baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true,
                          assetsBaseUrl: `${window.location.origin}/${repo}`}
-        isJuncture = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture'
+        // isJuncture = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture'
 
       } else {
         // GHP deploy mode
@@ -459,7 +459,7 @@
           isJuncture,
           junctureVersion,
           path: '/',
-          mdpath: '',
+          mdPath: '',
           mdDir: '/',
           markdown: null,
           markdownViewer: null,
@@ -694,9 +694,9 @@
               if (markdown) {
                 let mdFile = path.split('/').pop()
                 this.mdDir = mdFile !== 'README.md' && mdFile !== 'index.md' && mdFile !== 'admin.md' ? path : '/'
+                this.mdPath = pathsToTry[i]
                 break
               }
-              this.mdPath = pathsToTry[i]
             }
             if (markdown) {
               ([this.markdown, this.html, this.params, this.entities] = await this.parseMarkdown(markdown))
@@ -1560,7 +1560,7 @@
       }
       // console.log(`assetsBaseUrl=${contentSource.assetsBaseUrl}`)
       converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
-      // console.log(`convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
+      // console.log(`isJuncture=${isJuncture} convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
       return converted
     }
 

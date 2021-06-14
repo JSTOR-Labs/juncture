@@ -36,7 +36,7 @@ module.exports = {
     items: { type: Array, default: () => ([]) },
     allItems: { type: Array, default: () => ([]) },
     entities: { type: Object, default: () => ({}) },
-    active: Boolean,
+    viewerIsActive: Boolean,
     height: Number
   },
   data: () => ({
@@ -108,6 +108,7 @@ module.exports = {
       })
     },
     addHeatmap(layer) {
+      console.log('addHeatmap', layer)
       let cfg = {
         // radius should be small ONLY if scaleRadius is true (or small radius is intended)
         // if scaleRadius is false it will be the constant radius used in pixels
@@ -132,9 +133,11 @@ module.exports = {
 
       fetch(layer.url).then(resp => resp.text())
         .then(delimitedDataString => {
+          console.log(delimitedDataString)
           let byPlace = {}
           this.delimitedStringToObjArray(delimitedDataString)
             .forEach(item => {
+              console.log(item)
               if (!byPlace[item.PlaceQID.id]) byPlace[item.PlaceQID.id] = {lat: parseFloat(item.Lat1.id), lng: parseFloat(item.Long1.id), count: 0}
               byPlace[item.PlaceQID.id].count += 1
             })
