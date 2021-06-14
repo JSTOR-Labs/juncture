@@ -459,7 +459,7 @@
           isJuncture,
           junctureVersion,
           path: '/',
-          mdpath: '',
+          mdPath: '',
           mdDir: '/',
           markdown: null,
           markdownViewer: null,
@@ -540,7 +540,6 @@
           },
 
           editMarkdown() {
-            console.log('editMarkdown', this.mdPath)
             this.openWindow(`https://github.com/${this.contentSource.acct}/${this.contentSource.repo}/edit/${this.contentSource.ref}${this.mdPath}`) 
           },
           openWindow(url, options) {
@@ -695,9 +694,9 @@
               if (markdown) {
                 let mdFile = path.split('/').pop()
                 this.mdDir = mdFile !== 'README.md' && mdFile !== 'index.md' && mdFile !== 'admin.md' ? path : '/'
+                this.mdPath = pathsToTry[i]
                 break
               }
-              this.mdPath = pathsToTry[i]
             }
             if (markdown) {
               ([this.markdown, this.html, this.params, this.entities] = await this.parseMarkdown(markdown))
