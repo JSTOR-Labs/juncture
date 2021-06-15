@@ -118,6 +118,7 @@ module.exports = {
     doActionCallback: { type: Object, default: () => ({}) },
     loginsEnabled: { type: Boolean, default: false },
     siteConfig: { type: Object, default: function(){ return {}} },
+    essayConfig: { type: Object, default: function(){ return {}} }
   },
   data: () => ({
     content: {},

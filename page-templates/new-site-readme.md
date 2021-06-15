@@ -6,11 +6,12 @@
 
 This Juncture site is published at [https://<<acct>>.github.io/<<repo>>](https://<<acct>>.github.io/<<repo>>) (note that it can take a few minutes for this URL become active after the site is created).
 - The content for this site is located in the GitHub repository at [https://github.com/<<acct>>/<<repo>>](https://github.com/<<acct>>/<<repo>>).
-- A sample visual essay can be found at [https://github.com/<<acct>>/<<repo>>/sample](https://github.com/<<acct>>/<<repo>>/sample).
+- A sample visual essay can be found at [https://github.com/<<acct>>/<<repo>>/sample](/sample).
 
 # Customizing your site
 
 - The site home page (this page) can be edited at [<<edit-url>>](<<edit-url>>)
+- The sample essay can be edited at [https://github.com/<<acct>>/<<repo>>/edit/main/sample/README.md](https://github.com/<<acct>>/<<repo>>/edit/main/sample/README.md)
 
 A configuration file (**config.yaml**) is located at root of the **juncture** branch in the GitHub repository of the new site and is used to customize the site.  Configuration options include setting up navigation links in the site menu and configuring a contact form.
 - The configuration page is found at [https://github.com/<<acct>>/<<repo>>/blob/juncture/config.yaml](https://github.com/<<acct>>/<<repo>>/blob/juncture/config.yaml)
