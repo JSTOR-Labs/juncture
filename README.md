@@ -12,7 +12,7 @@
 
 Create and share interactive essays using free and open web resources
 
-[Get started](get-started)
+[Get started](#get-started)
 <param id="controls" class="button">
 
 #
@@ -48,7 +48,7 @@ Designed for narratives exploring complex and nuanced subjects, Juncture essays 
 Because it uses open standards like Markdown, IIIF, GeoJSON, D3, Timeline.js and more, Juncture is a great way to level-up your digital skills.  All you need is a Github account and a willingness to learn.
 
 # Building an interactive essay is easier than you think
-<param id="building-an-essay-is-easy">
+<param id="get-started">
 
 ## 1. Login with a Github account
 
