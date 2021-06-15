@@ -12,9 +12,9 @@ favicon: /images/favicon.svg
 # Defines options shown in the header navigation menu
 ######################################################
 nav:
-- label: About
-  icon: info
-  path: /about
+- label: Sample essay
+  icon: image
+  path: /sample
 - label: Contact Us
   icon: envelope
   path: "/contact-us"

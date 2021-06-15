@@ -6,6 +6,7 @@
 
 This Juncture site is published at [https://<<acct>>.github.io/<<repo>>](https://<<acct>>.github.io/<<repo>>) (note that it can take a few minutes for this URL become active after the site is created).
 - The content for this site is located in the GitHub repository at [https://github.com/<<acct>>/<<repo>>](https://github.com/<<acct>>/<<repo>>).
+- A sample visual essay can be found at [https://github.com/<<acct>>/<<repo>>/sample](https://github.com/<<acct>>/<<repo>>/sample).
 
 # Customizing your site
 
