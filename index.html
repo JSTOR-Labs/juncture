@@ -1110,7 +1110,7 @@
               let toReplace = {...replacementValues, ...{'<<edit-url>>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/README.md`}}
               await this.putFile('/README.md', this.replaceValues(resp.content, toReplace), targetAcct, targetRepo, 'main')
 
-              await this.addPage(targetAcct, targetRepo, fromRef, '/about')
+              await this.addPage(targetAcct, targetRepo, fromRef, '/sample')
             }
 
           },
