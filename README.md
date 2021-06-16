@@ -20,7 +20,9 @@ Create and share interactive essays using free and open web resources
 
 ## About Juncture
 
-![](https://picsum.photos/400/250)
+<video width="100%" height="100%" controls>
+  <source src="https://raw.githubusercontent.com/jstor-labs/juncture/main/videos/Juncture-final.mp4" type="video/mp4">
+</video>
 
 Juncture is a free-to-use, open source framework for converting simple text files into an engaging visual essay. A visual essay is an interactive and responsive web page that augments a text narrative with visual elements to provide depth and context.
 

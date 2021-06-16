@@ -565,7 +565,8 @@
             console.log('doAction', action, options)
             if (action === 'send-email') {
               this.doActionCallback = {status: 'processing', message: 'Processing request'}
-              await sendEmail(options)
+              let resp = await sendEmail(options)
+              console.log(resp)
               this.doActionCallback = {status: 'done', message: 'Email sent'}
             } else if (action === 'viewMarkdown') {
               this.markdownViewer.show()

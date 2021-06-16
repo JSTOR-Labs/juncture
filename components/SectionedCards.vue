@@ -73,6 +73,7 @@
           <div v-for="(card, cidx) in section.cards" :key="`${sidx}-${cidx}`"
                :class="`${section.cards.length === 1 ? 'card-1' : 'card-n'}`">
             <img v-if="card.image" :src="card.image">
+            <div class="raw" v-if="card.raw" v-html="card.raw"></div>
             <h2 v-if="card.heading" v-html="card.heading"></h2>
             <div class="card-text">
               <p v-for="(para, pidx) in card.content" :key="`${sidx}-${cidx}-${pidx}`" :class="para.classes.join(' ')"
@@ -177,11 +178,15 @@ module.exports = {
               let card = {}
               Object.entries({
                 image: 'p img',
+                raw: 'video',
                 heading: 'h1, h2, h3, h4, h5, h6'
               }).forEach(entry => {
                 let [fld, selector] = entry
                 let found = el.querySelector(selector)
-                if (found) card[fld] = found.tagName === 'IMG' ? found.src : found.innerHTML
+                if (found) {
+                  if (fld === 'raw') card.raw = found.outerHTML
+                  else card[fld] = found.tagName === 'IMG' ? found.src : found.innerHTML
+                }
               })
               card.content = Array.from(el.querySelectorAll('p'))
                   .filter(p => p.textContent)
@@ -233,7 +238,7 @@ module.exports = {
       let body = `${this.contactMessage}\n\r[Sent by: ${this.contactName} <${this.contactEmail}>]`
 
       this.$emit('do-action', 'send-email', {
-        fromAddress: `${this.contactName} <${this.contactEmail}>`,
+        fromAddress: this.contactEmail,
         toAddress: this.siteConfig.contactForm.toEmail,
         messageBodyText: body,
       })
@@ -419,7 +424,7 @@ p.button {
   margin-bottom: 8px;
 }
 
-.card-n img {
+.card-n img, .card-1 .raw {
   width: 100%;
   border-radius: 8px;
   background-size: cover;
@@ -449,7 +454,7 @@ p.button {
   grid-area: card-heading;
 }
 
-.card-1 img {
+.card-1 img, .card-1 .raw {
   grid-area: card-image;
   align-self: center;
   border-radius: 8px;
