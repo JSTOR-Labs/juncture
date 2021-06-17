@@ -25,7 +25,6 @@ contactForm:
   toEmail:
   # - <<display-name>> <<<email>>>
   - ron.snyder@ithaka.org
-  - julia.ha@ithaka.org
   subject: Contact Us
 
 #######################################################

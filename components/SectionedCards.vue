@@ -22,7 +22,7 @@
           <ul class="menu">
             <template v-if="loginsEnabled">
               <li v-if="isAuthenticated" @click="doMenuAction('logout')"><i :class="`fas fa-user`"></i>Logout</li>
-              <li v-else @click="doMenuAction('authenticate')"><i :class="`fas fa-user`"></i>Login</li>
+              <li v-else @click="doMenuAction('authenticate')"><i :class="`fas fa-user`"></i>Login using Github</li>
             </template>
             <li v-for="navItem in nav" :key="navItem.path" @click="doMenuAction('loadEssay', navItem.path)">
               <i v-if="navItem.icon" :class="navItem.icon"></i>{{ navItem.label }}
@@ -64,7 +64,7 @@
       </template>
 
       <template v-else-if="section.classes.has('footer')">
-        <div v-html="section.content"></div>
+        <div style="display:grid; grid-auto-flow:column; align-items:center;"><div v-html="section.content"></div><div style="justify-self:right; font-size:70%; font-weight:normal;" v-html="version"></div></div>
       </template>
 
       <template v-else>
@@ -119,7 +119,8 @@ module.exports = {
     doActionCallback: { type: Object, default: () => ({}) },
     loginsEnabled: { type: Boolean, default: false },
     siteConfig: { type: Object, default: function(){ return {}} },
-    essayConfig: { type: Object, default: function(){ return {}} }
+    essayConfig: { type: Object, default: function(){ return {}} },
+    version: {type: String, default: ''},
   },
   data: () => ({
     content: {},
