@@ -800,7 +800,7 @@ section.footer {
 
 .float-image {
   border-radius: 8px;
-  margin: 0 3%;
+  margin: 0 16px;
   background-size: cover;
 }
 
@@ -974,7 +974,7 @@ section.footer {
   font-size: 20px;
   font-family: Roboto, 'sans-serif';
   padding: 10px 30px;
-  box-shadow: 0px 3px 40px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 3px 40px rgba(0, 0, 0, 0.25);
 }
 
 .form-cancel {
