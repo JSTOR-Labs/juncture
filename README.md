@@ -21,7 +21,7 @@ Create and share interactive essays using free and open web resources
 
 <video width="100%" height="100%" controls playsinline poster="https://raw.githubusercontent.com/jstor-labs/juncture/main/images/video-thumbnail.png">
   <source src="https://raw.githubusercontent.com/jstor-labs/juncture/main/videos/Juncture-final.mp4" type="video/mp4">
-    <track label="English" kind="subtitles" srclang="en" src="https://raw.githubusercontent.com/jstor-labs/juncture/main/captions/Juncture-final.vtt" default>
+    <track label="English" kind="subtitles" srclang="en" src="https://raw.githubusercontent.com/jstor-labs/juncture/main/videos/Juncture-final.vtt" default>
     Sorry, your browser doesn't support embedded videos.
 </video>
 
