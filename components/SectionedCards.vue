@@ -412,6 +412,10 @@ p.button {
   box-shadow: 0 3px 40px rgba(0, 0, 0, 0.4); ;
 }
 
+.home-cards video {
+  border-radius: 8px;
+}
+
 .home-cards {
   display: grid;
   grid-auto-flow: row;
