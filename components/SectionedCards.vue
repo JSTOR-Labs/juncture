@@ -800,7 +800,7 @@ section.footer {
 
 .float-image {
   border-radius: 8px;
-  margin: 0 3%;
+  margin: 0 16px;
   background-size: cover;
 }
 
@@ -835,12 +835,13 @@ section.footer {
   top: 50%;
   width: auto;
   margin-top: -22px;
-  padding: 11px;
+  padding: 16px 10px;
   color: white;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 32px;
   transition: 0.6s ease;
   user-select: none;
+  background-color: rgba(124, 124, 124, 0.06);
 }
 
 .carousel .button {
@@ -877,7 +878,7 @@ section.footer {
 
 /* On hover, add a black background color with a little bit see-through */
 .prev:hover, .next:hover {
-  background-color: rgba(116, 116, 116, 0.8);
+  background-color: rgba(124, 124, 124, 1);
 }
 
 .float-child {
@@ -973,7 +974,7 @@ section.footer {
   font-size: 20px;
   font-family: Roboto, 'sans-serif';
   padding: 10px 30px;
-  box-shadow: 0px 3px 40px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 3px 40px rgba(0, 0, 0, 0.25);
 }
 
 .form-cancel {
