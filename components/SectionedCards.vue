@@ -12,7 +12,7 @@
       </ul>
     </header>
 
-    <section v-for="(section, sidx) in content" :key="sidx" :class="section.classes.join(' ')">
+    <section v-for="(section, sidx) in content" :key="sidx" :id="section.id || `section-${sidx}`" :class="section.classes.join(' ')">
 
       <template v-if="section.classes.has('heading')">
         <header v-if="!fixedHeader">
@@ -114,6 +114,7 @@ module.exports = {
   name: 'SectionedCards',
   props: {
     html: {type: String, default: ''},
+    anchor: {type: String, default: ''},
     params: {type: Array, default: () => ([])},
     isAuthenticated: { type: Boolean, default: false },
     doActionCallback: { type: Object, default: () => ({}) },
@@ -283,7 +284,10 @@ module.exports = {
   watch: {
     html: {
       handler: function (html) {
-        if (html) this.content = this.parseHtml(html)
+        if (html) {
+          this.content = this.parseHtml(html)
+          if (this.anchor) this.$nextTick(() => document.getElementById(this.anchor).scrollIntoView())
+        }
       },
       immediate: true
     }
@@ -293,6 +297,10 @@ module.exports = {
 </script>
 
 <style>
+
+html {
+  scroll-behavior: smooth;
+}
 
 a:hover {
   color: black !important;
