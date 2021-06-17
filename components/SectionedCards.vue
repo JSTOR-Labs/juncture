@@ -835,12 +835,13 @@ section.footer {
   top: 50%;
   width: auto;
   margin-top: -22px;
-  padding: 11px;
+  padding: 16px 10px;
   color: white;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 32px;
   transition: 0.6s ease;
   user-select: none;
+  background-color: rgba(124, 124, 124, 0.06);
 }
 
 .carousel .button {
@@ -877,7 +878,7 @@ section.footer {
 
 /* On hover, add a black background color with a little bit see-through */
 .prev:hover, .next:hover {
-  background-color: rgba(116, 116, 116, 0.8);
+  background-color: rgba(124, 124, 124, 1);
 }
 
 .float-child {
