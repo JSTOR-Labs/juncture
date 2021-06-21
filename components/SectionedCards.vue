@@ -22,7 +22,7 @@
           <ul class="menu">
             <template v-if="loginsEnabled">
               <li v-if="isAuthenticated" @click="doMenuAction('logout')"><i :class="`fas fa-user`"></i>Logout</li>
-              <li v-else @click="doMenuAction('authenticate')"><i :class="`fas fa-user`"></i>Login using Github</li>
+              <li v-else @click="doMenuAction('authenticate')"><i :class="`fas fa-user`"></i>Log in using Github</li>
             </template>
             <li v-for="navItem in nav" :key="navItem.path" @click="doMenuAction('loadEssay', navItem.path)">
               <i v-if="navItem.icon" :class="navItem.icon"></i>{{ navItem.label }}

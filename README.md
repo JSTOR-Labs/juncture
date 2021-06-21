@@ -28,7 +28,7 @@ Create and share interactive essays using free and open web resources
 
 Juncture is a free-to-use, open source framework for converting simple text files into an engaging visual essay. A visual essay is an interactive and responsive web page that augments a text narrative with visual elements to provide depth and context.
 
-With Juncture you can create a single essay or build a full web site consisting of multiple visual essays with navigation, site info pages, contact form, logo, and other simple customizations.
+With Juncture you can create a single essay or build a full website consisting of multiple visual essays with navigation, site info pages, contact form, logo, and other simple customizations.
 
 # Juncture is...
 <param id="why-use-juncture">
@@ -54,11 +54,11 @@ Because it uses open standards like Markdown, IIIF, GeoJSON, D3, Timeline.js and
 # Building an interactive essay is easier than you think
 <param id="get-started">
 
-## 1. Login with a Github account
+## 1. Log in with a Github account
 
 ![](/images/github-login.png)
 
-If you don't have a Github account, create a free one at [github.com](https://github.com). Login using the Juncture menu.
+If you don't have a Github account, create a free one at [github.com](https://github.com). Log in using the Juncture menu.
 
 ## 2. Create a new site
 
