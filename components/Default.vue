@@ -24,13 +24,13 @@
       <template v-if="section.classes.has('heading')">
 
         <header v-if="!fixedHeader" class="header responsive">
-          <img class="logo" @click="doMenuAction('loadEssay', '/')" :src="logo">
+          <img class="logo" @click="doMenuAction({action:'load-page', path:'/'})" :src="logo">
           <input class="menu-btn" type="checkbox" id="menu-btn"/>
           <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
           <ul class="menu">
             <template v-if="loginsEnabled">
-              <li v-if="isAuthenticated" @click="doMenuAction('logout')"><i :class="`fas fa-user`"></i>Logout</li>
-              <li v-else @click="doMenuAction('authenticate')"><i :class="`fas fa-user`"></i>Login using Github</li>
+              <li v-if="isAuthenticated" @click="doMenuAction({action:'logout'})"><i :class="`fas fa-user`"></i>Logout</li>
+              <li v-else @click="doMenuAction({action:'authenticate'})"><i :class="`fas fa-user`"></i>Login using Github</li>
             </template>
             <li v-for="navItem in nav" :key="navItem.path" @click="doMenuAction(navItem)">
               <i v-if="navItem.icon" :class="navItem.icon"></i>{{ navItem.label }}
