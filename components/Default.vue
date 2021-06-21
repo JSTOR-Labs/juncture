@@ -352,7 +352,7 @@ html {
 }
 
 #default section {
-  padding: 24px;
+  /* padding: 24px; */
 }
 
 section h1 {
@@ -815,13 +815,16 @@ img.logo {
     float: left;
     padding: 20px 20px;
   }
+  header.header.responsive ul {
+    margin: 0;
+  }
   header.header.responsive li a {
     padding: 20px 30px;
   }
   header.header.responsive .menu {
     clear: none;
     float: right;
-    /* max-height: none; */
+    max-height: none;
   }
   header.header.responsive .menu-icon {
     display: none;
