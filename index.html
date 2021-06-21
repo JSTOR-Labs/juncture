@@ -568,7 +568,7 @@
               let resp = await sendEmail(options)
               console.log(resp)
               this.doActionCallback = {status: 'done', message: 'Email sent'}
-            } else if (action === 'viewMarkdown') {
+            } else if (action === 'view-markdown') {
               this.markdownViewer.show()
             } else if (action === 'editMarkdown') {
               this.editMarkdown()
@@ -704,6 +704,7 @@
             if (markdown) {
               ([this.markdown, this.html, this.params, this.entities] = await this.parseMarkdown(markdown))
               let essayConfig = this.params.find(param => param['ve-config']) || {}
+              console.log('essayConfig', essayConfig)
               if (essayConfig.banner) essayConfig.banner = convertURL(essayConfig.banner)
               essayConfig.component = essayConfig.component || 'essay'
               this.essayConfig = essayConfig
@@ -731,16 +732,21 @@
             let segments = []
             let segment
 
-            tmp.querySelectorAll('param').forEach(param => {
-              if (param.id || param.classList.length > 0) {
-                let prior = param.previousElementSibling
-                if (param.id) {
-                  prior.id = param.id
-                  param.removeAttribute('id')
+            Array.from(tmp.querySelectorAll('param'))
+              .filter(param => Object.values(param.attributes).find(attr => attr.nodeName !== 'id' && attr.nodeName !== 'class') === undefined)
+              .forEach(param => {
+                if (param.id || param.className) {
+                  let prior = param.previousElementSibling
+                  if (param.id) {
+                    prior.id = param.id
+                    param.removeAttribute('id')
+                  }
+                  if (param.classList.length > 0) {
+                    if (prior) prior.className = param.className
+                    else essay.className = param.className
+                  }
+                  param.parentElement.removeChild(param)
                 }
-                if (param.classList.length > 0) prior.className = param.className
-                param.parentElement.removeChild(param)
-              }
             })
 
             Array.from(tmp.children).forEach(el => {
@@ -769,7 +775,7 @@
                 currentSection.setAttribute('data-id', currentDataID)
 
                 if (elClasses.indexOf('cards') >= 0) {
-                  let wrapper = new DOMParser().parseFromString('<section class="cards"></section>', 'text/html').children[0].children[1].children[0]
+                  let wrapper = new DOMParser().parseFromString(`<section class="${elClasses.join(' ')}"></section>`, 'text/html').children[0].children[1].children[0]
                   currentSection.appendChild(wrapper)
                 } else {
                   currentSection.classList.add(...elClasses)
@@ -782,7 +788,7 @@
 
                 parent.appendChild(currentSection)
 
-              } else if (el.tagName === 'P') {
+              } else if (el.tagName === 'P' || el.tagName === 'UL') {
                 if (el.innerHTML.indexOf('ve-button.png') >= 0) {
                   el = null
                 } else if (el.innerHTML.indexOf('class="nav"') >= 0) {
@@ -837,8 +843,7 @@
                 return paramObj
               })
 
-              let entities = await this.getEntityData(this.findEntities(tmp, params))
-
+            let entities = await this.getEntityData(this.findEntities(tmp, params))
             return [markdown, essay.innerHTML, params, entities]
           },
 
@@ -1171,11 +1176,7 @@
           essayConfig (config) {
             this.layouts = []
             this.viewerIsOpen = false
-            if (config) {
-              if (config.layout) this.layouts = config.layout.split(',').map(layout => layout === 'vtl' ? 'vertical' : layout)
-              // Array.from(this.$refs.app.classList).forEach(cls => this.$refs.app.classList.remove(cls))
-              if (config.class) config.class.replace(/,/,' ').split(' ').forEach(cls => this.$refs.app.classList.add(cls))
-            }
+            if (config && config.layout) this.layouts = config.layout.split(',').map(layout => layout === 'vtl' ? 'vertical' : layout)
           },
 
           // Watcher that updates various data elements when the active paragraph changes
@@ -1396,7 +1397,7 @@
       resp = YAML.parse(resp)
       ghUnscopedToken = atob(resp.ghUnscopedToken)
       fontawesome = resp.fontawesome
-      if (isJuncture) {
+      if (isJuncture || ENV === 'DEV') {
         config = resp
         gcApiKey = atob(config.gcApiKey)
         gcAuthDomain = atob(config.gcAuthDomain)
