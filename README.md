@@ -1,4 +1,4 @@
-<param ve-config component="sectioned-cards" fixed-header="false" logo="/images/logo-juncture.svg">
+<param ve-config component="default" class="home" layout="test" fixed-header="false" logo="/images/logo-juncture.svg">
 <param nav label="Contact Us" path="/contact-us" icon="fas fa-envelope">
 
 # 
@@ -7,15 +7,13 @@
 ![](/images/hero-juncture.png)
 <param class="background-image">
 
-##
-
 Create and share interactive essays using free and open web resources
 
 [Get started](#get-started)
-<param id="controls" class="button">
+<param class="button">
 
 #
-<param id="about">
+<param id="about" class="cards horizontal">
 
 ## About Juncture
 
@@ -31,7 +29,7 @@ Juncture is a free-to-use, open source framework for converting simple text file
 With Juncture you can create a single essay or build a full web site consisting of multiple visual essays with navigation, site info pages, contact form, logo, and other simple customizations.
 
 # Juncture is...
-<param id="why-use-juncture">
+<param id="why-use-juncture" class="cards">
 
 ## Free, open and minimal
 
@@ -52,7 +50,7 @@ Designed for narratives exploring complex and nuanced subjects, Juncture essays 
 Because it uses open standards like Markdown, IIIF, GeoJSON, D3, Timeline.js and more, Juncture is a great way to level-up your digital skills.  All you need is a Github account and a willingness to learn.
 
 # Building an interactive essay is easier than you think
-<param id="get-started">
+<param id="get-started" class="cards">
 
 ## 1. Login with a Github account
 
@@ -72,8 +70,8 @@ Select “Create a new site” from the Juncture menu. This will build a new sit
 
 Browse to your new site and add a new essay by selecting a template.  Add images, maps, and other components by following Juncture’s examples and documentation.
 
-# Public or private uses
-<param id="juncture-can" class="juncture-can">
+# Public or personal uses
+<param id="juncture-can" class="cards juncture-can">
 
 ## Create a public site
 
@@ -88,10 +86,10 @@ Your Juncture site will run out of Github, where it is easy to connect it to a r
 Since it runs out of Github, your Juncture site can be kept private, used for your own purposes or as part of a project-based learning exercise.
 
 # Showcase
-<param id="showcase" class="carousel">
+<param id="showcase" class="cards carousel">
 
 ## Plant Humanities Lab
-______
+
 ![](/images/phl-screenshot.png)
 
 Explore the cultural histories of plants and their influence on human societies.  The flagship use of Juncture, Plant Humanities Lab was developed as a Dumbarton Oaks and JSTOR Labs collaboration.
@@ -109,7 +107,7 @@ Explore themed essays about Kent, a county in South East England. Kent has a ric
 <param class="button">
 
 # Documentation
-<param class="juncture-documentation">
+<param class="center">
 
 ##
 
@@ -119,10 +117,8 @@ The team behind Juncture has created ample documentation and sample files to hel
 <param class="button">
 
 #
-<param class="footer raw">
+<param class="footer">
 
-- Brought to you by:
-- [![JSTOR labs](/images/Labs_logo_knockout.svg "JSTOR Labs")](https://labs.jstor.org)
+- Brought to you by: [![JSTOR labs](/images/Labs_logo_knockout.svg "JSTOR Labs")](https://labs.jstor.org)
 - [About](about)
 - [Terms and conditions](terms-and-conditions)
-

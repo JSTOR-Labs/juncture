@@ -26,7 +26,7 @@
             </li>
 
             <template v-if="isAuthenticated">
-              <li @click="doMenuAction('viewMarkdown')"><i class="fas fa-file-code"></i>View page markdown</li>
+              <li @click="doMenuAction('view-markdown')"><i class="fas fa-file-code"></i>View page markdown</li>
               <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="doMenuAction('editMarkdown')">
                 <i class="fas fa-edit"></i>Edit this page
               </li>

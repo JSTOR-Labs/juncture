@@ -1,25 +1,2 @@
 /* Custom Stylesheet */
 
-#app.no-header {
-  grid-template-columns: 1fr;
-	grid-template-rows: auto 1fr auto;
-}
-
-.no-header #header {
-	display: none;
-}
-
-.no-header  #essay {
-  grid-area: 1 / 1 / 2 / 3;
-  z-index: 1;
-	padding-top: 0;
-}
-
-.no-header #viewer {
-  grid-area: 2 / 2 / 3 / 2;
-  position: relative;
-}
-
-.no-header #footer {
-  grid-area: 3 / 1 / 4 / 3;
-}
