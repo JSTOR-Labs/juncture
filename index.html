@@ -570,20 +570,20 @@
               this.doActionCallback = {status: 'done', message: 'Email sent'}
             } else if (action === 'view-markdown') {
               this.markdownViewer.show()
-            } else if (action === 'editMarkdown') {
+            } else if (action === 'edit-page') {
               this.editMarkdown()
-            } else if (action === 'addPage') {
+            } else if (action === 'add-page') {
               this.reposForAcct = await this.listRepositories()
               this.selectedRepo = this.reposForAcct.length > 0 ? this.reposForAcct[0].name : null
               this.showForm('add-page-form')
-            } else if (action === 'createSite') {
+            } else if (action === 'create-site') {
               this.showForm('create-site-form')
-            } else if (action === 'updateSite') {
+            } else if (action === 'software-update') {
               let releases = await getGHReleases()
               this.selectedRelease = releases[0]
               this.releases = releases
               this.showForm('update-site-form')
-            } else if (action === 'gotoGitHub') {
+            } else if (action === 'goto-github') {
               window.open(`https://github.com/${contentSource.acct}/${contentSource.repo}/tree/${contentSource.ref}`, '_blank')
             } else if (action === 'viewSiteOnJuncture') {
               window.location.href = `https://juncture-digital.org/${contentSource.acct}/${contentSource.repo}`
@@ -591,7 +591,7 @@
               this.authenticate()
             } else if (action === 'logout') {
               this.logout()
-            } else if (action === 'loadEssay') {
+            } else if (action === 'load-page') {
               this.loadEssay(options)
             }
           },
