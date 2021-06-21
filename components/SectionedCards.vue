@@ -22,7 +22,7 @@
           <ul class="menu">
             <template v-if="loginsEnabled">
               <li v-if="isAuthenticated" @click="doMenuAction('logout')"><i :class="`fas fa-user`"></i>Logout</li>
-              <li v-else @click="doMenuAction('authenticate')"><i :class="`fas fa-user`"></i>Login using Github</li>
+              <li v-else @click="doMenuAction('authenticate')"><i :class="`fas fa-user`"></i>Log in using Github</li>
             </template>
             <li v-for="navItem in nav" :key="navItem.path" @click="doMenuAction('loadEssay', navItem.path)">
               <i v-if="navItem.icon" :class="navItem.icon"></i>{{ navItem.label }}
@@ -64,7 +64,10 @@
       </template>
 
       <template v-else-if="section.classes.has('footer')">
-        <div style="display:grid; grid-auto-flow:column; align-items:center;"><div v-html="section.content"></div><div style="justify-self:right; font-size:70%; font-weight:normal;" v-html="version"></div></div>
+        <div style="display:grid; grid-auto-flow:column; align-items:center;">
+          <div v-html="section.content"></div>
+        </div>
+        <div style="font-size:70%; font-weight:normal;" v-html="version"> </div>
       </template>
 
       <template v-else>
@@ -413,7 +416,7 @@ p.button {
   font-size: 30px;
   font-family: Roboto, 'sans-serif';
   padding: 16px 72px;
-  box-shadow: 0px 3px 40px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 3px 40px rgba(0, 0, 0, 0.25);
 }
 
 .button a:hover {
@@ -498,7 +501,7 @@ p.button {
 
 .juncture-documentation .card-text p {
   text-align: center;
-  margin: 40px;
+  margin: 16px 0;
 }
 
 .juncture-documentation .button a {
@@ -521,6 +524,10 @@ p.button {
   .home-cards {
     grid-auto-flow: column !important;
     grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .juncture-documentation .card-text p {
+    margin: 40px !important;
   }
 }
 
@@ -747,24 +754,45 @@ section.footer {
 }
 
 .footer ul {
-  display: grid;
-  grid-auto-flow: column;
-  align-items: center;
-  justify-content: left;
+  display: block;
   list-style-type: none;
   padding-inline-start: 0;
 }
 
-.footer ul li:first-child {
-  margin-right: 8px;
-}
-
 .footer ul li {
-  margin-right: 40px;
+  margin-bottom: 32px;
 }
 
 .footer ul li a {
   color: white !important;
+}
+
+.footer ul li:first-child {
+  margin-bottom: 8px;
+}
+
+@media (min-width: 48em) {
+  .footer ul {
+    display: grid;
+    grid-auto-flow: column;
+    align-items: center;
+    justify-content: left;
+  }
+
+  .footer ul li:first-child {
+    margin-right: 8px;
+    margin-bottom: 0;
+  }
+
+  .footer ul li {
+    margin-right: 40px;
+    margin-bottom: 0;
+  }
+
+  .footer ul li {
+    margin-right: 24px;
+  }
+
 }
 
 .wrap {
