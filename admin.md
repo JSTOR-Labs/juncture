@@ -1,4 +1,5 @@
 <param ve-config component="default" fixed-header="true" logo="/images/logo-juncture.svg">
+<param nav label="Home" action="cload-page" path="/" icon="fas fa-home">
 <param nav label="Contact Us" action="contact-us" icon="fas fa-envelope">
 <param nav label="Documentation" action="load-page" path="/docs" icon="fas fa-envelope">
 <param nav label="View page markdown" action="view-markdown" icon="fas fa-file-code">

@@ -727,6 +727,7 @@ section.heading p {
   font-size: 2em;
   padding: 10px 20px;
   text-decoration: none;
+  cursor: pointer;
 }
 
 img.logo {
