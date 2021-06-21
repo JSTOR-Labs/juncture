@@ -27,17 +27,17 @@
 
             <template v-if="isAuthenticated">
               <li @click="doMenuAction('view-markdown')"><i class="fas fa-file-code"></i>View page markdown</li>
-              <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="doMenuAction('editMarkdown')">
+              <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="doMenuAction('edit-page')">
                 <i class="fas fa-edit"></i>Edit this page
               </li>
-              <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="doMenuAction('addPage')">
+              <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="doMenuAction('add-page')">
                 <i class="fas fa-file-medical"></i>Add a page
               </li>
               <li @click="doMenuAction('gotoGitHub')"><i class="fab fa-github"></i>Goto to GitHub</li>
                           
               <hr>
-              <li v-if="isAuthenticated" @click="doMenuAction('createSite')"><i class="fas fa-plus-circle"></i>Create new site</li>
-              <li v-if="isAdmin" @click="doMenuAction('updateSite')"><i class="fas fa-wrench"></i>Software update</li>
+              <li v-if="isAuthenticated" @click="doMenuAction('create-site')"><i class="fas fa-plus-circle"></i>Create new site</li>
+              <li v-if="isAdmin" @click="doMenuAction('software-update')"><i class="fas fa-wrench"></i>Software update</li>
             </template>
 
           </template>
