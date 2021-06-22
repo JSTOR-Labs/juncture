@@ -701,6 +701,15 @@
                 break
               }
             }
+          
+            let browserPath = `${contentSource.basePath}${path}${this.anchor ? '#'+this.anchor : ''}`
+            if (qargs.ref) browserPath += `?ref=${qargs.ref}`
+            if (replace) {
+              history.replaceState({file: path || ''}, '', browserPath)
+            } else {
+              history.pushState({file: path || ''}, '', browserPath)
+            }
+            
             if (markdown) {
               ([this.markdown, this.html, this.params, this.entities] = await this.parseMarkdown(markdown))
               let essayConfig = this.params.find(param => param['ve-config']) || {}
@@ -710,14 +719,6 @@
               this.essayConfig = essayConfig
             }
             if (gaPropertyID) ga('send', 'pageview', `${contentSource.basePath}${path}`)
-
-            let browserPath = `${contentSource.basePath}${path}${this.anchor ? '#'+this.anchor : ''}`
-            if (qargs.ref) browserPath += `?ref=${qargs.ref}`
-            if (replace) {
-              history.replaceState({file: path || ''}, '', browserPath)
-            } else {
-              history.pushState({file: path || ''}, '', browserPath)
-            }
 
           },
 
