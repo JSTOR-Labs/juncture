@@ -2,7 +2,7 @@ title: Juncture
 tagline: A Visual Essay Site
 banner: /images/hero-juncture.png
 favicon: /images/favicon.svg
-
+logo: /images/logo-juncture.svg
 # When using a custom domain these fields must be updated to match
 # the account and repository name
 #acct: <GitHub account/username>
@@ -12,12 +12,17 @@ favicon: /images/favicon.svg
 # Defines options shown in the header navigation menu
 ######################################################
 nav:
-- label: Sample essay
-  icon: image
-  path: /sample
+- label: Home
+  icon: fas fa-home
+  action: load-page
+  path: /
+- label: Documentation
+  icon: fas fa-file-alt
+  action: load-page
+  path: /docs
 - label: Contact Us
-  icon: envelope
-  path: "/contact-us"
+  icon: fas fa-envelope
+  action: contact-us
 
 # If the /contact-us path is defined for the nav menu a contact form will be enabled
 # The following information is used in the display and processing of the contact form.

@@ -1,15 +1,4 @@
-<param ve-config component="default" fixed-header="true" logo="/images/logo-juncture.svg">
-<param nav label="Home" action="cload-page" path="/" icon="fas fa-home">
-<param nav label="Contact Us" action="contact-us" icon="fas fa-envelope">
-<param nav label="Documentation" action="load-page" path="/docs" icon="fas fa-envelope">
-<param nav label="View page markdown" action="view-markdown" icon="fas fa-file-code">
-<param nav if-authenticated>
-<param nav if-authenticated label="Edit this page" action="edit-page" icon="fas fa-edit">
-<param nav if-authenticated label="Add a page" action="add-page" icon="fas fa-file-medical">
-<param nav if-authenticated label="Goto to GitHub" action="goto-github" icon="fab fa-github">
-<param nav if-authenticated if-admin>
-<param nav if-authenticated if-admin label="Create new site" action="create-site" icon="fas fa-plus-circle">
-<param nav if-authenticated if-admin label="Software update" action="software-update" icon="fas fa-wrench">
+<param ve-config component="default" fixed-header>
 
 # Welcome to Juncture
 <param id="welcome">

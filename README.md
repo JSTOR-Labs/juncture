@@ -1,5 +1,5 @@
 <param ve-config component="default" class="home" layout="test" fixed-header="false" logo="/images/logo-juncture.svg">
-<param nav label="Contact Us" path="/contact-us" icon="fas fa-envelope">
+<param nav label="Contact Us" action="contact-us" icon="fas fa-envelope">
 
 # 
 <param class="heading">

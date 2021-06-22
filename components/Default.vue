@@ -6,16 +6,40 @@
       <input class="menu-btn" type="checkbox" id="menu-btn"/>
       <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
       <ul class="menu">
-        <template v-if="loginsEnabled">
-          <li v-if="isAuthenticated" @click="doMenuAction({action:'logout'})"><i :class="`fas fa-user`"></i>Logout</li>
-          <li v-else @click="doMenuAction({action:'authenticate'})"><i :class="`fas fa-user`"></i>Login using Github</li>
-        </template>
+
         <template v-for="(navItem, idx) in nav">
           <li v-if="(!navItem['if-authenticated'] || isAuthenticated) && (!navItem['if-admin'] || isAdmin)" 
               :key="`nav-${idx}`"@click="doMenuAction(navItem)">
             <i v-if="navItem.icon" :class="navItem.icon"></i>{{ navItem.label }}
           </li>
         </template>
+
+        <template v-if="isJuncture">
+          <hr>
+
+          <template v-if="loginsEnabled">
+            <li v-if="isAuthenticated" @click="doMenuAction({action:'logout'})"><i :class="`fas fa-user`"></i>Logout</li>
+            <li v-else @click="doMenuAction({action:'authenticate'})"><i :class="`fas fa-user`"></i>Login using Github</li>
+            <hr>
+          </template>
+
+          <template v-if="isAuthenticated">
+            <li @click="doMenuAction({action:'view-markdown'})"><i class="fas fa-file-code"></i>View page markdown</li>
+            <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') || isAdmin)" @click="doMenuAction({action:'edit-page'})">
+              <i class="fas fa-edit"></i>Edit this page
+            </li>
+            <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') || isAdmin)" @click="doMenuAction({action:'add-page'})">
+              <i class="fas fa-file-medical"></i>Add a page
+            </li>
+            <li @click="doMenuAction({action:'goto-github'})"><i class="fab fa-github"></i>Goto to GitHub</li>
+                        
+            <hr>
+            <li v-if="isAuthenticated" @click="doMenuAction({action:'create-site'})"><i class="fas fa-plus-circle"></i>Create new site</li>
+            <li v-if="isAdmin" @click="doMenuAction({action:'software-update'})"><i class="fas fa-wrench"></i>Software update</li>
+          </template>
+
+        </template>
+
       </ul>
     </header>
 
@@ -126,10 +150,12 @@ module.exports = {
     html: {type: String, default: ''},
     anchor: {type: String, default: ''},
     params: {type: Array, default: () => ([])},
+    isJuncture: { type: Boolean, default: false },
     isAuthenticated: { type: Boolean, default: false },
     isAdmin: { type: Boolean, default: false },
     doActionCallback: { type: Object, default: () => ({}) },
     loginsEnabled: { type: Boolean, default: false },
+    contentSource: { type: Object, default: function(){ return {}} },
     siteConfig: { type: Object, default: function(){ return {}} },
     essayConfig: { type: Object, default: function(){ return {}} },
     version: {type: String, default: ''},
@@ -143,17 +169,15 @@ module.exports = {
     slideIndex: 0,
   }),
   computed: {
+    essayNav() { return this.params.filter(param => param.nav) },
     nav() {
-      return this.params.filter(param => param.nav)
-    },
-    config() {
-      return this.params.find(param => param['ve-config']) || {}
+      return this.essayNav.length > 0 ? this.essayNav : this.siteConfig.nav || []
     },
     fixedHeader() {
-      return this.config['fixed-header'] === true
+      return this.essayConfig['fixed-header'] === true
     },
     logo() {
-      return this.config.logo
+      return this.essayConfig.logo || this.siteConfig.logo
     }
   },
   mounted() {
@@ -246,7 +270,7 @@ module.exports = {
       } else if (options.action === 'contact-us') {
           this.toggleContactForm()
       } else {
-        this.$emit('do-action', options.action, options)
+        this.$emit('do-action', options.action, options.path)
       }
     },
 
@@ -313,11 +337,11 @@ module.exports = {
 
   },
   watch: {
-    config: {
+    essayConfig: {
       handler: function () {
         let app = document.getElementById('app')
         Array.from(app.classList).forEach(cls => app.classList.remove(cls))
-        if (this.config.class) app.classList.add(this.config.class.split(' '))
+        if (this.essayConfig.class) app.classList.add(this.essayConfig.class.split(' '))
       },
       immediate: true
     },
@@ -394,7 +418,7 @@ section .button a {
 }
 
 .fixed-header > section:first-of-type {
-  margin-top: 100px;
+  margin-top: 80px;
 }
 
 .heading .button a {
@@ -677,7 +701,7 @@ section.heading p {
 .fixed-header .header {
   background-color: #5B152E;
   position: fixed;
-  height: 100px;
+  height: 80px;
 }
 .header, .header ul, .header li {
   background-color: transparent;
