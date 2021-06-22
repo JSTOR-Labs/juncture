@@ -788,7 +788,7 @@
 
                 parent.appendChild(currentSection)
 
-              } else if (el.tagName === 'P' || el.tagName === 'UL') {
+              } else if (el.tagName === 'P' || el.tagName === 'UL' || el.tagName === 'OL') {
                 if (el.innerHTML.indexOf('ve-button.png') >= 0) {
                   el = null
                 } else if (el.innerHTML.indexOf('class="nav"') >= 0) {
