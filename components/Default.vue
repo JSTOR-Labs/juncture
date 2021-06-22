@@ -355,6 +355,7 @@ module.exports = {
 
           // Add click handler for internal links
           link.addEventListener('click', (e) => {
+            console.log('click', e)
             let target = e.target
             while (!target.dataset.target && target.parentElement) { target = target.parentElement }
             let path = target.dataset.target
