@@ -26,7 +26,7 @@ A visual essay may be created in any existing Github repository.  This can be do
 
 ## Create a sample visual essay
 
-![](/images/sample-essay.jpg)
+![](/images/create-essay.jpg)
 
 1. From the Juncture menu select the `Add a page` option
 2. In the dialog form select an existing Github repository to use for the visual essay and a name for the essay
@@ -43,7 +43,7 @@ A visual essay may be created in any existing Github repository.  This can be do
 
 ## View the visual essay
 
-![](https://upload.wikimedia.org/wikipedia/commons/6/67/Learning_Curve_--_Coming_Soon_Placeholder.png)
+![](/images/sample-essay.jpg)
 
 1. Reload the visual essay window using the browser reload button
 
