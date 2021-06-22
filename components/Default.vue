@@ -355,7 +355,6 @@ module.exports = {
 
           // Add click handler for internal links
           link.addEventListener('click', (e) => {
-            console.log('click', e)
             let target = e.target
             while (!target.dataset.target && target.parentElement) { target = target.parentElement }
             let path = target.dataset.target
@@ -366,7 +365,7 @@ module.exports = {
                 this.$refs.essay.scrollTop = this.scrollTop - 100
               }
             } else {
-              this.$emit('load-page', path)
+              this.$emit('do-action', 'load-page', path)
             }
           })
         } else {
