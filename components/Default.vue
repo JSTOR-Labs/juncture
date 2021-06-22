@@ -194,7 +194,6 @@ module.exports = {
     // Creates content object from input HTML
     parseHtml(html) {
       let root = new DOMParser().parseFromString(html, 'text/html').children[0].children[1]
-      console.log(root)
       return Array.from(root.querySelectorAll(':scope > section')).map(section => {
         console.log('section', section)
         
@@ -333,6 +332,48 @@ module.exports = {
             else dot.classList.remove('active')
           })
       }
+    },
+
+    // Converts link tags to elements with click listeners enabling intra-app navigation without page loading
+    convertLinks(root) {
+      root.querySelectorAll('a').forEach(link => {
+        if ((!link.href && link.dataset.target) || link.href.indexOf(window.location.host) > 0) {
+          // If internal link
+          let target = link.dataset.target
+          if (!target) { 
+            const parsedUrl = parseUrl(link.href)
+            let pathElems = parsedUrl.pathname.split('/').filter(elem => elem !== '')
+            if (contentSource.isGhpSite) {
+              if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
+            } else {
+              if (pathElems[0] === contentSource.acct && pathElems[1] === contentSource.repo) pathElems = pathElems.slice(2)
+            }
+            target = parsedUrl.hash === '' ? `/${pathElems.join('/')}/` : parsedUrl.hash.split('?')[0]
+          }
+          link.removeAttribute('href')
+          link.setAttribute('data-target', target)
+
+          // Add click handler for internal links
+          link.addEventListener('click', (e) => {
+            let target = e.target
+            while (!target.dataset.target && target.parentElement) { target = target.parentElement }
+            let path = target.dataset.target
+            if (path[0] === '#') {
+              let anchorElem = document.getElementById(path.slice(1))
+              if (anchorElem) {
+                this.scrollTop = anchorElem.offsetTop
+                this.$refs.essay.scrollTop = this.scrollTop - 100
+              }
+            } else {
+              this.$emit('load-page', path)
+            }
+          })
+        } else {
+          // If external link, add external link icon to text and force opening in new tab
+          link.innerHTML += '<sup><i class="fa fa-external-link-square-alt" style="margin-left:3px;margin-right:2px;font-size:0.7em;color:#219653;"></i></sup>'
+          link.setAttribute('target', '_blank')
+        }
+      })
     }
 
   },
@@ -352,6 +393,9 @@ module.exports = {
           console.log(this.content)
           if (this.anchor) this.$nextTick(() => document.getElementById(this.anchor).scrollIntoView())
           this.$nextTick(() => {
+            let root = document.getElementById('essay')
+            console.log('essay', root)
+            this.convertLinks(root)
             const ps = document.querySelectorAll('.clamp-wrapper')
             const observer = new ResizeObserver(entries => {
               for (let entry of entries) {

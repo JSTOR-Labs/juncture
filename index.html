@@ -788,7 +788,7 @@
 
                 parent.appendChild(currentSection)
 
-              } else if (el.tagName === 'P' || el.tagName === 'UL') {
+              } else if (el.tagName === 'P' || el.tagName === 'UL' || el.tagName === 'OL') {
                 if (el.innerHTML.indexOf('ve-button.png') >= 0) {
                   el = null
                 } else if (el.innerHTML.indexOf('class="nav"') >= 0) {
@@ -1548,7 +1548,10 @@
     function convertURL(current, path, pathIsDir) {
       let pathElems = []
       if (current.indexOf('http') === 0) {
-        if (current.indexOf(window.location.origin) === 0) pathElems = current.split('/').slice(3)
+        if (current.indexOf(window.location.origin) === 0) {
+          // pathElems = current.split('/').slice(3)
+          pathElems = [...path.split('/').filter(elem => elem !== ''), current.split('/').pop()]
+        }
         else return current
       } else if (current.indexOf('/') === 0) {
         pathElems = current.split('/').filter(elem => elem !== '')
@@ -1564,7 +1567,7 @@
       }
       // console.log(`assetsBaseUrl=${contentSource.assetsBaseUrl}`)
       converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
-      // console.log(`isJuncture=${isJuncture} convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
+      console.log(`isJuncture=${isJuncture} convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
       return converted
     }
 

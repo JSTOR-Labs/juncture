@@ -39,7 +39,7 @@ The structure of a visual essay is very similar to a traditional printed essay. 
 4. **References** The final section containing all the footnotes for the essay. These footnotes could be in any citation format and may include direct links to other sources.
 
 # The Configuration Tag
-<a name="config-tag"></a>
+<param id="config-tag">
 
 The `param ve-config` tag is not technically required for an essay to render, but it supplies crucial information that any serious essay would include. The form of the configuration tag is:
 
@@ -61,7 +61,7 @@ The value for a given attribute is always enclosed in double quotations marks ("
 |author|That's probably you!|Displayed at the top of your essay|
 
 # Linked Data Entity Tags
-<a name="linked-data-tag"></a>
+<param id="linked-data-tag">
 
 After the initial configuration, a visual essay will often contain a list of linked data tags. These linked data entity tags enable the most powerful features of visual essay writing, making it possible for authors to quickly generate:
 
@@ -97,7 +97,7 @@ Occasionally, you may also see an entity tag include attributes such as `fill` a
 |marker-symbol|The symbol used on a map for that entity|Readers will see that entity in the location where the entity is on the map according to Wikidata.|
 
 # Body
-<a name="body"></a>
+<param id="body">
 
 The body of a Visual Essay is composed of sections, where each section is denoted by a new heading such as:
 
@@ -112,7 +112,7 @@ The concept of a section is important, not just for guiding readers, but for det
 ![Scrolling to the next section causes an image to turn into a map](display-change.gif)
 
 # References
-<a name="references"></a>
+<param id="references">
 
 The final section of a visual essay contains any academic references. From a print perspective, these serve the same purpose as footnotes connecting readers to additional text (and sometimes resources) that are significant for research purposes but were not able to be included in the main body. A footnote is inserted into the body of the text using the basic form:
 
