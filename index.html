@@ -1548,7 +1548,10 @@
     function convertURL(current, path, pathIsDir) {
       let pathElems = []
       if (current.indexOf('http') === 0) {
-        if (current.indexOf(window.location.origin) === 0) pathElems = current.split('/').slice(3)
+        if (current.indexOf(window.location.origin) === 0) {
+          // pathElems = current.split('/').slice(3)
+          pathElems = [...path.split('/').filter(elem => elem !== ''), current.split('/').pop()]
+        }
         else return current
       } else if (current.indexOf('/') === 0) {
         pathElems = current.split('/').filter(elem => elem !== '')
