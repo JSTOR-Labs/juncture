@@ -186,7 +186,7 @@
   
     console.log(window.location)
     const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 ? 'DEV' : 'PROD'
-    let isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.host === 'localhost:8088'
+    let isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || ENV === 'DEV'
     const junctureVersion = 'main'
     let junctureVersionHash
 
@@ -385,7 +385,7 @@
         }}
       //}
       if (gaPropertyID) ga('create', gaPropertyID, 'auto')
-      let attrsWithUrls = ['banner', 'favicon']
+      let attrsWithUrls = ['banner', 'favicon', 'logo']
 
       if (ENV === 'PROD' || window.location.port === '8088') {
         headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
@@ -493,7 +493,7 @@
         computed: {
           // essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
           mainComponent() { return this.essayConfig && this.essayConfig.component ? `ve-${this.essayConfig.component.toLowerCase()}` : null},
-          isAdminUser() { return authenticatedUser !== null && (authenticatedUser.isAdmin || contentSource.acct === authenticatedUser.acct) },
+          isAdminUser() { return ENV === 'DEV' || authenticatedUser !== null && (authenticatedUser.isAdmin || contentSource.acct === authenticatedUser.acct) },
           ghToken() { return oauthAccessToken || ghUnscopedToken },
           viewerStyle() { return { 
             height: this.viewerIsOpen
