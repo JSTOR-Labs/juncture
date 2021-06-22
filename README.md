@@ -113,7 +113,7 @@ Explore themed essays about Kent, a county in South East England. Kent has a ric
 
 The team behind Juncture has created ample documentation and sample files to help you create new essays and sites.  Have a question or a suggestion?  Tell us how we can make Juncture better at [labs@ithaka.org](mailto:labs@ithaka.org).
 
-[View Documentation](https://docs.visual-essays.app/)
+[View Documentation](/docs)
 <param class="button">
 
 #

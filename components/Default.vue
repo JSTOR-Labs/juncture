@@ -75,7 +75,7 @@
 
           <template v-if="section.cards.classes.has('carousel')">
             <div v-for="(card, idx) in section.cards.content" :key="`carousel-slide-${idx}`" class="carousel-slides fade">
-              <a class="prev" @click="prevSlide">&#10094;</a>
+              <span class="prev" @click="prevSlide">&#10094;</span>
               <div class="carousel-image" v-html="card.media"></div>
               <div class="carousel-description">
                 <div class="carousel-slide-title" v-html="card.heading"></div>
@@ -84,7 +84,7 @@
                       v-html="para.html"></p>
                 </div>
               </div>
-              <a class="next" @click="nextSlide">&#10095;</a>
+              <span class="next" @click="nextSlide">&#10095;</span>
             </div>
             <div class="dots">
               <span v-for="(card, idx) in section.cards.content" :key="`carousel-dot-${idx}`" class="dot" @click="showSlide(idx)"></span>
@@ -360,10 +360,7 @@ module.exports = {
             let path = target.dataset.target
             if (path[0] === '#') {
               let anchorElem = document.getElementById(path.slice(1))
-              if (anchorElem) {
-                this.scrollTop = anchorElem.offsetTop
-                this.$refs.essay.scrollTop = this.scrollTop - 100
-              }
+              if (anchorElem) anchorElem.scrollIntoView()
             } else {
               this.$emit('do-action', 'load-page', path)
             }
@@ -444,6 +441,10 @@ section p.button {
   padding-top: 30px;
 }
 
+p.button a sup {
+  display: none;
+}
+
 section .button a {
   color: #fff !important;
   background-color: #5B152E;
@@ -484,7 +485,7 @@ section .button a {
 /************ Footer ***********/
 section.footer {
   padding: 24px 0;
-  background-color: #333;
+  background-color: #333 !important;
   color: white;
 }
 
@@ -500,6 +501,10 @@ section.footer {
 .footer li a {
   color: white !important;
   text-decoration: none;
+}
+
+.footer li a sup {
+  display: none;
 }
 
 .footer img {
@@ -956,7 +961,7 @@ img.logo {
   width: auto;
   margin-top: -22px;
   padding: 16px 10px;
-  color: white;
+  color: #0164b9;
   font-weight: bold;
   font-size: 32px;
   transition: 0.6s ease;
