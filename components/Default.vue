@@ -552,8 +552,11 @@ section.footer {
   font-size: 18px;
   font-weight: 300;
   line-height: 1.4;
-  padding-top: 20px;
   margin: 0;
+}
+
+.card p:first-of-type {
+  padding-top: 20px;
 }
 
 .horizontal .card {

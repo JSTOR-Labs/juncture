@@ -28,7 +28,7 @@ nav:
 # The following information is used in the display and processing of the contact form.
 contactForm:
   toEmail:
-  # - <<display-name>> <<<email>>>
+  # - Ron Snyder <ronald.snyder@ithaka.org>
   - ron.snyder@ithaka.org
   subject: Contact Us
 
@@ -39,7 +39,7 @@ contactForm:
 iiifServer: https://iiif.juncture-digital.org
 
 siteAdmins:
-- <<acct>>
+- rsnyder
 
 # Optional URL for premium version of Fontawesome
 #fontawesome: https://kit.fontawesome.com/12345abcde.js
