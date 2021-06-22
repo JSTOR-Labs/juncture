@@ -131,4 +131,4 @@ The only difference from the reference in the body is the inclusion of a colon. 
  ![An example references section](references.png)
 
 ___
-[<- Home](https://docs.visual-essays.app/) | [Adding Images to your Site ->](https://docs.visual-essays.app/create-images)
+[<i class="fas fa-arrow-circle-left"></i> Home](/docs) | [Adding Images to your Site <i class="fas fa-arrow-circle-right"></i>](/docs/create-images)
