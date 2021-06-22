@@ -109,7 +109,7 @@ In order for the heading to render properly (and therefore for the section to be
 
 The concept of a section is important, not just for guiding readers, but for determining what will be displayed in the right pane of the Visual Essay. When a reader approaches the next section in a text, a new visualization automatically populates the right pane of the Visual Essay. For example, the right pane may change from a gallery view of documents to a map or a network graph. Writers should carefully consider what content might be most useful for the readers in any given section.
 
-![Scrolling to the next section causes an image to turn into a map](display-change.gif)
+![Scrolling to the next section causes an image to turn into a map](images/display-change.gif)
 
 # References
 <param id="references">
