@@ -61,7 +61,7 @@ In addition to converting single text files into visual narratives, Juncture can
 
 ## Create a new Juncture site
 
-![](https://upload.wikimedia.org/wikipedia/commons/6/67/Learning_Curve_--_Coming_Soon_Placeholder.png)
+![](/images/create-site.jpg)
 
 1. From the Juncture menu select the `Create a new site` option
 2. In the dialog form enter the name of the Juncture site (Github repository) to create.
@@ -69,11 +69,15 @@ In addition to converting single text files into visual narratives, Juncture can
 
 ## Customize the new site
 
-![](https://upload.wikimedia.org/wikipedia/commons/6/67/Learning_Curve_--_Coming_Soon_Placeholder.png)
+![](/images/new-site.jpg)
 
-1. Lorem ipsum dolor sit amet
-2. Consectetur adipiscing elit
-3. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+The home page template for the newly generated site includes instructions and links for customizing a number of site features, including:
+- A custom logo and default banner image
+- Email addresses for a contact form
+- Menu links for new pages created
+- Global or page-specific styling (fonts, colors, layouts, etc)
+- The assignment of a custom domain
+- And more...
 
 #
 <param class="footer">
