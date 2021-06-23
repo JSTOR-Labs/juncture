@@ -187,7 +187,7 @@
     console.log(window.location)
     const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 ? 'DEV' : 'PROD'
     let isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || ENV === 'DEV'
-    const junctureVersion = 'main'
+    const junctureVersion = 'v0.2.18'
     let junctureVersionHash
 
     const referrerUrl = document.referrer
@@ -701,7 +701,7 @@
                 break
               }
             }
-          
+
             let browserPath = `${contentSource.basePath}${path}${this.anchor ? '#'+this.anchor : ''}`
             if (qargs.ref) browserPath += `?ref=${qargs.ref}`
             if (replace) {
@@ -709,7 +709,7 @@
             } else {
               history.pushState({file: path || ''}, '', browserPath)
             }
-            
+
             if (markdown) {
               ([this.markdown, this.html, this.params, this.entities] = await this.parseMarkdown(markdown))
               let essayConfig = this.params.find(param => param['ve-config']) || {}
@@ -719,6 +719,8 @@
               this.essayConfig = essayConfig
             }
             if (gaPropertyID) ga('send', 'pageview', `${contentSource.basePath}${path}`)
+
+
 
           },
 
@@ -1549,10 +1551,7 @@
     function convertURL(current, path, pathIsDir) {
       let pathElems = []
       if (current.indexOf('http') === 0) {
-        if (current.indexOf(window.location.origin) === 0) {
-          pathElems = current.split('/').slice(3)
-          // pathElems = [...path.split('/').filter(elem => elem !== ''), current.split('/').pop()]
-        }
+        if (current.indexOf(window.location.origin) === 0) pathElems = current.split('/').slice(3)
         else return current
       } else if (current.indexOf('/') === 0) {
         pathElems = current.split('/').filter(elem => elem !== '')
@@ -1568,7 +1567,7 @@
       }
       // console.log(`assetsBaseUrl=${contentSource.assetsBaseUrl}`)
       converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
-      console.log(`isJuncture=${isJuncture} convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
+      // console.log(`isJuncture=${isJuncture} convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
       return converted
     }
 
