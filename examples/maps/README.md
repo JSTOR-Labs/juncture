@@ -236,7 +236,7 @@ This example uses the [Leaflet Heatmap Layer Plugin](https://www.patrick-wied.at
 - **use-local-extrema** - _optional_ (boolean, default false) Defines whether the heatmap should use a global extrema set via setData/addData OR a local extrema (the maximum and minimum of the currently displayed viewport)
 - **max** - _optional_ (integer, default 10) Sets the upper bound of your dataset
 <param ve-map center="-2, 118" zoom="4">
-<param ve-map-layer heatmap url="nepenthes_horticultural_heatmap.tsv" radius="2" scale-radius="true" use-local-extrema="true" max-opacity="0.6">
+<!-- <param ve-map-layer heatmap url="nepenthes_horticultural_heatmap.tsv" radius="2" scale-radius="true" use-local-extrema="true" max-opacity="0.6"> -->
 
 ```markdown
 <param ve-map center="-2, 118" zoom="4">
