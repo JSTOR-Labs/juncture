@@ -695,8 +695,8 @@
             for (let i = 0; i < pathsToTry.length; i++) {
               markdown = await this.getMarkdown(pathsToTry[i])
               if (markdown) {
-                console.log(`path=${path}`)
-                let mdFile = path.split('/').filter(elem => elem !== '').pop()
+                console.log(`path=${pathsToTry[i]}`)
+                let mdFile = pathsToTry[i].split('/').filter(elem => elem !== '').pop()
                 this.mdDir = mdFile !== 'README.md' && mdFile !== 'index.md' && mdFile !== 'admin.md' ? path : '/'
                 console.log(`mdFile=${mdFile} mdDir=${this.mdDir}`)
                 this.mdPath = pathsToTry[i]
