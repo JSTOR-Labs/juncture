@@ -224,6 +224,7 @@ This map of the county of Kent in the UK uses the standard OSM basemap overlaid 
 `flyto` actions can be used in the essay text to trigger an update in the map viewer.  The action is triggered by a user mouse click or hover interaction with text that is "wrapped" with an HTML `span` tag defining the action.  This paragraph used a map of <span data-mouseover-map-flyto="43,12.3,6">Italy</span> and includes actions causing the map to flyto <span data-click-map-flyto="41.893,12.483,10" data-mouseover-map-flyto="41.893,12.483,11">Rome</span> or <span data-mouseover-map-flyto="45.440, 12.332, 13">Venice</span> when the mouse hovers over the text.
 <param ve-map center="43,12.3" zoom="6">
 ```
+
 ## Map with heatmap overlay {#heatmap}
 
 This example uses the [Leaflet Heatmap Layer Plugin](https://www.patrick-wied.at/static/heatmapjs/plugin-leaflet-layer.html) to add a heatmap overlay on a map.  `ve-map-layer` options:
@@ -260,22 +261,20 @@ This example uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/)
 - **shadowSize** - the size of the shadow image in pixels, separated by a comma.
 - **shadowAnchor** - The coordinates of the "tip" of the shadow (relative to its top left corner) (the same as iconAnchor if not specified).
 - **className** - A custom class name to assign to both primary and shadow images. Used for custom CSS styling.
-
 <param ve-map center="2, 40" zoom="3">
+<!--
 <param ve-map-marker
        url="https://leafletjs.com/examples/custom-icons/leaf-green.png"
        coords="17.188263050774324, 52.28406397248149"
        size="38, 95"
        iconAnchor="22, 94"
        shadowUrl="https://leafletjs.com/examples/custom-icons/leaf-shadow.png"
-       shadowSize="50, 64"
-       >
-<param ve-map-marker
-       url="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Pinz%C3%B3n_azul_de_Gran_Canaria_%28macho%29%2C_M._A._Pe%C3%B1a.jpg/220px-Pinz%C3%B3n_azul_de_Gran_Canaria_%28macho%29%2C_M._A._Pe%C3%B1a.jpg"
+       shadowSize="50, 64">
+<param ve-map-marker url="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Pinz%C3%B3n_azul_de_Gran_Canaria_%28macho%29%2C_M._A._Pe%C3%B1a.jpg/220px-Pinz%C3%B3n_azul_de_Gran_Canaria_%28macho%29%2C_M._A._Pe%C3%B1a.jpg"
        coords="-7.182405194219532, 35.05200886854757"
        size="129, 170"
-       circle="true"
-       >
+       circle="true">
+-->
 
 ```markdown
 <param ve-map center="2, 40" zoom="4">
