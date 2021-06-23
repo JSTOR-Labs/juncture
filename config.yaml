@@ -20,6 +20,10 @@ nav:
   icon: fas fa-file-alt
   action: load-page
   path: /docs
+- label: Tags quick reference
+  icon: fas fa-file-alt
+  action: load-page
+  path: /docs/tags
 - label: Contact Us
   icon: fas fa-envelope
   action: contact-us

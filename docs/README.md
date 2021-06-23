@@ -44,7 +44,7 @@ While these technologies may seem intimidating at first, the Visual Essay Tool (
 # Quick Reference
 <param id="quick-reference">
 
-* [Visual essay tags](visual-essay-tags)
+* [Visual essay tags](tags)
 * [Configuring Sitewide Details (config.json file)](config-file-description)
 * [Tools](tools)
 
