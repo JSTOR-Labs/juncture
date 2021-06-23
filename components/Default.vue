@@ -416,10 +416,6 @@ html {
   scroll-behavior: smooth;
 }
 
-#default section {
-  /* padding: 24px; */
-}
-
 section h1 {
   text-align: center;
   font-family: Georgia, 'serif';

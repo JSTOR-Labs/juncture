@@ -10,11 +10,11 @@
         <span></span>
         <ul id="menu">
 
-          <li @click="doMenuAction('loadEssay', '/')"><i :class="`fas fa-home`"></i>Home</li>
+          <li @click="doMenuAction('load-page', '/')"><i :class="`fas fa-home`"></i>Home</li>
 
           <!--  Adds menu items defined in site config.yaml -->
           <template v-for="item in siteConfig.nav">
-            <li :key="item.path" @click="doMenuAction('loadEssay', item.path)"><i :class="`fas fa-${item.icon}`"></i>{{item.label}}</li>
+            <li :key="item.path" @click="doMenuAction('load-page', item.path)"><i :class="`fas fa-${item.icon}`"></i>{{item.label}}</li>
           </template>
 
           <template v-if="isJuncture">
@@ -33,7 +33,7 @@
               <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="doMenuAction('add-page')">
                 <i class="fas fa-file-medical"></i>Add a page
               </li>
-              <li @click="doMenuAction('gotoGitHub')"><i class="fab fa-github"></i>Goto to GitHub</li>
+              <li @click="doMenuAction('goto-github')"><i class="fab fa-github"></i>Goto to GitHub</li>
                           
               <hr>
               <li v-if="isAuthenticated" @click="doMenuAction('create-site')"><i class="fas fa-plus-circle"></i>Create new site</li>
@@ -127,7 +127,7 @@
       doMenuAction(action, options) {
         console.log(`doMenuAction=${action}`, options)
         document.querySelector('#menuToggle input').checked = false
-        if (action === 'loadEssay' && options === '/contact-us') {
+        if (action === 'load-page' && options === '/contact-us') {
           this.showForm('contact-form')
         } else {
           this.$emit('do-action', action, options)
