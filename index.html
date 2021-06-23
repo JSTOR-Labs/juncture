@@ -698,7 +698,7 @@
                 console.log(`path=${path}`)
                 let mdFile = path.split('/').filter(elem => elem !== '').pop()
                 this.mdDir = mdFile !== 'README.md' && mdFile !== 'index.md' && mdFile !== 'admin.md' ? path : '/'
-                console.log(`mdFile=${mdFile} mdDir=${mdDir}`)
+                console.log(`mdFile=${mdFile} mdDir=${this.mdDir}`)
                 this.mdPath = pathsToTry[i]
                 break
               }
