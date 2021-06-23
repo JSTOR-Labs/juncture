@@ -617,7 +617,8 @@
             this.formProcessingMessage = 'Creating site...'
             await this.createSite(this.authenticatedUser.acct, this.newRepo, junctureVersion)
             let siteUrl = `https://${this.authenticatedUser.acct}.github.io/${this.newRepo}`
-            this.formProcessingMessage = `New Juncture site created at <a href="${siteUrl}">${siteUrl}</a>`
+            // this.formProcessingMessage = `New Juncture site created at <a href="${siteUrl}">${siteUrl}</a>`
+            this.formProcessingMessage = `New Juncture site created.`
             this.formProcessingStatus = 'done'
           },
           
