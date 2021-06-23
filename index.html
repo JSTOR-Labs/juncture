@@ -700,7 +700,7 @@
                 let mdFile = pathElems.pop()
                 let mdPath = pathElems.slice(0,-1)
                 // this.mdDir = mdFile !== 'README.md' && mdFile !== 'index.md' && mdFile !== 'admin.md' ? `/${mdPath.join('/'}` : '/'
-                this.mdDir = `/${mdPath.join('/'}`
+                this.mdDir = `/${mdPath.join('/')}`
                 console.log(`mdFile=${mdFile} mdDir=${this.mdDir}`)
                 this.mdPath = pathsToTry[i]
                 break
