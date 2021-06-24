@@ -187,7 +187,7 @@
     console.log(window.location)
     const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 ? 'DEV' : 'PROD'
     let isJuncture = window.location.hostname.indexOf('juncture-digital.org') >= 0 || ENV === 'DEV'
-    const junctureVersion = 'v0.2.18'
+    const junctureVersion = 'main'
     let junctureVersionHash
 
     const referrerUrl = document.referrer
@@ -330,7 +330,8 @@
         sha = found ? found.object.sha : null
       } 
       if (!sha) {
-        resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/tags`)
+        resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/tags`, {
+          headers: {Authorization: `Token ${token}`, Accept: 'application/vnd.github.v3+json'} })
         if (resp.ok) {
           tags = await resp.json()
           found = tags.find(tag => tag.name === ref)
@@ -617,7 +618,8 @@
             this.formProcessingMessage = 'Creating site...'
             await this.createSite(this.authenticatedUser.acct, this.newRepo, junctureVersion)
             let siteUrl = `https://${this.authenticatedUser.acct}.github.io/${this.newRepo}`
-            this.formProcessingMessage = `New Juncture site created at <a href="${siteUrl}">${siteUrl}</a>`
+            // this.formProcessingMessage = `New Juncture site created at <a href="${siteUrl}">${siteUrl}</a>`
+            this.formProcessingMessage = `New Juncture site created.`
             this.formProcessingStatus = 'done'
           },
           
@@ -695,13 +697,9 @@
             for (let i = 0; i < pathsToTry.length; i++) {
               markdown = await this.getMarkdown(pathsToTry[i])
               if (markdown) {
-                console.log(`pathsToTry[i]=${pathsToTry[i]}`)
                 let pathElems = pathsToTry[i].split('/').filter(elem => elem !== '')
                 let mdFile = pathElems.pop()
-                let mdPath = pathElems.slice(0,-1)
-                // this.mdDir = mdFile !== 'README.md' && mdFile !== 'index.md' && mdFile !== 'admin.md' ? `/${mdPath.join('/'}` : '/'
-                this.mdDir = `/${mdPath.join('/')}`
-                console.log(`mdFile=${mdFile} mdDir=${this.mdDir}`)
+                this.mdDir = `/${pathElems.slice(0,-1).join('/')}`
                 this.mdPath = pathsToTry[i]
                 break
               }
@@ -740,21 +738,16 @@
             let segments = []
             let segment
 
-            Array.from(tmp.querySelectorAll('param'))
-              .filter(param => Object.values(param.attributes).find(attr => attr.nodeName !== 'id' && attr.nodeName !== 'class') === undefined)
-              .forEach(param => {
-                if (param.id || param.className) {
-                  let prior = param.previousElementSibling
-                  if (param.id) {
-                    prior.id = param.id
-                    param.removeAttribute('id')
-                  }
-                  if (param.classList.length > 0) {
-                    if (prior) prior.className = param.className
-                    else essay.className = param.className
-                  }
-                  param.parentElement.removeChild(param)
+            tmp.querySelectorAll('param').forEach(param => {
+              if (param.id || param.classList.length > 0) {
+                let prior = param.previousElementSibling
+                if (param.id) {
+                  prior.id = param.id
+                  param.removeAttribute('id')
                 }
+                if (param.classList.length > 0) prior.className = param.className
+                param.parentElement.removeChild(param)
+              }
             })
 
             Array.from(tmp.children).forEach(el => {
@@ -1437,13 +1430,17 @@
     }
 
     async function getGHTags() {
-      let resp = await fetch('https://api.github.com/repos/jstor-labs/juncture/tags')
+      let ghToken = oauthAccessToken || ghUnscopedToken
+      let resp = await fetch('https://api.github.com/repos/jstor-labs/juncture/tags',
+                               ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
       resp = await resp.json()
       return resp.map(tag => tag.name)
     }
 
     async function getGHReleases() {
-      let resp = await fetch('https://api.github.com/repos/jstor-labs/juncture/releases')
+      let ghToken = oauthAccessToken || ghUnscopedToken
+      let resp = await fetch('https://api.github.com/repos/jstor-labs/juncture/releases',
+                               ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
       return await resp.json()
     }
 
@@ -1572,7 +1569,7 @@
       }
       // console.log(`assetsBaseUrl=${contentSource.assetsBaseUrl}`)
       converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
-      console.log(`isJuncture=${isJuncture} convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
+      // console.log(`isJuncture=${isJuncture} convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
       return converted
     }
 
