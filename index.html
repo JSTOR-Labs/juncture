@@ -928,9 +928,9 @@
           },
 
           convertResourceUrls(root) {
-            console.log(this.path, this.mdDir, pathIsDir)
+            let pathIsDir = this.path.slice(0,-1) === this.mdDir
+            console.log(this.path.slice(0,-1), this.mdDir, pathIsDir)
             root.querySelectorAll('img').forEach(img => {
-              let pathIsDir = this.path.slice(0,-1) === this.mdDir
               if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src,`${contentSource.basePath}${this.path}`, pathIsDir))
             })
             root.querySelectorAll('param').forEach(param => {
