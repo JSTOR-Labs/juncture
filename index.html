@@ -1562,7 +1562,7 @@
         if (_current.indexOf(window.location.origin) === 0) {
           pathElems = current.split('/').slice(3)
           let regex = new RegExp(this.path.replace(/\//g, '\\/'))
-          console.log(current.replace(regex, `${this.mdDir}/`)
+          console.log(current.replace(regex, `${this.mdDir}/`))
           // if (pathIsDir) pathElems.pop()
         }
         else return _current
