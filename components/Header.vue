@@ -13,8 +13,10 @@
           <li @click="doMenuAction('load-page', '/')"><i :class="`fas fa-home`"></i>Home</li>
 
           <!--  Adds menu items defined in site config.yaml -->
-          <template v-for="item in siteConfig.nav">
-            <li :key="item.path" @click="doMenuAction('load-page', item.path)"><i :class="`fas fa-${item.icon}`"></i>{{item.label}}</li>
+          <template v-for="(navItem, idx) in siteConfig.nav">
+            <li :key="`nav-${idx}`" @click="doMenuAction(navItem)">
+              <i v-if="navItem.icon" :class="navItem.icon"></i>{{ navItem.label }}
+            </li>
           </template>
 
           <template v-if="isJuncture">
@@ -124,13 +126,15 @@
     mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
     methods: {
 
-      doMenuAction(action, options) {
-        console.log(`doMenuAction=${action}`, options)
-        document.querySelector('#menuToggle input').checked = false
-        if (action === 'load-page' && options === '/contact-us') {
-          this.showForm('contact-form')
+      doMenuAction(options) {
+        console.log('doMenuAction', options.action)
+        document.getElementById('menu-btn').checked = false
+        if (options.action === 'load-page') {
+          this.$emit('do-action', 'load-page', options.path)
+        } else if (options.action === 'contact-us') {
+            this.toggleContactForm()
         } else {
-          this.$emit('do-action', action, options)
+          this.$emit('do-action', options.action, options.path)
         }
       },
 

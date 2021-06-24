@@ -751,15 +751,18 @@
             let segments = []
             let segment
 
-            tmp.querySelectorAll('param').forEach(param => {
-              if (param.id || param.classList.length > 0) {
-                let prior = param.previousElementSibling
-                if (prior) {
-                  if (param.id) prior.id = param.id
-                  if (param.className) prior.className = param.className
+            Array.from(tmp.querySelectorAll('param'))
+              .filter(param => Object.values(param.attributes).find(attr => attr.nodeName !== 'id' && attr.nodeName !== 'class') === undefined)
+              .forEach(param => {
+                if (param.id || param.className) {
+                  let prior = param.previousElementSibling
+                  if (param.id && prior) prior.id = param.id
+                  if (param.className) {
+                    if (prior) prior.className = param.className
+                    else essay.className = param.className
+                  }
                   param.parentElement.removeChild(param)
                 }
-              }
             })
 
             Array.from(tmp.children).forEach(el => {
