@@ -298,6 +298,20 @@
             }
           }
 
+        } else if (window.location.hostname === 'dev.juncture-digital.org') {
+          contentSource = {
+            acct: 'jstor-labs', repo: 'juncture-dev', ref: 'main', basePath: '', isGhpSite: false,
+            baseUrl: window.location.origin, assetsBaseUrl: `https://raw.githubusercontent.com/jstor-labs/juncture-dev/main`
+          }
+          let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
+          if (pathElems.length >= 2) {
+            let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
+            if (ghRepoInfo) {
+              contentSource = {...contentSource, ...ghRepoInfo}
+              contentSource.basePath = `/${contentSource.acct}/${contentSource.repo}`
+            }
+          }
+
         // Deployed in a non juncture-digital.org custom domain
         } else {
           contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, basePath: '', isGhpSite: false}
@@ -1420,7 +1434,7 @@
         }
       } else if (!isJuncture) {
         resp = await fetch(`${window.location.origin}/config.yaml`)
-        if (resp.ok) config = {...YAML.parse(await resp.text()), ...{acct: contentSource.acct, repo: contentSource.repo}}
+        if (resp.ok) config = YAML.parse(await resp.text())
       }
       if (config.ghUnscopedToken) ghUnscopedToken = atob(config.ghUnscopedToken)
       if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
