@@ -701,6 +701,7 @@
                 let mdFile = pathElems.pop()
                 this.mdDir = `/${pathElems.slice(0,-1).join('/')}`
                 this.mdPath = pathsToTry[i]
+                console.log(pathsToTry[i], pathElems, mdFile, this.mdDir, this.mdPath)
                 break
               }
             }
