@@ -1561,7 +1561,7 @@
       if (_current.indexOf('http') === 0) {
         if (_current.indexOf(window.location.origin) === 0) {
           pathElems = current.split('/').slice(3)
-          if (pathIsDir) pathElems.pop()
+          // if (pathIsDir) pathElems.pop()
         }
         else return _current
       } else if (_current.indexOf('/') === 0) {
