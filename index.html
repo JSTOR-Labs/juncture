@@ -756,12 +756,11 @@
             tmp.querySelectorAll('param').forEach(param => {
               if (param.id || param.classList.length > 0) {
                 let prior = param.previousElementSibling
-                if (param.id) {
-                  prior.id = param.id
-                  param.removeAttribute('id')
+                if (prior) {
+                  if (param.id) prior.id = param.id
+                  if (param.className) prior.className = param.className
+                  param.parentElement.removeChild(param)
                 }
-                if (param.classList.length > 0) prior.className = param.className
-                param.parentElement.removeChild(param)
               }
             })
 
