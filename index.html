@@ -1561,8 +1561,8 @@
       if (_current.indexOf('http') === 0) {
         if (_current.indexOf(window.location.origin) === 0) {
           pathElems = current.split('/').slice(3)
-          let regex = new RegExp(this.path.replace(/\//g, '\\/'))
-          console.log(current.replace(regex, `${this.mdDir}/`))
+          let regex = new RegExp(path.replace(/\//g, '\\/'))
+          console.log(path, current.replace(regex, `${this.mdDir}/`))
           // if (pathIsDir) pathElems.pop()
         }
         else return _current
