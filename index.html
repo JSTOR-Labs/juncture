@@ -712,7 +712,7 @@
               markdown = await this.getMarkdown(pathsToTry[i])
               if (markdown) {
                 let pathElems = pathsToTry[i].split('/').filter(elem => elem !== '')
-                let mdFile = pathElems.pop()
+                let mdFile = pathElems.slice(-1)
                 this.mdDir = `/${pathElems.slice(0,-1).join('/')}`
                 this.mdPath = pathsToTry[i]
                 break
@@ -736,8 +736,6 @@
               this.essayConfig = essayConfig
             }
             if (gaPropertyID) ga('send', 'pageview', `${contentSource.basePath}${path}`)
-
-
 
           },
 
@@ -941,13 +939,14 @@
           },
 
           convertResourceUrls(root) {
+            let pathIsDir = this.path.slice(0,-1) === this.mdDir
             root.querySelectorAll('img').forEach(img => {
-              if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src,`${contentSource.basePath}${this.path}`, this.mdDir !== '/'))
+              if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src,`${contentSource.basePath}${this.path}`, pathIsDir))
             })
             root.querySelectorAll('param').forEach(param => {
               ['url', 'banner', 'article', 'logo'].forEach(attr => {
                 if (param.attributes[attr]) {
-                  param.setAttribute(attr, convertURL(param.attributes[attr].value, `${contentSource.basePath}${this.path}`, this.mdDir !== '/'))
+                  param.setAttribute(attr, convertURL(param.attributes[attr].value, `${contentSource.basePath}${this.path}`, pathIsDir))
                 }
               })
             })
@@ -1571,7 +1570,15 @@
       let _current = current.replace(/\s/g, '%20')
       let pathElems = []
       if (_current.indexOf('http') === 0) {
-        if (_current.indexOf(window.location.origin) === 0) pathElems = current.split('/').slice(3)
+        if (_current.indexOf(window.location.origin) === 0) {
+          if (!pathIsDir) {
+            let dirElems = path.split('/').filter(elem => elem !== '').slice(0,-1)
+            let mdDir = dirElems.length > 0 ? `/${dirElems.join('/')}/` : '/'
+            _current = _current.replace(new RegExp(path.replace(/\//g, '\\/')), `${mdDir}`)
+            console.log(path, mdDir, _current)
+          }
+          pathElems = _current.split('/').slice(3)
+        }
         else return _current
       } else if (_current.indexOf('/') === 0) {
         pathElems = _current.split('/').filter(elem => elem !== '')
