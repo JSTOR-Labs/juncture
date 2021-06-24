@@ -132,7 +132,7 @@
         if (options.action === 'load-page') {
           this.$emit('do-action', 'load-page', options.path)
         } else if (options.action === 'contact-us') {
-            this.toggleContactForm()
+          this.showForm('contact-form')
         } else {
           this.$emit('do-action', options.action, options.path)
         }
