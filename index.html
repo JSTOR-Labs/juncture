@@ -698,7 +698,7 @@
               markdown = await this.getMarkdown(pathsToTry[i])
               if (markdown) {
                 let pathElems = pathsToTry[i].split('/').filter(elem => elem !== '')
-                let mdFile = pathElems.pop()
+                let mdFile = pathElems.slice(-1)
                 this.mdDir = `/${pathElems.slice(0,-1).join('/')}`
                 this.mdPath = pathsToTry[i]
                 console.log(pathsToTry[i], pathElems, mdFile, this.mdDir, this.mdPath)
