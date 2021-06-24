@@ -335,7 +335,7 @@
   #menu li svg {
     min-width: 1.5em;
     margin-right: 10px;
-    margin-top: 6px;
+    /* margin-top: 6px; */
     /* font-weight: bold; */
     font-size: 1em;
   }
