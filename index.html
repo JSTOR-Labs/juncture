@@ -1560,12 +1560,13 @@
       let pathElems = []
       if (_current.indexOf('http') === 0) {
         if (_current.indexOf(window.location.origin) === 0) {
-          pathElems = current.split('/').slice(3)
-          let dirElems = path.split('/').filter(elem => elem !== '').slice(0,-1)
-          let mdDir = dirElems.length > 0 ? `/${dirElems.join('/')}/` : '/'
-          let regex = new RegExp(path.replace(/\//g, '\\/'))
-          console.log(path, mdDir, current.replace(regex, `${mdDir}/`))
-          // if (pathIsDir) pathElems.pop()
+          if (pathIsDir) {
+            let dirElems = path.split('/').filter(elem => elem !== '').slice(0,-1)
+            let mdDir = dirElems.length > 0 ? `/${dirElems.join('/')}/` : '/'
+            _current = _current.replace(new RegExp(path.replace(/\//g, '\\/')), `${mdDir}`)
+            console.log(path, mdDir, _current)
+          }
+          pathElems = _current.split('/').slice(3)
         }
         else return _current
       } else if (_current.indexOf('/') === 0) {
