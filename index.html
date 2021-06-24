@@ -928,13 +928,15 @@
           },
 
           convertResourceUrls(root) {
+            console.log(this.path, this.mdDir, pathIsDir)
             root.querySelectorAll('img').forEach(img => {
-              if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src,`${contentSource.basePath}${this.path}`, this.mdDir !== '/'))
+              let pathIsDir = this.path.slice(0,-1) === this.mdDir
+              if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src,`${contentSource.basePath}${this.path}`, pathIsDir))
             })
             root.querySelectorAll('param').forEach(param => {
               ['url', 'banner', 'article', 'logo'].forEach(attr => {
                 if (param.attributes[attr]) {
-                  param.setAttribute(attr, convertURL(param.attributes[attr].value, `${contentSource.basePath}${this.path}`, this.mdDir !== '/'))
+                  param.setAttribute(attr, convertURL(param.attributes[attr].value, `${contentSource.basePath}${this.path}`, pathIsDir))
                 }
               })
             })
