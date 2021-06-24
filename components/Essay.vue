@@ -306,4 +306,55 @@ module.exports = {
 </script>
 
 <style>
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr) );
+    grid-auto-rows: 1fr;
+    grid-gap: 1.8rem;
+  }
+
+  .card {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto 1fr 0px;
+    grid-template-areas:
+        "image"
+        "title"
+        "metadata"
+        "abstract"
+        "heading";
+    border-radius: 4px;
+    padding: .5rem;
+  }
+
+  .card > a, .card > strong {
+    grid-area: title;
+    font-weight: bold;
+    font-size: 1.5rem;
+    line-height: 1;
+    margin-top: 1.3rem;
+    margin-bottom: 0.2rem;
+    text-decoration: none;
+}
+
+  .card a:hover {
+    text-decoration: underline;
+  }
+
+  .card img {
+      grid-area: image;
+      justify-self: stretch;
+      object-fit: cover;
+      width: 100%;
+      height: 250px;
+  }
+
+  .card ul {
+      grid-area: metadata;
+      list-style-type: none;
+      padding: 12px 0;
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 400;
+  }
 </style>

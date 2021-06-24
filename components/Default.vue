@@ -39,6 +39,8 @@
           </template>
 
         </template>
+        <hr>
+        <li v-if="version"><div class="version">Version: {{version}}</div></li>
 
       </ul>
     </header>
@@ -805,6 +807,11 @@ section.heading p {
 img.logo {
   height: 60px;
   width: auto;
+}
+
+.version {
+  font-size: 0.9rem;
+  font-weight: 300;
 }
 
 /* menu */
