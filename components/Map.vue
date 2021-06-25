@@ -279,7 +279,7 @@ module.exports = {
         syncLayers() {
             this.syncGeoJSONLayers()
             this.syncTileLayers()
-            this.map.flyTo(this.center, this.zoom)
+            // this.map.flyTo(this.center, this.zoom)
             
             const markers = this.itemsWithMarkers
             markers.forEach(marker => {
@@ -717,7 +717,7 @@ module.exports = {
             handler: _.debounce(function (height) {
                 console.log(`map.height=${height}`)
                 if (this.map) this.map.invalidateSize(true)
-            }, 50),
+            }, 100),
             immediate: true
         },
         viewerIsActive: {
