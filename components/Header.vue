@@ -10,7 +10,7 @@
         <span></span>
         <ul id="menu">
 
-          <li @click="doMenuAction('load-page', '/')"><i :class="`fas fa-home`"></i>Home</li>
+          <li @click="doMenuAction({action:'load-page', path:'/'})"><i :class="`fas fa-home`"></i>Home</li>
 
           <!--  Adds menu items defined in site config.yaml -->
           <template v-for="(navItem, idx) in siteConfig.nav">
@@ -23,23 +23,23 @@
             <hr>
 
             <li v-if="loginsEnabled">
-              <a v-if="isAuthenticated" @click="doMenuAction('logout')"><i :class="`fas fa-user`"></i>Logout</a>
-              <a v-else @click="doMenuAction('authenticate')"><i :class="`fas fa-user`"></i>Login</a>
+              <a v-if="isAuthenticated" @click="doMenuAction({action:'logout'})"><i :class="`fas fa-user`"></i>Logout</a>
+              <a v-else @click="doMenuAction({action:'authenticate'})"><i :class="`fas fa-user`"></i>Login</a>
             </li>
 
             <template v-if="isAuthenticated">
-              <li @click="doMenuAction('view-markdown')"><i class="fas fa-file-code"></i>View page markdown</li>
-              <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="doMenuAction('edit-page')">
+              <li @click="doMenuAction({action:'view-markdown'})"><i class="fas fa-file-code"></i>View page markdown</li>
+              <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="doMenuAction({action:'edit-page'})">
                 <i class="fas fa-edit"></i>Edit this page
               </li>
-              <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="doMenuAction('add-page')">
+              <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture')|| isAdmin)" @click="doMenuAction({action:'add-page'})">
                 <i class="fas fa-file-medical"></i>Add a page
               </li>
-              <li @click="doMenuAction('goto-github')"><i class="fab fa-github"></i>Goto to GitHub</li>
+              <li @click="doMenuAction({action:'goto-github'})"><i class="fab fa-github"></i>Goto to GitHub</li>
                           
               <hr>
-              <li v-if="isAuthenticated" @click="doMenuAction('create-site')"><i class="fas fa-plus-circle"></i>Create new site</li>
-              <li v-if="isAdmin" @click="doMenuAction('software-update')"><i class="fas fa-wrench"></i>Software update</li>
+              <li v-if="isAuthenticated" @click="doMenuAction({action:'create-site'})"><i class="fas fa-plus-circle"></i>Create new site</li>
+              <li v-if="isAdmin" @click="doMenuAction({action:'software-update'})"><i class="fas fa-wrench"></i>Software update</li>
             </template>
 
           </template>
