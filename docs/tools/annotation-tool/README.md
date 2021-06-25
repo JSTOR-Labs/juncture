@@ -1,3 +1,5 @@
+<param ve-config title="Documentation" component="default" class="documentation" fixed-header>
+
 # Annotation Tool
 
 ## Overview
