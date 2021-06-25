@@ -1,3 +1,5 @@
+<param ve-config title="Documentation" component="default" class="documentation" fixed-header>
+
 [Home](/docs) | [Learn Markdown in 30 Minutes <i class="fas fa-arrow-circle-right"></i>](/docs/markdown/)
 
 ---
