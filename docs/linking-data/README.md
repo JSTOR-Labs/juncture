@@ -1,3 +1,7 @@
+<a href="https://juncture-digital.org"><img src="https://gitcdn.link/cdn/jstor-labs/juncture/main/images/ve-button.png"></a>
+
+<param ve-config title="Documentation" component="default" class="documentation" fixed-header>
+
 [<i class="fas fa-arrow-circle-left"></i> Home](/docs) <br />
 [Linking Entities in a Section of Your Essay](#section-link) <br />
 [Linking Entities for the Entire Essay](#whole-essay-link) <br />
