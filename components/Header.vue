@@ -127,7 +127,6 @@
     methods: {
 
       doMenuAction(options) {
-        console.log('doMenuAction', options.action)
         document.querySelector('#menuToggle input').checked = false
         if (options.action === 'load-page') {
           this.$emit('do-action', 'load-page', options.path)

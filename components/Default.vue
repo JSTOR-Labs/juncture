@@ -199,7 +199,6 @@ module.exports = {
     parseHtml(html) {
       let root = new DOMParser().parseFromString(html, 'text/html').children[0].children[1]
       return Array.from(root.querySelectorAll(':scope > section')).map(section => {
-        console.log('section', section)
         
         let classes = new Set(section.className.split(' ').filter(cls => cls !== ''))
         let backgroundImage = section.querySelector('p.background-image > img')
@@ -209,7 +208,6 @@ module.exports = {
         let cards, subsections
         
         let cardsSection = section.querySelector(':scope > section.cards')
-        console.log(cardsSection)
         if (cardsSection) {
           // cardsSection.className.split(' ').filter(cls => cls !== '').forEach(cls => classes.add(cls))
           let cardClasses = new Set(cardsSection.className.split(' ').filter(cls => cls !== ''))
@@ -266,7 +264,6 @@ module.exports = {
     },
 
     doMenuAction(options) {
-      console.log('doMenuAction', options.action)
       document.getElementById('menu-btn').checked = false
       if (options.action === 'load-page') {
         this.$emit('do-action', 'load-page', options.path)
@@ -323,7 +320,6 @@ module.exports = {
 
     showSlide(n) {
       n = n || 0
-      console.log('showSlide', n)
       if (document.querySelector('.carousel')) {
         this.slideIndex = n
         Array.from(document.querySelectorAll('.carousel-slides'))
@@ -391,11 +387,9 @@ module.exports = {
       handler: function (html) {
         if (html) {
           this.content = this.parseHtml(html)
-          console.log(this.content)
           if (this.anchor) this.$nextTick(() => document.getElementById(this.anchor).scrollIntoView())
           this.$nextTick(() => {
             let root = document.getElementById('essay')
-            console.log('essay', root)
             this.convertLinks(root)
             const ps = document.querySelectorAll('.clamp-wrapper')
             const observer = new ResizeObserver(entries => {

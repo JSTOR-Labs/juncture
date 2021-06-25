@@ -41,7 +41,6 @@ module.exports = {
     items() { return this.active ? this.paramsInScope(document.querySelector(`[data-id="${this.active}"] p`)) : [] },
   },
   mounted() {
-    console.log(`${this.$options.name}.mounted`)
     document.getElementById('app').classList.add('visual-essay')
   },
   methods: {
@@ -247,7 +246,7 @@ module.exports = {
       })
       Array.from(root.querySelectorAll('span.entity'))
         .forEach(el => el.addEventListener('click', (e) => {
-          console.log('entity selected', e.target.dataset.eid)
+          // console.log('entity selected', e.target.dataset.eid)
         })
       )
     },
@@ -268,7 +267,6 @@ module.exports = {
 
     active: {
       handler: function (current, prior) {
-        console.log(`activeSegment=${current}`)
         this.$emit('set-active', current)
         let activeSegment = document.querySelector(`[data-id="${current}"]`)
         if (activeSegment) activeSegment.classList.add('active')

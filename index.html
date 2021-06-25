@@ -335,7 +335,7 @@
     async function headRef(acct, repo, ref, token) {  
       token = token || oauthAccessToken || ghUnscopedToken
       let heads, tags, found, sha
-      console.log(`headRef: acct=${acct} repo=${repo} ref=${ref} token=${token} oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`)
+      // console.log(`headRef: acct=${acct} repo=${repo} ref=${ref} token=${token} oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`)
       let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs/heads`, {
         headers: {Authorization: `Token ${token}`, Accept: 'application/vnd.github.v3+json'} })
       if (resp.ok) {
@@ -357,8 +357,8 @@
 
     async function getFile(acct, repo, ref, path, token) {
       token = token || oauthAccessToken || ghUnscopedToken
-      console.log(`getFile: token=${token} oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`)
-      console.log(`getFile: acct=${acct} repo=${repo} ref=${ref} path=${path} token=${token}`)
+      // console.log(`getFile: token=${token} oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`)
+      // console.log(`getFile: acct=${acct} repo=${repo} ref=${ref} path=${path} token=${token}`)
       let content
       let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`, {headers: {Authorization:`Token ${token}`}})
       if (resp.ok) {
@@ -577,11 +577,10 @@
 
           // Handles menu actions from header
           async doAction(action, options) {
-            console.log('doAction', action, options)
+            // console.log('doAction', action, options)
             if (action === 'send-email') {
               this.doActionCallback = {status: 'processing', message: 'Processing request'}
               let resp = await sendEmail(options)
-              console.log(resp)
               this.doActionCallback = {status: 'done', message: 'Email sent'}
             } else if (action === 'view-markdown') {
               this.markdownViewer.show()
@@ -730,7 +729,6 @@
             if (markdown) {
               ([this.markdown, this.html, this.params, this.entities] = await this.parseMarkdown(markdown))
               let essayConfig = this.params.find(param => param['ve-config']) || {}
-              console.log('essayConfig', essayConfig)
               if (essayConfig.banner) essayConfig.banner = convertURL(essayConfig.banner)
               essayConfig.component = essayConfig.component || 'essay'
               this.essayConfig = essayConfig
@@ -742,7 +740,6 @@
           // Convert essay Markdown into HTML.  Markdown headings are used to infer content heirarchy
           async parseMarkdown(markdown) {
             let tmp = new DOMParser().parseFromString(md.render(markdown), 'text/html').children[0].children[1]
-            console.log(tmp)
             this.convertResourceUrls(tmp)
       
             let essay = document.createElement('div')
@@ -1148,7 +1145,7 @@
           },
 
           async addPage(acct, repo, ref, path) {
-            console.log(`addPage: acct=${acct} repo=${repo} ref=${ref} path=${path}`)
+            // console.log(`addPage: acct=${acct} repo=${repo} ref=${ref} path=${path}`)
             let replacementValues = {'<<acct>>': acct, '<<repo>>': repo, '<<display-name>>': authenticatedUser.displayName, '<<email>>': authenticatedUser.email}
             resp = await this.getFile('/page-templates/new-page-readme.md', 'jstor-labs', 'juncture', 'main')
             toReplace = {...replacementValues, ...{'<<edit-url>>': `https://github.com/${acct}/${repo}/edit/${ref}${path}/README.md`}}
@@ -1156,7 +1153,7 @@
           },
 
           async createSite(targetAcct, targetRepo, fromRef) {
-            console.log(`createSite: targetAcct=${targetAcct} targetRepo=${targetRepo} fromRef=${fromRef}`)
+            // console.log(`createSite: targetAcct=${targetAcct} targetRepo=${targetRepo} fromRef=${fromRef}`)
             // See if repo exists and create it if needed
             let resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}`, { headers: {Authorization: `Token ${this.ghToken}`}} )
             let repoExists = resp.ok
@@ -1176,7 +1173,7 @@
           },
 
           async updateSite(release) {
-            console.log(`updateSite: release=${release.name} tag=${release.tag_name}`)
+            // console.log(`updateSite: release=${release.name} tag=${release.tag_name}`)
             this.syncFiles(contentSource.acct, contentSource.repo, release.tag_name, false)
           }
     
@@ -1230,7 +1227,7 @@
 
           // logging watchers
           params (params) {
-            console.log('params', params)
+            // console.log('params', params)
             // Load custom components declared in page markdown
             params
               .filter(param => param['ve-component'] !== undefined)
@@ -1244,8 +1241,8 @@
                 }
             })
           },
-          entities (entities) { console.log('entities', entities) },
-          selectedViewer (selectedViewer) { console.log('selectedViewer', selectedViewer) },
+          // entities (entities) { console.log('entities', entities) },
+          // selectedViewer (selectedViewer) { console.log('selectedViewer', selectedViewer) },
           selectedItem (eid) { console.log(`selectedItem=${eid}`) },
           hoverItem (eid) {
             document.querySelectorAll('.hover').forEach(el => el.classList.remove('hover'))
@@ -1333,7 +1330,7 @@
           repo = repo || this.contentSource.repo
           ref = ref || this.contentSource.ref
           let ghToken = oauthAccessToken || ghUnscopedToken
-          console.log(`getFile: path=${path} acct=${acct} repo=${repo} ref=${ref} ghToken=${ghToken}`)
+          // console.log(`getFile: path=${path} acct=${acct} repo=${repo} ref=${ref} ghToken=${ghToken}`)
           if (ENV === 'PROD' && acct) {
             let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`
             let resp = await fetch(url, ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
@@ -1354,7 +1351,7 @@
           repo = repo || this.contentSource.repo
           branch = branch || this.contentSource.ref
           message = message || 'API Commit'
-          console.log(`putFile: path=${path} acct=${acct} repo=${repo} branch=${branch} message=${message}`)
+          // console.log(`putFile: path=${path} acct=${acct} repo=${repo} branch=${branch} message=${message}`)
           if (ENV === 'PROD' && acct) {
             let ghToken = oauthAccessToken || ghUnscopedToken
             let existing = await this.getFile(path, acct, repo, branch)
@@ -1444,7 +1441,6 @@
       if (config.gaPropertyID) gaPropertyID = config.gaPropertyID
       if (config.fontawesome) fontawesome = config.fontawesome
       loginsEnabled = gcApiKey !== undefined && gcAuthDomain !== undefined
-      console.log(config)
       return config
     }
 
@@ -1578,7 +1574,6 @@
             let dirElems = path.split('/').filter(elem => elem !== '').slice(0,-1)
             let mdDir = dirElems.length > 0 ? `/${dirElems.join('/')}/` : '/'
             _current = _current.replace(new RegExp(path.replace(/\//g, '\\/')), `${mdDir}`)
-            console.log(path, mdDir, _current)
           }
           pathElems = _current.split('/').slice(3)
         }
