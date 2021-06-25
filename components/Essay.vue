@@ -225,7 +225,7 @@ module.exports = {
               let toMatch = [...[entity.label], ...entity.aliases.filter(alias => alias.length > 2)]
               for (let i = 0; i < toMatch.length; i++) {
                 if (toMatch[i]) {
-                  let re = new RegExp(`(^|[\\s(])(${toMatch[i].replace(/'/, "'?")})([\\s);:,.]|$)`, 'i')
+                  let re = new RegExp(`(^|[\\s(>])(${toMatch[i].replace(/'/, "'?")})([\\s)<;:,.]|$)`, 'i')
                   let match = re.exec(paraHTML)
                   if (match) {
                     paraHTML = paraHTML.replace(match[2], `<span class="entity inferred" data-eid="${id}">${match[2]}</span>`)

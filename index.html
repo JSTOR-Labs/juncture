@@ -1004,6 +1004,7 @@
           itemClickHandler(e) {
             e.stopPropagation()
             this.selectedItem = e.target.dataset.eid 
+            this.interactionHander(e)
           },
 
           getInteractionAttrs(elem) {
@@ -1037,8 +1038,8 @@
 
           interactionHander(e) {
             e.stopPropagation()
-            const eventActions = {}
-            Array.from(e.target.attributes)
+            const eventActions = {};
+            [...e.target.attributes, ...e.target.parentElement.attributes]
               .filter(attr => attr.name.indexOf(`data-`) === 0 && attr.name.split('-').length === 4)
               .map(attr => {
                 const attrParts = attr.name.split('-').slice(1)

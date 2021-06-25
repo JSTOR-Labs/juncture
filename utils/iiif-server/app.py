@@ -17,7 +17,7 @@ from hashlib import sha256
 import traceback
 import getopt
 from datetime import datetime
-from urllib.parse import urlparse, unquote
+from urllib.parse import urlparse
 
 import requests
 logging.getLogger('requests').setLevel(logging.INFO)
@@ -71,18 +71,16 @@ def get_image_size(url, **kwargs):
     return size
 
 def queue_image_for_iiifhosting(mdb, **kwargs):
-    _id = unquote(kwargs['url'])
-    url = kwargs['url'].replace(' ', '%20')
-    name = sha256(url.encode('utf-8')).hexdigest()
-    size = get_image_size(url)
-    logger.info(f'queue_image_for_iiifhosting: url={url} name={name} size={size}')
+    name = sha256(kwargs['url'].encode('utf-8')).hexdigest()
+    size = get_image_size(kwargs['url'])
+    logger.info(f'queue_image_for_iiifhosting: url={kwargs["url"]} name={name} size={size}')
     if size:
-        image_data = mdb['images'].find_one({'_id': _id})
+        image_data = mdb['images'].find_one({'_id': kwargs['url']})
         if image_data:
             image_data['source_size'] = size
         else:
             mdb['images'].insert_one({
-                '_id': _id,
+                '_id': kwargs['url'],
                 'status': 'submitted',
                 'source_size': size,
                 'submitted': datetime.utcnow().isoformat(),
@@ -92,9 +90,8 @@ def queue_image_for_iiifhosting(mdb, **kwargs):
         'email': iiifhosting_user,
         'secure_payload': iiifhosting_token,
         'files': [{
-            'id': _id, 
-            'url': url, 
-            # 'name': unquote(url.split('/')[-1]), 
+            'id': kwargs['url'], 
+            'url': kwargs['url'], 
             'name': name,
             'size': size}]
     }
@@ -144,10 +141,12 @@ def add_image_data_to_manifest(manifest, image_data):
 
 def update_manifests_with_image_data(mdb, image_data):
     image_data['url'] = image_data['url'].replace('http:', 'https:')
-    # _filter = {'sequences.canvases.images.resource.@id': {'$eq': unquote(image_data['external_id'])}}
     _filter = {'sequences.canvases.images.resource.@id': {'$eq': image_data['external_id']}}
+    logger.info(f'update_manifests_with_image_data: image_data={image_data}')
+    logger.info(image_data['external_id'])
     cursor = mdb['manifests'].find(_filter)
     for manifest in cursor:
+        logger.info(f'manifest={manifest}')
         manifest = add_image_data_to_manifest(manifest, image_data)
         mdb['manifests'].replace_one({'_id': manifest['_id']}, manifest)   
 
@@ -260,6 +259,8 @@ def manifest(path=None):
     elif request.method in ('HEAD', 'GET'):
         mid = path
         args = dict([(k, request.args.get(k)) for k in request.args])
+        if 'url' in args:
+            args['url'] = args['url'].replace(' ', '%20')
         refresh = args.get('refresh', 'false').lower() in ('', 'true')
         mdb = connect_db()
         manifest = mdb['manifests'].find_one({'_id': mid})
@@ -282,6 +283,8 @@ def manifest(path=None):
 
         mdb = connect_db()
         input_data = request.json
+        if 'url' in input_data:
+            input_data['url'] = input_data['url'].replace(' ', '%20')
         source = _source(input_data['url'])
 
         # make manifest id using hash of url
@@ -291,18 +294,20 @@ def manifest(path=None):
 
         refresh = str(input_data.pop('refresh', False)).lower() in ('', 'true')
 
-        logger.info(f'manifest: method={request.method} mid={mid} found={manifest is not None} refresh={refresh} referrer={referrer} can_mutate={can_mutate}')
+        logger.info(f'manifest: method={request.method} source={source} mid={mid} found={manifest is not None} refresh={refresh} referrer={referrer} can_mutate={can_mutate}')
 
         if manifest:
-            manifest_md_hash = hashlib.md5(json.dumps(manifest.get('metadata',{}), sort_keys=True).encode()).hexdigest()
-            input_data_md_hash = hashlib.md5(json.dumps(metadata(**input_data), sort_keys=True).encode()).hexdigest()
+            logger.info(f'manifest={manifest}')
             if can_mutate:
                 if refresh or 'service' not in manifest['sequences'][0]['canvases'][0]['images'][0]['resource']:
                     image_data = get_image_data(mdb, source)
+                    logger.info(f'image_data={image_data}')
                     if refresh or image_data is None or image_data['status'] != 'done':
                         make_iiif_image(mdb, manifest, **input_data)
                 else:
                     image_data = None
+                manifest_md_hash = hashlib.md5(json.dumps(manifest.get('metadata',{}), sort_keys=True).encode()).hexdigest()
+                input_data_md_hash = hashlib.md5(json.dumps(metadata(**input_data), sort_keys=True).encode()).hexdigest()
                 if (image_data is not None) or (manifest_md_hash != input_data_md_hash):
                     manifest = update_manifest(mdb, manifest, image_data, **input_data)
         else:
