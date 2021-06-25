@@ -712,10 +712,12 @@ module.exports = {
             },
             immediate: true
         },
+       
         height: {
-            handler: function (height) {
+            handler: _.debounce(function (height) {
+                console.log(`map.height=${height}`)
                 if (this.map) this.map.invalidateSize(true)
-            },
+            }, 50),
             immediate: true
         },
         viewerIsActive: {
