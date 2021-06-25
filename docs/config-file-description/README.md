@@ -1,3 +1,5 @@
+<param ve-config title="Documentation" component="default" class="documentation" fixed-header>
+
 [<i class="fas fa-arrow-circle-left"></i> Home](/docs)
 ___
 The `config.json` file stores sitewide settings such as the site title, logo, and banner. The `config.json` file should be created in the root directory of your GitHub repository. It takes the general form:
