@@ -1,5 +1,3 @@
-<a href="https://juncture-digital.org"><img src="https://gitcdn.link/cdn/jstor-labs/juncture/main/images/ve-button.png"></a>
-
 <param ve-config title="Documentation" component="default" class="documentation" fixed-header>
 
 # Adding a Map to Your Essay

@@ -1,3 +1,5 @@
+<param ve-config title="Documentation" component="default" class="documentation" fixed-header>
+
 [<i class="fas fa-arrow-circle-left"></i> Home](/docs) <br />
 [Viewing your Website Files on GitHub.com](#view-website-files) <br />
 [Editing your Website Files on GitHub.com](#edit-website-files) <br />

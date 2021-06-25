@@ -1,5 +1,7 @@
 <param ve-config title="Documentation" component="default" class="documentation" fixed-header>
 
+<param ve-config title="Documentation" component="default" class="documentation" fixed-header>
+
 # Video viewer
 
 ## Overview

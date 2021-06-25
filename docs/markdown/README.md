@@ -1,3 +1,5 @@
+<param ve-config title="Documentation" component="default" class="documentation" fixed-header>
+
 [<i class="fas fa-arrow-circle-left"></i> Home](/docs) <br />
 [Viewing Your Writing in a Markdown Editor](#viewing-your-writing) <br />
 [Create Headers/Titles](#headers) <br />

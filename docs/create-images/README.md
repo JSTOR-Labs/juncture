@@ -1,3 +1,5 @@
+<param ve-config title="Documentation" component="default" class="documentation" fixed-header>
+
 [<i class="fas fa-arrow-circle-left"></i> Home](/docs) <br />
 [Link to a Hosted Image (Preferred)](#link-to-hosted-image) <br />
 [Upload an Image to your GitHub Repository (Not Ideal)](#upload-an-image) <br />
