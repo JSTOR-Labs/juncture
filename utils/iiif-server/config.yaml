@@ -3,5 +3,7 @@ atlas: mongo-user:o9oRXtJe9HhD0JZK@cluster0.llrbv.gcp.mongodb.net
 iiifhosting: ronald.snyder@ithaka.org:f518f50dde078a319b6bce286d85fa0f6fdfc2429e49ade92423d8c9be85fa922f37a588397cbd1c1fcd2793e95991d3d4fb8002d98bcf3b96ab659e5b03002d
 referrer_whitelist:
 - juncture-digital.org
+- dev.juncture-digital.org
 - localhost:8080
 - kent-maps.online
+- dofe.kent-maps.online
