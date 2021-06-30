@@ -1597,10 +1597,24 @@
       return converted
     }
 
+    /*
     async function sendEmail(options) {
       let resp = await fetch('https://visual-essays.app/send-email/', {
         method: 'POST', body: JSON.stringify(options),
         headers: {'Content-Type': 'application/json', Accept: 'application/json'},
+      })
+      return await resp.json()
+    }
+    */
+    async function sendEmail(options) {
+      console.log('sendEmail options', JSON.stringify(options));
+      let apiKey = siteConfig.apiKey;
+      let resp = await fetch('https://api.sendgrid.com/v3/resource/mail/send', {
+        method: 'POST',
+        body: JSON.stringify(options),
+        headers: {'Content-Type': 'application/json',
+                  Accept: 'application/json',
+                  Authorization: `Token ${apiKey}` },
       })
       return await resp.json()
     }

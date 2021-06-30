@@ -240,12 +240,22 @@ module.exports = {
     },
 
     submitContactForm() {
+      console.log('this.siteConfig.contactForm.toEmail', this.siteConfig.contactForm.toEmail)
       let body = `${this.contactMessage}\n\r[Sent by: ${this.contactName} <${this.contactEmail}>]`
 
       this.$emit('do-action', 'send-email', {
-        fromAddress: this.contactEmail,
-        toAddress: this.siteConfig.contactForm.toEmail,
-        messageBodyText: body,
+        personalizations: [],
+        from: {
+          email: `${this.contactName}`,
+          name: `<${this.contactEmail}>`
+        },
+        reply_to: {
+          email: this.siteConfig.contactForm.toEmail
+        },
+        content: [{
+          type: "text/html",
+          value: body
+        }]
       })
     },
 
@@ -282,7 +292,6 @@ module.exports = {
       slides[this.slideIndex - 1].style.display = "grid";
       dots[this.slideIndex - 1].className += " active";
     }
-
   },
   watch: {
     html: {
