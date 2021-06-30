@@ -95,7 +95,7 @@ def queue_image_for_iiifhosting(mdb, **kwargs):
             'name': name,
             'size': size}]
     }
-    logger.info(json.dumps(data, indent=2))
+    # logger.info(json.dumps(data, indent=2))
     resp = requests.post(
         ingest_endpoint_iiifhosting,
         headers = {
@@ -142,11 +142,11 @@ def add_image_data_to_manifest(manifest, image_data):
 def update_manifests_with_image_data(mdb, image_data):
     image_data['url'] = image_data['url'].replace('http:', 'https:')
     _filter = {'sequences.canvases.images.resource.@id': {'$eq': image_data['external_id']}}
-    logger.info(f'update_manifests_with_image_data: image_data={image_data}')
-    logger.info(image_data['external_id'])
+    # logger.info(f'update_manifests_with_image_data: image_data={image_data}')
+    # logger.info(image_data['external_id'])
     cursor = mdb['manifests'].find(_filter)
     for manifest in cursor:
-        logger.info(f'manifest={manifest}')
+        # logger.info(f'manifest={manifest}')
         manifest = add_image_data_to_manifest(manifest, image_data)
         mdb['manifests'].replace_one({'_id': manifest['_id']}, manifest)   
 
@@ -297,11 +297,11 @@ def manifest(path=None):
         logger.info(f'manifest: method={request.method} source={source} mid={mid} found={manifest is not None} refresh={refresh} referrer={referrer} can_mutate={can_mutate}')
 
         if manifest:
-            logger.info(f'manifest={manifest}')
+            # logger.info(f'manifest={manifest}')
             if can_mutate:
                 if refresh or 'service' not in manifest['sequences'][0]['canvases'][0]['images'][0]['resource']:
                     image_data = get_image_data(mdb, source)
-                    logger.info(f'image_data={image_data}')
+                    # logger.info(f'image_data={image_data}')
                     if refresh or image_data is None or image_data['status'] != 'done':
                         make_iiif_image(mdb, manifest, **input_data)
                 else:
@@ -455,7 +455,6 @@ def thumbnail():
                     if region == 'full':
                         region, size = _calc_region_and_size(placeholder, args, action)
                     thumbnail_url = f'{placeholder["url"].replace("http:","https:")}{region}/{size}/{rotation}/{quality}.{format}'
-                    logger.info(thumbnail_url)
                     return redirect(thumbnail_url)
                     '''
                     resp = requests.get(thumbnail_url)

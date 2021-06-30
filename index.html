@@ -17,7 +17,7 @@
 
   <div id="app" v-cloak ref="app" :class="layouts.join(' ')">
     <div id="header" ref="header">            
-      <component v-bind:is="'ve-header'" :active="true" :scroll-top="scrollTop"
+      <component v-bind:is="headerComponent" :active="true" :scroll-top="scrollTop"
                  :site-config="siteConfig"
                  :essay-config="essayConfig"
                  :content-source="contentSource"
@@ -89,7 +89,7 @@
       ></component>
     </div>
     <div v-if="essayConfig && path === '/'" id="footer" ref="footer">            
-      <component v-bind:is="'ve-footer'" :site-config="siteConfig" :content-source="contentSource"></component>
+      <component v-bind:is="footerComponent" :site-config="siteConfig" :content-source="contentSource"></component>
     </div>
 
     <div ref="markdownViewer" id="markdown-viewer" style="display: none;">
@@ -507,7 +507,9 @@
         }),
         computed: {
           // essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
-          mainComponent() { return this.essayConfig && this.essayConfig.component ? `ve-${this.essayConfig.component.toLowerCase()}` : null},
+          headerComponent() { return this.essayConfig && this.essayConfig.header ? `ve-${this.essayConfig.header.toLowerCase()}` : null},
+          mainComponent() { return this.essayConfig && this.essayConfig.main ? `ve-${this.essayConfig.main.toLowerCase()}` : null},
+          footerComponent() { return this.essayConfig && this.essayConfig.footer ? `ve-${this.essayConfig.footer.toLowerCase()}` : null},
           isAdminUser() { return ENV === 'DEV' || authenticatedUser !== null && (authenticatedUser.isAdmin || contentSource.acct === authenticatedUser.acct) },
           ghToken() { return oauthAccessToken || ghUnscopedToken },
           viewerStyle() { return { 
@@ -730,7 +732,9 @@
               ([this.markdown, this.html, this.params, this.entities] = await this.parseMarkdown(markdown))
               let essayConfig = this.params.find(param => param['ve-config']) || {}
               if (essayConfig.banner) essayConfig.banner = convertURL(essayConfig.banner)
-              essayConfig.component = essayConfig.component || 'essay'
+              essayConfig.header = essayConfig.header || 'header'
+              essayConfig.main = essayConfig.main || essayConfig.component || 'visual-essay'
+              essayConfig.footer = essayConfig.footer || 'footer'
               this.essayConfig = essayConfig
             }
             if (gaPropertyID) ga('send', 'pageview', `${contentSource.basePath}${path}`)
@@ -1376,6 +1380,15 @@
     function isEntityID(arg) { return typeof arg === 'string' && arg.split(':').slice(-1).find(val => val.length > 1 && val[0] === 'Q' && isNumeric(val.slice(1))) !== undefined }
     function attrsToObject(el) { return Object.fromEntries(Array.from(el.attributes).map(attr => 
                       [attr.nodeName, attr.value === '' || attr.value === 'true' ? true : attr.value === 'false' ? false : attr.value] )) }
+    function slugify(str) {
+      str = str.replace(/^\s+|\s+$/g, '').toLowerCase()
+      let from = "ÁÄÂÀÃÅČÇĆĎÉĚËÈÊẼĔȆÍÌÎÏŇÑÓÖÒÔÕØŘŔŠŤÚŮÜÙÛÝŸŽáäâàãåčçćďéěëèêẽĕȇíìîïňñóöòôõøðřŕšťúůüùûýÿžþÞĐđßÆa·/_,:;"
+      var to   = "AAAAAACCCDEEEEEEEEIIIINNOOOOOORRSTUUUUUYYZaaaaaacccdeeeeeeeeiiiinnooooooorrstuuuuuyyzbBDdBAa------"
+      for (let i = 0, l = from.length; i < l; i++) {
+        str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i))
+      }
+      return str.replace(/[^a-z0-9 -]/g, '') .replace(/\s+/g, '-').replace(/-+/g, '-')
+    }
     function getDomPath(el) {
       var stack = []
       while ( el.parentNode != null ) {
@@ -1566,6 +1579,45 @@
       return el
     }
 
+    // Converts link tags to elements with click listeners enabling intra-app navigation without page loading
+    function convertLinks(root) {
+      root.querySelectorAll('a').forEach(link => {
+        if ((!link.href && link.dataset.target) || link.href.indexOf(window.location.host) > 0) {
+          // If internal link
+          let target = link.dataset.target
+          if (!target) { 
+            const parsedUrl = parseUrl(link.href)
+            let pathElems = parsedUrl.pathname.split('/').filter(elem => elem !== '')
+            if (contentSource.isGhpSite) {
+              if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
+            } else {
+              if (pathElems[0] === contentSource.acct && pathElems[1] === contentSource.repo) pathElems = pathElems.slice(2)
+            }
+            target = parsedUrl.hash === '' ? `/${pathElems.join('/')}/` : parsedUrl.hash.split('?')[0]
+          }
+          link.removeAttribute('href')
+          link.setAttribute('data-target', target)
+
+          // Add click handler for internal links
+          link.addEventListener('click', (e) => {
+            let target = e.target
+            while (!target.dataset.target && target.parentElement) { target = target.parentElement }
+            let path = target.dataset.target
+            if (path[0] === '#') {
+              let anchorElem = document.getElementById(path.slice(1))
+              if (anchorElem) anchorElem.scrollIntoView()
+            } else {
+              this.$emit('do-action', 'load-page', path)
+            }
+          })
+        } else {
+          // If external link, add external link icon to text and force opening in new tab
+          link.innerHTML += '<sup><i class="fa fa-external-link-square-alt" style="margin-left:3px;margin-right:2px;font-size:0.7em;color:#219653;"></i></sup>'
+          link.setAttribute('target', '_blank')
+        }
+      })
+    }
+  
     function convertURL(current, path, pathIsDir) {
       let _current = current.replace(/\s/g, '%20')
       let pathElems = []
