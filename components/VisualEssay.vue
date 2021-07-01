@@ -55,7 +55,7 @@ module.exports = {
       this.$emit('set-entities', this.entities)
       this.$nextTick(() => {
         this.addPopups(this.entities)
-        convertLinks(essayElem)
+        this.convertLinks(essayElem)
         let segments = [...essayElem.querySelectorAll('.segment')]
         if (this.anchor) {
           let anchorElem = document.getElementById(this.anchor)
@@ -208,6 +208,44 @@ module.exports = {
         })
       )
     },
+
+    convertLinks(root) {
+      root.querySelectorAll('a').forEach(link => {
+        if ((!link.href && link.dataset.target) || link.href.indexOf(window.location.host) > 0) {
+          // If internal link
+          let target = link.dataset.target
+          if (!target) { 
+            const parsedUrl = parseUrl(link.href)
+            let pathElems = parsedUrl.pathname.split('/').filter(elem => elem !== '')
+            if (contentSource.isGhpSite) {
+              if (pathElems[0] === contentSource.repo) pathElems = pathElems.slice(1)
+            } else {
+              if (pathElems[0] === contentSource.acct && pathElems[1] === contentSource.repo) pathElems = pathElems.slice(2)
+            }
+            target = parsedUrl.hash === '' ? `/${pathElems.join('/')}/` : parsedUrl.hash.split('?')[0]
+          }
+          link.removeAttribute('href')
+          link.setAttribute('data-target', target)
+
+          // Add click handler for internal links
+          link.addEventListener('click', (e) => {
+            let target = e.target
+            while (!target.dataset.target && target.parentElement) { target = target.parentElement }
+            let path = target.dataset.target
+            if (path[0] === '#') {
+              let anchorElem = document.getElementById(path.slice(1))
+              if (anchorElem) anchorElem.scrollIntoView()
+            } else {
+              this.$emit('do-action', 'load-page', path)
+            }
+          })
+        } else {
+          // If external link, add external link icon to text and force opening in new tab
+          link.innerHTML += '<sup><i class="fa fa-external-link-square-alt" style="margin-left:3px;margin-right:2px;font-size:0.7em;color:#219653;"></i></sup>'
+          link.setAttribute('target', '_blank')
+        }
+      })
+    }
 
   },
   watch: {
