@@ -3,11 +3,11 @@
 [Home](/docs) | [Learn Markdown in 30 Minutes <i class="fas fa-arrow-circle-right"></i>](/docs/markdown/)
 
 ---
-# An Introduction to the Visual Essay Tool
+# An Introduction to Juncture
 
-We have constructed a (very plain) visual essay site based on a single document: readme.md. We can see text in our readme.md rendered into a visual essay site based on a website visible at:
+We have constructed a (very plain) visual essay site based on a single document: README.md. We can see text in our readme.md rendered into a visual essay site based on a website visible at:
 
-> https://juncture-digital.org//your-github-username/your-repo-name
+> https://juncture-digital.org/your-github-username/your-repo-name
 
 Each unique page in your site will be based on a single Markdown (.md) file. Using Markdown is a way to add basic formatting to each page, including emphasis, lists, and links. If you're not familiar with Markdown, we describe how to use it in the next section. Even if you have never coded before, you should be able to pick up the basics in about 30 minutes. If you've learned HTML before, you'll pick it up even faster.
 
