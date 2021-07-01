@@ -10,6 +10,10 @@ The image viewer is used to display high-resolution images with interactive zoom
 
 The visual essays image viewer is able to both use an existing IIIF manifest (such as those made available by a number of museums, libraries, and other image archives) and dynamically created manifests using attributes defined in a visual essay `ve-image` tag.
 
+## Syntax
+```html
+<param ve-image>
+```
 
 ## Options
 

@@ -19,6 +19,11 @@ ___
 
 This tag renders a basic network diagram using the D3Plus library. D3plus is a JavaScript re-usable chart library that extends the popular D3.js to enable the easy creation of visualizations.  Example diagrams can be seen at [https://d3plus.org/examples/](https://d3plus.org/examples/).  Documentation is available at [https://d3plus.org/docs/](https://d3plus.org/docs/). The `ve-d3plus-network` tag is used to generate this diagram and currently supports comma separated (CSV) or tab separated (TSV) delimited text files as input data. 
 
+## Syntax
+```html
+<param ve-d3plus-network>
+```
+
 ### Options
 - __url__: url to the input data file
 
@@ -38,6 +43,11 @@ ___
 ![D3Plus Ring Network](d3plusring.png){: .right .dropshadow .border .thumb-300w} 
 
 This tag renders a ring network diagram using the D3Plus library. Rings are a way to view network connections focused on 1 node in the network.  This visualization shows primary and secondary connections of a specific node, and allows the user to click on a node to recenter the visualization on that selected node. The `ve-d3plus-ring` tag is used to generate this diagram and currently supports comma separated (CSV) or tab separated (TSV) delimited text files as input data. It also uses a `center` attribute to identify the name of the network'ss central node.
+
+## Syntax
+```html
+<param ve-d3plus-ring-network>
+```
 
 ### Options
 - __url__: url to the input data file
@@ -61,6 +71,11 @@ ___
 ![Vis.js Network](visnetwork.png){: .right .dropshadow .border .thumb-300w} 
 
 This tag renders a network diagram using the Vis.js library, a dynamic, browser based visualization JavaScript library. Examples of network graphs created in Vis.js can be seen at [https://visjs.github.io/vis-network/examples/](https://visjs.github.io/vis-network/examples/). The documentation for networks can be viewed at [https://visjs.github.io/vis-network/docs/network/](https://visjs.github.io/vis-network/docs/network/). The `ve-vis-network` tag is used to generate this graph and currently supports comma separated (CSV) or tab separated (TSV) delimited text files as input data. An optional `title` attribute can be defined to give the network graph a title. 
+
+## Syntax
+```html
+<param ve-vis-network>
+```
 
 ### Options
 - __url__: url to the input data file

@@ -6,6 +6,11 @@
 
 The `ve-map` tag indicates that a map should be added as a visualization component for the associated text element(s).  Maps can be further customized with `ve-map-layer` directives that define layers or overlays to be applied to the map. 
 
+## Syntax
+```html
+<param ve-map>
+```
+
 ## Options
 
 - __basemap__:  By default, [OpenStreetMap (OSM)](https://www.openstreetmap.org/) is used for the base map.  Other base maps are available and can be requested with this attribute.  The available base maps are:

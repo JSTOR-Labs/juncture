@@ -5,6 +5,11 @@
 ## Overview
 The map shown for an active element can be augmented with one or more layers.  Two types of layers are currently supported.
 
+## Syntax
+```html
+<param ve-map-layer>
+```
+
 ## Options
 
 - __type__:  `mapwarper` or `geojson`.  Defines the specific layer type.

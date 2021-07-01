@@ -6,6 +6,11 @@
 
 An optional `ve-config` tag may be added to an essay to define essay-specific attributes, metadata, and behaviors.  For exanple, this tag is often used to define a title and banner image for an essay.  When used, this tag is generally included at the top of the essay markdown file.  In addition to some commonly used metadata like title and author names the ve-config tag can also be used as a convenient means for passing arbitray metadata to various components used by the tool.  This typically includes components like the header and footer but the the metdata is globally accessible to any component.
 
+## Syntax
+```html
+<param ve-config>
+```
+
 ## Options
 
 - __title__:  The essay title.
