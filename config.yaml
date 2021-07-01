@@ -26,7 +26,8 @@ nav:
 # The following information is used in the display and processing of the contact form
 # A valid toEmail address is required. Other fields are optional
 contactForm:
-  toEmail:
+  from: JSTOR Labs <labs@ithaka.org>
+  to:
   #- labs@ithakaorg.onmicrosoft.com
   - Ron.Snyder@ithaka.org
   subject: Juncture Contact Form
