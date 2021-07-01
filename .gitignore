@@ -5,4 +5,5 @@ venv
 CNAME
 tmp
 creds
-iiif-server/config.yaml
+utils/email-client/config.yaml
+utils/iiif-server/config.yaml
