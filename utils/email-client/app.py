@@ -77,13 +77,16 @@ def sendinblue(**kwargs):
             'api-key': config['providers']['sendinblue']['api_token']
         },
         data = json.dumps(data))
-    return resp
+    return resp.content, resp.status_code
 
 def sendmail(**kwargs):
     return globals()[kwargs.pop('provider', config['default_provider'])](**kwargs)
 
 @app.route('/', methods=['OPTIONS', 'POST'])
 def _sendmail():
+    if request.method == 'OPTIONS':
+        return ('', 204)
+
     referrer = '.'.join(urlparse(request.referrer).netloc.split('.')[-2:]) if request.referrer else None
     logger.info(f'sendmail: referrer={referrer} provider={request.json.get("provider", config["default_provider"])} payload={request.json}')
     if referrer in referrer_whitelist:

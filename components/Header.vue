@@ -154,7 +154,7 @@
 
       submitContactForm() {
         this.$emit('do-action', 'sendmail', {
-          from: `${this.siteConfig.contactForm.from} <${this.contactEmail}>`,
+          from: `${this.contactName} <${this.contactEmail}>`,
           to: this.siteConfig.contactForm.to,
           subject: this.siteConfig.contactForm.subject,
           message: `${this.contactMessage}\n\r[Sent by: ${this.contactName} <${this.contactEmail}>]`
