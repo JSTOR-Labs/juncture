@@ -56,6 +56,28 @@ The following attributes control marker and geojson formatting:
 - __fill__:  Fill color.  Default=`#32C125`
 - __fill-opacity__:  Default=`0.5`
 
+
+### Custom Markers and Image Overlay
+
+The following tag uses a [Leaflet Icon](https://leafletjs.com/examples/custom-icons/) to create a custom marker or put an image on the map. The basic tag is `<param ve-map-marker>` and the options are:
+```html
+<param ve-map-marker>
+```
+
+## Options:
+
+- **url** - _required_ URL to image.
+- **center** - _required_ latitude and longitude coordinates for the image placement, in that order, separated by a comma. For example: `"39, 20"`
+- **size** - _required_ the size of the image in pixels, separated by a comma.
+- **circle** - when set to "true", the image is cropped to an icon-sized circle
+- **square** - when set to true, the image is cropped to an icon-sized square
+- **iconAnchor** - The coordinates of the "tip" of the icon (relative to its top left corner). The icon will be aligned so that this point is at the marker's geographical location. Centered by default.
+- **shadowUrl** - the URL to a shadow image.
+- **shadowSize** - the size of the shadow image in pixels, separated by a comma.
+- **shadowAnchor** - The coordinates of the "tip" of the shadow (relative to its top left corner) (the same as iconAnchor if not specified).
+- **className** - A custom class name to assign to both primary and shadow images. Used for custom CSS styling.
+
+
 ### Interactions
 
 - __flyto__:  The `flyto` action takes a comma-delimited value consisting latitude, longitude, and zoom level.  
@@ -71,10 +93,29 @@ Below are example `flyto` actions for Rome, one for a `click` event and another 
 	<param ve-map center="32.262084, 64.391554" zoom="2.5" stroke-width="0" show-labels>
 	<param ve-map-layer geojson url="/geojson/peony.json" title="Peony Distribution" active> 
 ```
-
+---
 ```html
 	<param ve-map center="0.040297, -71.224280" zoom="3.8" marker-type="circle" stroke-width="0" fill-opacity="1">
 	<param ve-map-layer geojson active title="Aurea" url="https://jstor-labs.github.io/plant-humanities/data/heliconia-aurea.tsv" fill="#D11141" radius="6">  
-	<param ve-map-layer geojson active title="Bihai" url="https://jstor-labs.github.io/plant-humanities/data/heliconia-bihai.tsv" radius="4.5" fill="#009900"> 
+    <param ve-map-layer geojson active title="Bihai" url="https://jstor-labs.github.io/plant-humanities/data/heliconia-bihai.tsv" radius="4.5" fill="#009900"> 
+    
+```
+---
+The following example demonstrates a map with a custom marker and an image.
+```html
+<param ve-map center="2, 40" zoom="4">
+<param ve-map-marker
+       url="https://leafletjs.com/examples/custom-icons/leaf-green.png"
+       coords="17.188263050774324, 52.28406397248149"
+       size="38, 95"
+       iconAnchor="22, 94"
+       shadowUrl="https://leafletjs.com/examples/custom-icons/leaf-shadow.png"
+       shadowSize="50, 64">
+<param ve-map-marker
+       url="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Pinz%C3%B3n_azul_de_Gran_Canaria_%28macho%29%2C_M._A._Pe%C3%B1a.jpg/220px-Pinz%C3%B3n_azul_de_Gran_Canaria_%28macho%29%2C_M._A._Pe%C3%B1a.jpg""
+       coords="-7.182405194219532, 35.05200886854757"
+       size="129, 170"
+       circle="true"
+       >
 ```
 
