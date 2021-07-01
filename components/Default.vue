@@ -296,11 +296,11 @@ module.exports = {
     },
 
     submitContactForm() {
-      let body = `${this.contactMessage}\n\r[Sent by: ${this.contactName} <${this.contactEmail}>]`
-      this.$emit('do-action', 'send-email', {
-        fromAddress: this.contactEmail,
-        toAddress: this.siteConfig.contactForm.toEmail,
-        messageBodyText: body,
+      this.$emit('do-action', 'sendmail', {
+        from: `${this.siteConfig.contactForm.from} <${this.contactEmail}>`,
+        to: this.siteConfig.contactForm.to,
+        subject: this.siteConfig.contactForm.subject,
+        message: `${this.contactMessage}\n\r[Sent by: ${this.contactName} <${this.contactEmail}>]`
       })
     },
 

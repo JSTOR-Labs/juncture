@@ -19,9 +19,9 @@ nav:
 # If the /contact-us path is defined for the nav menu a contact form will be enabled
 # The following information is used in the display and processing of the contact form.
 contactForm:
-  toEmail:
-  # - Ron Snyder <ronald.snyder@ithaka.org>
-  - ron.snyder@ithaka.org
+  from: JSTOR Labs <labs@ithaka.org>
+  to:
+    - Ron Snyder <ronald.snyder@ithaka.org>
   subject: Contact Us
 
 #######################################################
