@@ -40,7 +40,7 @@ In this case, a reader could click on the text <span ve-entity title="Black Live
 # Linking Entities for the Entire Essay
 <param id="whole-essay-link">
 
-If you want to link a set of entities for your entire essay, create those links before the first section of the essay. This practice is so common that we have called "Linked Data Tags" one of the [Four Parts of a Visual Essay](https://docs.visual-essays.app/parts-of-essay/).
+If you want to link a set of entities for your entire essay, create those links before the first section of the essay. This practice is so common that we have called "Linked Data Tags" one of the [Four Parts of a Visual Essay](/docs/parts-of-essay).
 
 1. Configuration (the content of `param ve-config`)
 2. Linked Data Tags (the content of `param ve-entity` tags)

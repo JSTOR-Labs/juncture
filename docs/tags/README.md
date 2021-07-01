@@ -8,10 +8,11 @@ Essay visualizations are created (and optionally controlled) by a couple of spec
 - The __span__ tag is used to wrap sections of text in the essay to associate the text with an entity or to use the text as a interaction trigger.  An example of an interaction trigger would be connecting a location reference in the essay text to an interaction that causes the map to "fly to" a specific location when the user clicks on or hovers over the "spanned" text in the essay.
 
 HTML tags begin with the `<` character and end with the `>` character.  The text after the `<` character and before the first space define the tag name.  The HTML language defines many tags but the visual essay tool only uses the `param` and `span` tags.  Both of these are standard HTML tags that have been extended for use by the visual essay tool.  In the case of the `param` tag a visual essay type attribute and optional options attributes are used to define the type of visualization generated.  The visual essay type attribute starts with `ve-` and defines the specific component used to render the visualizaiton.  Below are a few commonly used `ve` type attributes.
-
-- `ve-image`
-- `ve-map`
-- `ve-video`
+```html
+- ve-image
+- ve-map
+- ve-video
+```
 
 More detailed information on these tags and others are provided in the following sections.
 

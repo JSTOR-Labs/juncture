@@ -13,6 +13,11 @@ ____
 
 Any changes to your site will be changes to the site repository files at GitHub.com. We can create a new page, edit pages, and upload files directly on GitHub.com. The Visual Essay Tool also includes a component to make quick changes directly from your site. This quick editor can change the code on an existing page, but it cannot create a new page or add files to your site. 
 
+# Editing Pages
+
+Any changes to your site will be changes to the site repository files at GitHub.com. We can create a new page, edit pages, and upload files directly on GitHub.com. Juncture also allows for quick changeses to be made directly from your site. 
+
+
 # Viewing your Website Files on GitHub.com
 <param id="view-website-files">
   
@@ -22,7 +27,7 @@ The files for your website can be found in your account on github.com. To see yo
 ![GitHub files in a new repo](github-new-repo.png)
 
 For now, you should just have a single file: README.md. The contents of the file will be displayed on the main page for your site at:
-> http://visual-essays.app/your-user-name/your-repo-name
+> http://juncture-digital.org/your-user-name/your-repo-name
 
 # Editing your Website Files on GitHub.com
 <param id="edit-website-files">
@@ -66,9 +71,9 @@ where `new-page` is the name of the directory/folder. (There is no need to inclu
 
 Once a page has been created, we have created a simple interface for editing built directly into your website. Navigate to your website at:
 
->https://visual-essays.app/your-user-name/your-repo-name
+>https://juncture-digital.org/your-user-name/your-repo-name
 
-Click on the "hamburger menu" (the set of three horizontal lines) in the upper, lefthand corner and choose "Login." 
+Click on the "hamburger menu" (the set of three horizontal lines) in the upper, lefthand corner and choose "Login.", if not logged in already. 
 
 ![Hamburger Menu](hamburger.png)
 
@@ -80,7 +85,7 @@ Supply your login information for your github account. This information will be 
 1. Complete the previous step "Logging into your GitHub Account from your Website." 
 2. Navigate to the particular web page you would like to edit.
 3. Click the hamburger icon ![Hamburger Menu](hamburger.png)
-4. Choose "Edit Page"
+4. Choose "Edit this page"
 5. An editor window will appear allowing you to quickly make any changes.
 6. Remember to commit changes!
 ___

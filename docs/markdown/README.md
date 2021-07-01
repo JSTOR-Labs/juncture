@@ -127,4 +127,4 @@ If you find yourself forgetting how to do something in markdown, there are many 
 
 ___
 
-[<i class="fas fa-arrow-circle-left"></i> Home](https://docs.visual-essays.app/) | [Creating and Editing Pages in GitHub <i class="fas fa-arrow-circle-right"></i>](/docs/create-and-edit-pages/)
+[<i class="fas fa-arrow-circle-left"></i> Home](/docs) | [Creating and Editing Pages in GitHub <i class="fas fa-arrow-circle-right"></i>](/docs/create-and-edit-pages/)
