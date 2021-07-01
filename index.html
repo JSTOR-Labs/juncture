@@ -583,6 +583,7 @@
             if (action === 'sendmail') {
               this.doActionCallback = {status: 'processing', message: 'Processing request'}
               let resp = await sendmail(options)
+              console.log('sendmail response', resp)
               this.doActionCallback = {status: 'done', message: 'Email sent'}
             } else if (action === 'view-markdown') {
               this.markdownViewer.show()
