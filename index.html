@@ -439,8 +439,8 @@
       if (fontawesome) document.querySelector('body').appendChild(makeScriptTag(fontawesome, 'anonymous'))
       
 
-      let mainCssPromise = ENV === 'DEV'
-        ? fetch(`${window.location.port === '8088' ? '' : '/juncture'}/css/main.css`).then(resp => resp.text())
+      let mainCssPromise = ENV === 'DEV' && contentSource.repo === 'juncture'
+        ? fetch(`${window.location.port === '8088' ? '' : 'juncture'}/css/main.css`).then(resp => resp.text())
         : getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
       mainCssPromise.then(css => {
       let style = document.createElement('style')
@@ -1456,7 +1456,8 @@
     // Gets site config
     async function getSiteConfig() {
       let config = {}
-      let junctureConfigUrl = isJuncture && window.location.hostname !== 'localhost' 
+      console.log(isJuncture, ENV)
+      let junctureConfigUrl = isJuncture && ENV !== 'DEV'
         ? `${window.location.origin}/config.yaml`
         : 'https://raw.githubusercontent.com/jstor-labs/juncture/juncture/config.yaml'
       let resp = await fetch(junctureConfigUrl)
@@ -1560,7 +1561,7 @@
       }
       // if (isJuncture && contentSource.acct !== 'jstor-labs' || contentSource.repo !== 'juncture') {
       if (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs') {
-        if (ENV === 'DEV') {
+        if (window.location.hostname === 'localhost') {
           let basePath = contentSource.isGhpSite ? '/juncture' : ''
           let resp = await fetch(`${contentSource.baseUrl}${basePath}/${componentsRoot}`)
           resp = await resp.json()
