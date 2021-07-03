@@ -415,15 +415,16 @@
       let attrsWithUrls = ['banner', 'favicon', 'logo']
 
       if (ENV === 'PROD' || window.location.port === '8088') {
-        /*
+        
         headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
           if (headHash) {
+            if (contentSource.acct !== 'jstor-labs' || contentSource.repo !== 'juncture-digital') contentSource.basePath = `/${contentSource.acct}/${contentSource.repo}`
             contentSource.hash = headHash.slice(0,7)
             contentSource.assetsBaseUrl = `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.hash}`
             attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
           }
         })
-        */
+        
       } else {
         attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       }
@@ -1471,7 +1472,7 @@
 
     // Gets site config
     async function getSiteConfig() {
-      console.log('getSiteConfig')
+      console.log('getSiteConfig', contentSource)
       let config = {}
       /*
       let junctureConfigUrl = isJuncture && ENV !== 'DEV'
@@ -1487,7 +1488,22 @@
         // resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
         resp = await fetch(`${window.location.origin}${contentSource.basePath}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
-      } 
+      }
+      if (config.ghUnscopedToken) {
+        ghUnscopedToken = atob(config.ghUnscopedToken)
+      // } else if (contentSource.acct === 'jstor-labs') {
+      } else {
+        ghUnscopedToken = atob('Z2hwX05lcnV2RUYzRmx6M3o5YnFjQWZuOGpJQnJMR3lEMTNmYjYyVw==')
+      }
+      if (contentSource.acct && (contentSource.repo !== 'juncture-digital' || contentSource.acct !== 'jstor-labs')) {
+        let ghToken = oauthAccessToken || ghUnscopedToken
+        resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=juncture`,
+                               ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
+        if (resp.ok) {
+          resp = await resp.json()
+          config = {...config, ...YAML.parse(atob(resp.content))}
+        }
+      }
       /*
       else if (contentSource.acct && (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs')) {
         config = {}
@@ -1503,12 +1519,7 @@
         if (resp.ok) config = YAML.parse(await resp.text())
       }
       */
-     console.log(contentSource)
-      if (config.ghUnscopedToken) {
-        ghUnscopedToken = atob(config.ghUnscopedToken)
-      } else if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture') {
-        ghUnscopedToken = atob('Z2hwX05lcnV2RUYzRmx6M3o5YnFjQWZuOGpJQnJMR3lEMTNmYjYyVw==')
-      }
+
       if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
       if (config.gcAuthDomain) gcAuthDomain = atob(config.gcAuthDomain)
       if (config.gaPropertyID) gaPropertyID = config.gaPropertyID
