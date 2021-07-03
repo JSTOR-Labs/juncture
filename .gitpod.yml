@@ -1,6 +1,6 @@
 ports:
-  - port: 8080-8080
+  - port: 8080
     onOpen: open-preview
 tasks:
-  - init: pip install -r utils/dev-server/requirements.txt
-    command: utils/dev-server/server.py -l info -r ..
+  - name: Static Server
+    command: python3 -m http.server 8080
