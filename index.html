@@ -266,7 +266,8 @@
 
       } else if (ENV === 'DEV') {
         // For local dev in GHP mode
-        let repo = window.location.pathname.split('/').filter(elem => elem !== '')[0] || 'juncture'
+        // let repo = window.location.pathname.split('/').filter(elem => elem !== '')[0] || 'juncture'
+        let repo = 'juncture'
         contentSource = {
           acct: 'jstor-labs', 
           repo, branch: 'main',
@@ -1470,6 +1471,7 @@
 
     // Gets site config
     async function getSiteConfig() {
+      console.log('getSiteConfig')
       let config = {}
       /*
       let junctureConfigUrl = isJuncture && ENV !== 'DEV'
@@ -1482,7 +1484,8 @@
           .catch(err => console.warn(err))
         config = YAML.parse(resp)
       } else {
-        resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
+        // resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
+        resp = await fetch(`${window.location.origin}${contentSource.basePath}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
       } 
       /*
@@ -1500,6 +1503,7 @@
         if (resp.ok) config = YAML.parse(await resp.text())
       }
       */
+     console.log(contentSource)
       if (config.ghUnscopedToken) {
         ghUnscopedToken = atob(config.ghUnscopedToken)
       } else if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture') {

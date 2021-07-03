@@ -3,4 +3,4 @@ ports:
     onOpen: open-preview
 tasks:
   - name: Static Server
-    command: python3 -m http.server 8080
+    command: npx http-server
