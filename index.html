@@ -1495,7 +1495,7 @@
       } else {
         ghUnscopedToken = atob('Z2hwX05lcnV2RUYzRmx6M3o5YnFjQWZuOGpJQnJMR3lEMTNmYjYyVw==')
       }
-      if (contentSource.acct && (contentSource.repo !== 'juncture-digital' || contentSource.acct !== 'jstor-labs')) {
+      if (contentSource.acct && (contentSource.acct !== 'jstor-labs' || (contentSource.repo !== 'juncture') && contentSource.repo !== 'juncture-digital')) {
         let ghToken = oauthAccessToken || ghUnscopedToken
         resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=juncture`,
                                ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
