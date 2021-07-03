@@ -3,4 +3,4 @@ ports:
     onOpen: open-browser
 tasks:
   - name: Static Server
-    command: npx http-server
+    command: npx serve
