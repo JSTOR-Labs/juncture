@@ -163,7 +163,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/yamljs/0.3.0/yaml.min.js" integrity="sha512-f/K0Q5lZ1SrdNdjc2BO2I5kTx8E5Uw1EU3PhSUB9fYPohap5rPWEmQRCjtpDxNmQB4/+MMI/Cf+nvh1VSiwrTA==" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@popperjs/core@2"></script>
   <script src="https://unpkg.com/tippy.js@6"></script>
-  <script src="https://blueimp.github.io/JavaScript-MD5/js/md5.min.js"></script>
+  <script src="https://gitcdn.link/repo/jstor-labs/juncture/main/js/md5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase.js"></script>
   
@@ -267,8 +267,18 @@
       } else if (ENV === 'DEV') {
         // For local dev in GHP mode
         let repo = window.location.pathname.split('/').filter(elem => elem !== '')[0] || 'juncture'
-        contentSource = {acct: 'jstor-labs', repo, branch: 'main', ref: 'main', hash: null, baseUrl: window.location.origin, basePath: `/${repo}`, isGhpSite: true,
-                         assetsBaseUrl: `${window.location.origin}/${repo}`}
+        contentSource = {
+          acct: 'jstor-labs', 
+          repo, branch: 'main',
+          ref: 'main', 
+          hash: null, 
+          isGhpSite: true,
+          baseUrl: window.location.origin, 
+          // basePath: `/${repo}`, 
+          // assetsBaseUrl: `${window.location.origin}/${repo}`
+          basePath: '', 
+          assetsBaseUrl: `${window.location.origin}`
+        }
         // isJuncture = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture'
 
       } else {
@@ -287,7 +297,7 @@
         // juncture-digital.org
         } else if (isJuncture) {
           contentSource = {
-            acct: 'jstor-labs', repo: 'juncture', ref: 'main', basePath: '', isGhpSite: false,
+            acct: 'jstor-labs', repo: 'juncture-digital', ref: 'main', basePath: '', isGhpSite: false,
             baseUrl: window.location.origin, assetsBaseUrl: `https://raw.githubusercontent.com/jstor-labs/juncture/main`
           }
           let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
@@ -404,6 +414,7 @@
       let attrsWithUrls = ['banner', 'favicon', 'logo']
 
       if (ENV === 'PROD' || window.location.port === '8088') {
+        /*
         headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
           if (headHash) {
             contentSource.hash = headHash.slice(0,7)
@@ -411,6 +422,7 @@
             attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
           }
         })
+        */
       } else {
         attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       }
@@ -438,10 +450,12 @@
       if (siteConfig.title) document.title = siteConfig.title
       if (fontawesome) document.querySelector('body').appendChild(makeScriptTag(fontawesome, 'anonymous'))
       
-
+      /*
       let mainCssPromise = ENV === 'DEV' && contentSource.repo === 'juncture'
         ? fetch(`${window.location.port === '8088' ? '' : 'juncture'}/css/main.css`).then(resp => resp.text())
         : getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
+      */
+      let mainCssPromise = getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
       mainCssPromise.then(css => {
       let style = document.createElement('style')
         style.innerHTML = css
@@ -707,7 +721,8 @@
             if (path.slice(-1) !== '/') path += '/'
             this.path = path 
             console.log(`loadEssay: basePath=${contentSource.basePath} path=${path} anchor=${this.anchor}`)
-            let pathsToTry = [`${path}README.md`, `${path.slice(0,-1)}.md`, `${path}index.md`]
+            // let pathsToTry = [`${path}index.md`, `${path}README.md`, `${path.slice(0,-1)}.md`]
+            let pathsToTry = [`${path}README.md`, `${path.slice(0,-1)}.md`]
             if (this.authenticatedUser !== null) pathsToTry = [...[`${path}admin.md`], ...pathsToTry]
             let markdown
             for (let i = 0; i < pathsToTry.length; i++) {
@@ -1456,26 +1471,22 @@
     // Gets site config
     async function getSiteConfig() {
       let config = {}
-      console.log(isJuncture, ENV)
+      /*
       let junctureConfigUrl = isJuncture && ENV !== 'DEV'
         ? `${window.location.origin}/config.yaml`
         : 'https://raw.githubusercontent.com/jstor-labs/juncture/juncture/config.yaml'
-      let resp = await fetch(junctureConfigUrl)
-        .then(resp => resp.text())
-        .catch(err => console.warn(err))
-      resp = YAML.parse(resp)
-      ghUnscopedToken = atob(resp.ghUnscopedToken)
-      fontawesome = resp.fontawesome
-      if (isJuncture || ENV === 'DEV') {
-        config = resp
-        gcApiKey = atob(config.gcApiKey)
-        gcAuthDomain = atob(config.gcAuthDomain)
-        gaPropertyID = config.gaPropertyID
-      }
-      if (contentSource.isGhpSite) {
+      */
+      if (window.location.port === '8088' || window.location.host.indexOf('juncture-digital.org') >= 0) {
+        let resp = await fetch(`${window.location.origin}/config.yaml`)
+          .then(resp => resp.text())
+          .catch(err => console.warn(err))
+        config = YAML.parse(resp)
+      } else {
         resp = await fetch(`${contentSource.baseUrl}${contentSource.basePath}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
-      } else if (contentSource.acct && (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs')) {
+      } 
+      /*
+      else if (contentSource.acct && (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs')) {
         config = {}
         let ghToken = oauthAccessToken || ghUnscopedToken
         resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=juncture`,
@@ -1488,6 +1499,7 @@
         resp = await fetch(`${window.location.origin}/config.yaml`)
         if (resp.ok) config = YAML.parse(await resp.text())
       }
+      */
       if (config.ghUnscopedToken) ghUnscopedToken = atob(config.ghUnscopedToken)
       if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
       if (config.gcAuthDomain) gcAuthDomain = atob(config.gcAuthDomain)
@@ -1556,10 +1568,15 @@
       if (ENV === 'DEV') {
         let basePath = contentSource.isGhpSite ? contentSource.basePath : ''
         let resp = await fetch(`${contentSource.baseUrl}${basePath}/${componentsRoot}`)
-        resp = await resp.json()
-        componentsList = [...componentsList, ...resp.files.map(fname => `${contentSource.baseUrl}${basePath}/${componentsRoot}/${fname}`)]
+        // resp = await resp.json()
+        resp = await resp.text()
+        let tmp = new DOMParser().parseFromString(resp, 'text/html').children[0].children[1]
+        componentsList = [...componentsList, ...Array.from(tmp.querySelectorAll('li a'))
+          .map(el => el.innerText)
+          .map(fname => `${contentSource.baseUrl}${basePath}/${componentsRoot}/${fname}`)]
       }
       // if (isJuncture && contentSource.acct !== 'jstor-labs' || contentSource.repo !== 'juncture') {
+      /*
       if (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs') {
         if (window.location.hostname === 'localhost') {
           let basePath = contentSource.isGhpSite ? '/juncture' : ''
@@ -1567,13 +1584,14 @@
           resp = await resp.json()
           componentsList = [...componentsList, ...resp.files.map(fname => `${contentSource.baseUrl}${basePath}/${componentsRoot}/${fname}`)]
         } else {
+        */
           let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/${junctureVersionHash}`, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
           resp = await resp.json()
           resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
           resp = await resp.json()
           componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/jstor-labs/juncture/${junctureVersionHash}/${componentsRoot}/${item.path}`)]
-        }
-      }
+        //}
+      //}
       return componentsList
     }
   
