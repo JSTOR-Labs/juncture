@@ -1500,7 +1500,11 @@
         if (resp.ok) config = YAML.parse(await resp.text())
       }
       */
-      if (config.ghUnscopedToken) ghUnscopedToken = atob(config.ghUnscopedToken)
+      if (config.ghUnscopedToken) {
+        ghUnscopedToken = atob(config.ghUnscopedToken)
+      } else if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture') {
+        ghUnscopedToken = atob('Z2hwX05lcnV2RUYzRmx6M3o5YnFjQWZuOGpJQnJMR3lEMTNmYjYyVw==')
+      }
       if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
       if (config.gcAuthDomain) gcAuthDomain = atob(config.gcAuthDomain)
       if (config.gaPropertyID) gaPropertyID = config.gaPropertyID

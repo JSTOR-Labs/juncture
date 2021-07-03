@@ -1,10 +1,11 @@
 title: Juncture
 tagline: A Visual Essay Site
-banner: /images/hero-juncture.png
-favicon: /images/favicon.svg
-logo: /images/logo-juncture.svg
+banner: https://picsum.photos/1000/400
+#favicon: <favicon url>
+#logo: <logo url>
+
 # When using a custom domain these fields must be updated to match
-# the account and repository name
+# the Github account and repository name
 #acct: <GitHub account/username>
 #repo: <GitHub repository>
 
@@ -12,37 +13,32 @@ logo: /images/logo-juncture.svg
 # Defines options shown in the header navigation menu
 ######################################################
 nav:
-- label: Contact Us
+- label: User guide
+  icon: fas fa-info
+  action: load-page
+  path: /user-guide
+- label: Sample visual essay
+  icon: fas fa-file-image
+  action: load-page
+  path: /sample-visual-essay
+- label:
+- label: Contact the Juncture team
   icon: fas fa-envelope
   action: contact-us
+- label:
+- label: View page source
+  icon: fas fa-file-code
+  action: view-markdown
 
-# If the /contact-us path is defined for the nav menu a contact form will be enabled
+# If a contact-us action is defined for the nav menu a contact form will be enabled
 # The following information is used in the display and processing of the contact form.
 contactForm:
-  from: JSTOR Labs <labs@ithaka.org>
   to:
-    - Ron Snyder <ronald.snyder@ithaka.org>
-  subject: Contact Us
+  - JSTOR Labs <ron.snyder@ithaka.org>
+  subject: Juncture
 
 #######################################################
 # Base URL of server used for serving and optionally
 # creating IIIF presentation manifests
 ######################################################
 iiifServer: https://iiif.juncture-digital.org
-
-siteAdmins:
-- rsnyder
-
-# Optional URL for premium version of Fontawesome
-#fontawesome: https://kit.fontawesome.com/12345abcde.js
-
-######################################################
-# Optional credentials used for GitHub API and OAuth integration
-######################################################
-
-# GitHub upscoped API token used for content retrivals
-#ghUnscopedToken: <Base64 encoded GitHub unscoped token>
-
-# Google Cloud OAuth settings for GithHub login via Juncture
-#gcAuthDomain: <Base64-encoded Google Cloud OAuth domain>
-#gcApiKey: <Base64-encoded restricted access Google Cloud API key>
