@@ -1,0 +1,33 @@
+title: Kent Maps DofE
+tagline: Duke of Edinburgh award site
+banner: https://picsum.photos/id/403/1000/400?blur=1
+favicon: /images/favicon.svg
+
+# When using a custom domain these fields must be updated to match
+# the account, repository name and branch (ref)
+acct: kent-map
+repo: dofe
+ref: main
+
+######################################################
+# Defines options shown in the header navigation menu
+######################################################
+nav:
+- label: About
+  icon: fas fa-info
+  action: load-page
+  path: /about
+- label: Contact Us
+  icon: fas fa-envelope
+  action: contact-us
+
+# If the /contact-us path is defined for the nav menu a contact form will be enabled
+# The following information is used in the display and processing of the contact form.
+contactForm:
+  to:
+  - Kent DofE Contact <ron.snyder@ithaka.org>
+  subject: Kent DofE Contact
+
+siteAdmins:
+- rsnyder
+- DigiHum1
