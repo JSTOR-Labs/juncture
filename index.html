@@ -452,12 +452,10 @@
       if (siteConfig.title) document.title = siteConfig.title
       if (fontawesome) document.querySelector('body').appendChild(makeScriptTag(fontawesome, 'anonymous'))
       
-      /*
-      let mainCssPromise = ENV === 'DEV' && contentSource.repo === 'juncture'
-        ? fetch(`${window.location.port === '8088' ? '' : 'juncture'}/css/main.css`).then(resp => resp.text())
-        : getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
-      */
-      let mainCssPromise = getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
+      let mainCssPromise = window.location.port === '8088' || contentSource.repo === 'juncture-digital'
+        ? getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
+        : fetch(`${contentSource.assetsBaseUrl}/css/main.css`).then(resp => resp.text())
+
       mainCssPromise.then(css => {
       let style = document.createElement('style')
         style.innerHTML = css
