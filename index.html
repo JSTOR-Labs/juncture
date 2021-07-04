@@ -249,10 +249,9 @@
     async function getContentSource() {
       let contentSource
 
-      if (window.location.host === 'localhost:8088') {
-        // For local dev in custom domain mode
+      if (window.location.port === '8088' || window.location.host.indexOf('8088') === 0) {
         contentSource = {
-          acct: null, repo: null, branch: null, ref: null, hash: null, basePath: '', isGhpSite: false,
+          acct: 'jstor-labs', repo: 'juncture-digital', ref: 'main', hash: null, basePath: '', isGhpSite: false,
           baseUrl: window.location.origin, 
           assetsBaseUrl: `${window.location.origin}`
       }
@@ -264,24 +263,21 @@
           }
         }
 
-      } else if (ENV === 'DEV') {
+      } else if (window.location.port === '8080' || window.location.host.indexOf('8080') === 0) {
         // For local dev in GHP mode
         // let repo = window.location.pathname.split('/').filter(elem => elem !== '')[0] || 'juncture'
         let repo = 'juncture'
         contentSource = {
           acct: 'jstor-labs', 
-          repo, branch: 'main',
+          repo: 'juncture',
+          branch: 'main',
           ref: 'main', 
           hash: null, 
           isGhpSite: true,
           baseUrl: window.location.origin, 
-          // basePath: `/${repo}`, 
-          // assetsBaseUrl: `${window.location.origin}/${repo}`
           basePath: '', 
           assetsBaseUrl: `${window.location.origin}`
         }
-        // isJuncture = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture'
-
       } else {
         // GHP deploy mode
         if (window.location.hostname.indexOf('github.io') > 0) {
@@ -1561,7 +1557,7 @@
           if (ghComponentsItem) {
             resp = await fetch(ghComponentsItem.url, ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
             resp = await resp.json()
-            components = resp.tree.map(item => `${componentsBaseUrl}${componentsRoot}/${item.path}`)
+            components = resp.tree.map(item => `${componentsBaseUrl}/${componentsRoot}/${item.path}`)
           }
         }
       } else {
