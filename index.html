@@ -1564,53 +1564,58 @@
       return ghInfo
 
     }
-  
-    // Gets a list of available components
-    async function getComponentsList() {
-      let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersionHash : contentSource.ref
-      // console.log(`getComponentsList: ref=${ref} junctureVersionHash=${junctureVersionHash}`)
-      let componentsList = []
-      let ghToken = ENV === 'DEV' ? ghUnscopedToken : (oauthAccessToken || ghUnscopedToken)
-      if (ENV === 'PROD' && contentSource.acct && contentSource.repo && contentSource.ref) {
-        let resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
-                               ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
+
+    async function listComponents(url, componentsRoot, componentsBaseUrl) {
+      componentsBaseUrl = componentsBaseUrl || url
+      let components = []
+      if (url.indexOf('api.github.com') > 0) {
+        let ghToken = oauthAccessToken || ghUnscopedToken
+        let resp = await fetch(url, ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
         if (resp.ok) {
           resp = await resp.json()
+          console.log(resp)
           let ghComponentsItem = resp.tree.find(item => item.path === componentsRoot)
           if (ghComponentsItem) {
             resp = await fetch(ghComponentsItem.url, ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
             resp = await resp.json()
-            componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}/${componentsRoot}/${item.path}`)]
+            components = resp.tree.map(item => `${componentsBaseUrl}${componentsRoot}/${item.path}`)
           }
         }
+      } else {
+        let resp = await fetch(`${url}/${componentsRoot}`)
+        if (resp.ok) {
+          let tmp = new DOMParser().parseFromString(await resp.text(), 'text/html').children[0].children[1]
+          components = Array.from(tmp.querySelectorAll('li a.file')).map(el => el.innerText).map(fname => `${componentsBaseUrl}/${componentsRoot}/${fname}`)
+        }
+      }
+      console.log(`listComponents: url=${url} componentsRoot=${componentsRoot} components=${components}`)
+      return components
+    }
+
+    // Gets a list of available components
+    async function getComponentsList(componentsRoot, acct, repo) {
+      let componentsList = []
+      if (ENV === 'PROD' && contentSource.acct && contentSource.repo && contentSource.ref) {
+        componentsList = [...componentsList, ...await listComponents(
+          `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
+          'custom/components',
+          `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
+        componentsList = [...componentsList, ...await listComponents(
+          `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
+          'components',
+          `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
       } 
       if (ENV === 'DEV') {
-        let basePath = contentSource.isGhpSite ? contentSource.basePath : ''
-        let resp = await fetch(`${contentSource.baseUrl}${basePath}/${componentsRoot}`)
-        // resp = await resp.json()
-        resp = await resp.text()
-        let tmp = new DOMParser().parseFromString(resp, 'text/html').children[0].children[1]
-        componentsList = [...componentsList, ...Array.from(tmp.querySelectorAll('li a'))
-          .map(el => el.innerText)
-          .map(fname => `${contentSource.baseUrl}${basePath}/${componentsRoot}/${fname}`)]
+        componentsList = [...componentsList, ...await listComponents(
+          `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
+        componentsList = [...componentsList, ...await listComponents(
+          `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'components')]
       }
-      // if (isJuncture && contentSource.acct !== 'jstor-labs' || contentSource.repo !== 'juncture') {
-      /*
-      if (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs') {
-        if (window.location.hostname === 'localhost') {
-          let basePath = contentSource.isGhpSite ? '/juncture' : ''
-          let resp = await fetch(`${contentSource.baseUrl}${basePath}/${componentsRoot}`)
-          resp = await resp.json()
-          componentsList = [...componentsList, ...resp.files.map(fname => `${contentSource.baseUrl}${basePath}/${componentsRoot}/${fname}`)]
-        } else {
-        */
-          let resp = await fetch(`https://api.github.com/repos/jstor-labs/juncture/git/trees/${junctureVersionHash}`, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
-          resp = await resp.json()
-          resp = await fetch(resp.tree.find(item => item.path === componentsRoot).url, ghToken ? {headers: {Authorization: `Token ${ghToken}`}} : {})
-          resp = await resp.json()
-          componentsList = [...componentsList, ...resp.tree.map(item => `https://raw.githubusercontent.com/jstor-labs/juncture/${junctureVersionHash}/${componentsRoot}/${item.path}`)]
-        //}
-      //}
+      componentsList = [...componentsList, ...await listComponents(
+        `https://api.github.com/repos/jstor-labs/juncture/git/trees/${junctureVersionHash}`,
+        'components',
+        `https://raw.githubusercontent.com/jstor-labs/juncture/${junctureVersionHash}`)]
+
       return componentsList
     }
   
