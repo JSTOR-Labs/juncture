@@ -1475,35 +1475,23 @@
     async function getSiteConfig() {
       console.log('getSiteConfig', contentSource)
       let config = {}
-      if (window.location.port === '8088' || window.location.host.indexOf('juncture-digital.org') >= 0) {
-        let resp = await fetch(`${window.location.origin}/config.yaml`)
-        if (resp.ok) config = YAML.parse(await resp.text())
+      let resp = await fetch(`${window.location.origin}${contentSource.basePath}/config.yaml`)
+      if (resp.ok) {
+        config = YAML.parse(await resp.text())
       } else {
-        resp = await fetch(`${window.location.origin}${contentSource.basePath}/config.yaml`)
-        if (resp.ok) {
-          config = YAML.parse(await resp.text())
-        } else {
-          resp = await fetch(`${window.location.origin}${contentSource.basePath}/config.template.yaml`)
-          if (resp.ok) config = YAML.parse(await resp.text())
-        }
+        resp = await fetch(`${window.location.origin}${contentSource.basePath}/config.template.yaml`)
+        if (resp.ok) config = YAML.parse(await resp.text())
       }
+
       ghUnscopedToken = config.ghUnscopedToken 
         ? atob(config.ghUnscopedToken)
         : atob('Z2hwX05lcnV2RUYzRmx6M3o5YnFjQWZuOGpJQnJMR3lEMTNmYjYyVw==')
 
-      if (contentSource.acct && (contentSource.acct !== 'jstor-labs' || (contentSource.repo !== 'juncture') && contentSource.repo !== 'juncture-digital')) {
-        let ghToken = oauthAccessToken || ghUnscopedToken
-        resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.yaml?ref=juncture`, ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
-        if (resp.ok) {
-          resp = await resp.json()
-          config = {...config, ...YAML.parse(atob(resp.content))}
-        } else {
-          resp = await fetch(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents/config.template.yaml?ref=${contentSource.ref}`, ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
-          if (resp.ok) {
-            resp = await resp.json()
-            config = {...config, ...YAML.parse(atob(resp.content))}
-          }
-        }
+      let ghToken = oauthAccessToken || ghUnscopedToken
+      resp = await fetch(`https://api.github.com/repos/${config.acct || contentSource.acct}/${config.repo || contentSource.repo}/contents/config.yaml?ref=${config.ref || contentSource.ref}`, ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
+      if (resp.ok) {
+        resp = await resp.json()
+        config = {...config, ...YAML.parse(atob(resp.content))}
       }
 
       if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
@@ -1542,13 +1530,13 @@
           resp = await resp.json()
           ghInfo = {acct, repo, branch: resp.default_branch, ref: qargs.ref || resp.default_branch}
         }
-      //}
-      if (ghInfo) {
-        let refHash = await headRef(ghInfo.acct, ghInfo.repo, ghInfo.ref)
-        ghInfo.assetsBaseUrl = `https://raw.githubusercontent.com/${ghInfo.acct}/${ghInfo.repo}/${refHash}`
-      }
       return ghInfo
 
+    }
+
+    async function ghDirList(url, ghToken) {
+      let resp = await fetch(url, ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
+      return resp.ok ? await resp.json() : null
     }
 
     async function listComponents(url, componentsRoot, componentsBaseUrl) {
@@ -1556,16 +1544,17 @@
       let components = []
       if (url.indexOf('api.github.com') > 0) {
         let ghToken = oauthAccessToken || ghUnscopedToken
-        let resp = await fetch(url, ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
-        if (resp.ok) {
-          resp = await resp.json()
-          console.log(resp)
-          let ghComponentsItem = resp.tree.find(item => item.path === componentsRoot)
-          if (ghComponentsItem) {
-            resp = await fetch(ghComponentsItem.url, ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
-            resp = await resp.json()
-            components = resp.tree.map(item => `${componentsBaseUrl}/${componentsRoot}/${item.path}`)
-          }
+        let pathElems = componentsRoot.split('/')
+        let dirList, found
+        for (let i = 0; i < pathElems.length; i++) {
+          dirList = await ghDirList(url, ghToken)
+          found = dirList.tree.find(item => item.path === pathElems[i])
+          if (found) url = found.url
+          else break
+        }
+        if (url) {
+          dirList = await ghDirList(url, ghToken)
+          components = dirList.tree.map(item => `${componentsBaseUrl}/${componentsRoot}/${item.path}`)
         }
       } else {
         let resp = await fetch(`${url}/${componentsRoot}`)
