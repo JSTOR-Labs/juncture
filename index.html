@@ -249,7 +249,7 @@
     async function getContentSource() {
       let contentSource
 
-      if (window.location.port === '8088' || window.location.host.indexOf('8088') === 0) {
+      if (window.location.port === '8088' || window.location.host.indexOf('8088') === 0 || window.location.host.indexOf('juncture-digital.org') >= 0) {
         contentSource = {
           acct: 'jstor-labs', repo: 'juncture-digital', ref: 'main', hash: null, basePath: '', isGhpSite: false,
           baseUrl: window.location.origin, 
@@ -259,7 +259,7 @@
         if (pathElems.length >= 2) {
           let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
           if (ghRepoInfo) {
-            contentSource = {...contentSource, ...ghRepoInfo}
+            contentSource = {...contentSource, ...ghRepoInfo, ...{basePath: `/${ghRepoInfo.acct}/${ghRepoInfo.repo}`}}
           }
         }
 
@@ -283,16 +283,15 @@
         if (window.location.hostname.indexOf('github.io') > 0) {
           [acct, repo] = window.location.href.replace(/\.github\.io/,'').split('/').slice(2, 4)
           contentSource = {
-            acct, repo, ref: qargs.ref || 'main', basePath: `/${repo}`, isGhpSite: true,
-            baseUrl: window.location.origin
+            acct, repo, ref: qargs.ref || 'main', basePath: `/${repo}`, isGhpSite: true, baseUrl: window.location.origin
           }
           let ghRepoInfo = await githubRepoInfo(acct, repo)
           if (ghRepoInfo) {
             contentSource = {...contentSource, ...ghRepoInfo}
           }
-
         // juncture-digital.org
-        } else if (isJuncture) {
+        /*
+        else if (isJuncture) {
           contentSource = {
             acct: 'jstor-labs', repo: 'juncture-digital', ref: 'main', basePath: '', isGhpSite: false,
             baseUrl: window.location.origin, assetsBaseUrl: `https://raw.githubusercontent.com/jstor-labs/juncture/main`
@@ -302,7 +301,7 @@
             let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
             if (ghRepoInfo) {
               contentSource = {...contentSource, ...ghRepoInfo}
-              contentSource.basePath = `/${contentSource.acct}/${contentSource.repo}`
+              // contentSource.basePath = `/${contentSource.acct}/${contentSource.repo}`
             }
           }
 
@@ -319,7 +318,7 @@
               contentSource.basePath = `/${contentSource.acct}/${contentSource.repo}`
             }
           }
-
+        */
         // Deployed in a non juncture-digital.org custom domain
         } else {
           contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, basePath: '', isGhpSite: false}
@@ -410,20 +409,20 @@
       if (gaPropertyID) ga('create', gaPropertyID, 'auto')
       let attrsWithUrls = ['banner', 'favicon', 'logo']
 
-      if (ENV === 'PROD' || window.location.port === '8088') {
+      //if (ENV === 'PROD' || window.location.port === '8088') {
         
         headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
           if (headHash) {
-            if (contentSource.acct !== 'jstor-labs' || contentSource.repo !== 'juncture-digital') contentSource.basePath = `/${contentSource.acct}/${contentSource.repo}`
+            // if (contentSource.acct !== 'jstor-labs' || contentSource.repo !== 'juncture-digital') contentSource.basePath = `/${contentSource.acct}/${contentSource.repo}`
             contentSource.hash = headHash.slice(0,7)
             contentSource.assetsBaseUrl = `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.hash}`
             attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
           }
         })
         
-      } else {
-        attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
-      }
+      //} else {
+      //  attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
+      //}
       return config
     })
     .then(config => gcOauth())
@@ -450,7 +449,9 @@
       
       let mainCssPromise = window.location.port === '8088' || window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.hostname.indexOf('8088') === 0
         ? getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
-        : fetch(`${contentSource.assetsBaseUrl}/css/main.css`).then(resp => resp.text())
+        //: fetch(`${contentSource.assetsBaseUrl}/css/main.css`).then(resp => resp.text())
+        : fetch(`${window.location.origin}/${contentSource.basePath}/css/main.css`).then(resp => resp.text())
+
 
       mainCssPromise.then(css => {
       let style = document.createElement('style')
@@ -696,17 +697,20 @@
           },
 
           async getMarkdown(path) {
-            if ((ENV === 'PROD' || window.location.port === '8088') && contentSource.acct) {
+            if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' && (window.location.port === '8080' || window.location.hostname.indexOf('8080') === 0)) {
+              let url = `${contentSource.baseUrl}${contentSource.basePath}${path}`
+              console.log(url)
+              let resp = await fetch(url)
+              if (resp.ok) return await resp.text()
+            } else {
+            //if ((ENV === 'PROD' || window.location.port === '8088') && contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
+              console.log(url)
               let resp = await fetch(url, this.ghToken ? {cache: 'no-cache', headers: {Authorization:`Token ${this.ghToken}`}} : {})
               if (resp.ok) {
                 resp = await resp.json()
                 return decodeURIComponent(escape(atob(resp.content)))
               }
-            } else {
-              let url = `${contentSource.baseUrl}${contentSource.basePath}${path}`
-              let resp = await fetch(url)
-              if (resp.ok) return await resp.text()
             }
             return null
           },
@@ -959,12 +963,13 @@
           convertResourceUrls(root) {
             let pathIsDir = this.path.slice(0,-1) === this.mdDir
             root.querySelectorAll('img').forEach(img => {
-              if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src,`${contentSource.basePath}${this.path}`, pathIsDir))
+              // if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src,`${contentSource.basePath}${this.path}`, pathIsDir))
+              if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src, this.path, pathIsDir))
             })
             root.querySelectorAll('param').forEach(param => {
               ['url', 'banner', 'article', 'logo'].forEach(attr => {
                 if (param.attributes[attr]) {
-                  param.setAttribute(attr, convertURL(param.attributes[attr].value, `${contentSource.basePath}${this.path}`, pathIsDir))
+                  param.setAttribute(attr, convertURL(param.attributes[attr].value, this.path, pathIsDir))
                 }
               })
             })
@@ -1539,8 +1544,8 @@
         }
       //}
       if (ghInfo) {
-        // let refHash = await headRef(ghInfo.acct, ghInfo.repo, ghInfo.ref)
-        // ghInfo.assetsBaseUrl = `https://raw.githubusercontent.com/${ghInfo.acct}/${ghInfo.repo}/${refHash}`
+        let refHash = await headRef(ghInfo.acct, ghInfo.repo, ghInfo.ref)
+        ghInfo.assetsBaseUrl = `https://raw.githubusercontent.com/${ghInfo.acct}/${ghInfo.repo}/${refHash}`
       }
       return ghInfo
 
@@ -1641,6 +1646,7 @@
       if (crossorigin) el.setAttribute('crossorigin', crossorigin)
       return el
     }
+  
     function convertURL(current, path, pathIsDir) {
       let _current = current.replace(/\s/g, '%20')
       let pathElems = []
