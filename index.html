@@ -1575,6 +1575,7 @@
     async function getComponentsList(componentsRoot, acct, repo) {
       let componentsList = []
       if (ENV === 'PROD' && contentSource.acct && contentSource.repo && contentSource.ref) {
+        let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersionHash : contentSource.ref
         componentsList = [...componentsList, ...await listComponents(
           `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
           'custom/components',
