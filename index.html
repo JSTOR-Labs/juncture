@@ -448,7 +448,7 @@
       if (siteConfig.title) document.title = siteConfig.title
       if (fontawesome) document.querySelector('body').appendChild(makeScriptTag(fontawesome, 'anonymous'))
       
-      let mainCssPromise = window.location.port === '8088' || contentSource.repo === 'juncture-digital'
+      let mainCssPromise = window.location.port === '8088' || window.location.hostname.indexOf('juncture-digital.org') >= 0
         ? getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
         : fetch(`${contentSource.assetsBaseUrl}/css/main.css`).then(resp => resp.text())
 
