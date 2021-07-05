@@ -448,7 +448,7 @@
       if (siteConfig.title) document.title = siteConfig.title
       if (fontawesome) document.querySelector('body').appendChild(makeScriptTag(fontawesome, 'anonymous'))
       
-      let mainCssPromise = window.location.port === '8088' || window.location.hostname.indexOf('juncture-digital.org') >= 0
+      let mainCssPromise = window.location.port === '8088' || window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.hostname.indexOf('8088') === 0
         ? getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
         : fetch(`${contentSource.assetsBaseUrl}/css/main.css`).then(resp => resp.text())
 
@@ -597,6 +597,8 @@
               this.doActionCallback = {status: 'done', message: 'Email sent'}
             } else if (action === 'view-markdown') {
               this.markdownViewer.show()
+            } else if (action === 'user-guide') {
+              window.open('https://github.com/JSTOR-Labs/juncture/wiki/user-guide', '_blank')
             } else if (action === 'edit-page') {
               this.editMarkdown()
             } else if (action === 'add-page') {
