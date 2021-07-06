@@ -407,22 +407,15 @@
         }}
       //}
       if (gaPropertyID) ga('create', gaPropertyID, 'auto')
-      let attrsWithUrls = ['banner', 'favicon', 'logo']
-
-      //if (ENV === 'PROD' || window.location.port === '8088') {
+      let attrsWithUrls = ['banner', 'favicon', 'logo']        
+      headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
+        if (headHash) {
+          contentSource.hash = headHash.slice(0,7)
+          contentSource.assetsBaseUrl = `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.hash}`
+          attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
+        }
+      })
         
-        headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
-          if (headHash) {
-            // if (contentSource.acct !== 'jstor-labs' || contentSource.repo !== 'juncture-digital') contentSource.basePath = `/${contentSource.acct}/${contentSource.repo}`
-            contentSource.hash = headHash.slice(0,7)
-            contentSource.assetsBaseUrl = `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.hash}`
-            attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
-          }
-        })
-        
-      //} else {
-      //  attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
-      //}
       return config
     })
     .then(config => gcOauth())
@@ -447,15 +440,12 @@
       if (siteConfig.title) document.title = siteConfig.title
       if (fontawesome) document.querySelector('body').appendChild(makeScriptTag(fontawesome, 'anonymous'))
       
-      let mainCssPromise = window.location.port === '8088' || window.location.hostname.indexOf('juncture-digital.org') >= 0 || window.location.hostname.indexOf('8088') === 0
-        ? getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
-        //: fetch(`${contentSource.assetsBaseUrl}/css/main.css`).then(resp => resp.text())
-        : fetch(`${window.location.origin}/${contentSource.basePath}/css/main.css`).then(resp => resp.text())
-
-
-      mainCssPromise.then(css => {
-      let style = document.createElement('style')
-        style.innerHTML = css
+      Promise.all([
+        getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css'),
+        fetch(`${window.location.origin}/${contentSource.basePath}/css/main.css`).then(resp => resp.text())
+      ]).then(responses => {
+        let style = document.createElement('style')
+        style.innerHTML = responses[0] || responses[1]
         document.querySelector('head').appendChild(style)
       })
 
@@ -1570,28 +1560,30 @@
     // Gets a list of available components
     async function getComponentsList(componentsRoot, acct, repo) {
       let componentsList = []
-
       let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersionHash : contentSource.ref
-      componentsList = [...componentsList, ...await listComponents(
-        `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
-        'custom/components',
-        `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
-      componentsList = [...componentsList, ...await listComponents(
-        `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
-        'components',
-        `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
 
-      componentsList = [...componentsList, ...await listComponents(
-        `https://api.github.com/repos/jstor-labs/juncture/git/trees/${junctureVersionHash}`,
-        'components',
-        `https://raw.githubusercontent.com/jstor-labs/juncture/${junctureVersionHash}`)]
+      if (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs') {
+        componentsList = [...componentsList, ...await listComponents(
+          `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
+          'custom/components',
+          `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
+        componentsList = [...componentsList, ...await listComponents(
+          `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
+          'components',
+          `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
+      }
 
       componentsList = [...componentsList, ...await listComponents(
         `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
       componentsList = [...componentsList, ...await listComponents(
         `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'components')]
 
-      return componentsList
+      componentsList = [...componentsList, ...await listComponents(
+        `https://api.github.com/repos/jstor-labs/juncture/git/trees/${junctureVersionHash}`,
+        'components',
+        `https://raw.githubusercontent.com/jstor-labs/juncture/${junctureVersionHash}`)]
+        
+        return componentsList
     }
   
     function parseUrl(href) {

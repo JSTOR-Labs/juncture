@@ -121,7 +121,7 @@
         backgroundColor: 'white',
         backgroundImage: `url(${this.banner})`
       } },
-      banner() { return this.essayConfig !== null ? (this.essayConfig.banner || this.siteConfig.banner) : null },
+      banner() { return this.essayConfig !== null ? (this.essayConfig.banner || this.siteConfig.banner || 'https://picsum.photos/1000/400') : null },
       title() { return this.essayConfig !== null ? this.essayConfig.title || this.siteConfig.title : null},
       author() { return this.essayConfig !== null ? this.essayConfig.author || this.siteConfig.tagline : null },
     },
