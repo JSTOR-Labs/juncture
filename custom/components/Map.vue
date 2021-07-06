@@ -1,8 +1,11 @@
 <template>
-  <div id="map"></div>
+  <div id="map">
+    test
+  </div>
 </template>
 
 <script>
+
 
 const dependencies = [
   'https://cdn.jsdelivr.net/npm/leaflet@1.5.1/dist/leaflet.css',
