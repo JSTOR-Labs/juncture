@@ -1549,8 +1549,8 @@
         for (let i = 0; i < pathElems.length; i++) {
           dirList = await ghDirList(url, ghToken)
           found = dirList.tree.find(item => item.path === pathElems[i])
-          if (found) url = found.url
-          else break
+          url = found ? found.url : null
+          if (!url) break
         }
         if (url) {
           dirList = await ghDirList(url, ghToken)
@@ -1570,27 +1570,26 @@
     // Gets a list of available components
     async function getComponentsList(componentsRoot, acct, repo) {
       let componentsList = []
-      if (ENV === 'PROD' && contentSource.acct && contentSource.repo && contentSource.ref) {
-        let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersionHash : contentSource.ref
-        componentsList = [...componentsList, ...await listComponents(
-          `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
-          'custom/components',
-          `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
-        componentsList = [...componentsList, ...await listComponents(
-          `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
-          'components',
-          `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
-      } 
-      if (ENV === 'DEV') {
-        componentsList = [...componentsList, ...await listComponents(
-          `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
-        componentsList = [...componentsList, ...await listComponents(
-          `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'components')]
-      }
+
+      let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersionHash : contentSource.ref
+      componentsList = [...componentsList, ...await listComponents(
+        `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
+        'custom/components',
+        `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
+      componentsList = [...componentsList, ...await listComponents(
+        `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
+        'components',
+        `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
+
       componentsList = [...componentsList, ...await listComponents(
         `https://api.github.com/repos/jstor-labs/juncture/git/trees/${junctureVersionHash}`,
         'components',
         `https://raw.githubusercontent.com/jstor-labs/juncture/${junctureVersionHash}`)]
+
+      componentsList = [...componentsList, ...await listComponents(
+        `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
+      componentsList = [...componentsList, ...await listComponents(
+        `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'components')]
 
       return componentsList
     }
