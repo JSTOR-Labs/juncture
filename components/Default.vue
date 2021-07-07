@@ -492,7 +492,7 @@ section.footer {
 
 .card .media {
   text-align: center;
-  min-height: 300px;
+  /* min-height: 300px;*/
 }
 
 .card .media video {
