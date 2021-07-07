@@ -448,7 +448,7 @@
       
       Promise.all([
         getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css'),
-        fetch(`${window.location.origin}/${contentSource.basePath}/css/main.css`).then(resp => resp.text())
+        fetch(`${window.location.origin}${contentSource.basePath}/css/main.css`).then(resp => resp.ok ? resp.text() : null)
       ]).then(responses => {
         let style = document.createElement('style')
         style.innerHTML = responses[0] || responses[1]
@@ -456,7 +456,7 @@
       })
 
       let customCssPromise = ENV === 'DEV'
-        ? fetch(`${contentSource.assetsBaseUrl}/css/custom.css`).then(resp => resp.text())
+        ? fetch(`${contentSource.assetsBaseUrl}/css/custom.css`).then(resp => resp.ok ? resp.text() : null)
         : getFile(contentSource.acct, contentSource.repo, contentSource.ref, '/css/custom.css')
       customCssPromise.then(css => {
         if (css) {
@@ -693,7 +693,7 @@
           },
 
           async getMarkdown(path) {
-            if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0 ) {
+            if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('8080') === 0 ) {
               let url = `${contentSource.baseUrl}${contentSource.basePath}${path}`
               let resp = await fetch(url)
               if (resp.ok) return await resp.text()
