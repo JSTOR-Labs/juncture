@@ -454,7 +454,7 @@ section.footer {
   padding-inline-start: 0;
 }
 
-.footer li::not(:first-child) {
+.footer li:not(:first-child) {
   justify-self:end;
 }
 
