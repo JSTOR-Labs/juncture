@@ -693,12 +693,11 @@
           },
 
           async getMarkdown(path) {
-            if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' && (window.location.port === '8080' || window.location.hostname.indexOf('8080') === 0)) {
+            if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0 ) {
               let url = `${contentSource.baseUrl}${contentSource.basePath}${path}`
               let resp = await fetch(url)
               if (resp.ok) return await resp.text()
             } else {
-            //if ((ENV === 'PROD' || window.location.port === '8088') && contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
               let resp = await fetch(url, this.ghToken ? {cache: 'no-cache', headers: {Authorization:`Token ${this.ghToken}`}} : {})
               if (resp.ok) {
