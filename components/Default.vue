@@ -440,7 +440,7 @@ section .button a {
 
 /************ Footer ***********/
 section.footer {
-  padding: 24px 0;
+  padding: 24px;
   background-color: #333 !important;
   color: white;
 }
@@ -450,9 +450,11 @@ section.footer {
   grid-auto-flow: column;
   align-items: center;
   margin: 0;
-  padding: 0 12px;
   list-style: none;
+  padding-inline-start: 0;
 }
+
+.footer li:
 
 .footer li a {
   color: white !important;
