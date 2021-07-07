@@ -454,6 +454,15 @@ section.footer {
   padding-inline-start: 0;
 }
 
+@media (max-width: 48em) {
+  .footer ul {
+    display: block;
+  }
+   .footer li {
+    margin-bottom: 24px;
+  }
+}
+
 .footer li:not(:first-child) {
   justify-self:end;
 }
