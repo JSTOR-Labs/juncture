@@ -384,10 +384,16 @@
       try {
         let ghAuth = JSON.parse(window.localStorage.getItem('ghAuth'))
         if (ghAuth) {
-          authenticatedUser = ghAuth.user
-          authenticatedUser.acct = ghAuth.additionalUserInfo.username
-          authenticatedUser.isAdmin = siteConfig.siteAdmins && siteConfig.siteAdmins.indexOf(authenticatedUser.acct) >= 0
-          oauthAccessToken = ghAuth.credential.oauthAccessToken
+          let currentTime = new Date().getTime()
+          let expirationTime = ghAuth.user.stsTokenManager.expirationTime
+          let expiresInSecs = (expirationTime-currentTime)/1000
+          console.log(`oauthAccessToken: expiresInSecs=${expiresInSecs} isValid=${expiresInSecs >= 300}`)
+          if (expiresInSecs >= 300) {
+            authenticatedUser = ghAuth.user
+            authenticatedUser.acct = ghAuth.additionalUserInfo.username
+            authenticatedUser.isAdmin = siteConfig.siteAdmins && siteConfig.siteAdmins.indexOf(authenticatedUser.acct) >= 0
+            oauthAccessToken = ghAuth.credential.oauthAccessToken
+          }
         }
       } catch(err){console.log(err)}
     }
@@ -689,13 +695,11 @@
           async getMarkdown(path) {
             if (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' && (window.location.port === '8080' || window.location.hostname.indexOf('8080') === 0)) {
               let url = `${contentSource.baseUrl}${contentSource.basePath}${path}`
-              console.log(url)
               let resp = await fetch(url)
               if (resp.ok) return await resp.text()
             } else {
             //if ((ENV === 'PROD' || window.location.port === '8088') && contentSource.acct) {
               let url = `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/contents${path}?ref=${contentSource.ref}`
-              console.log(url)
               let resp = await fetch(url, this.ghToken ? {cache: 'no-cache', headers: {Authorization:`Token ${this.ghToken}`}} : {})
               if (resp.ok) {
                 resp = await resp.json()
@@ -1534,6 +1538,7 @@
       let components = []
       if (url.indexOf('api.github.com') > 0) {
         let ghToken = oauthAccessToken || ghUnscopedToken
+        console.log(`ghToken=${ghToken} oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`)
         let pathElems = componentsRoot.split('/')
         let dirList, found
         for (let i = 0; i < pathElems.length; i++) {
