@@ -454,8 +454,6 @@ section.footer {
   padding-inline-start: 0;
 }
 
-.footer li:
-
 .footer li a {
   color: white !important;
   text-decoration: none;
