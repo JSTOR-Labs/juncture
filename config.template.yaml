@@ -1,6 +1,6 @@
 title: Juncture
-tagline: A Visual Essay Site
-banner: https://picsum.photos/1000/400
+tagline: The Visual Essay Framework from JSTOR Labs
+banner: https://picsum.photos/id/857/1000/400
 #favicon: <favicon url>
 #logo: <logo url>
 
@@ -13,19 +13,9 @@ banner: https://picsum.photos/1000/400
 # Defines options shown in the header navigation menu
 ######################################################
 nav:
-- label: User guide
-  icon: fas fa-info
-  action: load-page
-  path: /user-guide
-- label: Sample visual essay
-  icon: fas fa-file-image
-  action: load-page
-  path: /sample-visual-essay
-- label:
 - label: Contact the Juncture team
   icon: fas fa-envelope
   action: contact-us
-- label:
 - label: View page source
   icon: fas fa-file-code
   action: view-markdown
@@ -36,9 +26,3 @@ contactForm:
   to:
   - JSTOR Labs <labs@ithaka.org>
   subject: Juncture
-
-#######################################################
-# Base URL of server used for serving and optionally
-# creating IIIF presentation manifests
-######################################################
-iiifServer: https://iiif.juncture-digital.org

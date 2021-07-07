@@ -55,7 +55,7 @@
 
       <div class="title-bar">
         <div class="title" v-html="title"></div>
-        <div class="author" v-html="author"></div>
+        <div class="author" v-html="author || tagline"></div>
       </div>
     
     </template>
@@ -64,7 +64,7 @@
 
       <div class="title-bar">
         <div class="title" v-html="title"></div>
-        <div class="author" v-html="author"></div>
+        <div class="author" v-html="author || tagline"></div>
       </div>
     
     </template>
@@ -121,9 +121,10 @@
         backgroundColor: 'white',
         backgroundImage: `url(${this.banner})`
       } },
-      banner() { return this.essayConfig !== null ? (this.essayConfig.banner || this.siteConfig.banner || 'https://picsum.photos/1000/400') : null },
-      title() { return this.essayConfig !== null ? this.essayConfig.title || this.siteConfig.title : null},
-      author() { return this.essayConfig !== null ? this.essayConfig.author || this.siteConfig.tagline : null },
+      banner() { return this.essayConfig !== null ? (this.essayConfig.banner || this.siteConfig.banner || 'https://picsum.photos/id/857/1000/400') : null },
+      title() { return this.essayConfig !== null ? this.essayConfig.title || this.siteConfig.title : 'Juncture'},
+      tagline() { return this.essayConfig !== null ? this.siteConfig.tagline : null },
+      author() { return this.essayConfig !== null ? this.essayConfig.author : null },
     },
     mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
     methods: {
