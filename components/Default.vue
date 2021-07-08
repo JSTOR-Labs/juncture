@@ -440,7 +440,7 @@ section .button a {
 
 /************ Footer ***********/
 section.footer {
-  padding: 24px 0;
+  padding: 24px;
   background-color: #333 !important;
   color: white;
 }
@@ -450,8 +450,21 @@ section.footer {
   grid-auto-flow: column;
   align-items: center;
   margin: 0;
-  padding: 0 12px;
   list-style: none;
+  padding-inline-start: 0;
+}
+
+@media (max-width: 48em) {
+  .footer ul {
+    display: block;
+  }
+   .footer li {
+    margin-bottom: 24px;
+  }
+}
+
+.footer li:not(:first-child) {
+  justify-self:end;
 }
 
 .footer li a {
@@ -492,7 +505,7 @@ section.footer {
 
 .card .media {
   text-align: center;
-  min-height: 300px;
+  /* min-height: 300px;*/
 }
 
 .card .media video {
