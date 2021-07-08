@@ -413,6 +413,12 @@
         }}
       //}
       if (gaPropertyID) ga('create', gaPropertyID, 'auto')
+      if (siteConfig.description) {
+        let el = document.createElement('meta')
+        el.name = 'description'
+        el.content = siteConfig.description
+        document.querySelector('head').appendChild(el)
+      }
       let attrsWithUrls = ['banner', 'favicon', 'logo']        
       headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
         if (headHash) {
