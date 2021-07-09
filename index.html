@@ -1570,7 +1570,15 @@
     // Gets a list of available components
     async function getComponentsList(componentsRoot, acct, repo) {
       let componentsList = []
+
       let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersionHash : contentSource.ref
+
+      if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0) {
+        componentsList = [...componentsList, ...await listComponents(
+        `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
+        componentsList = [...componentsList, ...await listComponents(
+        `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'components')]
+      }
 
       if (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs') {
         componentsList = [...componentsList, ...await listComponents(
@@ -1583,10 +1591,12 @@
           `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
       }
 
-      componentsList = [...componentsList, ...await listComponents(
-        `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
-      componentsList = [...componentsList, ...await listComponents(
-        `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'components')]
+      if (window.location.hostname !== 'localhost' && window.location.hostname.indexOf('gitpod') < 0) {
+        componentsList = [...componentsList, ...await listComponents(
+          `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
+        componentsList = [...componentsList, ...await listComponents(
+          `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'components')]
+      }
 
       componentsList = [...componentsList, ...await listComponents(
         `https://api.github.com/repos/jstor-labs/juncture/git/trees/${junctureVersionHash}`,
