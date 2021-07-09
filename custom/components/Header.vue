@@ -4,12 +4,14 @@
 
     <header class="header">
       <!-- <img class="logo" @click="doMenuAction({action:'load-page', path:'/'})" :src="logo"> -->
-      <span class="logo" @click="doMenuAction({action:'load-page', path:'/'})">Dofe</span>
+      <span class="logo" @click="doMenuAction({action:'load-page', path:'/'})">
+        <img src = "../images/dofe-logo.png" />
+      </span>
       <input class="menu-btn" type="checkbox" id="menu-btn"/>
       <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
       <ul class="menu">
         <li v-for="(navItem, idx) in nav" :key="`nav-${idx}`"@click="doMenuAction(navItem)">
-          <i v-if="navItem.icon" :class="navItem.icon"></i>{{ navItem.label }}
+          <i v-if="navItem.icon" :class="navItem.icon"></i>    {{ navItem.label }}
         </li>
       </ul>
     </header>
@@ -125,6 +127,7 @@ body {
   list-style: none;
   overflow: hidden;
   background-color: #fff;
+  width: auto;
 }
 
 .header li {
@@ -154,6 +157,10 @@ body {
   cursor: pointer;
 }
 
+.logo img {
+  height: 6vh;
+}
+
 /* menu */
 
 .header .menu {
@@ -167,9 +174,9 @@ body {
 .header .menu-icon {
   cursor: pointer;
   display: inline-block;
-  /* float: right; */
   padding: 28px 20px;
   position: relative;
+  float: right;
   user-select: none;
 }
 

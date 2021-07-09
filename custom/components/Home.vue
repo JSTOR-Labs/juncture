@@ -3,20 +3,20 @@
   <main class="dofe-home">
 
     <template v-for="(section, idx) in content">
-      <section v-if="!section.cards" :key="`section-${idx}`">
+      <section id = "intro-section" v-if="!section.cards" :key="`section-${idx}`">
         <h1 v-if="section.heading" v-html="section.heading"></h1>
         <div v-if="section.html" v-html="section.html"></div>
       </section>
     </template>
 
-    </section>
+    <section>
       <ul class="navbar">
         <li :class="{'active': tab === 'map'}" @click="tab = 'map'"><i class="fas fa-map"></i> Map</li>
         <li :class="{'active': tab === 'cards'}" @click="tab = 'cards'"><i class="fas fa-th-large"></i> Cards</li>
       </ul>
     </section>
 
-    </section>
+    <section>
       <ve-map v-if="tab === 'map'" :locations="locations" @do-action="doAction"></ve-map>
       <ve-cards v-if="tab === 'cards'" :locations="locations" @do-action="doAction"></ve-cards>
     </section>
@@ -187,6 +187,11 @@ ul.navbar {
 /* Current/active navbar link */
 .active {
   background-color: #04AA6D;
+}
+
+#intro-section {
+  padding-left: 2%;
+  padding-right: 2%;
 }
 
 /* Add responsiveness - will automatically display the navbar vertically instead of horizontally on screens less than 500 pixels */
