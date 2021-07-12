@@ -120,16 +120,16 @@ module.exports = {
 
 .card .media {
   text-align: center;
-  min-height: 300px;
+}
+
+.media img { 
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
 }
 
 .card .media video {
   border-radius: 8px;
-}
-
-.card img {
-  width: 100%;
-  max-height: 300px;
 }
 
 .card p {
