@@ -194,6 +194,18 @@ ul.navbar {
   padding-right: 2%;
 }
 
+.card {
+  top: 25px !important;
+}
+
+.media img { 
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 4vh;
+  max-height: 4vh;
+
+}
+
 /* Add responsiveness - will automatically display the navbar vertically instead of horizontally on screens less than 500 pixels */
 /*
 @media screen and (max-width: 500px) {

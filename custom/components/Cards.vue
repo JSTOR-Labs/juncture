@@ -55,6 +55,36 @@ module.exports = {
 <style>
 
 /************ Cards ***********/
+
+.cards {
+  padding: 1em;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-column-gap: 0;
+  grid-row-gap: 20px;
+}
+
+.card {
+  padding: 12px;
+}
+
+@media only screen and (min-width: 640px) {
+  .cards {
+    grid-template-columns: 47.5% 47.5%;
+    grid-column-gap: 5%;
+    grid-row-gap: 40px;
+  }
+}
+
+@media only screen and (min-width: 981px) {
+  .cards {
+    grid-template-columns: 30% 30% 30%;
+    grid-row-gap: 50px;
+  }
+}
+
+/*
 .cards {
   display: grid;
   grid-auto-flow: row;
@@ -63,11 +93,19 @@ module.exports = {
   height: 100%;
 }
 
+@media (min-width: 48em) {
+  .cards {
+    grid-auto-flow: column !important;
+    grid-auto-columns: 1fr;
+  }
+}
+
 .card {
   padding: 12px;
   display: flex;
   flex-direction: column;
 }
+*/
 
 .card:hover {
   cursor: pointer;
@@ -126,13 +164,6 @@ module.exports = {
   grid-area: card-text;
 }.horizontal .card .media {
   grid-area: card-media;
-}
-
-@media (min-width: 48em) {
-  .cards {
-    grid-auto-flow: column !important;
-    grid-auto-columns: 1fr;
-  }
 }
 
 .card input, .card label {

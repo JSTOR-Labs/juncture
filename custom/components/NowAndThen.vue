@@ -1,7 +1,7 @@
 <template>
-  <div id="now-and-then">
-    <div v-html="html"></div>
-    <div id="osd"></div>
+  <div id = "now-and-then">
+    <div id = "para" v-html = "html"></div>
+    <div id = "osd"></div>
   </div>
 </template>
 
@@ -112,7 +112,16 @@ module.exports = {
   display: unset;
 }
 #now-and-then {
-  padding: 58px 0 0 0;
+  padding: 58px 3% 0 3%;
+}
+
+#now-and-then > #para {
+  padding: 0 0 2vh 0;
+}
+
+#osd {
+  background-color: black;
+  text-align: center;
 }
 
 </style>

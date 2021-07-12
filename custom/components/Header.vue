@@ -5,7 +5,7 @@
     <header class="header">
       <!-- <img class="logo" @click="doMenuAction({action:'load-page', path:'/'})" :src="logo"> -->
       <span class="logo" @click="doMenuAction({action:'load-page', path:'/'})">
-        <img src = "../images/dofe-logo.png" />
+        <img src = "https://dofe.kent-maps.online/images/dofe-logo.png" />
       </span>
       <input class="menu-btn" type="checkbox" id="menu-btn"/>
       <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
@@ -158,7 +158,7 @@ body {
 }
 
 .logo img {
-  height: 6vh;
+  height: 4.5vh;
 }
 
 /* menu */
