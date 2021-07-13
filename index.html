@@ -331,7 +331,7 @@
     
     // GLobal variables used to initialize Vue
     let siteConfig, contentSource, componentsList, ghUnscopedToken, oauthAccessToken, gcApiKey, gcAuthDomain, gaPropertyID, fontawesome
-    let loginsEnabled = false
+    let oauthCredsFound = false
     let authenticatedUser = null
     
     const componentsRoot = 'components'
@@ -506,7 +506,7 @@
           selectedItem: undefined,
           actions: {},
           authenticatedUser,
-          loginsEnabled,
+          oauthCredsFound,
           externalWindow: null,
           newRepo: null,
           newPage: null,
@@ -538,7 +538,8 @@
           viewersEnabled() { 
             let viewers = this.items.filter(item => this.availableViewers.indexOf(item.viewer) >= 0).map(item => item.viewer)
             return viewers.filter((viewer, index) => viewers.indexOf(viewer) === index)
-          }
+          },
+          loginsEnabled() { return this.oauthCredsFound && (!this.essayConfig || !this.essayConfig['logins-disabled']) }
         },
         mounted() {
           this.anchor = window.location.href.indexOf('#') >= 0 ? window.location.href.split('#').pop() : null
@@ -699,7 +700,7 @@
           },
 
           async getMarkdown(path) {
-            if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('8080') === 0 ) {
+            if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0 ) {
               let url = `${contentSource.baseUrl}${contentSource.basePath}${path}`
               let resp = await fetch(url)
               if (resp.ok) return await resp.text()
@@ -1497,7 +1498,7 @@
       if (config.gcAuthDomain) gcAuthDomain = atob(config.gcAuthDomain)
       if (config.gaPropertyID) gaPropertyID = config.gaPropertyID
       if (config.fontawesome) fontawesome = config.fontawesome
-      loginsEnabled = gcApiKey !== undefined && gcAuthDomain !== undefined
+      oauthCredsFound = gcApiKey !== undefined && gcAuthDomain !== undefined
       return config
     }
 
