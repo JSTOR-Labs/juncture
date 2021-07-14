@@ -15,15 +15,14 @@
         </template>
 
         <template v-if="isJuncture">
-          <hr>
 
           <template v-if="loginsEnabled">
             <li v-if="isAuthenticated" @click="doMenuAction({action:'logout'})"><i :class="`fas fa-user`"></i>Logout</li>
             <li v-else @click="doMenuAction({action:'authenticate'})"><i :class="`fas fa-user`"></i>Login using Github</li>
-            <hr>
           </template>
 
           <template v-if="isAuthenticated">
+            <hr>
             <li @click="doMenuAction({action:'view-markdown'})"><i class="fas fa-file-code"></i>View page markdown</li>
             <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') || isAdmin)" @click="doMenuAction({action:'edit-page'})">
               <i class="fas fa-edit"></i>Edit this page
@@ -51,7 +50,7 @@
 
       <template v-if="section.classes.has('heading')">
 
-        <header v-if="!fixedHeader" class="header responsive">
+        <header v-if="!fixedHeader" :class="`header${essayConfig['force-hamburger'] ? '' : ' responsive'}`">
           <img class="logo" @click="doMenuAction({action:'load-page', path:'/'})" :src="logo">
           <input class="menu-btn" type="checkbox" id="menu-btn"/>
           <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
