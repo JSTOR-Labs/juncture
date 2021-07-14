@@ -1406,7 +1406,7 @@
                 } else {
                   if (pathElems[0] === contentSource.acct && pathElems[1] === contentSource.repo) pathElems = pathElems.slice(2)
                 }
-                target = parsedUrl.hash === '' ? `/${pathElems.join('/')}/` : parsedUrl.hash.split('?')[0]
+                target = parsedUrl.hash === '' ? `/${pathElems.join('/')}${pathElems.length > 0 ? '/' : ''}` : parsedUrl.hash.split('?')[0]
               }
               link.removeAttribute('href')
               link.setAttribute('data-target', target)
