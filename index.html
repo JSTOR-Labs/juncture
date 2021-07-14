@@ -1495,7 +1495,7 @@
       resp = await fetch(`https://api.github.com/repos/${config.acct || contentSource.acct}/${config.repo || contentSource.repo}/contents/config.yaml?ref=${config.ref || contentSource.ref}`, ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
       if (resp.ok) {
         resp = await resp.json()
-        config = {...config, ...YAML.parse(atob(resp.content))}
+        config = {...YAML.parse(atob(resp.content)), ...config}
       }
 
       if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
