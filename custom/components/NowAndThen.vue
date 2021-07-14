@@ -1,6 +1,9 @@
 <template>
   <div id = "now-and-then">
     <div id = "para" v-html = "html"></div>
+    <h3>Mode</h3>
+    <button type = "button" :class="{'active': this.mode === 'curtain'}" class = "toggle-mode" id = "curtain-mode" @click = "initCurtain();">Curtain</button>
+    <button type = "button" :class="{'active': this.mode === 'sync'}" class = "toggle-mode" id = "sync-mode" @click = "initSync();">Sync</button>
     <div id = "osd"></div>
   </div>
 </template>
@@ -21,18 +24,26 @@ module.exports = {
     params: {type: Array, default: () => ([])}
   },
   data: () => ({
-    viewer: null
+    viewer: null,
+    mode: 'curtain'
   }),
   computed: {
     compareItems() { return this.params.filter(param => param.viewer === 've-compare') },
-    mode() { let itemsWithMode = this.compareItems.filter(item => item.sync || item.curtain).map(item => item.sync ? 'sync' : 'curtain') 
-      return itemsWithMode.length > 0 ? itemsWithMode[0] : 'curtain'
-    }
   },
   mounted() { this.loadDependencies(dependencies, 0, this.init) },
   methods: {
 
     init() {
+      this.initCurtain()
+    },
+
+    initSync() {
+      this.mode = 'sync'
+      this.loadImages().then(images => this.initViewer(images))
+    },
+
+    initCurtain() {
+      this.mode = 'curtain'
       this.loadImages().then(images => this.initViewer(images))
     },
 
@@ -102,8 +113,7 @@ module.exports = {
   
   },
   watch: {}
-}
-
+  }
 </script>
 
 <style>
@@ -122,6 +132,28 @@ module.exports = {
 #osd {
   background-color: black;
   text-align: center;
+}
+
+.toggle-mode {
+  font-size: 1.2em;
+  padding: 0.6%;
+  border-radius: 10px;
+  color: white;
+  background-color: #555;
+  border: 2px solid #555;
+  margin-bottom: 3vh;
+}
+
+.toggle-mode:hover {
+  cursor: pointer;
+  color: #555;
+  background-color: #f6f6f6;
+  border: 2px solid #04AA6D;
+}
+
+.active {
+  border: 2px solid #04AA6D;
+  background-color: #04AA6D;
 }
 
 </style>
