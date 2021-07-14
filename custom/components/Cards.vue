@@ -16,6 +16,7 @@
         <label :for="`exp-${cidx}`" role="button">more</label>
       </div>
     </div>
+    <button type = "button" @click = "printLocations();">Print</button>
   </div>
 </template>
 
@@ -45,6 +46,17 @@ module.exports = {
     cardSelected(slug) {
       console.log(`cardSelected: slug=${slug}`)
       this.$emit('do-action', {action: 'load-page', path: `/pages/${slug}`})
+    },
+
+    printLocations() {
+      console.log(this.locations.toSource())
+      for (let card in this.locations) {
+        console.log(card.heading)
+      }
+      /*for (let obj in this.locations) {
+        (card, cidx) = obj
+        console.log(card.heading)
+      }*/
     }
   },
   watch: {}

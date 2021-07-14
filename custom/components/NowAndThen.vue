@@ -4,6 +4,7 @@
     <h3>Mode</h3>
     <button type = "button" :class="{'active': this.mode === 'curtain'}" class = "toggle-mode" id = "curtain-mode" @click = "initCurtain();">Curtain</button>
     <button type = "button" :class="{'active': this.mode === 'sync'}" class = "toggle-mode" id = "sync-mode" @click = "initSync();">Sync</button>
+    <p class = "mode-description">{{ mode_description }}</p>
     <div id = "osd"></div>
   </div>
 </template>
@@ -25,7 +26,8 @@ module.exports = {
   },
   data: () => ({
     viewer: null,
-    mode: 'curtain'
+    mode: 'curtain',
+    mode_description: 'Pinch in to zoom. Move your cursor from left to right to view now VS then.'
   }),
   computed: {
     compareItems() { return this.params.filter(param => param.viewer === 've-compare') },
@@ -39,11 +41,13 @@ module.exports = {
 
     initSync() {
       this.mode = 'sync'
+      this.mode_description = 'Pinch in to zoom. Hold left-click and move your cursor to view differnt parts of the image.'
       this.loadImages().then(images => this.initViewer(images))
     },
 
     initCurtain() {
       this.mode = 'curtain'
+      this.mode_description = 'Pinch in to zoom. Move your cursor from left to right to view now VS then.'
       this.loadImages().then(images => this.initViewer(images))
     },
 
@@ -141,7 +145,7 @@ module.exports = {
   color: white;
   background-color: #555;
   border: 2px solid #555;
-  margin-bottom: 3vh;
+
 }
 
 .toggle-mode:hover {
@@ -154,6 +158,10 @@ module.exports = {
 .active {
   border: 2px solid #04AA6D;
   background-color: #04AA6D;
+}
+
+.mode-description {
+  font-style: italic;
 }
 
 </style>

@@ -12,7 +12,7 @@
     <section>
       <ul class="navbar">
         <li :class="{'active': tab === 'map'}" @click="tab = 'map'"><i class="fas fa-map"></i> Map</li>
-        <li :class="{'active': tab === 'cards'}" @click="tab = 'cards'"><i class="fas fa-th-large"></i> Cards</li>
+        <li :class="{'active': tab === 'cards'}" @click="tab = 'cards'"><i class="fas fa-th-large"></i> Places</li>
       </ul>
     </section>
 
