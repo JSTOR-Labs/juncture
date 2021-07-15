@@ -947,8 +947,8 @@ img.logo {
   }
 
   .carousel .button {
-    margin-top: 24px ;
-    text-align: center;
+    margin-top: 24px !important ;
+    text-align: center !important;
   }
 }
 
