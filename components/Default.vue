@@ -947,7 +947,7 @@ img.logo {
   }
 
   .carousel .button {
-    margin-top: 24px;
+    margin-top: 24px ;
     text-align: center;
   }
 }
@@ -984,7 +984,7 @@ img.logo {
 
 .carousel .button {
   margin-top: 60px;
-  text-align: left !important;
+  text-align: left;
 }
 
 .carousel .button a {
