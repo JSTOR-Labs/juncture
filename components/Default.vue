@@ -440,7 +440,7 @@ section .button a {
 /************ Footer ***********/
 section.footer {
   padding: 24px;
-  background-color: #333 !important;
+  background-color: #222029 !important;
   color: white;
 }
 
