@@ -487,7 +487,6 @@ section.footer {
   display: grid;
   grid-auto-flow: row;
   gap: 1em;
-  padding: 1em;
 }
 
 .card {
@@ -514,6 +513,7 @@ section.footer {
 .card img {
   width: 100%;
   max-height: 300px;
+  border-radius: 8px;
 }
 
 .card p {
@@ -927,6 +927,13 @@ img.logo {
   grid-template-columns: 1fr 1fr;
   grid-template-areas:
     "carousel-image carousel-description";
+}
+
+@media (max-width: 48em) {
+  .carousel-slides {
+    grid-template-columns: unset;
+    grid-template-areas: unset;
+  }
 }
 
 /* Next & previous buttons */
