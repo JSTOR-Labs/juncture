@@ -557,6 +557,16 @@ section.footer {
   }
 }
 
+@media (max-width: 48em) {
+  #about .horizontal .card {
+    display: block;
+  }
+
+  #about .horizontal .card .media {
+    margin-bottom: 40px;
+  }
+}
+
 .card input, .card label {
   display: none;
 }
@@ -933,6 +943,11 @@ img.logo {
   .carousel-slides {
     grid-template-columns: unset;
     grid-template-areas: unset;
+  }
+
+  .carousel .button {
+    margin-top: 24px;
+    text-align: center;
   }
 }
 
