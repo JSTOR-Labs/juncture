@@ -785,7 +785,7 @@ section.heading p {
 }
 
 img.logo {
-  height: 60px;
+  height: 48px;
   width: auto;
 }
 
