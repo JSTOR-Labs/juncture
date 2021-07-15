@@ -779,7 +779,7 @@ section.heading p {
   display: block;
   float: left;
   font-size: 2em;
-  padding: 10px 20px;
+  padding: 16px 36px;
   text-decoration: none;
   cursor: pointer;
 }
@@ -808,7 +808,7 @@ img.logo {
   cursor: pointer;
   display: inline-block;
   float: right;
-  padding: 28px 20px;
+  padding: 40px 36px;
   position: relative;
   user-select: none;
 }
@@ -816,10 +816,11 @@ img.logo {
 .header .menu-icon .navicon {
   background: #fff;
   display: block;
-  height: 2px;
+  height: 4px;
+  border-radius: 2px;
   position: relative;
   transition: background .2s ease-out;
-  width: 18px;
+  width: 32px;
 }
 
 .header .menu-icon .navicon:before,
@@ -834,11 +835,11 @@ img.logo {
 }
 
 .header .menu-icon .navicon:before {
-  top: 5px;
+  top: 10px;
 }
 
 .header .menu-icon .navicon:after {
-  top: -5px;
+  top: -10px;
 }
 
 /* menu btn */
