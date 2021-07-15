@@ -832,6 +832,7 @@ img.logo {
   position: absolute;
   transition: all .2s ease-out;
   width: 100%;
+  border-radius: 2px;
 }
 
 .header .menu-icon .navicon:before {
