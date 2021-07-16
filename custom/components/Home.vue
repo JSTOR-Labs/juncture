@@ -13,12 +13,14 @@
       <ul class="navbar">
         <li :class="{'active': tab === 'map'}" @click="tab = 'map'"><i class="fas fa-map"></i> Map</li>
         <li :class="{'active': tab === 'cards'}" @click="tab = 'cards'"><i class="fas fa-th-large"></i> Places</li>
+        <li :class="{'active': tab === 'about'}" @click="tab = 'about'"><i class="fas fa-about"></i> About</li>
       </ul>
     </section>
 
     <section>
       <ve-map v-if="tab === 'map'" :locations="locations" @do-action="doAction"></ve-map>
       <ve-cards v-if="tab === 'cards'" :locations="locations" @do-action="doAction"></ve-cards>
+      <ve-about v-if="tab === 'about'" :locations="locations" @do-action="doAction"></ve-about>
     </section>
 
   </main>

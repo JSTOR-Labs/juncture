@@ -1,5 +1,5 @@
 <template>
-  <div class="cards clamp-10">
+  <div class="cards clamp-10" id = "cards_container">
     <div v-for="(card, cidx) in locations" 
       :key="`card-${cidx}`" :id="card.id" :class="card.classes.join(' ')"
     >
@@ -16,7 +16,7 @@
         <label :for="`exp-${cidx}`" role="button">more</label>
       </div>
     </div>
-    <button type = "button" @click = "printLocations();">Print</button>
+    <!--<button type = "button" @click = "printLocations();">Print</button>-->
   </div>
 </template>
 
@@ -47,16 +47,17 @@ module.exports = {
       console.log(`cardSelected: slug=${slug}`)
       this.$emit('do-action', {action: 'load-page', path: `/pages/${slug}`})
     },
-
     printLocations() {
-      console.log(this.locations.toSource())
-      for (let card in this.locations) {
-        console.log(card.heading)
+      var cards_container = document.getElementById('cards_container')
+      var cards = cards_container.getElementsByTagName('div')
+      var cardsArray = [];
+      var heading = "hi"
+      for (var i = 0; i < cards.length; i += 1) {
+        heading = cards[i].getElementsByTagName('h2')[0];
+        console.log(heading.innerHTML)
+        //cardsArray.push(heading.innerHTML)
       }
-      /*for (let obj in this.locations) {
-        (card, cidx) = obj
-        console.log(card.heading)
-      }*/
+      //console.log(cardsArray)
     }
   },
   watch: {}
