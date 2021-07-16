@@ -616,7 +616,7 @@ header ul {
 
 header li {
   display: block;
-  padding: 10px 20px;
+  padding: 16px 20px;
   border-right: 1px solid #f4f4f4;
   color: #0164b9;
   text-decoration: none;
