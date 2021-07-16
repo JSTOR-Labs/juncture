@@ -1,5 +1,5 @@
 <template>
-  <div class="cards clamp-10" id = "cards_container">
+  <div class="cards clamp-10" id = "cards_container" @onload="sortCards()">
     <div v-for="(card, cidx) in locations" 
       :key="`card-${cidx}`" :id="card.id" :class="card.classes.join(' ')"
     >
@@ -16,7 +16,6 @@
         <label :for="`exp-${cidx}`" role="button">more</label>
       </div>
     </div>
-    <!--<button type = "button" @click = "printLocations();">Print</button>-->
   </div>
 </template>
 
@@ -41,24 +40,25 @@ module.exports = {
       }
     })
     ps.forEach(p => observer.observe(p))
+
+    // Sort cards alphabetically
+    var cards_container = document.getElementById('cards_container')
+    var cards = cards_container.getElementsByClassName('card');
+
+    [].slice.call(cards).sort(function(a, b) {
+      var a_heading = a.getElementsByTagName('h2')[0].innerHTML
+      var b_heading = b.getElementsByTagName('h2')[0].innerHTML
+      return a_heading.localeCompare(b_heading)
+    }).forEach(function(val, index) {
+      cards_container.appendChild(val)
+    })
+
   },
   methods: {
     cardSelected(slug) {
       console.log(`cardSelected: slug=${slug}`)
       this.$emit('do-action', {action: 'load-page', path: `/pages/${slug}`})
     },
-    printLocations() {
-      var cards_container = document.getElementById('cards_container')
-      var cards = cards_container.getElementsByTagName('div')
-      var cardsArray = [];
-      var heading = "hi"
-      for (var i = 0; i < cards.length; i += 1) {
-        heading = cards[i].getElementsByTagName('h2')[0];
-        console.log(heading.innerHTML)
-        //cardsArray.push(heading.innerHTML)
-      }
-      //console.log(cardsArray)
-    }
   },
   watch: {}
 }
@@ -96,29 +96,6 @@ module.exports = {
     grid-row-gap: 50px;
   }
 }
-
-/*
-.cards {
-  display: grid;
-  grid-auto-flow: row;
-  gap: 1em;
-  padding: 1em;
-  height: 100%;
-}
-
-@media (min-width: 48em) {
-  .cards {
-    grid-auto-flow: column !important;
-    grid-auto-columns: 1fr;
-  }
-}
-
-.card {
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-}
-*/
 
 .card:hover {
   cursor: pointer;
