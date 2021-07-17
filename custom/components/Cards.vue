@@ -1,19 +1,49 @@
 <template>
-  <div class="cards clamp-10" id = "cards_container" @onload="sortCards()">
-    <div v-for="(card, cidx) in locations" 
-      :key="`card-${cidx}`" :id="card.id" :class="card.classes.join(' ')"
-    >
-      <div v-if="card.media" class="media" v-html="card.media"></div>
-      <h2 v-if="card.heading" v-html="card.heading" @click="cardSelected(card.slug)"></h2>
-      <div v-if="card.content.length > 0" class="card-text">
-        <input type="checkbox" :id="`exp-${cidx}`">
-        <div class="clamp-wrapper">
-          <p v-for="(contentItem, ccidx) in card.content" :key="`${cidx}-${ccidx}`" :id="contentItem.id" 
-            :class="contentItem.classes.join(' ')"
-            v-html="contentItem.html"
-          ></p>
+  <div id = "wrapper">
+    <p>
+      <a href = '#A'>a</a> |
+      <a href = '#B'>b</a> |
+      <a href = '#C'>c</a> |
+      <a href = '#D'>d</a> |
+      <a href = '#E'>e</a> |
+      <a href = '#F'>f</a> |
+      <a href = '#G'>g</a> |
+      <a href = '#H'>h</a> |
+      <a href = '#I'>i</a> |
+      <a href = '#J'>j</a> |
+      <a href = '#K'>k</a> |
+      <a href = '#L'>l</a> |  
+      <a href = '#M'>m</a> |
+      <a href = '#N'>n</a> |
+      <a href = '#O'>o</a> |
+      <a href = '#P'>p</a> |
+      <a href = '#Q'>q</a> |
+      <a href = '#R'>r</a> |  
+      <a href = '#S'>s</a> |
+      <a href = '#T'>t</a> |
+      <a href = '#U'>u</a> |
+      <a href = '#V'>v</a> |
+      <a href = '#W'>w</a> |
+      <a href = '#X'>x</a> |  
+      <a href = '#Y'>y</a> |
+      <a href = '#Z'>z</a> | 
+    </p>
+    <div class="cards clamp-10" id = "cards_container" @onload="sortCards()">
+      <div v-for="(card, cidx) in locations" 
+        :key="`card-${cidx}`" :id="card.heading.charAt(0)" :class="card.classes.join(' ')"
+      >
+        <div v-if="card.media" class="media" v-html="card.media"></div>
+        <h2 v-if="card.heading" v-html="card.heading" @click="cardSelected(card.slug)"></h2>
+        <div v-if="card.content.length > 0" class="card-text">
+          <input type="checkbox" :id="`exp-${cidx}`">
+          <div class="clamp-wrapper">
+            <p v-for="(contentItem, ccidx) in card.content" :key="`${cidx}-${ccidx}`" :id="contentItem.id" 
+              :class="contentItem.classes.join(' ')"
+              v-html="contentItem.html"
+            ></p>
+          </div>
+          <label :for="`exp-${cidx}`" role="button">more</label>
         </div>
-        <label :for="`exp-${cidx}`" role="button">more</label>
       </div>
     </div>
   </div>
@@ -67,6 +97,11 @@ module.exports = {
 
 <style>
 
+#wrapper > p {
+  margin-left: 3%;
+  margin-right: 3%
+}
+
 /************ Cards ***********/
 
 .cards {
@@ -77,6 +112,7 @@ module.exports = {
   grid-column-gap: 0;
   grid-row-gap: 20px;
 }
+
 
 .card {
   padding: 12px;
