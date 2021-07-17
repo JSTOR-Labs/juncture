@@ -26,7 +26,7 @@
       <a href = '#W'>w</a> |
       <a href = '#X'>x</a> |  
       <a href = '#Y'>y</a> |
-      <a href = '#Z'>z</a> | 
+      <a href = '#Z'>z</a>
     </p>
     <div class="cards clamp-10" id = "cards_container" @onload="sortCards()">
       <div v-for="(card, cidx) in locations" 

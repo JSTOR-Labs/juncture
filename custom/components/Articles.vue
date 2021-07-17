@@ -1,19 +1,19 @@
 <template>
-  <div id = "about">
-      <p>{{ about_text }}</p>
+  <div id = "articles">
+      <p>{{ articles_text }}</p>
   </div>
 </template>
 
 <script>
 
 module.exports = {
-  name: 'About',
+  name: 'Articles',
   props: {
     locations: {type: Array, default: () => ([])}
   },
   data: () => ({
     map: null,
-    about_text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    articles_text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
   }),
   computed: {},
   mounted() {
@@ -29,7 +29,7 @@ module.exports = {
   },
   methods: {
       init() {
-          this.about_text = "Hello world."
+          this.articles_text = "Hello world."
       }
   },
   watch: {}
