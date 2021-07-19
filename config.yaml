@@ -14,7 +14,6 @@ ref: main
 ######################################################
 nav:
 - label: Main Site
-  icon: fas fa-info
   action: load-page
   path: https://kent-maps.online
 - label: About
