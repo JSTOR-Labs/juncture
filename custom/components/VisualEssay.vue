@@ -2,7 +2,7 @@
 
   <div v-if="centuryPage">
 
-    <div id="essay-component" ref="essay" v-html="processedHtml"></div>
+    <div id="essay-component" ref="" v-html="processedHtml"></div>
 
     <!-- Entity infobox popup -->
     <div style="display:none;">
@@ -142,72 +142,12 @@ module.exports = {
     },
 
     toggleExpandCollapse(e) {
-      let button = e.target
-      let textDiv = button.previousElementSibling
-      if (button.innerText == 'read more') {
-        button.innerText = 'read less'
-        textDiv.style['-webkit-line-clamp'] = 'unset'
-      }
-      else if (button.innerText == 'read less') {
-        button.innerText = 'read more'
-        textDiv.style['-webkit-line-clamp'] = 5
-      }
+ 
     },
 
     // Finds all param tags in elements between top-level app element and element in para arg
     paramsInScope(root) {
-      let paramTags = []
-      let scope = []
-      let el = root
-      while (el) {
-        scope.push(el)
-        el = el.id !== 'essay-component' ? el.parentElement : null
-      }
-      scope.forEach(elemInScope =>{
-        let elemPath = getDomPath(elemInScope).slice(6).join('>')
-        paramTags = [...paramTags, ...this.params.filter(param => param.path === elemPath)]
-        })
-      return paramTags
-    },
-
-    // Finds words/phrases in content paragraphs that match labels or aliases for entities in scope
-    // Matched text is wrapped with a span tag for reacting to hover and click actions
-    tagEntities(root) {
-      Array.from(root.querySelectorAll('.segment p')).forEach(para => {
-        let paraHTML = para.innerHTML
-        this.paramsInScope(para, this.params)
-          .filter(param => param['ve-entity'] !== undefined || param.eid !== undefined)
-          .map(param => param.id)
-          .forEach(id => {
-            let entity = this.entities[id]
-            if (entity) {
-              let toMatch = [...[entity.label], ...entity.aliases.filter(alias => alias.length > 2)]
-              for (let i = 0; i < toMatch.length; i++) {
-                if (toMatch[i]) {
-                  let re = new RegExp(`(^|[\\s(>])(${toMatch[i].replace(/'/, "'?")})([\\s)<;:,.]|$)`, 'i')
-                  let match = re.exec(paraHTML)
-                  if (match) {
-                    paraHTML = paraHTML.replace(match[2], `<span class="entity inferred" data-eid="${id}">${match[2]}</span>`)
-                    entity.foundIn.add(para.parentElement.dataset.id)
-                    break
-                  }
-                }
-              }
-            }
-          })
-        para.innerHTML = paraHTML
-      })
-      Array.from(root.querySelectorAll('p span')).forEach(span => {
-        if (span.attributes.eid) {
-          span.setAttribute('data-eid', span.attributes.eid.value)
-          span.classList.add('entity', 'tagged')
-        }
-      })
-      Array.from(root.querySelectorAll('span.entity'))
-        .forEach(el => el.addEventListener('click', (e) => {
-          // console.log('entity selected', e.target.dataset.eid)
-        })
-      )
+      
     }
 
   },

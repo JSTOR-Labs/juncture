@@ -41,7 +41,7 @@ module.exports = {
 
     initSync() {
       this.mode = 'sync'
-      this.mode_description = 'Pinch in to zoom. Hold left-click and move your cursor to view differnt parts of the image.'
+      this.mode_description = 'Pinch in to zoom. Hold left-click and move your cursor to view different parts of the image.'
       this.loadImages().then(images => this.initViewer(images))
     },
 
