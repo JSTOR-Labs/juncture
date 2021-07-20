@@ -28,7 +28,7 @@ St Augustine's Abbey was a Benedictine monastery in Canterbury, Kent, England. T
     coords: 51.278333, 1.0775
     eid: Q29303
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+The first Archbishop of Canterbury, Augustine, arrived in Kent as a missionary in 597AD. The ruins of St Augustine’s Abbey are still open to visitors, on the edge of the modern city. Augustine’s original cathedral is beneath the Nave of the building we know today and in which a later Archbishop, Thomas Becket, was murdered in 1170.
 
 ## Chartham
 
@@ -36,7 +36,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 ![](https://upload.wikimedia.org/wikipedia/commons/5/57/Village_Church%2C_Chartham_-_geograph.org.uk_-_663007.jpg)
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+Translated as 'village on rough ground', Chartham is in the Canterbury district and the river Stour passes through both the village and the city. Chartham Mill has provided employment in paper making since 1738.
 
 ## Ramsgate
 
@@ -44,7 +44,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
     coords: 51.343911, 1.404031
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+‘Royal’ Ramsgate got its nickname from visits paid by Princess Victoria in 1835 and 1836. It was a favourite destination for Victorian holiday makers, with luminaries such as Florence Nightingale staying at the impressive Granville Hotel overlooking the sea.
 
 ## Folkestone
 
@@ -52,6 +52,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
     coords: 51.081389, 1.164722
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.   
+St Eanswythe, patron saint of Folkestone, was the granddaughter of the first English king to convert to Christianity. It was recently confirmed that her bones are still preserved in the Church of St Mary and St Eanswythe. By the late-nineteenth century this small fishing village had reinvented itself as a seaside resort, nicknamed ‘Fashionable Folkestone’.  
 
 </param>
