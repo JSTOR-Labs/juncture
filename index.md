@@ -4,9 +4,7 @@
 
 # Kent Maps Online - Duke of Edinburgh award site
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+This site showcases the work completed by our Duke of Edinburgh participants at all levels. Supported by student ambassadors from Canterbury Christ Church University, participants explore the extraordinary history of Kent and the people who have lived here, using words, images and innovative coding to bring their stories to life.
 
 ##
 [**How to use this site**](/howto)
