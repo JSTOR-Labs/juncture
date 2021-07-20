@@ -22,7 +22,7 @@ nav:
   action: load-page
   path: /about
 - label: How to Use Site
-  icon: fas fa-life-boat
+  icon: fas fa-life-bouy
   action: load-page
   path: /howto
 - label: Contact Us
