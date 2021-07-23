@@ -6,6 +6,7 @@
       <section id = "intro-section" v-if="!section.cards" :key="`section-${idx}`">
         <h1 v-if="section.heading" v-html="section.heading"></h1>
         <div v-if="section.html" v-html="section.html"></div>
+        <button id = 'main-site-link' onclick = "window.location.href='https://kent-maps.online';"><i class="fas fa-home"></i> Main Site</button>
       </section>
     </template>
 
@@ -148,6 +149,14 @@ module.exports = {
 </script>
 
 <style>
+
+  #main-site-link {
+    font-size: 1em;
+    padding: 10px;
+    border-radius: 15px;
+    margin-bottom: 4vh;
+    cursor: pointer;
+  }
 
 .visual-essay #essay {
   padding: 58px 0 0 0;

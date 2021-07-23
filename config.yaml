@@ -13,10 +13,6 @@ ref: main
 # Defines options shown in the header navigation menu
 ######################################################
 nav:
-- label: Main Site
-  action: load-page
-  icon: fas fa-home
-  path: https://kent-maps.online
 - label: About
   icon: fas fa-info
   action: load-page
