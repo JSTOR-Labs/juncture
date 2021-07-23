@@ -26,7 +26,7 @@ Places are displayed alphabetically. To quickly sort through all the places you 
 
 To find out more about a place, click on the places' name. This will  take you to our now VS then page. This page has a brief description of the place and then an image. The image can be viewed in 2 modes: curtain and sync. You can switch between curtain and sync modes by clicking on the 'Curtain' or 'Sync' button.
 
-In curtain mode you can move your curosr from left to right to view to modern-day picture on the left and the original picture on the right. You can also pinch in on your trackpad or touchscreen device or scroll forward on your mouse to zoom into the picture.
+In curtain mode you can move your curosr from left to right to view the modern-day picture on the left and the original picture on the right. You can also pinch in on your trackpad or touchscreen device or scroll forward on your mouse to zoom into the picture.
 
 In sync mode you can hold left-click and move your cursor to view different parts of the image. Similarly, you can pinch in on your trackpad or touchscreen device or scroll forward on your mouse to zoom into the picture.
 
