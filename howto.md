@@ -6,15 +6,11 @@
 
 ## Header
 
-To return to the home page you can click on the DofE logo in the top left.
-
-To return to the main Kent Maps site you can click on the 'Main Site'
-
-To view the 'About' or 'How to Use Site' pages you can click on the relevant link.
-
-To contact us you can fill in the contact form which appears when you click 'Contact Us'
-
-Below the introductory paragraph you can select between our 'Map', 'Places' and 'Articles' pages.
+- To return to the home page you can click on the DofE logo in the top left.
+- To return to the main Kent Maps site you can click on the 'Main Site'
+- To view the 'About' or 'How to Use Site' pages you can click on the relevant link.
+- To contact us you can fill in the contact form which appears when you click 'Contact Us'
+- Below the introductory paragraph you can select between our 'Map', 'Places' and 'Articles' pages.
 
 ## Map
 
