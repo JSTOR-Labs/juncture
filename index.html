@@ -1579,28 +1579,30 @@
       let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersionHash : contentSource.ref
 
       if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0) {
+
         componentsList = [...componentsList, ...await listComponents(
         `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
         componentsList = [...componentsList, ...await listComponents(
         `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'components')]
-      }
+      
+      } else {
+        
+        if (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs') {
+          componentsList = [...componentsList, ...await listComponents(
+            `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
+            'custom/components',
+            `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
+          componentsList = [...componentsList, ...await listComponents(
+            `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
+            'components',
+            `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
+        }
 
-      if (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs') {
-        componentsList = [...componentsList, ...await listComponents(
-          `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
-          'custom/components',
-          `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
-        componentsList = [...componentsList, ...await listComponents(
-          `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
-          'components',
-          `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
-      }
-
-      if (window.location.hostname !== 'localhost' && window.location.hostname.indexOf('gitpod') < 0) {
         componentsList = [...componentsList, ...await listComponents(
           `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
         componentsList = [...componentsList, ...await listComponents(
           `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'components')]
+
       }
 
       componentsList = [...componentsList, ...await listComponents(
@@ -1608,7 +1610,7 @@
         'components',
         `https://raw.githubusercontent.com/jstor-labs/juncture/${junctureVersionHash}`)]
         
-        return componentsList
+      return componentsList
     }
   
     function parseUrl(href) {
