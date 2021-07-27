@@ -188,7 +188,7 @@
     console.log(window.location)
     const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 ? 'DEV' : 'PROD'
     let isJuncture = window.location.hostname.indexOf('juncture-digital.org') === 0 || ENV === 'DEV'
-    const junctureVersion = 'v0.4.0'
+    const junctureVersion = 'v0.4.1'
     let junctureVersionHash
 
     const referrerUrl = document.referrer
@@ -254,12 +254,13 @@
           acct: 'jstor-labs', repo: 'juncture-digital', ref: 'main', hash: null, basePath: '', isGhpSite: false,
           baseUrl: window.location.origin, 
           assetsBaseUrl: `${window.location.origin}`
-      }
+        }
         let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
         if (pathElems.length >= 2) {
           let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
           if (ghRepoInfo) {
-            contentSource = {...contentSource, ...ghRepoInfo, ...{basePath: `/${ghRepoInfo.acct}/${ghRepoInfo.repo}`}}
+            contentSource = {...contentSource, ...ghRepoInfo, 
+              ...{basePath: `/${ghRepoInfo.acct}/${ghRepoInfo.repo}`, assetsBaseUrl: `https://raw.githubusercontent.com/${ghRepoInfo.acct}/${ghRepoInfo.repo}/${ghRepoInfo.ref}`}}
           }
         }
 
@@ -420,7 +421,7 @@
         document.querySelector('head').appendChild(el)
       }
       let attrsWithUrls = ['banner', 'favicon', 'logo']
-      if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0 ) {
+      if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital') ) {
         attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       } else {
         headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
@@ -437,7 +438,7 @@
     .then(config => gcOauth())
     .then(resp => headRef('jstor-labs', 'juncture', junctureVersion, ghUnscopedToken))
     .then(hash => {
-      junctureVersionHash = hash.slice(0,7)
+      junctureVersionHash = hash ? hash.slice(0,7) : null
       console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} junctureVersionHash=${junctureVersionHash} referrer=${document.referrer}`)
       return getComponentsList()
     })
@@ -704,7 +705,7 @@
           },
 
           async getMarkdown(path) {
-            if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0 ) {
+            if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital')) {
               let url = `${contentSource.baseUrl}${contentSource.basePath}${path}`
               let resp = await fetch(url)
               if (resp.ok) return await resp.text()
@@ -1479,7 +1480,12 @@
     async function getSiteConfig() {
       console.log('getSiteConfig', contentSource)
       let config = {}
-      let resp = await fetch(`${window.location.origin}${contentSource.basePath}/config.yaml`)
+      let configUrl = window.location.port === '8088' || window.location.host.indexOf('8088') === 0
+        ?  `${window.location.origin}/config.yaml`
+        : window.location.host.indexOf('juncture-digital.org') >= 0
+          ? `https://juncture-digital.org/config.yaml`
+          : `${window.location.origin}${contentSource.basePath}/config.yaml`
+      let resp = await fetch(configUrl)
       if (resp.ok) {
         config = YAML.parse(await resp.text())
       } else {
@@ -1495,7 +1501,7 @@
       resp = await fetch(`https://api.github.com/repos/${config.acct || contentSource.acct}/${config.repo || contentSource.repo}/contents/config.yaml?ref=${config.ref || contentSource.ref}`, ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
       if (resp.ok) {
         resp = await resp.json()
-        config = {...YAML.parse(atob(resp.content)), ...config}
+        config = {...config, ...YAML.parse(atob(resp.content))}
       }
 
       if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
@@ -1553,7 +1559,7 @@
         let dirList, found
         for (let i = 0; i < pathElems.length; i++) {
           dirList = await ghDirList(url, ghToken)
-          found = dirList.tree.find(item => item.path === pathElems[i])
+          found = dirList ? dirList.tree.find(item => item.path === pathElems[i]) : null
           url = found ? found.url : null
           if (!url) break
         }
@@ -1578,7 +1584,7 @@
 
       let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersionHash : contentSource.ref
 
-      if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0) {
+      if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital')) {
 
         componentsList = [...componentsList, ...await listComponents(
         `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
