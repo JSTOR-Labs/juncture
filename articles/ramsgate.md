@@ -1,0 +1,1 @@
+‘Royal’ Ramsgate got its nickname from visits paid by Princess Victoria in 1835 and 1836. It was a favourite destination for Victorian holiday makers, with luminaries such as Florence Nightingale staying at the impressive Granville Hotel overlooking the sea.
