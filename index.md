@@ -46,6 +46,7 @@ Translated as 'village on rough ground', Chartham is in the Canterbury district 
 
 The House of Agnes is a half-timbered medieval coaching inn in the St Dunstans area of Canterbury dating from the 13th century. It takes its name from the character Agnes Wickfield, in Charles Dicken's David Copperfield.
 
+
 ## Ramsgate
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Ramsgate_Harbour_2.jpg/320px-Ramsgate_Harbour_2.jpg)
@@ -61,5 +62,6 @@ The House of Agnes is a half-timbered medieval coaching inn in the St Dunstans a
     coords: 51.081389, 1.164722
 
 St Eanswythe, patron saint of Folkestone, was the granddaughter of the first English king to convert to Christianity. It was recently confirmed that her bones are still preserved in the Church of St Mary and St Eanswythe. By the late-nineteenth century this small fishing village had reinvented itself as a seaside resort, nicknamed ‘Fashionable Folkestone’.  
+
 
 </param>
