@@ -279,7 +279,7 @@ module.exports = {
         syncLayers() {
             this.syncGeoJSONLayers()
             this.syncTileLayers()
-            // this.map.flyTo(this.center, this.zoom)
+            this.map.flyTo(this.center, this.zoom)
             
             const markers = this.itemsWithMarkers
             markers.forEach(marker => {
