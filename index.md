@@ -38,6 +38,14 @@ The first Archbishop of Canterbury, Augustine, arrived in Kent as a missionary i
 
 Translated as 'village on rough ground', Chartham is in the Canterbury district and the river Stour passes through both the village and the city. Chartham Mill has provided employment in paper making since 1738.
 
+## The House of Agnes
+
+    coords: 51.2824, 1.07365
+
+![](https://upload.wikimedia.org/wikipedia/commons/e/e1/Canterbury_-_House_of_Agnes.jpg)
+
+The House of Agnes is a half-timbered medieval coaching inn in the St Dunstans area of Canterbury dating from the 13th century. It takes its name from the character Agnes Wickfield, in Charles Dicken's David Copperfield.
+
 ## Ramsgate
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Ramsgate_Harbour_2.jpg/320px-Ramsgate_Harbour_2.jpg)
