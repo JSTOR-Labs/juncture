@@ -188,7 +188,7 @@
     console.log(window.location)
     const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 ? 'DEV' : 'PROD'
     let isJuncture = window.location.hostname.indexOf('juncture-digital.org') === 0 || ENV === 'DEV'
-    const junctureVersion = 'v0.4.1'
+    const junctureVersion = 'v0.4.2'
     let junctureVersionHash
 
     const referrerUrl = document.referrer
@@ -730,7 +730,7 @@
             console.log(`loadEssay: basePath=${contentSource.basePath} path=${path} anchor=${this.anchor}`)
             // let pathsToTry = [`${path}index.md`, `${path}README.md`, `${path.slice(0,-1)}.md`]
             let pathsToTry = [`${path}index.md`, `${path}README.md`, `${path.slice(0,-1)}.md`]
-            if (this.authenticatedUser !== null) pathsToTry = [...[`${path}admin.md`], ...pathsToTry]
+            // if (this.authenticatedUser !== null) pathsToTry = [...[`${path}admin.md`], ...pathsToTry]
             let markdown
             for (let i = 0; i < pathsToTry.length; i++) {
               markdown = await this.getMarkdown(pathsToTry[i])
@@ -1488,9 +1488,9 @@
       let resp = await fetch(configUrl)
       if (resp.ok) {
         config = YAML.parse(await resp.text())
-      } else {
-        resp = await fetch(`${window.location.origin}${contentSource.basePath}/config.template.yaml`)
-        if (resp.ok) config = YAML.parse(await resp.text())
+      //} else {
+      //  resp = await fetch(`${window.location.origin}${contentSource.basePath}/config.template.yaml`)
+      //  if (resp.ok) config = YAML.parse(await resp.text())
       }
 
       ghUnscopedToken = config.ghUnscopedToken 
