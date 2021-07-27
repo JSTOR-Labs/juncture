@@ -2,9 +2,9 @@
 
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare url="https://stor.artstor.org/stor/f5acfe60-3c2c-4d9e-979f-2ec2896ebb2d" label="St Augustine's College, Canterbury (2021)">
-<param ve-compare url="https://stor.artstor.org/stor/deb8a6fd-bc51-42fb-8ac2-28b556c482ab" label="St Augustine's College, Canterbury (1905 or earlier)">
+<param ve-compare url="https://stor.artstor.org/stor/aa7d89ed-8ac1-4043-a86c-8fd55d060d7d" label="Westgate Towers, Canterbury (2021)" attribution-"Amelia Baring">
+<param ve-compare url="https://stor.artstor.org/stor/27b9c6db-5902-4057-ab40-77f86c75d021" label="Westgate Towers, Canterbury (1905 or earlier)">
 
-# St Augustine's Abbey
+# Westgate Towers
 
-St Augustine's Abbey was a Benedictine monastery in Canterbury, Kent, England. The abbey was founded in 598 and functioned as a monastery until its dissolution in 1538 during the English Reformation. After the abbey's dissolution, it underwent dismantlement until 1848. Since 1848, part of the site has been used for educational purposes and the abbey ruins have been preserved for their historical value.
+Text here
