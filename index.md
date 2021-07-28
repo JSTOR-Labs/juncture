@@ -70,5 +70,13 @@ Once a popular seaside resort where Victorians came to take the air, where day-t
 
 St Eanswythe, patron saint of Folkestone, was the granddaughter of the first English king to convert to Christianity. It was recently confirmed that her bones are still preserved in the Church of St Mary and St Eanswythe. By the late-nineteenth century this small fishing village had reinvented itself as a seaside resort, nicknamed ‘Fashionable Folkestone’.  
 
+## Whitstable
+
+![](https://upload.wikimedia.org/wikipedia/commons/b/b5/Whitstable_Harbour%2C_Kent%2C_UK.jpg)
+
+    coords: 51.360694, 1.025694
+
+A pretty seaside town on the north coast of Kent, Whitstable is famous for oysters, the writer Somerset Maugham, the Maunsell forts nine miles from its shore and its associations with the history of diving.
+
 
 </param>
