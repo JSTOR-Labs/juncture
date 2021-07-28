@@ -46,6 +46,13 @@ Translated as 'village on rough ground', Chartham is in the Canterbury district 
 
 The House of Agnes is a half-timbered medieval coaching inn in the St Dunstans area of Canterbury dating from the 13th century. It takes its name from the character Agnes Wickfield, in Charles Dicken's David Copperfield.
 
+## Margate
+
+    coords: 51.385, 1.3838
+    
+![](https://upload.wikimedia.org/wikipedia/commons/7/70/Margate_from_Stone_Pier_3.JPG)
+
+Once a popular seaside resort where Victorians came to take the air, where day-trippers streamed off the London train to deposit themselves on the famous sandy beach, where poets including Keats and T. S. Eliot came to recuperate, and artists to paint the sunsets, and where Dreamland hummed with jingled music.
 
 ## Ramsgate
 
