@@ -142,7 +142,7 @@ module.exports = {
         layers() { return this.items.filter(item => item['ve-map-layer']) },
         itemsWithMapwarperLayer() { return layers.filter(item => item.mapwarper) },
         itemsWithMarkers() { return this.items.filter(item => item['ve-map-marker']) }, 
-        zoom() { return this.mapDef.zoom || defaults.zoom },
+        zoom() { return parseInt(this.mapDef.zoom || defaults.zoom) },
         maxZoom() { return this.mapDef['max-zoom'] || defaults.maxZoom },
         timeDimension() { return this.mapDef['time-dimension'] || defaults.timeDimension },
         autoPlay() { return this.mapDef['auto-play'] || defaults.autoPlay },
@@ -489,13 +489,12 @@ module.exports = {
             })
         },
         addCustomMarker(data) {
-            const faIcon = data.url
             console.log('data.circle', data.circle)
             const styleClass = data.circle ? 'circleImage' :
                                data.square ? 'squareImage' : data.classname;
             console.log(styleClass)
             var icon = L.icon({
-                    iconUrl:      faIcon,
+                    iconUrl:      data.url || 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
                     iconSize:     data.size ? this.toIntArray(data.size) : defaults.iconSize, // size of the icon
                     shadowUrl:    data.shadowurl ? data.shadowurl : null,
                     shadowSize:   data.shadowsize ? this.toIntArray(data.shadowsize) : defaults.iconSize, // size of the shadow
