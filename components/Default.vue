@@ -330,8 +330,8 @@ module.exports = {
           })
         Array.from(document.querySelectorAll('.dot'))
           .forEach((dot, idx) => {
-            if (idx === this.slideIndex) dot.classList.add('active')
-            else dot.classList.remove('active')
+            if (idx === this.slideIndex) dot.classList.add('active-slide')
+            else dot.classList.remove('active-slide')
           })
       }
     }
@@ -1019,7 +1019,7 @@ img.logo {
   transition: background-color 0.2s ease;
 }
 
-.active, .dot:hover {
+.active-slide, .dot:hover {
   cursor: pointer;
   background-color: #5b152e;
 }
