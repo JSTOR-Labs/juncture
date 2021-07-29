@@ -143,7 +143,7 @@ module.exports = {
   computed: {
     osdContainerStyle() {
       return {
-        backgroundColor: this.currentItem ? this.currentItem.background || 'black' : 'black',
+        background: this.currentItem ? this.currentItem.background || 'black' : 'black',
         textAlign: 'center',
         height: this.viewerIsActive ? '100%' : '0',
         display: this.viewerIsActive ? 'grid' : 'none',
