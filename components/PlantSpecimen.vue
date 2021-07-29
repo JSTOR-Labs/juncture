@@ -239,6 +239,13 @@ module.exports = {
 
   },
   watch: {
+    specimenItems: {
+      handler: function () {
+        console.log(`${this.$options.name}.specimenItems`, this.specimenItems)
+        this.findSpecimens()
+      },
+      immediate: true
+    },
     tileSources: {
       handler: function () {
         console.log(`${this.$options.name}.tileSources=${this.tileSources.length}`)      
