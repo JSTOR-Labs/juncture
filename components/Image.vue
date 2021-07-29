@@ -461,9 +461,9 @@ module.exports = {
     toggleAnnotatorEnabled() {
      this.annotatorEnabled = !this.annotatorEnabled
      if (this.annotatorEnabled) {
-      document.getElementById("annotatorIcon").style['background-color'] = "blue";
+      document.getElementById("annotatorIcon").style.backgroundColor = "blue";
      } else {
-      document.getElementById("annotatorIcon").style['background-color'] = "transparent";
+      document.getElementById("annotatorIcon").style.backgroundColor = "transparent";
      }
       
     },
