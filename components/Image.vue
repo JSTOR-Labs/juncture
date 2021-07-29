@@ -130,7 +130,7 @@ module.exports = {
     sliderPct: 0,
     tileSources: [],
     showAnnotations: false,
-    showAnnotationsNavigator: false,
+    showAnnotationsNavigator: true,
     licenseUrl: null,
     licenseIcons: [],
     imageViewportCoords: null,
@@ -294,7 +294,7 @@ module.exports = {
         // this.viewer.viewport.goHome = function(immediately) { if (this.viewer) this.viewer.raiseEvent('home', { immediately: immediately }) }
         this.viewer.addHandler('home', (e) => {
           this.positionImage(e.immediately, 'home')
-          this.showAnnotationsNavigator = false
+          this.showAnnotationsNavigator = true
         })
         this.viewer.addHandler('page', this.newPage)
         this.viewer.addHandler('viewport-change', this.viewportChange)
