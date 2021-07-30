@@ -234,8 +234,10 @@ module.exports = {
       console.log(this.$options.name, this.viewerItems, this.viewerIsActive, this.width, this.height, this.selected)
       // console.log(`acct=${this.acct} repo=${this.repo} path=${this.path}`)
       if (this.viewerIsActive) {
-      this.initViewer()
-      this.loadManifests(this.viewerItems)
+        this.initViewer()
+        this.loadManifests(this.viewerItems)
+        const osdElem = document.getElementById('osd')
+        if (osdElem) { osdElem.style.background = this.osdContainerStyle.background }
       }
       //this.displayInfoBox()
     },
