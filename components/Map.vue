@@ -192,9 +192,6 @@ module.exports = {
             }
             if (!this.map) {
                 //this.$nextTick(() => {
-                    console.log('createMap', document.getElementById('map').clientHeight)
-
-                    console.log(this.$refs.map.clientHeight)
                     // this.labelsLayer = L.layerGroup()
                     // this.baseLayer = L.tileLayer(...baseLayers[this.basemap])
                     this.tileLayers.basemap = this.basemap
@@ -368,7 +365,6 @@ module.exports = {
                 })
         },
         syncGeoJSONLayers() {
-            console.log('syncGeoJSONLayers');
             for (let [label, layer] of Object.entries(this.geoJSONLayers)) {  // eslint-disable-line no-unused-vars
                 this.map.removeLayer(layer)
             }
@@ -380,19 +376,17 @@ module.exports = {
                 .then(geoJSON => this.addGeoJSONLayer(geoJSON))
             } else {
                 const itemsWithCoords = this.preferGeoJSON ? this.itemsWithCoordsNoGeojson : this.itemsWithCoords
-                console.log('itemsWithCoords', itemsWithCoords)
                 if (itemsWithCoords.length > 0) {
                     this.addGeoJSONLayer(this.itemsWithCoordsToGeoJSON(itemsWithCoords))
                 }
                 const itemsWithGeojson = this.preferGeoJSON ? this.itemsWithGeojson : this.itemsWithGeojsonNoCoords
-                console.log('itemsWithGeojson', itemsWithGeojson)
                 if (itemsWithGeojson.length > 0) {
                     itemsWithGeojson.forEach(item => {
                         this.getGeoJSON(item.geojson && typeof item.geojson === 'string' ? item.geojson : item.url)
                         .then(geoJSON => {
                             if (!geoJSON.properties) geoJSON.properties = {}
-                            geoJSON.properties.id = item.id || item.qid || item.eid
-                            geoJSON.properties.label = item.label
+                            //geoJSON.properties.id = item.id || item.qid || item.eid
+                            //geoJSON.properties.label = item.label
                             this.addGeoJSONLayer(geoJSON, item)
                         })
                     })
@@ -401,7 +395,6 @@ module.exports = {
             }
         },
         addGeoJSONLayer(geoJSON, layerDef) {
-            console.log('addGeoJSONLayer', geoJSON, layerDef)
             if (!geoJSON.properties) geoJSON.properties = {}
             let layerLabel = geoJSON.properties.label = geoJSON.properties.title || geoJSON.properties.label || geoJSON.properties.name
             if (!layerLabel) {
@@ -432,7 +425,6 @@ module.exports = {
             geoJSONLayer.addTo(this.map)
             this.geoJSONLayers[layerLabel] = geoJSONLayer
 
-            console.log(layerLabel, this.controls.layers !== undefined)
             if (geoJSON.properties.label) {
                 if (this.controls.layers) this.map.removeControl(this.controls.layers)
                 this.controls.layers = L.control.layers({}, this.geoJSONLayers, { collapsed: true }).addTo(this.map)
@@ -489,10 +481,8 @@ module.exports = {
             })
         },
         addCustomMarker(data) {
-            console.log('data.circle', data.circle)
             const styleClass = data.circle ? 'circleImage' :
                                data.square ? 'squareImage' : data.classname;
-            console.log(styleClass)
             var icon = L.icon({
                     iconUrl:      data.url || 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
                     iconSize:     data.size ? this.toIntArray(data.size) : defaults.iconSize, // size of the icon
@@ -503,7 +493,6 @@ module.exports = {
                     popupAnchor:  [-3, -76],
                     className:    styleClass
                 })
-            console.log(icon)
             this.tileLayers.push(L.marker(this.toFloatArray(data.coords), {icon}).addTo(this.map))
         },
         cachedGeoJSON(url) {
@@ -607,7 +596,6 @@ module.exports = {
             return geoJSON
         },
         itemsWithCoordsToGeoJSON(items) {
-            console.log(items)
             const geoJSON = { type: 'FeatureCollection', features: [] }
             items.filter(item => item.coords)
             .forEach(item => {
@@ -617,7 +605,6 @@ module.exports = {
                     geometry: { type: 'Point', coordinates: [...item.coords].reverse() }
                 })
             })
-            console.log('itemsWithCoordsToGeoJSON', geoJSON)
             return geoJSON
         },
         asDateString(s) {
@@ -658,7 +645,6 @@ module.exports = {
             const itemID = e.type === 'mouseover'
                 ? e.target.feature.properties.eid || e.target.feature.properties.id
                 : null
-            console.log('setHoverItem', itemID)
             this.$emit('set-hover-item', itemID)
         },
         setSelectedItem(e) {
@@ -667,7 +653,6 @@ module.exports = {
         },
         // eslint-disable-next-line no-unused-vars
         handleEssayAction({elem, event, action, value}) {
-            console.log(`handleEssayAction" event=${event} action=${action} value=${value}`)
             switch(event) {
                 case 'click':
                     switch(action) {
@@ -714,14 +699,12 @@ module.exports = {
        
         height: {
             handler: _.debounce(function (height) {
-                console.log(`map.height=${height}`)
                 if (this.map) this.map.invalidateSize(true)
             }, 100),
             immediate: true
         },
         viewerIsActive: {
             handler: function (isActive) { 
-                console.log(`${this.$options.name}.active=${isActive}`) 
                 if (isActive) {
                     if (!this.map) this.$nextTick(() => {
                         this.createMap()
@@ -736,7 +719,6 @@ module.exports = {
         },
         actions: {
             handler: function (actions) {
-                console.log(`actions`, actions)
                 if (actions[this.$options.name]) actions[this.$options.name].forEach(action => this.handleEssayAction(action))
             },
             immediate: true
@@ -756,7 +738,6 @@ module.exports = {
         },
         hoverItem: {
             handler: function (itemID, prior) {
-                if (itemID) console.log(`${this.$options.name}.watch.hoverItem=${itemID} showLabels=${this.showLabels}`)
                 if (this.showLabels) {
                     if (prior) {
                         let popup = document.querySelector(`div[data-eid="${prior}"]`)
