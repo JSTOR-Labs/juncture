@@ -398,7 +398,7 @@ module.exports = {
             if (!geoJSON.properties) geoJSON.properties = {}
             let layerLabel = layerDef && (layerDef.label || layerDef.title || layerDef.name)
                 ? layerDef.label || layerDef.title || layerDef.name
-                : geoJSON.properties.label = geoJSON.properties.title || geoJSON.properties.label || geoJSON.properties.name
+                : geoJSON.properties.label || geoJSON.properties.title || geoJSON.properties.name
 
             if (!layerLabel) layerLabel = `Layer-${Object.keys(this.geoJSONLayers).length+1}`
             if (!geoJSON.properties.label) geoJSON.properties.label = layerLabel
