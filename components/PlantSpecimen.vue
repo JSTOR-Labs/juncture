@@ -1,5 +1,12 @@
 <template>
-  <div class="osd" id="ps-osd" :style="containerStyle"></div>
+  <div class="osd" id="ps-osd" :style="containerStyle">
+  
+      <div class="citation">
+        <span v-if='title || itemLabel || description' v-html="title || itemLabel || description" class="image-label"></span><br>
+        <span v-if="attribution" v-html="attribution" class="attribution"></span>
+      </div>
+
+  </div>
 </template>
 
 <script>
@@ -145,6 +152,8 @@ module.exports = {
   data: () => ({
     viewerLabel: 'Plant Specimen',
     viewerIcon: 'fas fa-seedling',
+    
+
     dependencies: [
       'https://cdn.jsdelivr.net/npm/jsonld@1.0.0/dist/jsonld.min.js',
       'https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js'],
@@ -157,7 +166,11 @@ module.exports = {
       let withMax = this.specimenItems.filter(item => item.max)
       return withMax.length > 0 ? parseInt(withMax[0].max) : 10
     },
-    containerStyle() { return { height: this.viewerIsActive ? '100%' : '0' } }
+    containerStyle() { return { height: this.viewerIsActive ? '100%' : '0' } },
+    attribution() { return this.items[0] ? this.items[0]['attribution'] : null },
+    title() { return this.items[0] ? this.items[0]['title'] : null },
+    label() { return this.items[0] ? this.items[0]['label'] : null },
+    description() { return this.items[0] ? this.items[0]['description'] : null },
   },
   mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
   methods: {
