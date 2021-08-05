@@ -227,17 +227,17 @@ module.exports = {
   },
   mounted() {
     this.osdElem = document.getElementById('osd')
+    const osdElem = document.getElementById('osd')
+    if (osdElem) { osdElem.style.background = this.osdContainerStyle.background }
     this.loadDependencies(dependencies, 0, this.init)
   },
   methods: {
     init() {
-      console.log(this.$options.name, this.viewerItems, this.viewerIsActive, this.width, this.height, this.selected)
+      console.log(this.$options.name, this.viewerItems, this.viewerIsActive, this.width, this.height, this.selected, this.currentItme)
       // console.log(`acct=${this.acct} repo=${this.repo} path=${this.path}`)
       if (this.viewerIsActive) {
         this.initViewer()
         this.loadManifests(this.viewerItems)
-        const osdElem = document.getElementById('osd')
-        if (osdElem) { osdElem.style.background = this.osdContainerStyle.background }
       }
       //this.displayInfoBox()
     },
