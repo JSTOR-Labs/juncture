@@ -41,8 +41,8 @@
 
 ### **Bibliography**
 
-En.wikipedia.org. 2021. Edmund Blunden - Wikipedia. [online] Available at: <https://en.wikipedia.org/wiki/Edmund_Blunden> [Accessed 10 May 2021]. 
-Poetry Foundation. 2021. Edmund Blunden | Poetry Foundation. [online] Available at: <https://www.poetryfoundation.org/poets/edmund-blunden> [Accessed 10 May 2021].
-Blunden, E., 2021. Edmund Blunden - Poems by the Famous Poet - All Poetry. [online] Allpoet-ry.com. Available at: <https://allpoetry.com/Edmund-Blunden> [Accessed 11 May 2021]. 
-Morrell, L., Whistler, R. and Rothenstein, W., 2019. Search media - Wikimedia Commons. [online] Commons.wikimedia.org. Available at: <https://commons.wikimedia.org/w/index.php?search=edmund+blunden&title=Special:MediaSearch&go=Go&type=image> [Accessed 11 May 2021].
-My Poetic Side. 2021. Edmund Blunden Poems. [online] Available at: <https://mypoeticside.com/poets/edmund-blunden-poems> [Accessed 16 June 2021].
+En.wikipedia.org. 2021. Edmund Blunden - Wikipedia. [online] Available at: <https://en.wikipedia.org/wiki/Edmund_Blunden> [Accessed 10 May 2021].    
+Poetry Foundation. 2021. Edmund Blunden | Poetry Foundation. [online] Available at: <https://www.poetryfoundation.org/poets/edmund-blunden> [Accessed 10 May 2021].   
+Blunden, E., 2021. Edmund Blunden - Poems by the Famous Poet - All Poetry. [online] Allpoet-ry.com. Available at: <https://allpoetry.com/Edmund-Blunden> [Accessed 11 May 2021].    
+Morrell, L., Whistler, R. and Rothenstein, W., 2019. Search media - Wikimedia Commons. [online] Commons.wikimedia.org. Available at: <https://commons.wikimedia.org/w/index.php?search=edmund+blunden&title=Special:MediaSearch&go=Go&type=image> [Accessed 11 May 2021].   
+My Poetic Side. 2021. Edmund Blunden Poems. [online] Available at: <https://mypoeticside.com/poets/edmund-blunden-poems> [Accessed 16 June 2021].   
