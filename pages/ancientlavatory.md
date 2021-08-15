@@ -7,4 +7,4 @@
 
 # Ancient Lavatory
 
-The ancient lavatory where the monks washed before and after eating at Canterbury Cathedral.  Photographed by Conor Murphy in 2021.
+The ancient lavatory at Canterbury Cathedral where the monks washed before and after eating.  Photographed by Conor Murphy in 2021.
