@@ -7,4 +7,4 @@
 
 # Westgate Towers
 
-Text here
+Photographed by Amelia Barling in 2021.
