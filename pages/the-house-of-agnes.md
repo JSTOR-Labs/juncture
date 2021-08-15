@@ -7,6 +7,4 @@
 
 # House of Agnes
 
-**Photographed by** Nat Lowden and Sara Gelencer
-
-The House of Agnes was photographed in 2021. 
+Photographed by Nat Lowden and Sara Gelencer in 2021. 
