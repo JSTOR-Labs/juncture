@@ -78,5 +78,10 @@ St Eanswythe, patron saint of Folkestone, was the granddaughter of the first Eng
 
 A pretty seaside town on the north coast of Kent, Whitstable is famous for oysters, the writer Somerset Maugham, the Maunsell forts nine miles from its shore and its associations with the history of diving.
 
+## Yalding
+
+![](https://upload.wikimedia.org/wikipedia/commons/f/f8/Town_Bridge%2C_Yalding%2C_Kent_-_geograph.org.uk_-_1907735.jpg)
+
+    coords: 51.224131, 0.429715
 
 </param>
