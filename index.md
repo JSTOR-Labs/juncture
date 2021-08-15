@@ -87,6 +87,8 @@ St Eanswythe, patron saint of Folkestone, was the granddaughter of the first Eng
     coords: 51.2814, 1.07583
     eid: Q104815065
 
+Built c.1379, the Westgate Towers are the last surviving gatehouse in Canterbury.
+
 ## Whitstable
 
 ![](https://upload.wikimedia.org/wikipedia/commons/b/b5/Whitstable_Harbour%2C_Kent%2C_UK.jpg)
