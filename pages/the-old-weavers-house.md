@@ -7,5 +7,5 @@
 
 # The Old Weavers House
 
-The Old Weavers House is a half-timbered building on the River Stour, Canterbury, dating from the 14th century.
+The Old Weavers House is a half-timbered building on the River Stour, Canterbury. Photographed by Judyta Socha and Megan Yeoman.
 
