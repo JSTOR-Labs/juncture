@@ -2,9 +2,9 @@
 
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare url="https://stor.artstor.org/stor/a8b14191-ce7e-4e20-8023-e8ba8b72b33a" label="Dane John Gardens, Canterbury (2021)" attribution="Conor Murphy">
-<param ve-compare url="https://stor.artstor.org/stor/5aaa0ff4-3f0f-4ecc-86b6-1a320621a2ab" label="Dane John Gardens, Canterbury - 1905 or earlier">
+<param ve-compare url="https://stor.artstor.org/stor/04dc1444-cdd0-445b-8041-b2dd02ed0f58" label="Dane John Gardens, Canterbury (2021)" attribution="Calum Elliot and Emma Molford">
+<param ve-compare url="https://stor.artstor.org/stor/3cb447d3-c9cf-47a9-aac5-f019f2f745aa" label="Dane John Gardens, Canterbury - 1905 or earlier">
 
-# Ancient Lavatory
+# Dane John Gardens
 
-The ancient lavatory at 
+The Dane John Gardens in Canterbury were created on common land by Alderman James Simmons in 1790.
