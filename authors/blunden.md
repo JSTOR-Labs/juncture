@@ -39,9 +39,8 @@ This illustrates how badly the war affected him for so long in his life.
 **Conclusion**  
 Despite all the conflict that arose during his lifetime, he contributed a lot of significant poetry to the history of literature during the 20th century. 
 
-### Bibliography
+**Bibliography**   
 En.wikipedia.org. 2021. [Edmund Blunden - Wikipedia](https://en.wikipedia.org/wiki/Edmund_Blunden). [online] (Accessed 10 May 2021).    
 Poetry Foundation. 2021. [Edmund Blunden - Poetry Foundation](https://www.poetryfoundation.org/poets/edmund-blunden). [online] (Accessed 10 May 2021).   
 Blunden, E., 2021. [Edmund Blunden - Poems by the Famous Poet - All Poetry](https://allpoetry.com/Edmund-Blunden). [online] (Accessed 11 May 2021).     
 _My Poetic Side_. 2021. [Edmund Blunden Poems](https://mypoeticside.com/poets/edmund-blunden-poems). [online] (Accessed 16 June 2021).   
-
