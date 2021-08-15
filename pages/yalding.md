@@ -15,7 +15,7 @@ After the war, he returned to Suffolk in England where he married and had his fi
 <br><br>
 He was connected to Kent in various ways throughout his lifetime: beginning in London, moving to Yalding, and then later on to Tonbridge. 
 He lived in Tonbridge, Kent, during his later years where he wrote VE Day, which was published after 75 years in 2021. His most popular piece of writing was Undertones Of War in 1928, a memoir of active service during WW1. He later died in 1974 and was buried in Long Melford. 
-<br>
+<br><br>
 He is largely underestimated today as a war poet; this may be because he worked beside other great poets such as Wilfred Owen, Isaac Rosenberg, and Siegfried Sassoon. A unique feature of his poetry that neither Owen, Rosenberg nor Sassoon wrote about was his dismay at the destruction of the French countryside, again displaying his love for nature. He also acknowledged that there were moments of happiness even among all the slaughter during the war.
 
 **Poetry**   
