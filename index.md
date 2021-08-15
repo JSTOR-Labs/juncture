@@ -67,7 +67,7 @@ The Dane John Gardens were created on common land by Alderman James Simmons in 1
 
 ## Dane John Mound
 
-![](https://stor.artstor.org/stor/807b6fac-91b5-4633-91d8-57d47e1cdd9f)
+![](https://upload.wikimedia.org/wikipedia/commons/f/f5/Dane_John_mound_-_geograph.org.uk_-_2277327.jpg)
 
     coords: 51.2753, 1.07818
     eid: Q17647042
