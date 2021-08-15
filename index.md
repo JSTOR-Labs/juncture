@@ -84,4 +84,6 @@ A pretty seaside town on the north coast of Kent, Whitstable is famous for oyste
 
     coords: 51.224131, 0.429715
 
+Yalding is situated six miles south west of Maidstone and was home to the poet Edmund Blunden.
+
 </param>
