@@ -12,6 +12,13 @@ This site showcases the work completed by our Duke of Edinburgh participants at 
 #
 <param id="locations" class="cards clamp">
 
+## Ancient Lavatory
+
+![](https://upload.wikimedia.org/wikipedia/commons/1/13/Canterbury_Cathedral_cloister2.JPG)
+
+    coords: 51.279811, 1.083001
+    eid: Q29265
+
 ## St Augustine's Abbey
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Augustine_Abbey.jpg/320px-Augustine_Abbey.jpg)
@@ -41,6 +48,7 @@ Translated as 'village on rough ground', Chartham is in the Canterbury district 
 ## The House of Agnes
 
     coords: 51.2824, 1.07365
+    eid: Q17557200
 
 ![](https://upload.wikimedia.org/wikipedia/commons/e/e1/Canterbury_-_House_of_Agnes.jpg)
 
