@@ -39,6 +39,15 @@ St Augustine's Abbey was a Benedictine monastery in Canterbury, Kent, England. T
 
 The first Archbishop of Canterbury, Augustine, arrived in Kent as a missionary in 597AD. The ruins of St Augustine’s Abbey are still open to visitors, on the edge of the modern city. Augustine’s original cathedral is beneath the Nave of the building we know today and in which a later Archbishop, Thomas Becket, was murdered in 1170.
 
+## Canterbury Cathedral
+
+![](https://upload.wikimedia.org/wikipedia/commons/e/eb/Canterbury_cathedral_20160901.jpg)
+
+    coords: 51.279811, 1.083001
+    eid: Q29265
+
+Founded in 597, the cathedral is the oldest Christian structure in England.
+
 ## Chartham
 
     coords: 51.255, 1.0205
