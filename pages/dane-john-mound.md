@@ -8,4 +8,4 @@
 
 # Dane John Mound
 
-The Dane John Mound is a former Roman cemetery in Canterbury. Photographed by Michael Stubss and Ethan Dudley in 2021.
+The Dane John Mound is a former Roman cemetery in Canterbury. Photographed by Michael Stubbs and Ethan Dudley in 2021.
