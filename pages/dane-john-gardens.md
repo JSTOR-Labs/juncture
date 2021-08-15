@@ -7,4 +7,4 @@
 
 # Dane John Gardens
 
-The Dane John Gardens in Canterbury were created on common land by Alderman James Simmons in 1790.
+The Dane John Gardens in Canterbury were created on common land by Alderman James Simmons in 1790. Photographed by Calum Elliot and Emma Molford in 2021.
