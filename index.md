@@ -109,12 +109,12 @@ St Eanswythe, patron saint of Folkestone, was the granddaughter of the first Eng
 
 ## The Christchurch Gateway
 
-![](https://upload.wikimedia.org/wikipedia/commons/c/c6/Christchurch_Gate%2C_Canterbury_Cathedral.tif)
+![](https://upload.wikimedia.org/wikipedia/commons/0/00/Christchurch_Gateway_Canterbury_1_%284902073359%29.jpg)
 
     coords: 51.279303, 1.081117
     eid: Q64145150
     
-Christchurch Gateway, Canterbury Cathedral
+Christchurch Gateway, Canterbury Cathedral, built in 1517.
 
 ## St Martin's Church
 
