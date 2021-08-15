@@ -65,6 +65,15 @@ Translated as 'village on rough ground', Chartham is in the Canterbury district 
 
 The Dane John Gardens were created on common land by Alderman James Simmons in 1790.
 
+## Dane John Mound
+
+![](https://stor.artstor.org/stor/807b6fac-91b5-4633-91d8-57d47e1cdd9f)
+
+    coords: 51.2753, 1.07818
+    eid: Q17647042
+
+The Dane John Mound is a Roman cemetery in Canterbury.
+
 ## The House of Agnes
 
     coords: 51.2824, 1.07365
