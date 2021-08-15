@@ -19,6 +19,8 @@ This site showcases the work completed by our Duke of Edinburgh participants at 
     coords: 51.279811, 1.083001
     eid: Q29265
 
+The ancient lavatory at Canterbury Cathedral where the monks washed before and after eating.
+
 ## St Augustine's Abbey
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Augustine_Abbey.jpg/320px-Augustine_Abbey.jpg)
