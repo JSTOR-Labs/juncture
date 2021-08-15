@@ -80,6 +80,15 @@ Once a popular seaside resort where Victorians came to take the air, where day-t
 
 St Eanswythe, patron saint of Folkestone, was the granddaughter of the first English king to convert to Christianity. It was recently confirmed that her bones are still preserved in the Church of St Mary and St Eanswythe. By the late-nineteenth century this small fishing village had reinvented itself as a seaside resort, nicknamed ‘Fashionable Folkestone’.  
 
+## St Martin's Church
+
+![](https://upload.wikimedia.org/wikipedia/commons/3/38/St_Martin%27s_Church_-_panoramio_-_Jean_Marc_Gfp_%283%29.jpg)
+
+    coords: 51.277876, 1.092997
+    eid: Q840462
+
+St Martin's was the private chapel of Queen Bertha of Kent. 
+
 ## Westgate Towers
 
 ![](https://upload.wikimedia.org/wikipedia/commons/1/10/Westgate_Towers%2C_Canterbury.jpg)
