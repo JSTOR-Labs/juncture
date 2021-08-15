@@ -98,6 +98,15 @@ St Eanswythe, patron saint of Folkestone, was the granddaughter of the first Eng
 
 St Martin's was the private chapel of Queen Bertha of Kent. 
 
+## The Sun Hotel
+
+![](https://upload.wikimedia.org/wikipedia/commons/d/d7/Sun_Hotel%2C_Canterbury_-_geograph.org.uk_-_2080589.jpg)
+
+    coords: 51.279763, 1.08071
+    eid: Q26535422
+    
+Built in 1503, The Sun Hotel formerly known as The Little Inn was made famous by Charles Dickens in his travels through Kent.     
+
 ## Westgate Towers
 
 ![](https://upload.wikimedia.org/wikipedia/commons/1/10/Westgate_Towers%2C_Canterbury.jpg)
