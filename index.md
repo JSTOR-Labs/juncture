@@ -56,6 +56,15 @@ Founded in 597, the cathedral is the oldest Christian structure in England.
 
 Translated as 'village on rough ground', Chartham is in the Canterbury district and the river Stour passes through both the village and the city. Chartham Mill has provided employment in paper making since 1738.
 
+## Dane John Gardens
+
+    coords: 51.2753, 1.07818
+    eid: Q17647042
+
+![](https://upload.wikimedia.org/wikipedia/commons/4/41/Dane_John_gardens_-_geograph.org.uk_-_746465.jpg)
+
+The Dane John Gardens were created on common land by Alderman James Simmons in 1790.
+
 ## The House of Agnes
 
     coords: 51.2824, 1.07365
