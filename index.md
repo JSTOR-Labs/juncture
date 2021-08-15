@@ -122,7 +122,7 @@ St Martin's was the private chapel of Queen Bertha of Kent.
 
 coords: 51.280058, 1.078325
 
-The Old Weavers House is a half-timbered building on the River Stour dating from the 14th century.
+The Old Weavers House is a half-timbered building on the River Stour at Canterbury.
 
 ## The Sun Hotel
 
