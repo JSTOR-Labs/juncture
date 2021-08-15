@@ -18,7 +18,7 @@ He lived in Tonbridge, Kent, during his later years where he wrote VE Day, which
 <br>
 He is largely underestimated today as a war poet; this may be because he worked beside other great poets such as Wilfred Owen, Isaac Rosenberg, and Siegfried Sassoon. A unique feature of his poetry that neither Owen, Rosenberg nor Sassoon wrote about was his dismay at the destruction of the French countryside, again displaying his love for nature. He also acknowledged that there were moments of happiness even among all the slaughter during the war.
 
-**Poetry**
+**Poetry**   
  An extract of one of his most memorable works, _Ancre Sunshine_:
  <br><br>
 _The railway trains went by, and dreamily   
