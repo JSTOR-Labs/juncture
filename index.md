@@ -116,6 +116,14 @@ St Eanswythe, patron saint of Folkestone, was the granddaughter of the first Eng
 
 St Martin's was the private chapel of Queen Bertha of Kent. 
 
+## The Old Weavers House
+
+![](https://upload.wikimedia.org/wikipedia/commons/7/7d/Weaver%27s_House%2C_Canterbury_JC_07.JPG)
+
+coords: 51.280058, 1.078325
+
+The Old Weavers House is a half-timbered building on the River Stour dating from the 14th century.
+
 ## The Sun Hotel
 
 ![](https://upload.wikimedia.org/wikipedia/commons/d/d7/Sun_Hotel%2C_Canterbury_-_geograph.org.uk_-_2080589.jpg)
