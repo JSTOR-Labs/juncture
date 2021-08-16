@@ -2,8 +2,8 @@
 
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare url="https://upload.forum.jstor.org/#/projects/75476/edit/30322476?query=30322476%20&filter=[]&sort=id&dir=DESC&start=0&limit=100" label="Umble Ome of Uriah Heep (2021)" attribution="Nat Lowden and Sara Gelencer">
-<param ve-compare url="https://forum.jstor.org/#/projects/75476/edit/30322477?query=30322477%20&filter=[]&sort=id&dir=DESC&start=0&limit=100" label="Umble Ome of Uriah Heep (Date Unknown)">
+<param ve-compare url="https://stor.artstor.org/stor/f06aabec-8d86-408d-9c32-d7e566c997d9" label="Umble Ome of Uriah Heep (2021)" attribution="Nat Lowden and Sara Gelencer">
+<param ve-compare url="https://stor.artstor.org/stor/50de5935-5ff6-40b7-b69e-0b28db0e7604" label="Umble Ome of Uriah Heep (Date Unknown)">
 
 # Umble Ome of Uriah Heep
 
