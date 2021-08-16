@@ -144,7 +144,7 @@ Built in 1503, The Sun Hotel formerly known as The Little Inn was made famous by
 
 ## Umble Ome of Uriah Heep
 
-![](https://forum.jstor.org/#/projects/75476/edit/30322476?query=30322476%20&filter=[]&sort=id&dir=DESC&start=0&limit=100)
+![](https://upload.wikimedia.org/wikipedia/commons/d/d7/Sun_Hotel%2C_Canterbury_-_geograph.org.uk_-_2080589.jpg)
 
     coords: 51.276272, 1.087550
 
