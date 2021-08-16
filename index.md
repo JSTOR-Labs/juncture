@@ -142,6 +142,14 @@ The Old Weavers House is a half-timbered building on the River Stour at Canterbu
     
 Built in 1503, The Sun Hotel formerly known as The Little Inn was made famous by Charles Dickens in his travels through Kent.     
 
+## Umble Ome of Uriah Heep
+
+![]()
+
+    coords: 51.276272, 1.087550
+
+Umble Ome of Uriah Heep is the house belonging to a fictional character in the novel David Copperfield, written by Charles Dickens in 1850.
+
 ## Westgate Towers
 
 ![](https://upload.wikimedia.org/wikipedia/commons/1/10/Westgate_Towers%2C_Canterbury.jpg)
