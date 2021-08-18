@@ -1,4 +1,6 @@
-### Edmund Blunden in Yalding
+<a href="https://juncture-digital.org"><img src="https://gitcdn.link/repo/jstor-labs/juncture/main/images/ve-button.png"></a>
+
+<param ve-config header="header" main="Edmund Blunden in Yalding">
 
 Yalding is situated six miles south west of Maidstone and was home to the poet Edmund Blunden.  In the article below, Alice Sellors, Bronze Award participant, tells us more about Blunden's life.
 
