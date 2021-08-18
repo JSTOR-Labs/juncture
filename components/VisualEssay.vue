@@ -11,6 +11,7 @@
         <div class="label" v-html="hoverEntity.label"></div>
         <div v-if="hoverEntity.description" class="description" v-html="hoverEntity.description"></div>
         <div v-if="hoverEntity.summary" class="summary" v-html="hoverEntity.summary"></div>
+        <div v-if="hoverEntity.mwPage" v-html="hoverEntity.mwPage"></div>
       </div>
     </div>
 
