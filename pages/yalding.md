@@ -1,6 +1,6 @@
-Yalding is situated six miles south west of Maidstone and was home to the poet Edmund Blunden.  In the article below, Alice Sellors, Bronze Award participant, tells us more about Blunden's life.
+### Edmund Blunden in Yalding
 
-### Edmund Blunden
+Yalding is situated six miles south west of Maidstone and was home to the poet Edmund Blunden.  In the article below, Alice Sellors, Bronze Award participant, tells us more about Blunden's life.
 
 **Early Life**   
 Edmund Blunden was born on the 1st of November 1896, in London. He grew up in Yalding in Kent, where he developed his love of the English countryside and appreciation of nature. He became a successful poet, author and critic, and his writing style featured both poetry and prose. His love for the countryside was prevalent in his work as a writer, for example Blunden said:
