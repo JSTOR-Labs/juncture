@@ -167,7 +167,7 @@ Built c.1379, the Westgate Towers are the last surviving gatehouse in Canterbury
 
 A pretty seaside town on the north coast of Kent, Whitstable is famous for oysters, the writer Somerset Maugham, the Maunsell forts nine miles from its shore and its associations with the history of diving.
 
-## Yalding
+## Edmund Blunden in Yalding
 
 ![](https://upload.wikimedia.org/wikipedia/commons/f/f8/Town_Bridge%2C_Yalding%2C_Kent_-_geograph.org.uk_-_1907735.jpg)
 
