@@ -176,3 +176,28 @@ A pretty seaside town on the north coast of Kent, Whitstable is famous for oyste
 Yalding is situated six miles south west of Maidstone and was home to the poet Edmund Blunden.
 
 </param>
+
+## Cranbrook Union
+
+    coords: 51.279911, 0.516970
+
+## Dover Union
+
+    coords: 
+
+## Bridge Union
+
+    coords: 
+
+## Canterbury Union
+
+    coords: 
+
+## Dartford
+
+    coords: 51.447128, 0.211800
+
+## East Ashford
+
+    coords: 51.166670, 0.886980
+    
