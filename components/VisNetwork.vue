@@ -185,14 +185,25 @@ module.exports = {
             let shape = obj[nodeType].image ? "circularImage" : undefined;
             
             let html = undefined;
-            const element = document.createElement("div");
+            var element = document.createElement("div");
+            element.className = `${transformed.nodes.length}`
+            console.log('`${transformed.nodes.length}`', `${transformed.nodes.length}`);
             if (obj[nodeType].html){
-              element.innerHTML = html;
+              var class = '.'+`${transformed.nodes.length}`
+              tippy(class, {
+                allowHTML: true,
+                interactive: true,
+                //appendTo: document.body,
+                //delay: [null, null],
+                placement: 'right',
+                theme: 'light-border',
+                content: obj[nodeType].html
+                });
+                
               let html = element;
+              console.log('element', element)
             }
             
-            
-            //let fixed = true
             nodes[nodeId] = id;
             if (label !== ""){
               transformed.nodes.push({ id, qid, label, title: label, x, y, physics, image, shape, html });
