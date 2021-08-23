@@ -183,10 +183,19 @@ module.exports = {
             let physics = obj[nodeType].x && obj[nodeType].y ? false : true;
             let image = obj[nodeType].image ? obj[nodeType].image : undefined;
             let shape = obj[nodeType].image ? "circularImage" : undefined;
+            
+            let html = undefined;
+            const element = document.createElement("div");
+            if (obj[nodeType].html){
+              element.innerHTML = html;
+              let html = element;
+            }
+            
+            
             //let fixed = true
             nodes[nodeId] = id;
             if (label !== ""){
-              transformed.nodes.push({ id, qid, label, title: label, x, y, physics, image, shape});
+              transformed.nodes.push({ id, qid, label, title: label, x, y, physics, image, shape, html });
             }
           }
         });
