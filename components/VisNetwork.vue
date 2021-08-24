@@ -186,10 +186,10 @@ module.exports = {
             
             let html = undefined;
             var element = document.createElement("div");
-            element.className = `${transformed.nodes.length}`
+            element.className = id;
             console.log('`${transformed.nodes.length}`', `${transformed.nodes.length}`);
             if (obj[nodeType].html){
-              var class = '.'+`${transformed.nodes.length}`
+              var class = '.'+ id;
               tippy(class, {
                 allowHTML: true,
                 interactive: true,
