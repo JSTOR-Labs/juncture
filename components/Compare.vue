@@ -97,7 +97,7 @@ module.exports = {
             const tileSource = manifest.sequences[0].canvases[manifest.seq || 0].images[0].resource.service
               ? `${manifest.sequences[0].canvases[manifest.seq || 0].images[0].resource.service['@id']}/info.json`
               : { url: manifest.sequences[0].canvases[manifest.seq || 0].images[0].resource['@id'] || manifest.metadata.find(md => md.label === 'source').value,
-                 type: 'image', buildPyramid: true, tileSource.setClip(50, 80) }
+                 type: 'image', buildPyramid: true, tileSource.setClip(x : 50, y: 80) }
             return tileSource
           })
         })
