@@ -100,7 +100,6 @@ module.exports = {
         nodes: nodes,
         edges: edges,
       };
-
       let options = {
         interaction: { hover: true },
         physics:{
@@ -183,30 +182,30 @@ module.exports = {
             let physics = obj[nodeType].x && obj[nodeType].y ? false : true;
             let image = obj[nodeType].image ? obj[nodeType].image : undefined;
             let shape = obj[nodeType].image ? "circularImage" : undefined;
+            let title = obj[nodeType].label || obj[nodeType].id;
             
-            let html = undefined;
+            
             var element = document.createElement("div");
-            element.className = id;
-            console.log('`${transformed.nodes.length}`', `${transformed.nodes.length}`);
+            element.className = 'node'+id;
             if (obj[nodeType].html){
-              var class = '.'+ id;
-              tippy(class, {
+                console.log('obj[nodeType].html', obj[nodeType].html)
+              var className = '.node'+ id;
+              tippy(className, {
                 allowHTML: true,
                 interactive: true,
-                //appendTo: document.body,
-                //delay: [null, null],
-                placement: 'right',
+                appendTo: document.body,
+                trigger: 'click',
                 theme: 'light-border',
                 content: obj[nodeType].html
                 });
                 
-              let html = element;
+              title = element;
               console.log('element', element)
             }
             
             nodes[nodeId] = id;
             if (label !== ""){
-              transformed.nodes.push({ id, qid, label, title: label, x, y, physics, image, shape, html });
+              transformed.nodes.push({ id, qid, label, title: title, x, y, physics, image, shape });
             }
           }
         });
@@ -223,7 +222,6 @@ module.exports = {
       });
       return transformed;
     },
-
     async getImages(nodeslist) {
       let eids = nodeslist.filter(node => node.qid).map(node => node.qid)
       let entities = await this.getEntityData(eids)
@@ -260,7 +258,6 @@ module.exports = {
       })
       return entities
     },
-
     commonsImageUrl(url, width) {
       // Converts Wikimedia commons File URL to an image link
       //  If a width is provided a thumbnail is returned
@@ -291,7 +288,6 @@ module.exports = {
     overflow: visible;
   }
   #vis,
-
   .grid-container {
         display: grid;
         grid-template-rows: 1fr auto;
@@ -299,7 +295,6 @@ module.exports = {
         "main"
         "footer";
     }
-
   .footerBar {
       /* row-start / column-start / row-end / column-end */
       grid-area: footer;
@@ -312,7 +307,6 @@ module.exports = {
         text-align: center;
         line-height: 1;
     }
-
   #mynetwork {
     /*width: 100%;
     height: 100%;
@@ -330,10 +324,8 @@ module.exports = {
     color: black;
     text-align: center;
   }
-
   .title {
       font-size: 0.9rem;
       font-weight: bold;
     }
-
 </style>
