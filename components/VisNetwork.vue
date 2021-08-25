@@ -184,23 +184,11 @@ module.exports = {
             let shape = obj[nodeType].image ? "circularImage" : undefined;
             let title = obj[nodeType].label || obj[nodeType].id;
             
-            
             var element = document.createElement("div");
             element.className = 'node'+id;
             if (obj[nodeType].html){
-                console.log('obj[nodeType].html', obj[nodeType].html)
-              var className = '.node'+ id;
-              tippy(className, {
-                allowHTML: true,
-                interactive: true,
-                appendTo: document.body,
-                trigger: 'click',
-                theme: 'light-border',
-                content: obj[nodeType].html
-                });
-                
+              element.innerHTML = obj[nodeType].html;
               title = element;
-              console.log('element', element)
             }
             
             nodes[nodeId] = id;
