@@ -193,7 +193,7 @@
     console.log(window.location)
     const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 ? 'DEV' : 'PROD'
     let isJuncture = window.location.hostname.indexOf('juncture-digital.org') === 0 || ENV === 'DEV'
-    const junctureVersion = 'v0.4.17'
+    const junctureVersion = 'v0.4.21'
     let junctureVersionHash
 
     const referrerUrl = document.referrer
@@ -1598,6 +1598,9 @@
       
       } else {
         
+        componentsList = [...componentsList, ...await listComponents(
+          `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
+          
         if (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs') {
           componentsList = [...componentsList, ...await listComponents(
             `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
@@ -1609,8 +1612,6 @@
             `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
         }
 
-        componentsList = [...componentsList, ...await listComponents(
-          `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
         componentsList = [...componentsList, ...await listComponents(
           `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'components')]
 
