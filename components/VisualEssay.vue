@@ -1,339 +1,297 @@
 <template>
-  <div class="grid-container" :style="containerStyle">
-    <div id="mynetwork" :style="networkStyle"></div>
-    <div class="footerBar">
-    <span class="title">{{this.items[0].title}}</span>
+
+  <div>
+  
+    <div id="essay-component" ref="essay" v-html="processedHtml"></div>
+
+    <!-- Entity infobox popup -->
+    <div style="display:none;">
+      <div ref="popup" class="popup" v-if="hoverEntity">
+        <div v-if="hoverEntity.thumbnails" class="image"><img :src="hoverEntity.thumbnails[0]"></div>
+        <div class="label" v-html="hoverEntity.label"></div>
+        <div v-if="hoverEntity.description" class="description" v-html="hoverEntity.description"></div>
+        <div v-if="hoverEntity.summary" class="summary" v-html="hoverEntity.summary"></div>
+        <div v-if="hoverEntity.mwPage" v-html="hoverEntity.mwPage"></div>
+      </div>
     </div>
+
   </div>
+
 </template>
 
 <script>
-/* global vis, L */
-const viewerLabel = "Network Viewer"
-const viewerIcon = "fas fa-project-diagram"
-const dependencies = [
-  "https://unpkg.com/vis-network/styles/vis-network.min.css",
-  "https://unpkg.com/vis-data@latest/peer/umd/vis-data.min.js",
-  "https://unpkg.com/vis-network@latest/peer/umd/vis-network.min.js",
-];
-const defaults = {
-  popupOptions: { autoClose: false, closeButton: false, closeOnClick: false },
-};
-module.exports = {
-  name: "ve-vis-network",
+module.exports = {  
+  name: 'Essay',
   props: {
-    items: { type: Array, default: () => [] },
-    viewerIsActive: Boolean,
-    selected: String,
-    width: Number,
-    height: Number,
-    hoverItemID: String,
-    selectedItemID: String,
+    html: { type: String, default: '' },
+    path: String,
+    anchor: String,
+    entities: { type: Object, default: () => ({}) },
+    params: { type: Array, default: () => ([]) },
+    availableViewers: { type: Array, default: () => ([]) },
+    scrollTop: { type: Number, default: 0 },
+    contentSource:  { type: Object, default: () => ({}) }
   },
   data: () => ({
-    viewerLabel,
-    viewerIcon,
-    activeWindow: undefined,
-    popups: {},
-    active: new Set(),
+    processedHtml: '',
+    hoverEntity: null,
+    active: null
   }),
   computed: {
-    networkStyle() {
-            return {
-                width: `${this.width}px`,
-                //height: `${this.height}px`,
-                overflowY: 'auto !important',
-                marginLeft: '0',   
-            }
-    },
-    containerStyle() {
-      return {
-        width: `${this.width}px`,
-        height: this.viewerIsActive ? `${this.height}px` : '0',
-        overflowY: "auto !important",
-        backgroundColor: this.items[0] ? this.items[0].background || 'white' : 'white',
-      };
-    },
-    activeElements() {
-      return this.$store.getters.activeElements;
-    },
-    entities() {
-      return this.itemsInActiveElements.filter((item) => item.tag === "entity");
-    },
-    itemsInActiveElements() {
-      return this.$store.getters.itemsInActiveElements;
-    },
-    apiBaseURL() {
-      return window.location.origin;
-    },
-    input() { 
-      return this.items[0] && this.items[0].file || this.items[0].url
-    }
+    items() { return this.active ? this.paramsInScope(document.querySelector(`[data-id="${this.active}"] p`)) : [] },
   },
   mounted() {
-    console.log(this.$options.name, this.items);
-    // this.init();
-    this.loadDependencies(dependencies, 0, this.init);
+    document.getElementById('app').classList.add('visual-essay')
   },
   methods: {
-    init() {
-      var nodeslist = []
-      var edgeslist = []
-      //get input data here from file
-      this.getInput(this.input)
-        .then((delimitedDataString) => {
-          const delimiter = this.input.split(".").pop() == "tsv" ? "\t" : ",";
-          const data = this.transformData(
-            this.delimitedStringToObjArray(delimitedDataString, delimiter)
-          )
-          edgeslist = data.edges
-          return this.getImages(data.nodes)
-        })
-        .then(nodesWithImages => nodeslist = nodesWithImages)
-        .then(() => this.renderGraph(nodeslist, edgeslist))
-    },
-    renderGraph(nodeslist, edgeslist) {
-      let nodes = new vis.DataSet(nodeslist);
-      let edges = new vis.DataSet(edgeslist);
-      var container = document.getElementById("mynetwork");
-      var data = {
-        nodes: nodes,
-        edges: edges,
-      };
-
-      let options = {
-        interaction: { hover: true },
-        physics:{
-           stabilization: false,
-       },
-        layout: {
-          randomSeed: undefined,
-          improvedLayout: true,
-          clusterThreshold: 150,
-          hierarchical: this.items[0].layout === "hierarchy" ? true : false,
-        },
-        edges: {
-          arrows: this.items[0].arrows || 'to',
-          //color: 'red',
-          scaling: {
-            label: true,
-          },
-          shadow: true,
-          smooth: true,
-          length: 300,
-        },
-      };
-      //init network
-      var network = new vis.Network(container, data, options);
-      network.on("click", (properties) => {
-        var ids = properties.nodes;
-        var clickedNodes = nodes.get(ids);
-        if (clickedNodes.length > 0) {
-          this.setSelectedItemID(clickedNodes[0].qid);
+    async essayLoaded() {
+      this.active = null
+      let essayElem = document.getElementById('essay')
+      essayElem.querySelectorAll('.seg-link').forEach(el => el.addEventListener('click', () => navigator.clipboard.writeText(el.dataset.anchor)))
+      Array.from(essayElem.querySelectorAll('.collapsible')).forEach(el =>el.addEventListener('click', this.toggleExpandCollapse))
+      this.tagEntities(essayElem)
+      this.$emit('set-entities', this.entities)
+      this.$nextTick(() => {
+        this.addPopups(this.entities)
+        this.convertLinks(essayElem)
+        let segments = [...essayElem.querySelectorAll('.segment')]
+        if (this.anchor) {
+          let anchorElem = document.getElementById(this.anchor)
+          if (anchorElem) {
+            this.$emit('scroll-to-anchor')
+            this.$nextTick(() => essayElem.scrollTop = this.scrollTop - 100)
+          }
+        } else {
+          essayElem.scrollTop = 0
+          this.active = segments.length > 0 ? segments[0].dataset.id : null
         }
-      });
-      network.body.emitter.emit("_dataChanged");
-      network.redraw();
+      })
     },
-    setHoverItemID(itemID) {
-      this.$emit("hover-id", itemID);
-    },
-    setSelectedItemID(itemID) {
-      this.$emit("selected-id", itemID);
-    },
-    addEventHandlers(elem, itemId) {
-      elem.on("click", () => {
-        this.setSelectedItemID(itemId);
-      });
-      elem.on("mouseover", () => {
-        this.setHoverItemID(itemId);
-      });
-      elem.on("mouseout", () => {
-        this.setHoverItemID();
-      });
-    },
-    addPopup(id, label, latLng, offset) {
-      if (!this.popups[id]) {
-        const popup = L.popup({
-          ...defaults.popupOptions,
-          ...{ offset: L.point(0, offset || 0) },
-        });
-        popup.setLatLng(latLng);
-        popup.setContent(`<h1 data-eid="${id}">${label}</h1>`);
-        popup.options.id = id;
-        this.popups[id] = popup;
-      }
-    },
-    getInput() {
-      return fetch(this.input).then((resp) => resp.text());
-    },
-    transformData(objArray) {
-      const nodes = {};
-      const transformed = { nodes: [], edges: [] };
-      objArray.forEach((obj) => {
-        ['source', 'target'].forEach((nodeType) => {
-          let nodeId = obj[nodeType].id || obj[nodeType].label;
-          if (nodes[nodeId] === undefined) {
-            let id = `${transformed.nodes.length}`;
-            let qid =
-              obj[nodeType].id[0] === "Q" ? obj[nodeType].id : undefined;
-            let label = obj[nodeType].label || obj[nodeType].id;
-            let x = obj[nodeType].x ? (this.width)*(obj[nodeType].x/100) : undefined;
-            let y = obj[nodeType].y ? (this.height)*(obj[nodeType].y/100) : undefined;
-            let physics = obj[nodeType].x && obj[nodeType].y ? false : true;
-            let image = obj[nodeType].image ? obj[nodeType].image : undefined;
-            let shape = obj[nodeType].image ? "circularImage" : undefined;
-            let title = obj[nodeType].label || obj[nodeType].id;
-            
-            
-            var element = document.createElement("div");
-            element.className = 'node'+id;
-            if (obj[nodeType].html){
-                console.log('obj[nodeType].html', obj[nodeType].html)
-              var className = '.node'+ id;
-              tippy(className, {
-                allowHTML: true,
-                interactive: true,
-                appendTo: document.body,
-                trigger: 'click',
-                theme: 'light-border',
-                content: obj[nodeType].html
-                });
-                
-              title = element;
-              console.log('element', element)
+    doCustomFormatting(elem) {
+      Array.from(elem.querySelectorAll('section.cards')).forEach(cardsSection => {
+        Array.from(cardsSection.querySelectorAll('section')).forEach(card => {
+          ['img', '.card > .segment > p > a', '.card > .segment > p > strong', 'ul'].forEach(selector => {
+            let el = card.querySelector(selector)
+            if (el) {
+              if (selector !== 'strong' || el.parentElement.tagName !== 'A') card.appendChild(el)
             }
-            
-            nodes[nodeId] = id;
-            if (label !== ""){
-              transformed.nodes.push({ id, qid, label, title: title, x, y, physics, image, shape });
+          })
+          let segments = []
+          Array.from(card.querySelectorAll('.segment')).forEach(seg => {
+            if (seg.textContent.trim() === '') {
+              card.removeChild(seg)
+            } else {
+              segments.push(seg)
+            }
+          })
+          if (segments.length > 0) {
+            let abstractWrapper = document.createElement('div')
+            abstractWrapper.classList.add('abstract')
+            card.appendChild(abstractWrapper)
+            let abstractDiv = document.createElement('div')
+            abstractDiv.classList.add('abstract-text')
+            abstractWrapper.appendChild(abstractDiv)
+            segments.forEach(seg => abstractDiv.appendChild(seg))
+            abstractWrapper.innerHTML += '<button class="collapsible">read more</button>'
+          }
+        })
+      })
+      return elem.innerHTML
+    },
+    // Adds tippy popups to tagged entity text
+    addPopups(entities) {
+      tippy('.entity', {
+        allowHTML: true,
+        interactive: true,
+        appendTo: document.body,
+        delay: [null, null],
+        placement: 'right',
+        theme: 'light-border',
+        onShow: async (instance) => {
+          this.hoverEntity = this.entities[instance.reference.dataset.eid]
+          if (!this.hoverEntity.summary) {
+            let label, summary
+            if (this.hoverEntity.article) {
+              let resp = await fetch(this.hoverEntity.article)
+              let articleMarkdown = await resp.text()
+              let tmp = new DOMParser().parseFromString(md.render(articleMarkdown), 'text/html').children[0].children[1]
+              label = tmp.querySelector('h1, h2, h3, h4, h5, h6').innerHTML
+              summary = Array.from(tmp.querySelectorAll('p')).map(p => p.outerHTML).join('')
+            } else if (this.hoverEntity.mwPage) {
+              let page = this.hoverEntity.mwPage.replace(/\/w\//, '/wiki/').split('/wiki/').pop()
+              let resp = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${page}`)
+              resp = await resp.json()
+              summary = resp.extract_html
+            }
+            if (label || summary) {
+              entities[instance.reference.dataset.eid].summary = summary
+              entities[instance.reference.dataset.eid].label = entities[instance.reference.dataset.eid].label || label
+              this.$emit('set-entities', entities)
+              this.hoverEntity = {...entities[instance.reference.dataset.eid]}
             }
           }
-        });
-      });
-      objArray.forEach((obj) => {
-        if (obj.target.id !== ""){
-          transformed.edges.push({
-            from: nodes[obj.source.id || obj.source.label],
-            to: nodes[obj.target.id || obj.target.label],
-            title: obj.edge ? (obj.edge.label || obj.edge.id) : ''
-          });
-        }
-        
-      });
-      return transformed;
-    },
-
-    async getImages(nodeslist) {
-      let eids = nodeslist.filter(node => node.qid).map(node => node.qid)
-      let entities = await this.getEntityData(eids)
-      return nodeslist.map(node => {
-        if (node.qid) {
-          node.image = entities[node.qid].thumbnails[0]
-          node.shape = 'circularImage'
-        }
-        return node
+          this.$nextTick(() => instance.setContent(this.$refs.popup.outerHTML))
+        },
+        onHide: () => {}
       })
     },
-  
-    // Gets labels and images for referenced Wikdata entities
-    async getEntityData(eids) {
-      let values = eids.map(eid => `(<http://www.wikidata.org/entity/${eid}>)`).join(' ')
-      let query = `SELECT ?item ?label ?images WHERE {
-                      VALUES (?item) { ${values} }
-                      ?item rdfs:label ?label . FILTER(LANG(?label) = 'en')
-                      OPTIONAL { ?item wdt:P18 ?images . }
-                    }`
-      let resp = await fetch('https://query.wikidata.org/sparql', {
-        method: 'POST', body: `query=${encodeURIComponent(query)}`, 
-        headers: { Accept: 'application/sparql-results+json', 'Content-Type': 'application/x-www-form-urlencoded' }
+    toggleExpandCollapse(e) {
+      let button = e.target
+      let textDiv = button.previousElementSibling
+      if (button.innerText == 'read more') {
+        button.innerText = 'read less'
+        textDiv.style['-webkit-line-clamp'] = 'unset'
+      }
+      else if (button.innerText == 'read less') {
+        button.innerText = 'read more'
+        textDiv.style['-webkit-line-clamp'] = 5
+      }
+    },
+    // Finds all param tags in elements between top-level app element and element in para arg
+    paramsInScope(root) {
+      let paramTags = []
+      let scope = []
+      let el = root
+      while (el) {
+        scope.push(el)
+        el = el.id !== 'essay-component' ? el.parentElement : null
+      }
+      scope.forEach(elemInScope =>{
+        let elemPath = getDomPath(elemInScope).slice(6).join('>')
+        paramTags = [...paramTags, ...this.params.filter(param => param.path === elemPath)]
+        })
+      return paramTags
+    },
+    // Finds words/phrases in content paragraphs that match labels or aliases for entities in scope
+    // Matched text is wrapped with a span tag for reacting to hover and click actions
+    tagEntities(root) {
+      Array.from(root.querySelectorAll('.segment p')).forEach(para => {
+        let paraHTML = para.innerHTML
+        this.paramsInScope(para, this.params)
+          .filter(param => param['ve-entity'] !== undefined || param.eid !== undefined)
+          .map(param => param.id)
+          .forEach(id => {
+            let entity = this.entities[id]
+            if (entity) {
+              let toMatch = [...[entity.label], ...entity.aliases.filter(alias => alias.length > 2)]
+              for (let i = 0; i < toMatch.length; i++) {
+                if (toMatch[i]) {
+                  let re = new RegExp(`(^|[\\s(>])(${toMatch[i].replace(/'/, "'?")})([\\s)<;:,.]|$)`, 'i')
+                  let match = re.exec(paraHTML)
+                  if (match) {
+                    paraHTML = paraHTML.replace(match[2], `<span class="entity inferred" data-eid="${id}">${match[2]}</span>`)
+                    entity.foundIn.add(para.parentElement.dataset.id)
+                    break
+                  }
+                }
+              }
+            }
+          })
+        para.innerHTML = paraHTML
       })
-      resp = await resp.json()
-      let entities = {}
-      resp.results.bindings.forEach(rec => {
-        let eid = rec.item.value.split('/').pop()
-        if (!entities[eid]) entities[eid] = {eid, label: rec.label.value, images: [], thumbnails: []}
-        if (rec.images && entities[eid].images.indexOf(rec.images.value) < 0) {
-          entities[eid].images.push(rec.images.value)
-          entities[eid].thumbnails.push(this.commonsImageUrl(rec.images.value, 200))
+      Array.from(root.querySelectorAll('p span')).forEach(span => {
+        if (span.attributes.eid) {
+          span.setAttribute('data-eid', span.attributes.eid.value)
+          span.classList.add('entity', 'tagged')
         }
       })
-      return entities
-    },
-
-    commonsImageUrl(url, width) {
-      // Converts Wikimedia commons File URL to an image link
-      //  If a width is provided a thumbnail is returned
-      let mwImg = url.indexOf('Special:FilePath') > 0 ? url.split('/Special:FilePath/').pop() :  url.split('/File:').pop()
-      mwImg = decodeURIComponent(mwImg).replace(/ /g,'_')
-      const ImgMD5 = md5(mwImg)
-      const extension = mwImg.slice(mwImg.length-4)
-      let imgUrl = `https://upload.wikimedia.org/wikipedia/commons/${width ? 'thumb/' : ''}`
-      imgUrl += `${ImgMD5.slice(0,1)}/${ImgMD5.slice(0,2)}/${mwImg}`
-      if (width) imgUrl += `/${width}px-${mwImg}`
-      if (extension === '.svg') imgUrl += '.png'
-      if (extension === '.tif') imgUrl += '.jpg'
-      return imgUrl
+      Array.from(root.querySelectorAll('span.entity'))
+        .forEach(el => el.addEventListener('click', (e) => {
+          // console.log('entity selected', e.target.dataset.eid)
+        })
+      )
     }
-    
   },
   watch: {
-    items() {
-      console.log(`${this.$options.name}.watch.items`, this.items)
-      this.init()
+    html: {
+      handler: function (html) {
+        if (html) {
+          let tmp = new DOMParser().parseFromString(html, 'text/html').children[0].children[1]
+          this.processedHtml = this.doCustomFormatting(tmp)
+          this.$nextTick(() => this.essayLoaded())
+        }
+      },
+      immediate: true
+    },
+    active: {
+      handler: function (current, prior) {
+        this.$emit('set-active', current)
+        let activeSegment = document.querySelector(`[data-id="${current}"]`)
+        if (activeSegment) activeSegment.classList.add('active')
+        let priorSegment = document.querySelector(`[data-id="${prior}"]`)
+        if (priorSegment) priorSegment.classList.remove('active')
+      },
+      immediate: true
+    },
+    items: {
+      handler: function (items) {
+        this.$emit('set-items', items)
+      },
+      immediate: true
+    },
+    scrollTop: {
+      handler: function (pos) {
+        let target = this.$refs.essay
+        if (pos && target) {
+          let segments = Array.from(target.querySelectorAll('.segment'))
+          let i
+          for (i = 0; i < segments.length; i++) {
+            if (pos <= segments[i].offsetTop + segments[i].clientHeight - 200) break
+          }
+          if (i < segments.length && this.active !== segments[i].dataset.id ) this.active = segments[i].dataset.id
+        }
+      },
+      immediate: true
     }
   }
-};
+}
 </script>
 
 <style>
-  .vis-network {
-    overflow: visible;
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr) );
+    grid-auto-rows: 1fr;
+    grid-gap: 1.8rem;
   }
-  #vis,
-
-  .grid-container {
-        display: grid;
-        grid-template-rows: 1fr auto;
-        grid-template-areas:
-        "main"
-        "footer";
-    }
-
-  .footerBar {
-      /* row-start / column-start / row-end / column-end */
-      grid-area: footer;
-      z-index: 2;
+  .card {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto 1fr 0px;
+    grid-template-areas:
+        "image"
+        "title"
+        "metadata"
+        "abstract"
+        "heading";
+    border-radius: 4px;
+    padding: .5rem;
+  }
+  .card > a, .card > strong {
+    grid-area: title;
+    font-weight: bold;
+    font-size: 1.5rem;
+    line-height: 1;
+    margin-top: 1.3rem;
+    margin-bottom: 0.2rem;
+    text-decoration: none;
+}
+  .card a:hover {
+    text-decoration: underline;
+  }
+  .card img {
+      grid-area: image;
       justify-self: stretch;
-      align-self: stretch;
-      /* background-color: rgba(255, 255, 255, 0.8); */
-      background-color: #ccc;
-      padding: 9px 6px;
-        text-align: center;
-        line-height: 1;
-    }
-
-  #mynetwork {
-    /*width: 100%;
-    height: 100%;
-    */
-    grid-area: main
+      object-fit: cover;
+      width: 100%;
+      height: 250px;
   }
-  #networktitle {
-    z-index:100;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    font: 1.0em;
-    background-color:rgba(143, 223, 255, 0.5);
-    padding: 2%;
-    color: black;
-    text-align: center;
-  }
-
-  .title {
+  .card ul {
+      grid-area: metadata;
+      list-style-type: none;
+      padding: 12px 0;
+      margin: 0;
       font-size: 0.9rem;
-      font-weight: bold;
-    }
-
+      font-weight: 400;
+  }
 </style>
