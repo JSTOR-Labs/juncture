@@ -1,0 +1,1 @@
+A pretty seaside town on the north coast of Kent, Whitstable is famous for oysters, the writer Somerset Maugham, the Maunsell forts nine miles from its shore and its associations with the history of diving.
