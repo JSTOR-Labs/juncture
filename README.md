@@ -24,9 +24,7 @@
 
 ## Image
 
-_Girl with a Pearl Earring_ (Dutch: Meisje met de parel) is an oil painting by Dutch Golden Age painter Johannes Vermeer, 
-dated c. 1665. Going by various names over the centuries, it became known by its present title towards the end of the 
-20th century after the earring worn by the girl portrayed there.[^1]
+Parkinson's picture of Rhubarb struggles to accommodate evidence from a presumably real plant with the bigger roots which were available commercially. He has compromised by stitching the two together.[^1]
 <param ve-image 
        label="Rhubarbs/Parkinson Rhubarb.png" 
        description="Rhubarb in Parkinson" 
