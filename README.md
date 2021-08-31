@@ -2,9 +2,9 @@
 <a href="https://juncture-digital.org"><img src="https://juncture-digital.org/images/ve-button.png"></a>
 
 <param ve-config 
-       title="Girl with a Pearl Earring"
-       author="JSTOR Labs team"
-       banner="https://iiif.juncture-digital.org/banner/?url=https://upload.wikimedia.org/wikipedia/commons/4/47/Bartholomeus_Johannes_van_Hove%2C_Het_Mauritshuis_te_Den_Haag.jpg" 
+       title="Entangled Roots: How Rhubarb shows connections between new botanical science and herbal tradition"
+       author="Nathan Cornish"
+       banner="https://iiif.juncture-digital.org/banner/?url=https://upload.https://en.wikipedia.org/wiki/File:Rheum_rhabarbarum.2006-04-27.uellue.jpg" 
        layout="vertical">
 
 <!-- Entities discussed throughout the essay are typically defined before the essay text and
