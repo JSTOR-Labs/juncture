@@ -1,20 +1,20 @@
-title: Juncture
-tagline: The Visual Essay Framework from JSTOR Labs
-description: Juncture - An easy-to-use framework for building interactive visual essays and websites.
-banner: https://picsum.photos/id/857/1000/400
+title: Rhubarb History
+tagline: The History of Rhubarb 
+description: Rhubarb History!
+banner: https://en.wikipedia.org/wiki/File:Rheum_rhabarbarum.2006-04-27.uellue.jpg
 #favicon: <favicon url>
 #logo: <logo url>
 
 # When using a custom domain these fields must be updated to match
 # the Github account and repository name
-#acct: <GitHub account/username>
-#repo: <GitHub repository>
+#acct: <cornishnj>
+#repo: <Rhubarb>
 
 ######################################################
 # Defines options shown in the header navigation menu
 ######################################################
 nav:
-- label: Contact the Juncture team
+- label: Contact me
   icon: fas fa-envelope
   action: contact-us
 - label: View page source
@@ -25,5 +25,5 @@ nav:
 # The following information is used in the display and processing of the contact form.
 contactForm:
   to:
-  - JSTOR Labs <labs@ithaka.org>
-  subject: Juncture
+  - njcornish42@gmail.com
+  subject: Rhubarb 
