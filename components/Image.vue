@@ -439,7 +439,14 @@ module.exports = {
       }
     },
     async loadAnnotations() {
-      let annosPath = `${this.mdDir}${this.currentItemSourceHash}.json`
+      //let annosPath = `${this.mdDir}${this.currentItemSourceHash}.json`
+      let annosPath = `${this.mdDir}`
+      if (annosPath.length > 1){
+        annosPath = `${this.mdDir}/${this.currentItemSourceHash}.json`
+      } else {
+        annosPath = `${this.mdDir}${this.currentItemSourceHash}.json`
+      }
+       
       console.log(`loadAnnotations: path=${annosPath}`)
       this.getFile(annosPath).then(annos => {
         if (annos && annos.content && annos.content.length > 0) {
