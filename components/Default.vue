@@ -720,7 +720,7 @@ section.heading p {
   }
   .button a {
     font-size: 24px !important;
-    padding: 12px 56px !important;
+    padding: 8px 40px !important;
   }
 }
 
