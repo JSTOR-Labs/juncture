@@ -32,11 +32,12 @@
      <source src=”https://www.youtube.com/watch?v=_VwKvS6QpsI" type=”video/mp4"></source>
    </video>
   </div>
-  -->
+    -->
+
   <div :style="containerStyle">
     <div class="plyr__video-embed" id="player">
       <iframe
-        :src="`https://www.youtube.com/embed/${videoId}`"
+        :src="`${source}`"
         allowfullscreen
         allowtransparency
         allow="autoplay"
@@ -44,6 +45,8 @@
       ></iframe>
     </div>
   <div>
+
+
   
 </template>
 
@@ -80,6 +83,8 @@ module.exports = {
   computed: {
     videoItems() { return this.items.filter(item => item[this.componentName]) },
     videoId() { return this.videoItems.length > 0 ? this.videoItems[0].vid || this.videoItems[0].id : null },
+    videoSource() {return this.videoItems.length > 0 ? this.videoItems[0].source : null },
+    source() { return this.videoSource ? this.videoSource : 'https://www.youtube.com/embed/'+this.videoId},
     containerStyle() { return { display: this.viewerIsActive ? '' : 'none', height: this.viewerIsActive ? '100%' : '0' } }
   },
   mounted() {
