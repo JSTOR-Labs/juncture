@@ -193,7 +193,7 @@
     console.log(window.location)
     const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 ? 'DEV' : 'PROD'
     let isJuncture = window.location.hostname.indexOf('juncture-digital.org') === 0 || ENV === 'DEV'
-    const junctureVersion = 'v0.4.24'
+    const junctureVersion = 'v0.4.25'
     let junctureVersionHash
 
     const referrerUrl = document.referrer
@@ -418,13 +418,9 @@
             ref: qargs.ref || config.ref || contentSource.ref
         }}
       //}
+      console.log('essayConfig', this.essayConfig)
       if (gaPropertyID) ga('create', gaPropertyID, 'auto')
-      if (siteConfig.description) {
-        let el = document.createElement('meta')
-        el.name = 'description'
-        el.content = siteConfig.description
-        document.querySelector('head').appendChild(el)
-      }
+      if (siteConfig.description) setMetaDescription(siteConfig.description)
       let attrsWithUrls = ['banner', 'favicon', 'logo']
       if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital') ) {
         attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
@@ -710,7 +706,8 @@
           },
 
           async getMarkdown(path) {
-            if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital')) {
+            // if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital')) {
+            if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0) {
               let url = `${contentSource.baseUrl}${contentSource.basePath}${path}`
               let resp = await fetch(url)
               if (resp.ok) return await resp.text()
@@ -1226,7 +1223,10 @@
           essayConfig (config) {
             this.layouts = []
             this.viewerIsOpen = false
-            if (config && config.layout) this.layouts = config.layout.split(',').map(layout => layout === 'vtl' ? 'vertical' : layout)
+            if (config) {
+              if (config.layout) this.layouts = config.layout.split(',').map(layout => layout === 'vtl' ? 'vertical' : layout)
+              if (config.description) setMetaDescription(config.description)
+            }
           },
 
           // Watcher that updates various data elements when the active paragraph changes
@@ -1479,6 +1479,15 @@
         el = el.parentNode
       }
       return stack
+    }
+
+    function setMetaDescription(description) {
+      let existing = Array.from(document.querySelectorAll('meta[name=description]')).find(item => item)
+      if (existing) existing.parentElement.removeChild(existing)
+      let el = document.createElement('meta')
+      el.name = 'description'
+      el.content = description
+      document.querySelector('head').appendChild(el)
     }
 
     // Gets site config
