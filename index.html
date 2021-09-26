@@ -193,7 +193,7 @@
     console.log(window.location)
     const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 ? 'DEV' : 'PROD'
     let isJuncture = window.location.hostname.indexOf('juncture-digital.org') === 0 || ENV === 'DEV'
-    const junctureVersion = 'v0.4.26'
+    const junctureVersion = 'v0.4.27'
     let junctureVersionHash
 
     const referrerUrl = document.referrer
@@ -548,11 +548,14 @@
           loginsEnabled() { return this.oauthCredsFound && (!this.essayConfig || !this.essayConfig['logins-disabled']) }
         },
         mounted() {
+          let path
           if (window.location.href.indexOf('#') > 0) {
             path = window.location.href.split('#')[0].split('/').slice(3).join('')
-            anchor = window.location.href.split('#').pop()
+            let anchor = window.location.href.split('#').pop()
+            console.log(`path=${path} anchor=${anchor}`)
             if (path) this.anchor = anchor
             else path = anchor
+            console.log(`path=${path} anchor=${anchor}`)
           }
           // this.anchor = window.location.href.indexOf('#') >= 0 ? window.location.href.split('#').pop() : null
           window.onpopstate = (e) => this.loadEssay(e.state.file, true) 
@@ -560,7 +563,7 @@
             this.forceHorizontalLayout = window.matchMedia('only screen and (max-width: 1000px)').matches
           })
           resizeObserver.observe(this.$refs.app)
-          this.loadEssay()
+          this.loadEssay(path)
           // Initialize Markdown source viewer
           this.markdownViewer = tippy(this.$refs.header, {
             trigger: 'manual', 
