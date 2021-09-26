@@ -193,7 +193,7 @@
     console.log(window.location)
     const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 ? 'DEV' : 'PROD'
     let isJuncture = window.location.hostname.indexOf('juncture-digital.org') === 0 || ENV === 'DEV'
-    const junctureVersion = 'v0.4.25'
+    const junctureVersion = 'v0.4.26'
     let junctureVersionHash
 
     const referrerUrl = document.referrer
@@ -548,7 +548,13 @@
           loginsEnabled() { return this.oauthCredsFound && (!this.essayConfig || !this.essayConfig['logins-disabled']) }
         },
         mounted() {
-          this.anchor = window.location.href.indexOf('#') >= 0 ? window.location.href.split('#').pop() : null
+          if (window.location.href.indexOf('#') > 0) {
+            path = window.location.href.split('#')[0].split('/').slice(3).join('')
+            anchor = window.location.href.split('#').pop()
+            if (path) this.anchor = anchor
+            else path = anchor
+          }
+          // this.anchor = window.location.href.indexOf('#') >= 0 ? window.location.href.split('#').pop() : null
           window.onpopstate = (e) => this.loadEssay(e.state.file, true) 
           const resizeObserver = new ResizeObserver(entries => { 
             this.forceHorizontalLayout = window.matchMedia('only screen and (max-width: 1000px)').matches
