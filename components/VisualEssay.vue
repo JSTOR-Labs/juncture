@@ -11,6 +11,7 @@
         <div class="label" v-html="hoverEntity.label"></div>
         <div v-if="hoverEntity.description" class="description" v-html="hoverEntity.description"></div>
         <div v-if="hoverEntity.summary" class="summary" v-html="hoverEntity.summary"></div>
+        <div v-if="hoverEntity.mwPage" v-html="hoverEntity.mwPage"></div>
       </div>
     </div>
 
@@ -19,7 +20,6 @@
 </template>
 
 <script>
-
 module.exports = {  
   name: 'Essay',
   props: {
@@ -44,13 +44,11 @@ module.exports = {
     document.getElementById('app').classList.add('visual-essay')
   },
   methods: {
-
     async essayLoaded() {
       this.active = null
       let essayElem = document.getElementById('essay')
       essayElem.querySelectorAll('.seg-link').forEach(el => el.addEventListener('click', () => navigator.clipboard.writeText(el.dataset.anchor)))
       Array.from(essayElem.querySelectorAll('.collapsible')).forEach(el =>el.addEventListener('click', this.toggleExpandCollapse))
-
       this.tagEntities(essayElem)
       this.$emit('set-entities', this.entities)
       this.$nextTick(() => {
@@ -69,7 +67,6 @@ module.exports = {
         }
       })
     },
-
     doCustomFormatting(elem) {
       Array.from(elem.querySelectorAll('section.cards')).forEach(cardsSection => {
         Array.from(cardsSection.querySelectorAll('section')).forEach(card => {
@@ -101,7 +98,6 @@ module.exports = {
       })
       return elem.innerHTML
     },
-
     // Adds tippy popups to tagged entity text
     addPopups(entities) {
       tippy('.entity', {
@@ -139,7 +135,6 @@ module.exports = {
         onHide: () => {}
       })
     },
-
     toggleExpandCollapse(e) {
       let button = e.target
       let textDiv = button.previousElementSibling
@@ -152,7 +147,6 @@ module.exports = {
         textDiv.style['-webkit-line-clamp'] = 5
       }
     },
-
     // Finds all param tags in elements between top-level app element and element in para arg
     paramsInScope(root) {
       let paramTags = []
@@ -168,7 +162,6 @@ module.exports = {
         })
       return paramTags
     },
-
     // Finds words/phrases in content paragraphs that match labels or aliases for entities in scope
     // Matched text is wrapped with a span tag for reacting to hover and click actions
     tagEntities(root) {
@@ -208,10 +201,8 @@ module.exports = {
         })
       )
     }
-
   },
   watch: {
-
     html: {
       handler: function (html) {
         if (html) {
@@ -222,7 +213,6 @@ module.exports = {
       },
       immediate: true
     },
-
     active: {
       handler: function (current, prior) {
         this.$emit('set-active', current)
@@ -233,14 +223,12 @@ module.exports = {
       },
       immediate: true
     },
-
     items: {
       handler: function (items) {
         this.$emit('set-items', items)
       },
       immediate: true
     },
-
     scrollTop: {
       handler: function (pos) {
         let target = this.$refs.essay
@@ -255,10 +243,8 @@ module.exports = {
       },
       immediate: true
     }
-
   }
 }
-
 </script>
 
 <style>
@@ -268,7 +254,6 @@ module.exports = {
     grid-auto-rows: 1fr;
     grid-gap: 1.8rem;
   }
-
   .card {
     display: grid;
     grid-template-columns: 1fr;
@@ -282,7 +267,6 @@ module.exports = {
     border-radius: 4px;
     padding: .5rem;
   }
-
   .card > a, .card > strong {
     grid-area: title;
     font-weight: bold;
@@ -292,11 +276,9 @@ module.exports = {
     margin-bottom: 0.2rem;
     text-decoration: none;
 }
-
   .card a:hover {
     text-decoration: underline;
   }
-
   .card img {
       grid-area: image;
       justify-self: stretch;
@@ -304,7 +286,6 @@ module.exports = {
       width: 100%;
       height: 250px;
   }
-
   .card ul {
       grid-area: metadata;
       list-style-type: none;

@@ -16,7 +16,7 @@
             <path fill-rule="evenodd" clip-rule="evenodd" d="M13.3333 8L7.77778 12.4444V3.55556L13.3333 8ZM2.22222 0H17.7778C19 0 20 1 20 2.22222V13.7778C20 15 19 16 17.7778 16H11.885L14.2682 18.8598C14.6218 19.2841 14.5645 19.9147 14.1402 20.2682C13.7159 20.6218 13.0853 20.5645 12.7318 20.1402L9.75 16.562L6.76822 20.1402C6.41466 20.5645 5.78409 20.6218 5.35982 20.2682C4.93554 19.9147 4.87821 19.2841 5.23178 18.8598L7.61496 16H2.22222C1 16 0 15 0 13.7778V2.22222C0 1 1 0 2.22222 0ZM2.22222 13.7778H17.7778V2.22222H2.22222V13.7778Z"/>
           </svg>
         </span>
-        <span v-if="isAuthenticated" @click="toggleAnnotatorEnabled" title="Edit Annotations" style="height:40px;">
+        <span v-if="isAuthenticated" @click="toggleAnnotatorEnabled" title="Edit Annotations" style="height:40px;" id="annotatorIcon">
           <svg width="21" height="18" viewBox="0 0 22 19" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M20.6453 5.5585L17.0283 4.25559C16.8759 4.2007 16.7039 4.27914 16.6455 4.43017L13.2845 13.1108L14.1453 15.7556C14.2596 16.1093 14.6807 16.2609 15.0074 16.0661L17.4548 14.613L20.8158 5.93242C20.8743 5.78138 20.7977 5.61339 20.6453 5.5585ZM19.2831 0.880764L21.2399 1.58566C21.8495 1.80522 22.1546 2.47448 21.9219 3.08134L21.3772 4.48836C21.3187 4.6394 21.1467 4.71783 20.9943 4.66294L17.3774 3.36003C17.225 3.30514 17.1484 3.13715 17.2069 2.98611L17.7516 1.57909C17.9883 0.973681 18.6736 0.661205 19.2831 0.880764ZM10.6142 12.8025L14.7886 2.84821C13.8401 2.62062 12.8308 2.49796 11.784 2.49796C6.24285 2.49796 1.75304 5.93501 1.75304 10.1785C1.75304 11.825 2.43302 13.3419 3.58562 14.5948C2.98452 15.9433 0.742171 17.2336 0.420251 17.4188C0.39608 17.4327 0.382736 17.4404 0.381725 17.4414C0.275629 17.5518 0.246694 17.715 0.309387 17.8591C0.37208 18.0031 0.507112 18.0895 0.661434 18.0895C2.42649 18.0895 5.36514 17.2686 6.41646 16.659C7.96933 17.4126 9.80673 17.8591 11.784 17.8591C12.0419 17.8591 12.2976 17.8516 12.5506 17.837L10.6142 12.8025Z"/>
         </svg>
@@ -143,7 +143,7 @@ module.exports = {
   computed: {
     osdContainerStyle() {
       return {
-        backgroundColor: this.currentItem ? this.currentItem.background || 'black' : 'black',
+        background: this.currentItem && this.currentItem.background ? this.currentItem.background : 'black',
         textAlign: 'center',
         height: this.viewerIsActive ? '100%' : '0',
         display: this.viewerIsActive ? 'grid' : 'none',
@@ -227,15 +227,17 @@ module.exports = {
   },
   mounted() {
     this.osdElem = document.getElementById('osd')
+    const osdElem = document.getElementById('osd')
+    if (osdElem) { osdElem.style.background = this.osdContainerStyle.background }
     this.loadDependencies(dependencies, 0, this.init)
   },
   methods: {
     init() {
-      console.log(this.$options.name, this.viewerItems, this.viewerIsActive, this.width, this.height, this.selected)
+      console.log(this.$options.name, this.viewerItems, this.viewerIsActive, this.width, this.height, this.selected, this.currentItme)
       // console.log(`acct=${this.acct} repo=${this.repo} path=${this.path}`)
       if (this.viewerIsActive) {
-      this.initViewer()
-      this.loadManifests(this.viewerItems)
+        this.initViewer()
+        this.loadManifests(this.viewerItems)
       }
       //this.displayInfoBox()
     },
@@ -294,7 +296,7 @@ module.exports = {
         // this.viewer.viewport.goHome = function(immediately) { if (this.viewer) this.viewer.raiseEvent('home', { immediately: immediately }) }
         this.viewer.addHandler('home', (e) => {
           this.positionImage(e.immediately, 'home')
-          this.showAnnotationsNavigator = false
+          // this.showAnnotationsNavigator = false
         })
         this.viewer.addHandler('page', this.newPage)
         this.viewer.addHandler('viewport-change', this.viewportChange)
@@ -437,8 +439,15 @@ module.exports = {
       }
     },
     async loadAnnotations() {
-      let annosPath = `${this.mdDir}${this.currentItemSourceHash}.json`
-      // console.log(`loadAnnotations: path=${annosPath}`)
+      //let annosPath = `${this.mdDir}${this.currentItemSourceHash}.json`
+      let annosPath = `${this.mdDir}`
+      if (annosPath.length > 1){
+        annosPath = `${this.mdDir}/${this.currentItemSourceHash}.json`
+      } else {
+        annosPath = `${this.mdDir}${this.currentItemSourceHash}.json`
+      }
+       
+      console.log(`loadAnnotations: path=${annosPath}`)
       this.getFile(annosPath).then(annos => {
         if (annos && annos.content && annos.content.length > 0) {
           this.annotations = JSON.parse(annos.content)
@@ -448,6 +457,9 @@ module.exports = {
         } else {
           this.annotations = []
         }
+        this.annoCursor = 0
+        if (this.annotations.length > 0) this.showAnnotationsNavigator = true
+        console.log(`annotations=${this.annotations.length} show=${this.showAnnotationsNavigator}`)
       })
     },
     saveAnnotations() {
@@ -460,6 +472,12 @@ module.exports = {
     },
     toggleAnnotatorEnabled() {
      this.annotatorEnabled = !this.annotatorEnabled
+     if (this.annotatorEnabled) {
+      document.getElementById("annotatorIcon").style.backgroundColor = "#f5e753";
+     } else {
+      document.getElementById("annotatorIcon").style.backgroundColor = "transparent";
+     }
+      
     },
     setAnnotatorEnabled(enabled) {
       console.log(`setAnnotatorEnabled=${enabled}`)
@@ -717,7 +735,7 @@ module.exports = {
 
       return html;
     },
-    displayInfoBox(){
+    displayInfoBox() {
       //this.imageInfo = this.parseManifest();
 
       if (this.manifests.length == 2 && (this.mode === 'layers' || this.mode === 'curtain')){
@@ -738,38 +756,28 @@ module.exports = {
       //const template = document.getElementsByClassName('.info-box-content');
       //console.log('template', template);
 
-        if (!this.tippy) {
-          new tippy(document.querySelectorAll('.info-box'), {
-            animation:'scale',
-            trigger:'click',
-            interactive: true,
-            allowHTML: true,
-            placement: 'bottom-start',
-            zIndex: 11,
-            preventOverflow: { enabled: true },
-            hideOnClick: true,
-            // theme: 'light-border',
-            
-            onShow: (instance) => {
-              instance.setContent(this.imageInfo)
-              //setTimeout(() => { instance.hide() }, 10000)
-            },
-            onHide(instance) {
-              instance.setProps({trigger: 'mouseenter'});
-            }
-          })
-        }
-    
-    },
-    setImageCatpion(){
-      if (this.manifests.length == 2){
-        if (this.sliderPct < 50){
-          this.imageInfo = this.parseManifest(0)
-        }
-        else if (this.sliderPct > 50){
-          this.imageInfo = this.parseManifest(1)
-        }
+      if (!this.tippy) {
+        new tippy(document.querySelectorAll('.info-box'), {
+          animation:'scale',
+          trigger:'click',
+          interactive: true,
+          allowHTML: true,
+          placement: 'bottom-start',
+          zIndex: 11,
+          preventOverflow: { enabled: true },
+          hideOnClick: true,
+          // theme: 'light-border',
+          
+          onShow: (instance) => {
+            instance.setContent(this.imageInfo)
+            //setTimeout(() => { instance.hide() }, 10000)
+          },
+          onHide(instance) {
+            instance.setProps({trigger: 'mouseenter'});
+          }
+        })
       }
+    
     }
   },
   beforeDestroy() {
@@ -866,6 +874,10 @@ module.exports = {
     },
     currentItem(current, previous) {
       console.log('currentItem', current, previous)
+      this.annotations = []
+      this.annoCursor = 0
+      this.loadAnnotations()
+      /*
       if (this.viewer && current && (!previous || current['@id'] !== previous['@id'])) {
         this.loadAnnotations()
         this.displayInfoBox();
@@ -874,6 +886,7 @@ module.exports = {
         // if (previous && previous.annotations) this.currentItem = { ...this.currentItem, ...{ annotations: [...previous.annotations] } }
         if (current && previous && previous.annotations) this.currentItem.annotations = [...previous.annotations]
       }
+      */
     },
     currentItemSourceHash() { console.log(`currentItemSource=${this.currentItemSource} hash=${this.currentItemSourceHash}`) },
     mode() {

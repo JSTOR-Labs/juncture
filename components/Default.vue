@@ -15,30 +15,32 @@
         </template>
 
         <template v-if="isJuncture">
-          <hr>
 
           <template v-if="loginsEnabled">
             <li v-if="isAuthenticated" @click="doMenuAction({action:'logout'})"><i :class="`fas fa-user`"></i>Logout</li>
             <li v-else @click="doMenuAction({action:'authenticate'})"><i :class="`fas fa-user`"></i>Login using Github</li>
-            <hr>
           </template>
 
+          <li @click="doMenuAction({action:'view-markdown'})"><i class="fas fa-file-code"></i>View page markdown</li>
+          <li @click="doMenuAction({action:'goto-github'})"><i class="fab fa-github"></i>View on GitHub</li>
+
+          <!-- 
           <template v-if="isAuthenticated">
-            <li @click="doMenuAction({action:'view-markdown'})"><i class="fas fa-file-code"></i>View page markdown</li>
+            <hr>
             <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') || isAdmin)" @click="doMenuAction({action:'edit-page'})">
               <i class="fas fa-edit"></i>Edit this page
             </li>
             <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') || isAdmin)" @click="doMenuAction({action:'add-page'})">
               <i class="fas fa-file-medical"></i>Add a page
             </li>
-            <li @click="doMenuAction({action:'goto-github'})"><i class="fab fa-github"></i>Goto to GitHub</li>
             <li @click="doMenuAction({action:'create-site'})"><i class="fas fa-plus-circle"></i>Create new site</li>
 
             <template v-if="isAdmin">
-                <hr>
-                <li v-if="isAdmin" @click="doMenuAction({action:'software-update'})"><i class="fas fa-wrench"></i>Software update</li>
-              </template>
+              <hr>
+              <li v-if="isAdmin" @click="doMenuAction({action:'software-update'})"><i class="fas fa-wrench"></i>Software update</li>
+            </template>
           </template>
+          -->
 
         </template>
         <hr>
@@ -51,7 +53,7 @@
 
       <template v-if="section.classes.has('heading')">
 
-        <header v-if="!fixedHeader" class="header responsive">
+        <header v-if="!fixedHeader" :class="`header${essayConfig['force-hamburger'] ? '' : ' responsive'}`">
           <img class="logo" @click="doMenuAction({action:'load-page', path:'/'})" :src="logo">
           <input class="menu-btn" type="checkbox" id="menu-btn"/>
           <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
@@ -328,8 +330,8 @@ module.exports = {
           })
         Array.from(document.querySelectorAll('.dot'))
           .forEach((dot, idx) => {
-            if (idx === this.slideIndex) dot.classList.add('active')
-            else dot.classList.remove('active')
+            if (idx === this.slideIndex) dot.classList.add('active-slide')
+            else dot.classList.remove('active-slide')
           })
       }
     }
@@ -441,7 +443,7 @@ section .button a {
 /************ Footer ***********/
 section.footer {
   padding: 24px;
-  background-color: #333 !important;
+  background-color: #222029 !important;
   color: white;
 }
 
@@ -488,7 +490,6 @@ section.footer {
   display: grid;
   grid-auto-flow: row;
   gap: 1em;
-  padding: 1em;
 }
 
 .card {
@@ -515,6 +516,7 @@ section.footer {
 .card img {
   width: 100%;
   max-height: 300px;
+  border-radius: 8px;
 }
 
 .card p {
@@ -555,6 +557,16 @@ section.footer {
   .cards {
     grid-auto-flow: column !important;
     grid-auto-columns: 1fr;
+  }
+}
+
+@media (max-width: 48em) {
+  #about .horizontal .card {
+    display: block;
+  }
+
+  #about .horizontal .card .media {
+    margin-bottom: 40px;
   }
 }
 
@@ -708,7 +720,7 @@ section.heading p {
   }
   .button a {
     font-size: 24px !important;
-    padding: 12px 56px !important;
+    padding: 8px 48px !important;
   }
 }
 
@@ -770,13 +782,13 @@ section.heading p {
   display: block;
   float: left;
   font-size: 2em;
-  padding: 10px 20px;
+  padding: 16px 36px;
   text-decoration: none;
   cursor: pointer;
 }
 
 img.logo {
-  height: 60px;
+  height: 48px;
   width: auto;
 }
 
@@ -799,7 +811,7 @@ img.logo {
   cursor: pointer;
   display: inline-block;
   float: right;
-  padding: 28px 20px;
+  padding: 40px 36px;
   position: relative;
   user-select: none;
 }
@@ -807,10 +819,11 @@ img.logo {
 .header .menu-icon .navicon {
   background: #fff;
   display: block;
-  height: 2px;
+  height: 4px;
+  border-radius: 2px;
   position: relative;
   transition: background .2s ease-out;
-  width: 18px;
+  width: 32px;
 }
 
 .header .menu-icon .navicon:before,
@@ -822,14 +835,15 @@ img.logo {
   position: absolute;
   transition: all .2s ease-out;
   width: 100%;
+  border-radius: 2px;
 }
 
 .header .menu-icon .navicon:before {
-  top: 5px;
+  top: 10px;
 }
 
 .header .menu-icon .navicon:after {
-  top: -5px;
+  top: -10px;
 }
 
 /* menu btn */
@@ -930,6 +944,18 @@ img.logo {
     "carousel-image carousel-description";
 }
 
+@media (max-width: 48em) {
+  .carousel-slides {
+    grid-template-columns: unset;
+    grid-template-areas: unset;
+  }
+
+  .carousel .button {
+    margin-top: 24px !important ;
+    text-align: center !important;
+  }
+}
+
 /* Next & previous buttons */
 .prev, .next {
   cursor: pointer;
@@ -962,7 +988,7 @@ img.logo {
 
 .carousel .button {
   margin-top: 60px;
-  text-align: left !important;
+  text-align: left;
 }
 
 .carousel .button a {
@@ -993,7 +1019,7 @@ img.logo {
   transition: background-color 0.2s ease;
 }
 
-.active, .dot:hover {
+.active-slide, .dot:hover {
   cursor: pointer;
   background-color: #5b152e;
 }
