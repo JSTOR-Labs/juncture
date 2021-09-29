@@ -7,4 +7,4 @@
 
 # Umble Ome of Uriah Heep
 
-Loew Chantry Lane, Canterbury. Photographed by Michael Stubbs and Ethan Dudley.
+Lower Chantry Lane, Canterbury. Photographed by Michael Stubbs and Ethan Dudley.
