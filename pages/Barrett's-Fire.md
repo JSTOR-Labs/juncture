@@ -1,6 +1,3 @@
-https://forum.jstor.org/#/projects/75476/edit/30256204?query=fire&filter=[]&sort=id&dir=DESC&start=0&limit=100
-https://forum.jstor.org/#/projects/75476/edit/31638680?query=&filter=[]&sort=id&dir=DESC&start=0&limit=100 - new
-
 <a href="https://juncture-digital.org"><img src="https://gitcdn.link/repo/jstor-labs/juncture/main/images/ve-button.png"></a>
 
 <param ve-config header="header" main="now-and-then">
