@@ -7,4 +7,4 @@
 
 # Umble Ome of Uriah Heep
 
-Text here
+Photographed by Michael Stubbs and Ethan Dudley.
