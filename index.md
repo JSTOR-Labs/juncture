@@ -203,7 +203,7 @@ Yalding is situated six miles south west of Maidstone and was home to the poet E
     
 ## Canterbury Market
 
-## Barrett's Fire
+## Barretts Fire
 
 
 
