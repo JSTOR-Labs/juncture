@@ -201,3 +201,4 @@ Yalding is situated six miles south west of Maidstone and was home to the poet E
 
     coords: 51.166670, 0.886980
     
+## Canterbury Market
