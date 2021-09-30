@@ -186,7 +186,7 @@
 
     const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 || window.location.hostname.indexOf('githubpreview') > 0 ? 'DEV' : 'PROD'
     let isJuncture = window.location.hostname.indexOf('juncture-digital.org') === 0 || ENV === 'DEV'
-    const junctureVersion = 'v0.4.28'
+    const junctureVersion = 'v0.5.0'
     let junctureVersionHash
 
     const referrerUrl = document.referrer
@@ -433,6 +433,13 @@
           document.querySelector('head').appendChild(style)
         }
       })
+
+      if (siteConfig.enableOneTrust && siteConfig.oneTrustSiteKey) {
+        let el = document.createElement('script')
+        el.src = 'https://cdn.cookielaw.org/scripttemplates/otSDKStub.js'
+        el.setAttribute('data-domain-script', siteConfig.oneTrustSiteKey)
+        document.querySelector('body').appendChild(el)
+      }
 
       new Vue({
         el: '#app',
@@ -1535,5 +1542,52 @@
     })(window ,document,'script','https://www.google-analytics.com/analytics.js','ga')
   </script>
 
+  <script>
+    function disablePerformanceGroup() {
+      // disable google analytics
+      if (gaPropertyID) window[`ga-disable-${gaPropertyID}`] = true
+    }
+
+    function handleOneTrustCookieGroups(oneTrustCookie) {
+      const STRICTLY_NECESSARY_GROUP_ID = "C0001"
+      const PERFORMANCE_GROUP_ID = "C0002"
+      const FUNCTIONAL_GROUP_ID = "C0003"
+      const ADVERTISING_GROUP_ID = "C0004"
+      const SOCIAL_MEDIA_GROUP_ID = "C0005"
+
+      const splitCookieValue = oneTrustCookie.split('=')
+      const cookieValues = new URLSearchParams(splitCookieValue.slice(1).join('='))
+      const cookieGroups = cookieValues.get('groups')
+      const disabledCookieGroups = cookieGroups && cookieGroups.split(',')
+        .map(cookie => cookie.split(':'))
+        .filter(([groupName, enabled]) => enabled == 0)
+
+      disabledCookieGroups && disabledCookieGroups.forEach(([group]) => {
+        if (group === PERFORMANCE_GROUP_ID) {
+          disablePerformanceGroup()
+        }
+      })
+    }
+
+    function findOneTrustCookie() {
+      const oneTrustCookie = document.cookie
+        .split(';')
+        .map(cookie => cookie.trim())
+        .find(cookie => {
+          const [cookieName] = cookie.split('=')
+          console.log(cookieName)
+          return cookieName === 'OptanonConsent'
+        })
+
+      return oneTrustCookie
+    }
+
+    function OptanonWrapper() {
+      const oneTrustCookie = findOneTrustCookie()
+      if (oneTrustCookie) {
+        handleOneTrustCookieGroups(oneTrustCookie)
+      }
+    }
+  </script>
 </body>
 </html>
