@@ -1575,7 +1575,6 @@
         .map(cookie => cookie.trim())
         .find(cookie => {
           const [cookieName] = cookie.split('=')
-          console.log(cookieName)
           return cookieName === 'OptanonConsent'
         })
 
