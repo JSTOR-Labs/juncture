@@ -170,15 +170,9 @@
   <!-- This is used for deep linking of Single Page Apps when hosted with GitHub Pages -->
   <script type="text/javascript">
     (function(l) {
-      if (l.search) {
-        let q = {}
-        l.search.slice(1).split('&').forEach(function(v) {
-          let a = v.split('=')
-          q[a[0]] = a.slice(1).join('=').replace(/~and~/g, '&')
-        })
-        if (q.p !== undefined) {
-          window.history.replaceState(null, null, l.pathname.slice(0, -1) + (q.p || '') + (q.q ? ('?' + q.q) : '') + l.hash)
-        }
+      if (l.search[1] === '/' ) {
+        let decoded = l.search.slice(1).split('&').map(s => s.replace(/~and~/g, '&')).join('?')
+        window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash)
       }
     }(window.location))
   </script>
@@ -190,10 +184,9 @@
 
   <script>
 
-    console.log(window.location)
-    const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 ? 'DEV' : 'PROD'
+    const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 || window.location.hostname.indexOf('githubpreview') > 0 ? 'DEV' : 'PROD'
     let isJuncture = window.location.hostname.indexOf('juncture-digital.org') === 0 || ENV === 'DEV'
-    const junctureVersion = 'v0.4.27'
+    const junctureVersion = 'v0.4.28'
     let junctureVersionHash
 
     const referrerUrl = document.referrer
@@ -295,36 +288,6 @@
           if (ghRepoInfo) {
             contentSource = {...contentSource, ...ghRepoInfo}
           }
-        // juncture-digital.org
-        /*
-        else if (isJuncture) {
-          contentSource = {
-            acct: 'jstor-labs', repo: 'juncture-digital', ref: 'main', basePath: '', isGhpSite: false,
-            baseUrl: window.location.origin, assetsBaseUrl: `https://raw.githubusercontent.com/jstor-labs/juncture/main`
-          }
-          let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
-          if (pathElems.length >= 2) {
-            let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
-            if (ghRepoInfo) {
-              contentSource = {...contentSource, ...ghRepoInfo}
-              // contentSource.basePath = `/${contentSource.acct}/${contentSource.repo}`
-            }
-          }
-
-        } else if (window.location.hostname === 'dev.juncture-digital.org') {
-          contentSource = {
-            acct: 'jstor-labs', repo: 'juncture-dev', ref: 'main', basePath: '', isGhpSite: false,
-            baseUrl: window.location.origin, assetsBaseUrl: `https://raw.githubusercontent.com/jstor-labs/juncture-dev/main`
-          }
-          let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
-          if (pathElems.length >= 2) {
-            let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
-            if (ghRepoInfo) {
-              contentSource = {...contentSource, ...ghRepoInfo}
-              contentSource.basePath = `/${contentSource.acct}/${contentSource.repo}`
-            }
-          }
-        */
         // Deployed in a non juncture-digital.org custom domain
         } else {
           contentSource = {acct: null, repo: null, ref: null, baseUrl: window.location.origin, basePath: '', isGhpSite: false}
@@ -348,7 +311,6 @@
     async function headRef(acct, repo, ref, token) {  
       token = token || oauthAccessToken || ghUnscopedToken
       let heads, tags, found, sha
-      // console.log(`headRef: acct=${acct} repo=${repo} ref=${ref} token=${token} oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`)
       let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs/heads`, {
         headers: {Authorization: `Token ${token}`, Accept: 'application/vnd.github.v3+json'} })
       if (resp.ok) {
@@ -370,8 +332,6 @@
 
     async function getFile(acct, repo, ref, path, token) {
       token = token || oauthAccessToken || ghUnscopedToken
-      // console.log(`getFile: token=${token} oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`)
-      // console.log(`getFile: acct=${acct} repo=${repo} ref=${ref} path=${path} token=${token}`)
       let content
       let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`, {headers: {Authorization:`Token ${token}`}})
       if (resp.ok) {
@@ -393,7 +353,6 @@
           let currentTime = new Date().getTime()
           let expirationTime = ghAuth.user.stsTokenManager.expirationTime
           let expiresInSecs = (expirationTime-currentTime)/1000
-          console.log(`oauthAccessToken: expiresInSecs=${expiresInSecs} isValid=${expiresInSecs >= 300}`)
           if (expiresInSecs >= 300) {
             authenticatedUser = ghAuth.user
             authenticatedUser.acct = ghAuth.additionalUserInfo.username
@@ -411,18 +370,15 @@
     })
     .then(config => {
       siteConfig = config
-      //if (ENV === 'PROD') {
-        contentSource = {...contentSource, ...{
-            acct: config.acct || contentSource.acct, 
-            repo: config.repo || contentSource.repo, 
-            ref: qargs.ref || config.ref || contentSource.ref
-        }}
-      //}
-      console.log('essayConfig', this.essayConfig)
+      contentSource = {...contentSource, ...{
+          acct: config.acct || contentSource.acct, 
+          repo: config.repo || contentSource.repo, 
+          ref: qargs.ref || config.ref || contentSource.ref
+      }}
       if (gaPropertyID) ga('create', gaPropertyID, 'auto')
       if (siteConfig.description) setMetaDescription(siteConfig.description)
       let attrsWithUrls = ['banner', 'favicon', 'logo']
-      if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital') ) {
+      if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0 || window.location.hostname.indexOf('githubpreview.dev') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital') ) {
         attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       } else {
         headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
@@ -440,7 +396,7 @@
     .then(resp => headRef('jstor-labs', 'juncture', junctureVersion, ghUnscopedToken))
     .then(hash => {
       junctureVersionHash = hash ? hash.slice(0,7) : null
-      console.log(`isJuncture=${isJuncture} junctureVersion=${junctureVersion} junctureVersionHash=${junctureVersionHash} referrer=${document.referrer}`)
+      console.log(`junctureVersion=${junctureVersion} junctureVersionHash=${junctureVersionHash} referrer=${document.referrer}`)
       return getComponentsList()
     })
     .then(clist => {
@@ -487,7 +443,6 @@
           anchor: null,
           items: [],
           active: null,
-
           qargs,
           layouts: [],
           siteConfig,
@@ -526,7 +481,6 @@
           essayConfig: null
         }),
         computed: {
-          // essayConfig() { return this.params.find(attr => attr['ve-config'] !== undefined) },
           headerComponent() { return this.essayConfig && this.essayConfig.header ? `ve-${this.essayConfig.header.toLowerCase()}` : null},
           mainComponent() { return this.essayConfig && this.essayConfig.main ? `ve-${this.essayConfig.main.toLowerCase()}` : null},
           footerComponent() { return this.essayConfig && this.essayConfig.footer ? `ve-${this.essayConfig.footer.toLowerCase()}` : null},
@@ -552,12 +506,10 @@
           if (window.location.href.indexOf('#') > 0) {
             path = window.location.href.split('#')[0].split('/').slice(3).join('')
             let anchor = window.location.href.split('#').pop()
-            console.log(`path=${path} anchor=${anchor}`)
             if (path) this.anchor = anchor
             else path = anchor
             console.log(`path=${path} anchor=${anchor}`)
           }
-          // this.anchor = window.location.href.indexOf('#') >= 0 ? window.location.href.split('#').pop() : null
           window.onpopstate = (e) => this.loadEssay(e.state.file, true) 
           const resizeObserver = new ResizeObserver(entries => { 
             this.forceHorizontalLayout = window.matchMedia('only screen and (max-width: 1000px)').matches
@@ -609,7 +561,6 @@
 
           // Handles menu actions from header
           async doAction(action, options) {
-            // console.log('doAction', action, options)
             if (action === 'sendmail') {
               this.doActionCallback = {status: 'processing', message: 'Processing request'}
               let resp = await sendmail(options)
@@ -672,7 +623,6 @@
           
           loadNewSite() {
             this.hideForm()
-            // window.location.href = `https://juncture-digital.org/${this.authenticatedUser.acct}/${this.newRepo}`
             window.open(`https://juncture-digital.org/${this.authenticatedUser.acct}/${this.newRepo}`, '_blank')
           },
 
@@ -716,7 +666,7 @@
 
           async getMarkdown(path) {
             // if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital')) {
-            if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0) {
+            if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0 || window.location.hostname.indexOf('githubpreview.dev') > 0) {
               let url = `${contentSource.baseUrl}${contentSource.basePath}${path}`
               let resp = await fetch(url)
               if (resp.ok) return await resp.text()
@@ -733,15 +683,12 @@
 
           // Loads essay Markdown file
           async loadEssay(path, replace, anchor) {
-            // Array.from(this.$refs.app.classList).forEach(cls => this.$refs.app.classList.remove(cls))
             this.essayConfig = null
             path = path || window.location.pathname.slice(contentSource.basePath.length) || '/'
             if (path.slice(-1) !== '/') path += '/'
             this.path = path 
-            console.log(`loadEssay: basePath=${contentSource.basePath} path=${path} anchor=${this.anchor}`)
-            // let pathsToTry = [`${path}index.md`, `${path}README.md`, `${path.slice(0,-1)}.md`]
+            // console.log(`loadEssay: basePath=${contentSource.basePath} path=${path} anchor=${this.anchor}`)
             let pathsToTry = [`${path}index.md`, `${path}README.md`, `${path.slice(0,-1)}.md`]
-            // if (this.authenticatedUser !== null) pathsToTry = [...[`${path}admin.md`], ...pathsToTry]
             let markdown
             for (let i = 0; i < pathsToTry.length; i++) {
               markdown = await this.getMarkdown(pathsToTry[i])
@@ -852,12 +799,6 @@
                   segment.classList.add('segment')
                   segment.innerHTML = el.outerHTML
                   segments.push(segment)
-
-                  /*
-                  let segLink = document.createElement('span')
-                  segment.appendChild(segLink)
-                  segLink.outerHTML = `<span class="seg-link" data-anchor="${this.contentSource.baseUrl}${this.contentSource.basePath}${this.path}#${segID}" title="${segID}"><i class="fas fa-link"></span>`
-                  */
                 }
               } else if (el.tagName === 'SECTION' && el.className === 'footnotes') {
                 currentSection.innerHTML += el.outerHTML
@@ -979,7 +920,6 @@
           convertResourceUrls(root) {
             let pathIsDir = this.path.slice(0,-1) === this.mdDir
             root.querySelectorAll('img').forEach(img => {
-              // if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src,`${contentSource.basePath}${this.path}`, pathIsDir))
               if (img.src.indexOf(window.location.origin) === 0) img.setAttribute('src', convertURL(img.src, this.path, pathIsDir))
             })
             root.querySelectorAll('param').forEach(param => {
@@ -1095,126 +1035,6 @@
             const actions = { ...this.actions }
             Object.keys(eventActions).forEach(target => actions[`ve-${target}`] = eventActions[target])
             this.actions = actions
-          },
-
-          replaceValues(content, replacements) {
-            for (const [toMatch, replacementValue] of Object.entries(replacements)) { content = content.replace(new RegExp(toMatch, 'g'), replacementValue) }
-            return content
-          },
-
-          async copyFile (src, tgt, path) {
-            let existing
-            resp = await fetch(`https://api.github.com/repos/${tgt.acct}/${tgt.repo}/contents${src.path}?ref=${tgt.ref}`, {headers: {Authorization: `Token ${this.ghToken}`}})
-            if (resp.ok) existing = await resp.json()
-            resp = await fetch(`https://api.github.com/repos/${src.acct}/${src.repo}/contents${src.path}?ref=${src.ref}`, {headers: {Authorization: `Token ${this.ghToken}`}})
-            resp = await resp.json()
-            let file = decodeURIComponent(escape(atob(resp.content)))
-            let payload = { message: 'initial', branch: tgt.ref, content: btoa(file) }
-            if (existing) payload.sha = existing.sha
-            resp = await fetch(`https://api.github.com/repos/${tgt.acct}/${tgt.repo}/contents${tgt.path || src.path}?ref=${tgt.ref}`, {
-              method: 'PUT', body: JSON.stringify(payload), headers: {Authorization: `Token ${this.ghToken}`} })
-          },
-
-          async waitForRepoInit(acct, repo, i) {
-            i = i === undefined ? 0 : i
-            let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}/git/refs/heads`, {
-                  headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.v3+json'} })
-            let heads = resp.ok ? await resp.json() : null
-            if (heads === null && i < 2) setTimeout(this.waitForRepoInit(acct, repo, ++i), 500)
-            return heads
-          },
-
-          async syncFiles(targetAcct, targetRepo, fromRef, isCreate) {
-            // Create a juncture branch in repo if needed
-            let resp
-            let heads = await this.waitForRepoInit(targetAcct, targetRepo)
-            if (heads) {
-              let mainHead = heads.find(head => head.ref === 'refs/heads/main')
-              let ghpHead = heads.find(head => head.ref === 'refs/heads/juncture')
-              if (!ghpHead) {
-                resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/git/refs`, {
-                    method: 'POST', body: JSON.stringify({ref: 'refs/heads/juncture', sha: mainHead.object.sha}),
-                    headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.v3+json'} })
-
-                // Make target repository a GitHub Pages site
-                resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages`, {
-                  headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.switcheroo-preview+json'} })
-                if (resp.status === 404) {
-                  resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages`, {
-                    method: 'POST', body: JSON.stringify({source: {branch: 'juncture', path: '/'}}),
-                    headers: {Authorization:`Token ${this.ghToken}`, Accept: 'application/vnd.github.switcheroo-preview+json'} })
-                }
-              }
-            }
-
-            // template tages used for customized starter pages
-            let replacementValues = {
-              '<<acct>>': targetAcct,
-              '<<repo>>': targetRepo,
-              '<<display-name>>': authenticatedUser.displayName,
-              '<<email>>': authenticatedUser.email,
-              }
-
-            // At this point we have a juncture branch and it is configured as the Github Pages source
-            resp = await this.getFile('/index.html', 'jstor-labs', 'juncture', fromRef)
-            await this.putFile('/index.html', resp.content.replace(/const junctureVersion = '.*'/, `const junctureVersion = '${fromRef}'`), targetAcct, targetRepo, 'juncture')
-
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/404.html'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
-            await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path:'/.nojekyll'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
-
-            if (targetAcct === 'jstor-labs' && targetRepo === 'juncture') {
-              await this.copyFile({acct:'jstor-labs', repo:'juncture', ref: fromRef, path: '/css/main.css'}, {acct: targetAcct, repo: targetRepo, ref:'juncture'})
-            }
-
-            if (isCreate) {
-              resp = await this.getFile('/config.yaml', 'jstor-labs', 'juncture', fromRef)
-              await this.putFile('/config.yaml', this.replaceValues(resp.content, replacementValues), targetAcct, targetRepo, 'juncture')
-
-              resp = await this.getFile('/page-templates/new-site-readme.md', 'jstor-labs', 'juncture', fromRef)
-              let toReplace = {...replacementValues, ...{'<<edit-url>>': `https://github.com/${targetAcct}/${targetRepo}/edit/main/README.md`}}
-              await this.putFile('/README.md', this.replaceValues(resp.content, toReplace), targetAcct, targetRepo, 'main')
-
-              await this.addPage(targetAcct, targetRepo, fromRef, '/sample')
-            }
-
-          },
-
-          async listRepositories() {
-            let resp = await fetch(`https://api.github.com/users/${authenticatedUser.acct}/repos?per_page=100&sort=created`, { headers: {Authorization: `Token ${this.ghToken}`}} )
-            return resp.ok ? await resp.json() : []
-          },
-
-          async addPage(acct, repo, ref, path) {
-            // console.log(`addPage: acct=${acct} repo=${repo} ref=${ref} path=${path}`)
-            let replacementValues = {'<<acct>>': acct, '<<repo>>': repo, '<<display-name>>': authenticatedUser.displayName, '<<email>>': authenticatedUser.email}
-            resp = await this.getFile('/page-templates/new-page-readme.md', 'jstor-labs', 'juncture', 'main')
-            toReplace = {...replacementValues, ...{'<<edit-url>>': `https://github.com/${acct}/${repo}/edit/${ref}${path}/README.md`}}
-            await this.putFile(`${path}/README.md`, this.replaceValues(resp.content, toReplace), acct, repo, ref)
-          },
-
-          async createSite(targetAcct, targetRepo, fromRef) {
-            // console.log(`createSite: targetAcct=${targetAcct} targetRepo=${targetRepo} fromRef=${fromRef}`)
-            // See if repo exists and create it if needed
-            let resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}`, { headers: {Authorization: `Token ${this.ghToken}`}} )
-            let repoExists = resp.ok
-            if (repoExists) {
-              let resp = await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/contents/index.html?ref=juncture`, {headers: {Authorization:`Token ${this.ghToken}`}})
-              if (resp.ok) sha = await resp.json().sha
-            } else { // create repo with auto_init enabled to create main branch and README.md file
-              resp = await fetch('https://api.github.com/user/repos', { method: 'POST', headers: {Authorization:`Token ${this.ghToken}`},
-                  body: JSON.stringify({name: targetRepo, description: 'Juncture repository', auto_init: true}) })
-              resp = await resp.json()
-            }
-
-            this.syncFiles(targetAcct, targetRepo, fromRef, true)
-
-            // Request rebuild of Pages site
-            await fetch(`https://api.github.com/repos/${targetAcct}/${targetRepo}/pages/builds`, {method: 'POST', headers: {Authorization: `Token ${this.ghToken}`}})
-          },
-
-          async updateSite(release) {
-            // console.log(`updateSite: release=${release.name} tag=${release.tag_name}`)
-            this.syncFiles(contentSource.acct, contentSource.repo, release.tag_name, false)
           }
     
         },
@@ -1284,8 +1104,6 @@
                 }
             })
           },
-          // entities (entities) { console.log('entities', entities) },
-          // selectedViewer (selectedViewer) { console.log('selectedViewer', selectedViewer) },
           selectedItem (eid) { console.log(`selectedItem=${eid}`) },
           hoverItem (eid) {
             document.querySelectorAll('.hover').forEach(el => el.classList.remove('hover'))
@@ -1394,7 +1212,6 @@
           repo = repo || this.contentSource.repo
           branch = branch || this.contentSource.ref
           message = message || 'API Commit'
-          // console.log(`putFile: path=${path} acct=${acct} repo=${repo} branch=${branch} message=${message}`)
           if (ENV === 'PROD' && acct) {
             let ghToken = oauthAccessToken || ghUnscopedToken
             let existing = await this.getFile(path, acct, repo, branch)
@@ -1501,7 +1318,6 @@
 
     // Gets site config
     async function getSiteConfig() {
-      console.log('getSiteConfig', contentSource)
       let config = {}
       let configUrl = window.location.port === '8088' || window.location.host.indexOf('8088') === 0
         ?  `${window.location.origin}/config.yaml`
@@ -1509,12 +1325,7 @@
           ? `https://juncture-digital.org/config.yaml`
           : `${window.location.origin}${contentSource.basePath}/config.yaml`
       let resp = await fetch(configUrl)
-      if (resp.ok) {
-        config = YAML.parse(await resp.text())
-      //} else {
-      //  resp = await fetch(`${window.location.origin}${contentSource.basePath}/config.template.yaml`)
-      //  if (resp.ok) config = YAML.parse(await resp.text())
-      }
+      if (resp.ok) config = YAML.parse(await resp.text())
 
       ghUnscopedToken = config.ghUnscopedToken 
         ? atob(config.ghUnscopedToken)
@@ -1553,9 +1364,6 @@
     // Determines if Github repo exists
     async function githubRepoInfo(acct, repo) {
       let ghInfo
-      //if (knownGhAccts[acct]) {
-      //  ghInfo = {acct, repo, ref: qargs.ref || knownGhAccts[acct], basePath: `/${acct}/${repo}`}
-      //} else {
         let ghToken = oauthAccessToken || ghUnscopedToken
         let resp = await fetch(`https://api.github.com/repos/${acct}/${repo}`,
                                ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
@@ -1577,7 +1385,6 @@
       let components = []
       if (url.indexOf('api.github.com') > 0) {
         let ghToken = oauthAccessToken || ghUnscopedToken
-        console.log(`ghToken=${ghToken} oauthAccessToken=${oauthAccessToken} ghUnscopedToken=${ghUnscopedToken}`)
         let pathElems = componentsRoot.split('/')
         let dirList, found
         for (let i = 0; i < pathElems.length; i++) {
@@ -1597,7 +1404,6 @@
           components = Array.from(tmp.querySelectorAll('li a.file')).map(el => el.innerText).map(fname => `${componentsBaseUrl}/${componentsRoot}/${fname}`)
         }
       }
-      console.log(`listComponents: url=${url} componentsRoot=${componentsRoot} components=${components}`)
       return components
     }
 
@@ -1607,7 +1413,7 @@
 
       let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersionHash : contentSource.ref
 
-      if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital')) {
+      if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 || window.location.hostname.indexOf('githubpreview.dev') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital')) {
 
         componentsList = [...componentsList, ...await listComponents(
         `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
@@ -1709,7 +1515,6 @@
       } else if (pathElems[0] === contentSource.repo) {
         pathElems = pathElems.slice(1)
       }
-      // console.log(`assetsBaseUrl=${contentSource.assetsBaseUrl}`)
       converted = `${contentSource.assetsBaseUrl || contentSource.baseUrl}/${pathElems.join('/')}`
       // console.log(`isJuncture=${isJuncture} convertURL: current=${current} converted=${converted} path=${path} pathIsDir=${pathIsDir} pathElems=${pathElems}`)
       return converted
