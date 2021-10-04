@@ -184,7 +184,7 @@
 
   <script>
 
-    const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 || window.location.hostname.indexOf('githubpreview') > 0 ? 'DEV' : 'PROD'
+    const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 || window.location.hostname.indexOf('githubpreview') > 0 || window.location.hostname.indexOf('netlify.app') > 0 ? 'DEV' : 'PROD'
     let isJuncture = window.location.hostname.indexOf('juncture-digital.org') === 0 || ENV === 'DEV'
     const junctureVersion = 'v0.5.0'
     let junctureVersionHash
@@ -378,7 +378,7 @@
       if (gaPropertyID) ga('create', gaPropertyID, 'auto')
       if (siteConfig.description) setMetaDescription(siteConfig.description)
       let attrsWithUrls = ['banner', 'favicon', 'logo']
-      if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0 || window.location.hostname.indexOf('githubpreview.dev') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital') ) {
+      if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0 || window.location.hostname.indexOf('githubpreview.dev') > 0 || window.location.hostname.indexOf('netlify.app') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital') ) {
         attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       } else {
         headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
@@ -673,7 +673,7 @@
 
           async getMarkdown(path) {
             // if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital')) {
-            if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0 || window.location.hostname.indexOf('githubpreview.dev') > 0) {
+            if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0 || window.location.hostname.indexOf('githubpreview.dev') > 0 || window.location.hostname.indexOf('netlify.app') > 0) {
               let url = `${contentSource.baseUrl}${contentSource.basePath}${path}`
               let resp = await fetch(url)
               if (resp.ok) return await resp.text()
@@ -1420,7 +1420,7 @@
 
       let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersionHash : contentSource.ref
 
-      if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 || window.location.hostname.indexOf('githubpreview.dev') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital')) {
+      if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 || window.location.hostname.indexOf('githubpreview.dev') > 0 || window.location.hostname.indexOf('netlify.app') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital')) {
 
         componentsList = [...componentsList, ...await listComponents(
         `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
