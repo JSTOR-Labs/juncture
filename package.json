@@ -1,0 +1,16 @@
+{
+    "name": "juncture",
+    "version": "1.0.0",
+    "description": "Juncture - An easy-to-use framework for building interactive visual essays and websites.",
+    "dependencies": {
+        "axios": "^0.22.0",
+        "netlify-cli": "^6.9.28",
+        "netlify-lambda": "^2.0.14"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "dev": "netlify dev",
+        "serve": "netlify-lambda serve functions",
+        "build": "netlify-lambda build functions"
+    }
+}
