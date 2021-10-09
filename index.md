@@ -113,7 +113,7 @@ Built in 1503, The Sun Hotel formerly known as The Little Inn was made famous by
 
 ## Umble Ome of Uriah Heep (Now and Then)
 
-![](https://goo.gl/maps/B1kXFdbra1A8huUt8)
+![](https://upload.wikimedia.org/wikipedia/commons/8/87/Uriah_Heep_from_David_Copperfield_art_by_Frank_Reynolds.jpg)
 
     coords: 51.276272, 1.087550
 
