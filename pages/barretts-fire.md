@@ -7,3 +7,4 @@
 
 # Barretts Fire
 
+Photography by Michael Stubbs and Ethan Dudley.
