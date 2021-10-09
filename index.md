@@ -30,7 +30,7 @@ The ancient lavatory at Canterbury Cathedral where the monks washed before and a
 
 St Augustine's Abbey was a Benedictine monastery in Canterbury, Kent, England. The abbey was founded in 598 and functioned as a monastery until its dissolution in 1538 during the English Reformation. After the abbey's dissolution, it underwent dismantlement until 1848. Since 1848, part of the site has been used for educational purposes and the abbey ruins have been preserved for their historical value.
 
-## Canterbury (Now and Then)
+## Canterbury High Street (Now and Then)
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Westgate_Gardens_5.JPG/320px-Westgate_Gardens_5.JPG)
 
