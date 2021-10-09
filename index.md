@@ -32,7 +32,7 @@ St Augustine's Abbey was a Benedictine monastery in Canterbury, Kent, England. T
 
 ## Canterbury High Street (Now and Then)
 
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Westgate_Gardens_5.JPG/320px-Westgate_Gardens_5.JPG)
+![](https://upload.wikimedia.org/wikipedia/commons/1/1a/High_Street%2C_Canterbury%2C_Kent.jpg)
 
     coords: 51.278333, 1.0775
     eid: Q29303
