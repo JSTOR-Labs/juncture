@@ -4,7 +4,7 @@
 
 # Kent Maps Online - Duke of Edinburgh award site
 
-This site showcases the work completed by our Duke of Edinburgh participants at all levels. Supported by student ambassadors from Canterbury Christ Church University, participants explore the extraordinary history of Kent and the people who have lived here, using words, images and innovative coding to bring their stories to life.
+This site showcases the work completed by our Duke of Edinburgh participants at all levels. Supported by student ambassadors from Canterbury Christ Church University, participants explore the extraordinary history of Kent and the people who have lived here, using words, images and innovative coding to bring their stories to life. 
 
 ##
 [**How to use this site**](/howto)
@@ -12,7 +12,7 @@ This site showcases the work completed by our Duke of Edinburgh participants at 
 #
 <param id="locations" class="cards clamp">
 
-## Ancient Lavatory
+## Ancient Lavatory (Now and Then)
 
 ![](https://upload.wikimedia.org/wikipedia/commons/1/13/Canterbury_Cathedral_cloister2.JPG)
 
@@ -21,7 +21,7 @@ This site showcases the work completed by our Duke of Edinburgh participants at 
 
 The ancient lavatory at Canterbury Cathedral where the monks washed before and after eating.
 
-## St Augustine's Abbey
+## St Augustine's Abbey (Now and Then)
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Augustine_Abbey.jpg/320px-Augustine_Abbey.jpg)
 
@@ -30,7 +30,7 @@ The ancient lavatory at Canterbury Cathedral where the monks washed before and a
 
 St Augustine's Abbey was a Benedictine monastery in Canterbury, Kent, England. The abbey was founded in 598 and functioned as a monastery until its dissolution in 1538 during the English Reformation. After the abbey's dissolution, it underwent dismantlement until 1848. Since 1848, part of the site has been used for educational purposes and the abbey ruins have been preserved for their historical value.
 
-## Canterbury
+## Canterbury (now and Then)
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Westgate_Gardens_5.JPG/320px-Westgate_Gardens_5.JPG)
 
@@ -56,7 +56,7 @@ Founded in 597, the cathedral is the oldest Christian structure in England.
 
 Translated as 'village on rough ground', Chartham is in the Canterbury district and the river Stour passes through both the village and the city. Chartham Mill has provided employment in paper making since 1738.
 
-## Dane John Gardens
+## Dane John Gardens (Now and Then)
 
     coords: 51.2753, 1.07818
     eid: Q17647042
@@ -65,7 +65,7 @@ Translated as 'village on rough ground', Chartham is in the Canterbury district 
 
 The Dane John Gardens were created on common land by Alderman James Simmons in 1790.
 
-## Dane John Mound
+## Dane John Mound (Now and Then)
 
 ![](https://upload.wikimedia.org/wikipedia/commons/f/f5/Dane_John_mound_-_geograph.org.uk_-_2277327.jpg)
 
@@ -74,7 +74,7 @@ The Dane John Gardens were created on common land by Alderman James Simmons in 1
 
 The Dane John Mound is a Roman cemetery in Canterbury.
 
-## The House of Agnes
+## The House of Agnes (Now and Then)
 
     coords: 51.2824, 1.07365
     eid: Q17557200
@@ -107,7 +107,7 @@ Once a popular seaside resort where Victorians came to take the air, where day-t
 
 St Eanswythe, patron saint of Folkestone, was the granddaughter of the first English king to convert to Christianity. It was recently confirmed that her bones are still preserved in the Church of St Mary and St Eanswythe. By the late-nineteenth century this small fishing village had reinvented itself as a seaside resort, nicknamed ‘Fashionable Folkestone’.  
 
-## The Christchurch Gateway
+## The Christchurch Gateway (Now and Then)
 
 ![](https://upload.wikimedia.org/wikipedia/commons/0/00/Christchurch_Gateway_Canterbury_1_%284902073359%29.jpg)
 
@@ -142,7 +142,7 @@ The Old Weavers House is a half-timbered building on the River Stour at Canterbu
     
 Built in 1503, The Sun Hotel formerly known as The Little Inn was made famous by Charles Dickens in his travels through Kent.     
 
-## Umble Ome of Uriah Heep
+## Umble Ome of Uriah Heep (Now and Then)
 
 ![](https://goo.gl/maps/B1kXFdbra1A8huUt8)
 
@@ -150,7 +150,7 @@ Built in 1503, The Sun Hotel formerly known as The Little Inn was made famous by
 
 Umble Ome of Uriah Heep is the house belonging to a fictional character in the novel David Copperfield, written by Charles Dickens in 1850.
 
-## Westgate Towers
+## Westgate Towers (Now and Then)
 
 ![](https://upload.wikimedia.org/wikipedia/commons/1/10/Westgate_Towers%2C_Canterbury.jpg)
 
