@@ -30,6 +30,16 @@ The ancient lavatory at Canterbury Cathedral where the monks washed before and a
 
 St Augustine's Abbey was a Benedictine monastery in Canterbury, Kent, England. The abbey was founded in 598 and functioned as a monastery until its dissolution in 1538 during the English Reformation. After the abbey's dissolution, it underwent dismantlement until 1848. Since 1848, part of the site has been used for educational purposes and the abbey ruins have been preserved for their historical value.
 
+## Barretts Fire (Now and Then)
+
+![](https://upload.wikimedia.org/wikipedia/commons/1/1a/High_Street%2C_Canterbury%2C_Kent.jpg)
+
+    coords: 51.278333, 1.0775
+    eid: Q29303
+
+Following a catastrophic fire in 1937 the premises of Barrett's car show room in St Peter’s Street had to be rebuilt.
+
+
 ## Canterbury High Street (Now and Then)
 
 ![](https://upload.wikimedia.org/wikipedia/commons/1/1a/High_Street%2C_Canterbury%2C_Kent.jpg)
