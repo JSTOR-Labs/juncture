@@ -32,9 +32,9 @@ St Augustine's Abbey was a Benedictine monastery in Canterbury, Kent, England. T
 
 ## Barretts Fire (Now and Then)
 
-![](https://upload.wikimedia.org/wikipedia/commons/1/1a/High_Street%2C_Canterbury%2C_Kent.jpg)
+![](https://upload.wikimedia.org/wikipedia/commons/b/b6/Westgate_014.jpg)
 
-    coords: 51.278333, 1.0775
+    coords: 51.2814, 1.07583
     eid: Q29303
 
 Following a catastrophic fire in 1937 the premises of Barrett's car show room in St Peter’s Street had to be rebuilt.
