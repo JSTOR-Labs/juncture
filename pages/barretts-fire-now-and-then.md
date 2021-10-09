@@ -8,4 +8,4 @@
 # Barretts Fire
 
 Photography by Michael Stubbs and Ethan Dudley.
-Head to the main Kent Maps Online website to find out more about the history of Barretts in our article on [Canterbury commerce in the 20th century](https://kent-maps.online/canterbury/20c-canterbury-commerce/)
+Head to the main [Kent Maps Online](https://kent-maps.online/) website to find out more about the history of Barretts in the article on [Canterbury commerce in the 20th century](https://kent-maps.online/canterbury/20c-canterbury-commerce/)
