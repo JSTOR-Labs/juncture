@@ -184,9 +184,9 @@
 
   <script>
 
-    const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 || window.location.hostname.indexOf('githubpreview') > 0 || window.location.hostname.indexOf('netlify.app') > 0 ? 'DEV' : 'PROD'
+    const ENV = window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod') > 0 || window.location.hostname.indexOf('githubpreview.dev') > 0 || window.location.hostname.indexOf('netlify.app') > 0 ? 'DEV' : 'PROD'
     let isJuncture = window.location.hostname.indexOf('juncture-digital.org') === 0 || ENV === 'DEV'
-    const junctureVersion = 'v0.5.0'
+    const junctureVersion = 'v0.5.1'
     let junctureVersionHash
 
     const referrerUrl = document.referrer
@@ -247,7 +247,7 @@
     async function getContentSource() {
       let contentSource
 
-      if (window.location.port === '8088' || window.location.host.indexOf('8088') === 0 || window.location.host.indexOf('juncture-digital.org') >= 0) {
+      if (window.location.port === '8088' || window.location.host.indexOf('8888') > 0 || window.location.host.indexOf('juncture-digital.org') >= 0) {
         contentSource = {
           acct: 'jstor-labs', repo: 'juncture-digital', ref: 'main', hash: null, basePath: '', isGhpSite: false,
           baseUrl: window.location.origin, 
@@ -673,7 +673,7 @@
 
           async getMarkdown(path) {
             // if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital')) {
-            if (window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0 || window.location.hostname.indexOf('githubpreview.dev') > 0 || window.location.hostname.indexOf('netlify.app') > 0) {
+            if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0 || window.location.hostname.indexOf('githubpreview.dev') > 0 || window.location.hostname.indexOf('netlify.app') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital')) {
               let url = `${contentSource.baseUrl}${contentSource.basePath}${path}`
               let resp = await fetch(url)
               if (resp.ok) return await resp.text()
@@ -1061,6 +1061,7 @@
             this.viewerIsOpen = false
             if (config) {
               if (config.layout) this.layouts = config.layout.split(',').map(layout => layout === 'vtl' ? 'vertical' : layout)
+              if (config.title) document.title = this.siteConfig && this.siteConfig.title ? `${config.title} - ${this.siteConfig.title}` : config.title
               if (config.description) setMetaDescription(config.description)
             }
           },
