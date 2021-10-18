@@ -15,7 +15,7 @@
         <li :class="{'active': tab === 'map'}" @click="tab = 'map'"><i class="fas fa-map"></i> Map</li>
         <li :class="{'active': tab === 'cards'}" @click="tab = 'cards'"><i class="fas fa-th-large"></i> Places</li>
         <li :class="{'active': tab === 'articles'}" @click="tab = 'articles'"><i class="fas fa-book"></i> Articles</li>
-        <li :class="{'active': tab === 'reviews'}" @click="tab = 'reviews'"><i class="fa fa-pencil"></i> Reviews</li>
+        <li :class="{'active': tab === 'reviews'}" @click="tab = 'reviews'"><i class="fas fa-pencil"></i> Reviews</li>
       </ul>
     </section>
 
