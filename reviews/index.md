@@ -1,3 +1,5 @@
+<a href="https://juncture-digital.org"><img src="https://gitcdn.link/repo/jstor-labs/juncture/main/images/ve-button.png"></a>
+
 <param ve-config 
        title="21st Century Kent"
        banner="images/Millenium%20Mural.jpg">
