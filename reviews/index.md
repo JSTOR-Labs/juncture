@@ -1,7 +1,5 @@
 <a href="https://juncture-digital.org"><img src="https://gitcdn.link/repo/jstor-labs/juncture/main/images/ve-button.png"></a>
 
-<param ve-config header="header" main="now-and-then">
-
 # 21C reading recommendations
 
 Patience Agbabi. _Telling Tales_ (2014).  
