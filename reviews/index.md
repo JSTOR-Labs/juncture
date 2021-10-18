@@ -1,16 +1,8 @@
-<href>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-148268745-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+<a href="https://juncture-digital.org"><img src="https://gitcdn.link/repo/jstor-labs/juncture/main/images/ve-button.png"></a>
 
-  gtag('config', 'UA-148268745-1');
-</script>
-</href>
+<param ve-config header="header" main="now-and-then">
 
-### 21C reading recommendations
+# 21C reading recommendations
 
 Patience Agbabi. _Telling Tales_ (2014).  
 Nicola Barker. _Darkmans_ (2011).  
