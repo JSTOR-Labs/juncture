@@ -29,11 +29,11 @@
       <a href = '#Z'>z</a>
     </p>
     <div class="reviews" id = "reviews_container" @onload="sortCards()">
-      <div v-for="(article, cidx) in locations" :key="`article-${cidx}`">
-        <h2 v-if="reviews.heading" v-html="reviews.heading"></h2>
-        <div v-if="reviews.content.length > 0" class="reviews-text">
+      <div v-for="(review, cidx) in locations" :key="`review-${cidx}`">
+        <h2 v-if="review.heading" v-html="review.heading"></h2>
+        <div v-if="review.content.length > 0" class="review-text">
           <div>
-            <p v-for="(contentItem, ccidx) in article.content" :key="`${cidx}-${ccidx}`" :id="contentItem.id" 
+            <p v-for="(contentItem, ccidx) in review.content" :key="`${cidx}-${ccidx}`" :id="contentItem.id" 
               :class="contentItem.classes.join(' ')"
               v-html="contentItem.html"
             ></p>
@@ -47,18 +47,19 @@
 <!--
 <template>
   <div class = "reviews clamp-10" id = "reviews_container">
-    <div v-for="(article, aidx) in articles"
-        :key="`reviews-${aidx}`" :id="reviews.heading.charAt(0)" :class="reviews.classes.join(' ')"
+    <div v-for="(review, aidx) in reviews"
+        :key="`review-${aidx}`" :id="review.heading.charAt(0)" :class="review.classes.join(' ')"
       >
-      <h2 v-if="reviews.heading" v-html="reviews.heading">
+      <h2 v-if="review.heading" v-html="review.heading">
       <div class = "clamp-wrapper">
-        <p v-if="reviews.text" v-html="reviews.text"></p>
+        <p v-if="review.text" v-html="review.text"></p>
       </div>
     </div>
   </div>
 </template>
 -->
 <script>
+
 module.exports = {
   name: 'Reviews',
   props: {
@@ -66,7 +67,7 @@ module.exports = {
   },
   data: () => ({
     map: null,
-    articles_text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    reviews_text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
   }),
   computed: {},
   mounted() {
@@ -83,9 +84,11 @@ module.exports = {
   methods: {},
   watch: {}
 }
+
 </script>
 
 <style>
+
 #header {
   display: unset;
 }
@@ -93,11 +96,14 @@ module.exports = {
   padding: 58px 3% 0 3%;
   font-family: Roboto, 'sans-serif';
 }
+
 #reviews_contianer > h2 {
   font-size: 30px;
   font-weight: normal;
 }
+
 #reviews_container > #para {
   padding: 0 0 2vh 0;
 }
+
 </style>
