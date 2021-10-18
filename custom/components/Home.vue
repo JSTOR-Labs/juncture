@@ -22,6 +22,7 @@
       <ve-map v-if="tab === 'map'" :locations="locations" @do-action="doAction"></ve-map>
       <ve-cards v-if="tab === 'cards'" :locations="locations" @do-action="doAction"></ve-cards>
       <ve-articles v-if="tab === 'articles'" :locations="locations" @do-action="doAction"></ve-articles>
+      <ve-reviews v-if="tab === 'reviews'" :locations="locations" @do-action="doAction"></ve-reviews>
     </section>
 
   </main>
