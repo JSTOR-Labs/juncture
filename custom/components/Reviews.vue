@@ -79,7 +79,7 @@ module.exports = {
       var a_heading = a.getElementsByTagName('h2')[0].innerHTML
       var b_heading = b.getElementsByTagName('h2')[0].innerHTML
       return a_heading.localeCompare(b_heading)
-    }).forEach(function(val, index) {
+    }).forEach(function(val, index1) {
       cards_container.appendChild(val)
     })
 
