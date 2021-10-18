@@ -29,11 +29,11 @@
       <a href = '#Z'>z</a>
     </p>
     <div class="reviews" id = "reviews_container" @onload="sortCards()">
-      <div v-for="(article, cidx) in locations" :key="`article-${cidx}`">
-        <h2 v-if="article.heading" v-html="article.heading"></h2>
-        <div v-if="article.content.length > 0" class="article-text">
+      <div v-for="(review, cidx) in locations" :key="`review-${cidx}`">
+        <h2 v-if="review.heading" v-html="review.heading"></h2>
+        <div v-if="review.content.length > 0" class="review-text">
           <div>
-            <p v-for="(contentItem, ccidx) in article.content" :key="`${cidx}-${ccidx}`" :id="contentItem.id" 
+            <p v-for="(contentItem, ccidx) in review.content" :key="`${cidx}-${ccidx}`" :id="contentItem.id" 
               :class="contentItem.classes.join(' ')"
               v-html="contentItem.html"
             ></p>
@@ -47,12 +47,12 @@
 <!--
 <template>
   <div class = "reviews clamp-10" id = "reviews_container">
-    <div v-for="(article, aidx) in articles"
-        :key="`article-${aidx}`" :id="article.heading.charAt(0)" :class="article.classes.join(' ')"
+    <div v-for="(review, aidx) in reviews"
+        :key="`review-${aidx}`" :id="review.heading.charAt(0)" :class="review.classes.join(' ')"
       >
-      <h2 v-if="article.heading" v-html="article.heading">
+      <h2 v-if="review.heading" v-html="review.heading">
       <div class = "clamp-wrapper">
-        <p v-if="article.text" v-html="article.text"></p>
+        <p v-if="review.text" v-html="review.text"></p>
       </div>
     </div>
   </div>
