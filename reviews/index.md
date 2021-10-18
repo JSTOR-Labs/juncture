@@ -1,9 +1,10 @@
 <a href="https://juncture-digital.org"><img src="https://gitcdn.link/repo/jstor-labs/juncture/main/images/ve-button.png"></a>
 
-<param ve-config 
-       title="21st Century Kent">
+<param ve-config header="header" main="home">
 
 # 21C reading recommendations
+
+We hope you will enjoy these books about Kent or by Kent authors.
 
 - Patience Agbabi. _Telling Tales_ (2014).  
 - Nicola Barker. _Darkmans_ (2011).  
