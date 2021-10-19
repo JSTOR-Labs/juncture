@@ -2,8 +2,8 @@
 
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare url="https://stor.artstor.org/stor/10970784-2155-498d-8b05-d8586b1f67d0" label="High Street, Canterbury (2021)" attribution="Calum Elliot and Emma Molford">
-<param ve-compare url="https://stor.artstor.org/stor/9eed092d-8c44-43fb-953f-dcc6e3583cac" label="High Street, Canterbury - Pre-1905 or earlier">
+<param ve-compare url="https://stor.artstor.org/stor/f97caf20-bc43-4921-885a-5a9d53f6a48c" label="High Street, Canterbury (2021)" attribution="Calum Elliot and Emma Molford">
+<param ve-compare url="https://stor.artstor.org/stor/ff1bcfd6-b7c5-42fc-8d25-1aa2bf246cb2" label="High Street, Canterbury - Pre-1905 or earlier">
 
 # Canterbury High Street
 
