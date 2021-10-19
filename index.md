@@ -23,7 +23,7 @@ The ancient lavatory at Canterbury Cathedral where the monks washed before and a
 
 ## St Augustine's Abbey (Now and Then)
 
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Augustine_Abbey.jpg/320px-Augustine_Abbey.jpg)
+![](https://stor.artstor.org/stor/f958882b-3914-448a-a35c-fca8e966a0fd.jpeg)
 
     coords: 51.278128, 1.088206
     eid: Q334303
