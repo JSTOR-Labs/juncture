@@ -372,7 +372,7 @@ module.exports = {
 
 </script>
 
-<style>
+<style scoped>
 
 html {
   scroll-behavior: smooth;
