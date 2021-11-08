@@ -1,0 +1,1 @@
+The first Archbishop of Canterbury, Augustine, arrived in Kent as a missionary in 597AD. The ruins of St Augustine’s Abbey are still open to visitors, on the edge of the modern city. Augustine’s original cathedral is beneath the Nave of the building we know today and in which a later Archbishop, Thomas Becket, was murdered in 1170.
