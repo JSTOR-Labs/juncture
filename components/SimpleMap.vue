@@ -9,8 +9,8 @@ const viewerIcon = 'fas fa-map-marker-alt'
 const dependencies = [
   'https://cdn.jsdelivr.net/npm/leaflet@1.5.1/dist/leaflet.css',
   'https://cdn.jsdelivr.net/npm/leaflet@1.5.1/dist/leaflet.js',
-  'https://gitcdn.link/repo/pa7/heatmap.js/develop/build/heatmap.min.js',
-  'https://gitcdn.link/repo/pa7/heatmap.js/develop/plugins/leaflet-heatmap/leaflet-heatmap.js'
+  'https://raw.githubusercontent.com/pa7/heatmap.js/develop/build/heatmap.min.js',
+  'https://raw.githubusercontent.com/pa7/heatmap.js/develop/plugins/leaflet-heatmap/leaflet-heatmap.js'
 ]
 
 // A leaflet baselayer

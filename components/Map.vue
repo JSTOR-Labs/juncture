@@ -21,8 +21,8 @@ const dependencies = [
     'https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js',
     'https://jstor-labs.github.io/visual-essays/js/L.Control.Opacity.js',
     'https://jstor-labs.github.io/visual-essays/js/leaflet-fa-markers.js',
-    'https://gitcdn.link/repo/pa7/heatmap.js/develop/build/heatmap.min.js',
-    'https://gitcdn.link/repo/pa7/heatmap.js/develop/plugins/leaflet-heatmap/leaflet-heatmap.js'
+    'https://raw.githubusercontent.com/pa7/heatmap.js/develop/build/heatmap.min.js',
+    'https://raw.githubusercontent.com/pa7/heatmap.js/develop/plugins/leaflet-heatmap/leaflet-heatmap.js'
 ]
 
 // Some leaflet baselayers
