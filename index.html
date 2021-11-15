@@ -186,7 +186,7 @@
 
     const ENV = window.location.port === '8088' || window.location.hostname.indexOf('8088') >= 0 ? 'DEV' : 'PROD'
     let isJuncture = window.location.hostname.indexOf('juncture-digital.org') === 0 || ENV === 'DEV'
-    const junctureVersion = 'v0.5.3'
+    const junctureVersion = 'v0.5.4'
     let junctureVersionHash
     let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
 
