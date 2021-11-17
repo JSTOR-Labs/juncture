@@ -1,3 +1,5 @@
+Read Polina Dubakova's article on Ada Lovelace
+
 Ada Lovelace (Ada King, countess of Lovelace)
 10 December 1815 – 27 November 1852
 Places: London (Marylebone), Nottingham (Church of St. Mary Magdalene, Hucknall), Canterbury
