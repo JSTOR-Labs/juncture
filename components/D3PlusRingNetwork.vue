@@ -13,9 +13,10 @@ const viewerIcon = 'fas fa-project-diagram'
 const dependencies = [
     // 'https://fonts.googleapis.com/css?family=Roboto',
     // 'https://d3plus.org/css/styles.css?v=3',
-    'https://d3plus.org/js/d3.min.js',
-    'https://d3plus.org/js/d3plus.min.js',
-    'https://d3plus.org/js/d3plus-network.v0.6.full.min.js'
+    // 'https://d3plus.org/js/d3.min.js',
+    // 'https://d3plus.org/js/d3plus.min.js',
+    // 'https://d3plus.org/js/d3plus-network.v0.6.full.min.js',
+    'https://cdn.jsdelivr.net/npm/d3plus@2'
 ]
 
 module.exports = {
