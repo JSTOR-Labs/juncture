@@ -184,16 +184,17 @@
 
   <script>
 
-    const ENV = window.location.port === '8088' || window.location.hostname.indexOf('8088') >= 0 ? 'DEV' : 'PROD'
+    const ENV = window.location.port ? 'DEV' : 'PROD'
+    
     let isJuncture = window.location.hostname.indexOf('juncture-digital.org') === 0 || ENV === 'DEV'
-    const junctureVersion = 'v0.5.4'
+    const junctureVersion = 'main'
     let junctureVersionHash
     let qargs = window.location.href.indexOf('?') > 0 ? parseQueryString(window.location.href.split('?')[1]) : {}
 
     const referrerUrl = document.referrer
     if (referrerUrl) {
       const referrer = parseUrl(referrerUrl)
-      if ((referrer.host === 'github.com' || referrer.host === 'juncture-digital.org') && referrer.pathname.indexOf('/jstor-labs/juncture/wiki') < 0) {
+      if (referrer.host === 'github.com' && referrer.pathname.indexOf('/jstor-labs/juncture/wiki') < 0) {
         const referrerPath = referrer.pathname.slice(1).split('/')
         const ghAcct = referrerPath[0]
         const ghRepo = referrerPath[1]
@@ -248,7 +249,7 @@
     async function getContentSource() {
       let contentSource
 
-      if (window.location.port === '8088' || window.location.host.indexOf('8088') >= 0 || window.location.host.indexOf('juncture-digital.org') >= 0) {
+      if (window.location.host.indexOf('juncture-digital.org') >= 0) {
         contentSource = {
           acct: 'jstor-labs', repo: 'juncture-digital', ref: 'main', hash: null, basePath: '', isGhpSite: false,
           baseUrl: window.location.origin, 
@@ -263,20 +264,27 @@
           }
         }
 
-      } else if (window.location.port === '8080' || window.location.host.indexOf('8080') >= 0) {
-        // For local dev in GHP mode
-        // let repo = window.location.pathname.split('/').filter(elem => elem !== '')[0] || 'juncture'
+      } else if (ENV === 'DEV') {
+        // For local dev
         let repo = 'juncture'
         contentSource = {
-          acct: 'jstor-labs', 
-          repo: 'juncture',
-          branch: 'main',
-          ref: 'main', 
-          hash: null, 
-          isGhpSite: true,
           baseUrl: window.location.origin, 
           basePath: '', 
           assetsBaseUrl: `${window.location.origin}`
+        }
+        let pathElems = window.location.pathname.split('/').filter(elem => elem !== '')
+        if (pathElems.length >= 2) {
+          let ghRepoInfo = await githubRepoInfo(pathElems[0], pathElems[1])
+          if (ghRepoInfo) {
+            contentSource = {
+              ...contentSource, 
+              ...ghRepoInfo, 
+              ...{
+                basePath: `/${ghRepoInfo.acct}/${ghRepoInfo.repo}`, 
+                assetsBaseUrl: `https://raw.githubusercontent.com/${ghRepoInfo.acct}/${ghRepoInfo.repo}/${ghRepoInfo.ref}`
+              }
+            }
+          }
         }
       } else {
         // GHP deploy mode
@@ -369,15 +377,17 @@
     })
     .then(config => {
       siteConfig = config
-      contentSource = {...contentSource, ...{
-          acct: config.acct || contentSource.acct, 
-          repo: config.repo || contentSource.repo, 
-          ref: qargs.ref || config.ref || contentSource.ref
-      }}
+      if (ENV !== 'DEV') {
+        contentSource = {...contentSource, ...{
+            acct: config.acct || contentSource.acct, 
+            repo: config.repo || contentSource.repo, 
+            ref: qargs.ref || config.ref || contentSource.ref
+        }}
+      }
       if (gaPropertyID) ga('create', gaPropertyID, 'auto')
       if (siteConfig.description) setMetaDescription(siteConfig.description)
       let attrsWithUrls = ['banner', 'favicon', 'logo']
-      if ((window.location.port === '8088' || window.location.hostname.indexOf('8088') >= 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital') ) {
+      if (ENV === 'DEV' && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital') ) {
         attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
       } else {
         headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
@@ -395,7 +405,7 @@
     .then(resp => headRef('jstor-labs', 'juncture', junctureVersion, ghUnscopedToken))
     .then(hash => {
       junctureVersionHash = hash ? hash.slice(0,7) : null
-      console.log(`junctureVersion=${junctureVersion} junctureVersionHash=${junctureVersionHash} referrer=${document.referrer}`)
+      console.log(`ENV=${ENV} junctureVersion=${junctureVersion} junctureVersionHash=${junctureVersionHash} referrer=${document.referrer}`)
       return getComponentsList()
     })
     .then(clist => {
@@ -412,10 +422,10 @@
       if (siteConfig.favicon ) document.querySelector('head').appendChild(makeLink(siteConfig.favicon, 'icon'))
       if (siteConfig.title) document.title = siteConfig.title
       if (fontawesome) document.querySelector('body').appendChild(makeScriptTag(fontawesome, 'anonymous'))
-      
+
       Promise.all([
-        getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css'),
-        fetch(`${window.location.origin}${contentSource.basePath}/css/main.css`).then(resp => resp.ok ? resp.text() : null)
+        fetch(`/css/main.css`).then(resp => resp.ok ? resp.text() : null),
+        getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
       ]).then(responses => {
         let style = document.createElement('style')
         style.innerHTML = responses[0] || responses[1]
@@ -567,6 +577,7 @@
 
           // Handles menu actions from header
           async doAction(action, options) {
+            console.log(`doAction action=${action}`)
             if (action === 'sendmail') {
               this.doActionCallback = {status: 'processing', message: 'Processing request'}
               let resp = await sendmail(options)
@@ -671,8 +682,7 @@
           },
 
           async getMarkdown(path) {
-            // if ((window.location.hostname === 'localhost' || window.location.hostname.indexOf('gitpod.io') > 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital')) {
-            if (window.location.port === '8080' || window.location.hostname.indexOf('8080') >= 0) {
+            if (ENV === 'DEV' && !contentSource.repo) {
               let url = `${contentSource.baseUrl}${contentSource.basePath}${path}`
               let resp = await fetch(url)
               if (resp.ok) return await resp.text()
@@ -1149,14 +1159,14 @@
         },
         load(url, callback) {
           let e
-          if (url.split('.').pop() === 'js') {
-            e = document.createElement('script')
-            e.src = url
-            e.type='text/javascript'
-          } else {
+          if (url.split('.').pop() === 'css') {
             e = document.createElement('link')
             e.href = url
             e.rel='stylesheet'
+          } else {
+            e = document.createElement('script')
+            e.src = url
+            e.type='text/javascript'
           }
           e.addEventListener('load', callback)
           document.getElementsByTagName('head')[0].appendChild(e)
@@ -1326,8 +1336,10 @@
     // Gets site config
     async function getSiteConfig() {
       let config = {}
-      let configUrl = window.location.port === '8088' || window.location.host.indexOf('8088') >= 0
-        ?  `${window.location.origin}/config.yaml`
+      let configUrl = ENV === 'DEV'
+        ?  contentSource.repo 
+          ? `${contentSource.assetsBaseUrl}/config.yaml`
+          : `${window.location.origin}/config.yaml`
         : window.location.host.indexOf('juncture-digital.org') >= 0
           ? `https://juncture-digital.org/config.yaml`
           : `${window.location.origin}${contentSource.basePath}/config.yaml`
@@ -1339,10 +1351,12 @@
         : atob('Z2hwX05lcnV2RUYzRmx6M3o5YnFjQWZuOGpJQnJMR3lEMTNmYjYyVw==')
 
       let ghToken = oauthAccessToken || ghUnscopedToken
-      resp = await fetch(`https://api.github.com/repos/${config.acct || contentSource.acct}/${config.repo || contentSource.repo}/contents/config.yaml?ref=${config.ref || contentSource.ref}`, ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
-      if (resp.ok) {
-        resp = await resp.json()
-        config = {...config, ...YAML.parse(atob(resp.content))}
+      if (ENV === 'PROD' && window.location.host.indexOf('juncture-digital.org') >= 0) {
+        resp = await fetch(`https://api.github.com/repos/${config.acct || contentSource.acct}/${config.repo || contentSource.repo}/contents/config.yaml?ref=${config.ref || contentSource.ref}`, ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
+        if (resp.ok) {
+          resp = await resp.json()
+          config = {...config, ...YAML.parse(atob(resp.content))}
+        }
       }
 
       if (config.gcApiKey) gcApiKey = atob(config.gcApiKey)
@@ -1420,7 +1434,7 @@
 
       let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersionHash : contentSource.ref
 
-      if ((window.location.port === '8080' || window.location.port === '8088' || window.location.hostname.indexOf('8080') >= 0 || window.location.hostname.indexOf('8088') >= 0) && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital')) {
+      if (ENV === 'DEV' && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital')) {
         componentsList = [...componentsList, ...await listComponents(
         `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
         componentsList = [...componentsList, ...await listComponents(
