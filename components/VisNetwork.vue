@@ -224,7 +224,7 @@ module.exports = {
   
     // Gets labels and images for referenced Wikdata entities
     async getEntityData(eids) {
-      let values = eids.map(eid => `(<http://www.wikidata.org/entity/${eid}>)`).join(' ')
+      let values = Array.from(eids).map(eid => `(<http://www.wikidata.org/entity/${eid}>)`).join(' ')
       let query = `SELECT ?item ?label ?images WHERE {
                       VALUES (?item) { ${values} }
                       ?item rdfs:label ?label . FILTER(LANG(?label) = 'en')

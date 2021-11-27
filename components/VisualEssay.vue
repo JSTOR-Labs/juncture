@@ -173,7 +173,7 @@ module.exports = {
           .forEach(id => {
             let entity = this.entities[id]
             if (entity) {
-              let toMatch = [...[entity.label], ...entity.aliases.filter(alias => alias.length > 2)]
+              let toMatch = [...[entity.label], ...Array.from(entity.aliases).filter(alias => alias.length > 2)]
               for (let i = 0; i < toMatch.length; i++) {
                 if (toMatch[i]) {
                   let re = new RegExp(`(^|[\\s(>])(${toMatch[i].replace(/'/, "'?")})([\\s)<;:,.]|$)`, 'i')
