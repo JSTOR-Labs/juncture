@@ -49,7 +49,7 @@
       </ul>
     </header>
 
-    <section v-for="(section, sidx) in content" :key="sidx" :id="section.id || `section-${sidx}`" :class="section.classes.join(' ')">
+    <section v-for="(section, sidx) in content" :key="sidx" :id="section.id || `section-${sidx}`" :class="Array.from(section.classes).join(' ')">
 
       <template v-if="section.classes.has('heading')">
 
@@ -77,7 +77,7 @@
         <h1 v-if="section.heading" v-html="section.heading"></h1>
         <div v-if="section.html" v-html="section.html"></div>          
         
-        <div v-if="section.cards" :class="section.cards.classes.join(' ')">
+        <div v-if="section.cards" :class="Array.from(section.cards.classes).join(' ')">
 
           <template v-if="section.cards.classes.has('carousel')">
             <div v-for="(card, idx) in section.cards.content" :key="`carousel-slide-${idx}`" class="carousel-slides fade">
@@ -86,7 +86,7 @@
               <div class="carousel-description">
                 <div class="carousel-slide-title" v-html="card.heading"></div>
                 <div class="carousel-slide-description">
-                  <p v-for="(para, pidx) in card.content" :key="`carousel-text-${pidx}`" :class="para.classes.join(' ')"
+                  <p v-for="(para, pidx) in card.content" :key="`carousel-text-${pidx}`" :class="Array.from(para.classes).join(' ')"
                       v-html="para.html"></p>
                 </div>
               </div>
@@ -98,14 +98,14 @@
           </template>
 
           <template v-else>
-            <div v-for="(card, cidx) in section.cards.content" :key="`${sidx}-${cidx}`" :id="card.id" :class="card.classes.join(' ')">
+            <div v-for="(card, cidx) in section.cards.content" :key="`${sidx}-${cidx}`" :id="card.id" :class="Array.from(card.classes).join(' ')">
               <div v-if="card.media" class="media" v-html="card.media"></div>
               <h2 v-if="card.heading" v-html="card.heading"></h2>
               <div v-if="card.content.length > 0" class="card-text">
                 <input type="checkbox" :id="`exp-${sidx}-${cidx}`">
                 <div class="clamp-wrapper">
                   <p v-for="(contentItem, ccidx) in card.content" :key="`${sidx}-${cidx}-${ccidx}`" :id="contentItem.id" 
-                    :class="contentItem.classes.join(' ')"
+                    :class="Array.from(contentItem.classes).join(' ')"
                     v-html="contentItem.html"
                   ></p>
                 </div>
@@ -118,7 +118,7 @@
         <template v-if="section.subsections">
           <div v-for="(subsection, cidx) in section.subsections" :key="`${sidx}-${cidx}`"
             :id="subsection.id"
-            :class="subsection.classes.join(' ')" 
+            :class="Array.from(subsection.classes).join(' ')" 
             v-html="subsection.html"
           ></div>
         </template>
