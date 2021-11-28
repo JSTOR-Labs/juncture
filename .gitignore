@@ -1,4 +1,13 @@
 .vscode
 .idea
+.DS_Store
+venv
 node_modules
 package-lock.json
+CNAME
+tmp
+creds
+utils/email-client/config.yaml
+utils/iiif-server/config.yaml
+index.xml
+sitemap.xml

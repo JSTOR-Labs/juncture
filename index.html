@@ -189,7 +189,7 @@
 
   <script>
 
-    const ENV = window.location.port ? 'DEV' : 'PROD'
+    const ENV = window.location.port || window.location.host.indexOf('githubpreview.dev') > 0 ? 'DEV' : 'PROD'
     
     let isJuncture = window.location.hostname.indexOf('juncture-digital.org') === 0 || ENV === 'DEV'
     const junctureVersion = 'main'
