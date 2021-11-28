@@ -26,7 +26,7 @@ module.exports = {
   mounted() {this.loadDependencies(dependencies, 0, this.init)},
   methods: {
     init() {
-      console.log(this.params, this.entities, this.entitiesWithCoords, this.entitiesWithGeojson)
+      // console.log(this.params, this.entities, this.entitiesWithCoords, this.entitiesWithGeojson)
       this.createMap()
     },
     createMap() {

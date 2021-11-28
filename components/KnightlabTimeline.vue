@@ -37,7 +37,7 @@ module.exports = {
   mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
   methods: {
     init() {
-      console.log(`${this.componentName}: height=${this.height} width=${this.width}`)
+      // console.log(`${this.componentName}: height=${this.height} width=${this.width}`)
     }
   }
 }

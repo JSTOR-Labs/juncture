@@ -45,7 +45,7 @@ module.exports = {
       },
     },
     mounted() {
-        console.log(this.$options.name, this.items)
+        // console.log(this.$options.name, this.items)
         if (typeof d3plus === 'object') {
             this.init()
         } else {
@@ -83,10 +83,9 @@ module.exports = {
         }
     },
     watch: {
-    items() {
-      console.log('in watcher', `${this.$options.name}.watch.items`, this.items)
-      this.init()
-    }
+        items() {
+            this.init()
+        }
     }
   }
 </script>

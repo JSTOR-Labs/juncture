@@ -164,7 +164,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tippy.js/6.3.7/tippy.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://vuejs.org/js/vue.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase-auth.js"></script> 
 
@@ -390,7 +390,7 @@
       let attrsWithUrls = ['banner', 'favicon', 'logo']
       if (ENV === 'DEV' && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital') ) {
         attrsWithUrls.forEach(attr => { if (config[attr]) config[attr] = convertURL(config[attr]) })
-      } else {
+      } else if (contentSource.repo) {
         headRef(contentSource.acct, contentSource.repo, contentSource.ref).then(headHash => {
           if (headHash) {
             contentSource.hash = headHash.slice(0,7)
@@ -424,25 +424,50 @@
       if (siteConfig.title) document.title = siteConfig.title
       if (fontawesome) document.querySelector('body').appendChild(makeScriptTag(fontawesome, 'anonymous'))
 
-      Promise.all([
-        fetch(`/css/main.css`).then(resp => resp.ok ? resp.text() : null),
-        getFile('jstor-labs', 'juncture', junctureVersionHash, '/css/main.css')
-      ]).then(responses => {
-        let style = document.createElement('style')
-        style.innerHTML = responses[0] || responses[1]
-        document.querySelector('head').appendChild(style)
-      })
-
-      let customCssPromise = ENV === 'DEV'
-        ? fetch(`${contentSource.assetsBaseUrl}/css/custom.css`).then(resp => resp.ok ? resp.text() : null)
-        : getFile(contentSource.acct, contentSource.repo, contentSource.ref, '/css/custom.css')
-      customCssPromise.then(css => {
-        if (css) {
+      if (ENV === 'DEV') {
+        fetch(`/css`).then(resp => resp.ok ? resp.text() : '')
+          .then(html => {
+            let tmp = new DOMParser().parseFromString(html, 'text/html').children[0].children[1]
+            return Array.from(tmp.querySelectorAll('li a.file')).map(el => el.innerText)
+          })
+          .then(files => 
+            Promise.all([
+              ...[ files.indexOf('main.css') >= 0
+                ? fetch(`/css/main.css`).then(resp => resp.text())
+                : getFile('jstor-labs', 'juncture', 'main', '/css/main.css')
+              ],
+              ...files.filter(file => file !== 'main.css').map(file => fetch(`/css/${file}`).then(resp => resp.text()))
+            ])
+          )
+          .then(styles => {
+            styles.forEach(css => {
+              let style = document.createElement('style')
+              style.innerHTML = css
+              document.querySelector('head').appendChild(style)
+            })
+          })
+      } else {
+        getFile('jstor-labs', 'juncture', 'main', '/css/main.css').then(css => {
           let style = document.createElement('style')
           style.innerHTML = css
           document.querySelector('head').appendChild(style)
-        }
-      })
+        })
+      }
+      if (contentSource.repo) {
+        dirList(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${contentSource.hash}`, 'css', `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.hash}`)
+        .then(cssUrls => {
+          return cssUrls.length > 0
+            ? Promise.all([cssUrls.map(url => fetch(url).then(resp => resp.text()))])
+            : []
+        })
+        .then(styles => {
+          styles.forEach(css => {
+              let style = document.createElement('style')
+              style.innerHTML = css
+              document.querySelector('head').appendChild(style)
+            })
+        })
+      }
 
       if (siteConfig.enableOneTrust && siteConfig.oneTrustSiteKey) {
         let el = document.createElement('script')
@@ -705,7 +730,8 @@
             if (path.slice(-1) !== '/') path += '/'
             this.path = path 
             // console.log(`loadEssay: basePath=${contentSource.basePath} path=${path} anchor=${this.anchor}`)
-            let pathsToTry = [`${path}index.md`, `${path}README.md`, `${path.slice(0,-1)}.md`]
+            // let pathsToTry = [`${path}index.md`, `${path}README.md`, `${path.slice(0,-1)}.md`]
+            let pathsToTry = [`${path}README.md`, `${path.slice(0,-1)}.md`]
             let markdown
             for (let i = 0; i < pathsToTry.length; i++) {
               markdown = await this.getMarkdown(pathsToTry[i])
@@ -1132,7 +1158,8 @@
     })
 
     Vue.config.productionTip = false
-    if (ENV === 'DEV') Vue.config.devtools = true
+    // if (ENV === 'DEV') Vue.config.devtools = true
+    Vue.config.devtools = true
 
     // Vue components mixin that handles linking to external JS and CSS resources
     Vue.mixin({
@@ -1402,31 +1429,31 @@
       return resp.ok ? await resp.json() : null
     }
 
-    async function listComponents(url, componentsRoot, componentsBaseUrl) {
-      componentsBaseUrl = componentsBaseUrl || url
-      let components = []
+    async function dirList(url, root, baseUrl) {
+      baseUrl = baseUrl || url
+      let files = []
       if (url.indexOf('api.github.com') > 0) {
         let ghToken = oauthAccessToken || ghUnscopedToken
-        let pathElems = componentsRoot.split('/')
-        let dirList, found
+        let pathElems = root.split('/').filter(pe => pe)
+        let _dirList, found
         for (let i = 0; i < pathElems.length; i++) {
-          dirList = await ghDirList(url, ghToken)
-          found = dirList ? dirList.tree.find(item => item.path === pathElems[i]) : null
+          _dirList = await ghDirList(url, ghToken)
+          found = _dirList ? _dirList.tree.find(item => item.path === pathElems[i]) : null
           url = found ? found.url : null
           if (!url) break
         }
         if (url) {
-          dirList = await ghDirList(url, ghToken)
-          components = dirList.tree.map(item => `${componentsBaseUrl}/${componentsRoot}/${item.path}`)
+          _dirList = await ghDirList(url, ghToken)
+          files = _dirList.tree.map(item => `${baseUrl}/${root}/${item.path}`)
         }
       } else {
-        let resp = await fetch(`${url}/${componentsRoot}`)
+        let resp = await fetch(`${url}/${root}`)
         if (resp.ok) {
           let tmp = new DOMParser().parseFromString(await resp.text(), 'text/html').children[0].children[1]
-          components = Array.from(tmp.querySelectorAll('li a.file')).map(el => el.innerText).map(fname => `${componentsBaseUrl}/${componentsRoot}/${fname}`)
+          files = Array.from(tmp.querySelectorAll('li a.file')).map(el => el.innerText).map(fname => `${baseUrl}/${componentsRoot}/${fname}`)
         }
       }
-      return components
+      return files
     }
 
     // Gets a list of available components
@@ -1435,37 +1462,21 @@
 
       let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersionHash : contentSource.ref
 
-      if (ENV === 'DEV' && (contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture-digital')) {
-        componentsList = [...componentsList, ...await listComponents(
-        `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
-        componentsList = [...componentsList, ...await listComponents(
-        `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'components')]
+      if (ENV === 'DEV') {
+        componentsList = await dirList(`${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'components')
+      }
       
-      } else {
-        
-        componentsList = [...componentsList, ...await listComponents(
-          `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'custom/components')]
-          
-        if (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs') {
-          componentsList = [...componentsList, ...await listComponents(
-            `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
-            'custom/components',
-            `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
-          componentsList = [...componentsList, ...await listComponents(
-            `https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`,
-            'components',
-            `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)]
-        }
-
-        componentsList = [...componentsList, ...await listComponents(
-          `${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'components')]
-
+      if (contentSource.repo && (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs')) {
+        componentsList = [
+          ...componentsList, 
+          ...await dirList(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`, 'components', `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)
+        ]
       }
 
-      componentsList = [...componentsList, ...await listComponents(
-        `https://api.github.com/repos/jstor-labs/juncture/git/trees/${junctureVersionHash}`,
-        'components',
-        `https://raw.githubusercontent.com/jstor-labs/juncture/${junctureVersionHash}`)]
+      componentsList = [
+        ...componentsList, 
+        ...await dirList(`https://api.github.com/repos/jstor-labs/juncture/git/trees/${junctureVersionHash}`, 'components', `https://raw.githubusercontent.com/jstor-labs/juncture/${junctureVersionHash}`)
+      ]
         
       return componentsList
     }

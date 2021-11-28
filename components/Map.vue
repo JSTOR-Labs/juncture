@@ -175,7 +175,7 @@ module.exports = {
     },
     methods: {
         init() {
-            console.log(this.$options.name, this.mapDef, this.items)
+            // console.log(this.$options.name, this.mapDef, this.items)
             
             if (this.viewerIsActive) {
                 this.$nextTick(() => {
@@ -226,7 +226,7 @@ module.exports = {
             }
         },
         addTimeDimension() {
-            console.log(`timeDimension: timeInterval=${this.timeInterval} period=${this.period} loop=${this.loop} autoPlay=${this.autoPlay} transitionTime=${1000/this.fps}`)
+            // console.log(`timeDimension: timeInterval=${this.timeInterval} period=${this.period} loop=${this.loop} autoPlay=${this.autoPlay} transitionTime=${1000/this.fps}`)
             let timeDimension = new L.TimeDimension({
                 // times: [],
                 timeInterval: this.timeInterval,
@@ -680,7 +680,7 @@ module.exports = {
     watch: {
         mapDef: {
             handler: function (mapDef) {
-                console.log('mapDef', mapDef)
+                // console.log('mapDef', mapDef)
                 this.removeTimeDimension()
                 if (this.timeDimension) {
                     this.addTimeDimension()
@@ -731,7 +731,7 @@ module.exports = {
         },
         items: {
             handler: function () {
-                console.log('map.items', this.items)
+                // console.log('map.items', this.items)
             },
             immediate: true
         },

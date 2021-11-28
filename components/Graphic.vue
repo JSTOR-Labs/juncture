@@ -55,7 +55,6 @@ module.exports = {
     mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
     methods: {
         init() {
-            console.log('init', this.input)
             //check if svg
             if (this.input.split('.').pop() == 'svg'){
                 fetch(this.input).then((resp) => resp.text())

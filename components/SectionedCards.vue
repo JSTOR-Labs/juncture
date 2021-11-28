@@ -206,7 +206,6 @@ module.exports = {
     },
 
     doMenuAction(action, options) {
-      console.log(`doMenuAction=${action}`, options)
       if (action === 'loadEssay') {
         if (options === '/contact-us') {
           this.toggleContactForm()
@@ -240,7 +239,7 @@ module.exports = {
     },
 
     submitContactForm() {
-      console.log('this.siteConfig.contactForm.toEmail', this.siteConfig.contactForm.toEmail)
+      // console.log('this.siteConfig.contactForm.toEmail', this.siteConfig.contactForm.toEmail)
       let body = `${this.contactMessage}\n\r[Sent by: ${this.contactName} <${this.contactEmail}>]`
 
       this.$emit('do-action', 'send-email', {

@@ -72,7 +72,6 @@ module.exports = {
   mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
   methods: {
     init() {
-      console.log(this.$options.name, this.mapDef)
       if (this.viewerIsActive) this.createMap()
     },
     createMap(reload) {
@@ -83,7 +82,6 @@ module.exports = {
       }
       if (!this.map) {
         this.$nextTick(() => {
-          console.log('createMap', document.getElementById('map').clientHeight)
           this.map = L.map('map', {
             center: this.center, 
             zoom: this.zoom, 
@@ -97,7 +95,6 @@ module.exports = {
     toFloatArray(str) { return str.split(',').map(num => parseFloat(num))},
     toIntArray(str) { return str.split(',').map(num => parseInt(num))},
     syncLayers() {
-      console.log('syncLayers')
       this.currentLayers.forEach(layer => this.map.removeLayer(layer))
       this.currentLayers = []
       this.layers.forEach(layer => {
@@ -108,7 +105,6 @@ module.exports = {
       })
     },
     addHeatmap(layer) {
-      console.log('addHeatmap', layer)
       let cfg = {
         // radius should be small ONLY if scaleRadius is true (or small radius is intended)
         // if scaleRadius is false it will be the constant radius used in pixels
@@ -133,11 +129,9 @@ module.exports = {
 
       fetch(layer.url).then(resp => resp.text())
         .then(delimitedDataString => {
-          console.log(delimitedDataString)
           let byPlace = {}
           this.delimitedStringToObjArray(delimitedDataString)
             .forEach(item => {
-              console.log(item)
               if (!byPlace[item.PlaceQID.id]) byPlace[item.PlaceQID.id] = {lat: parseFloat(item.Lat1.id), lng: parseFloat(item.Long1.id), count: 0}
               byPlace[item.PlaceQID.id].count += 1
             })
@@ -146,7 +140,6 @@ module.exports = {
         })
     },
     addCustomMarker(data) {
-        console.log('make custom marker', data)
         const faIcon = data.url
         var icon = L.icon({
                 iconUrl:      faIcon,
@@ -158,21 +151,18 @@ module.exports = {
                 popupAnchor:  [-3, -76],
                 className:    data.classname ? data.classname : ''
             })
-        console.log(icon)
         this.currentLayers.push(L.marker(this.toFloatArray(data.center), {icon}).addTo(this.map))
     },
   },
   watch: {
     active: {
       handler: function () { 
-        console.log(`${this.$options.name}.active=${this.viewerIsActive}`) 
         if (this.viewerIsActive && !this.map) this.createMap()
       },
       immediate: false
     },
     mapDef: {
       handler: function (mapDef) {
-        console.log('mapDef', mapDef)
         if (this.map) {
           this.syncLayers()
           this.map.flyTo(this.center, this.zoom)
@@ -184,7 +174,7 @@ module.exports = {
     },
     items: {
       handler: function (items) {
-        console.log('items', items)
+        // console.log('items', items)
       },
       immediate: true
     },

@@ -33,7 +33,7 @@ module.exports = {
       item() { return this.items.length > 0 ? this.items[0] : {} }
     },
     mounted() {
-        console.log(this.$options.name, this.items)
+        // console.log(this.$options.name, this.items)
         if (typeof d3plus === 'object') {
             this.init()
         } else {
@@ -45,7 +45,6 @@ module.exports = {
             fetch(this.item.url).then(resp => resp.text())
             .then(delimitedDataString => {
                 const data = this.transformData(this.delimitedStringToObjArray(delimitedDataString))
-                console.log(data)
                 new d3plus.Network() // eslint-disable-line no-undef
                     .select('#datavis')
                     .links(data.edges)
@@ -79,7 +78,7 @@ module.exports = {
     },
     watch: {
     items() {
-      console.log(`${this.$options.name}.watch.items`, this.items)
+      // console.log(`${this.$options.name}.watch.items`, this.items)
       this.init()
     }
     }

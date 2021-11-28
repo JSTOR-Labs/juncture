@@ -33,7 +33,6 @@ module.exports = {
         input() { return this.filteredItems[0].data || this.filteredItems[0].url }
     },
     mounted() {
-        console.log(this.$options.name, this.items)
         this.loadDependencies(dependencies, 0, this.init)
     },
     methods: {
@@ -42,7 +41,6 @@ module.exports = {
             .then((delimitedDataString) => {
                 const delimiter = this.input.split('.').pop() == 'tsv' ? '\t' : ',';
                 const data = this.toObjArray(delimitedDataString, delimiter)
-                console.log(data)
                 new Tabulator('#table', {
                     data: data.objs, 
                     height: this.height,

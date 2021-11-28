@@ -71,8 +71,6 @@ module.exports = {
     }
   },
   mounted() {
-    console.log(this.$options.name, this.items);
-    // this.init();
     this.loadDependencies(dependencies, 0, this.init);
   },
   methods: {
@@ -264,7 +262,6 @@ module.exports = {
   },
   watch: {
     items() {
-      console.log(`${this.$options.name}.watch.items`, this.items)
       this.init()
     }
   }

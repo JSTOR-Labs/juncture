@@ -176,13 +176,11 @@ module.exports = {
   methods: {
 
     init() {
-      console.log(`${this.$options.name}.mounted`)
       this.initOsdViewer()
       this.findSpecimens()
     },
 
     async findSpecimens() {
-      console.log('findSpecimens', this.specimenItems)
       let promises = this.specimenItems.map(item => {
         let selector
         if (item.jpid) selector = `jwdt:P1106 "${item.jpid}" ;`
@@ -208,7 +206,6 @@ module.exports = {
           : { url: manifest.sequences[0].canvases[manifest.seq || 0].images[0].resource['@id'] || manifest.metadata.find(md => md.label === 'source').value,
               type: 'image', buildPyramid: true }
       })
-      console.log(this.tileSources)
     },
 
     initOsdViewer() {
@@ -236,7 +233,6 @@ module.exports = {
     metadata(specimen) {
       let bestImgUrl = specimen.images.find(img => img.imgSize === 'best').id
       let rftId = bestImgUrl.match(/rft_id=([^&]*)/)[1]
-      console.log(`rftId=${rftId}`)
       let data = {url: `${iiifService}/gp-proxy${rftId}`}
       if (specimen.taxonName) data['Taxon name'] = specimen.taxonName
       if (specimen.jstorPlantsId) data['Global Plants ID'] = specimen.jstorPlantsId
@@ -254,14 +250,12 @@ module.exports = {
   watch: {
     specimenItems: {
       handler: function () {
-        console.log(`${this.$options.name}.specimenItems`, this.specimenItems)
         this.findSpecimens()
       },
       immediate: true
     },
     tileSources: {
       handler: function () {
-        console.log(`${this.$options.name}.tileSources=${this.tileSources.length}`)      
         if (this.viewer) this.viewer.open(this.tileSources)
       },
       immediate: true

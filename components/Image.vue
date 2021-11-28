@@ -175,7 +175,6 @@ module.exports = {
         return this.currentItem.target
       } else {
         let path = `${window.location.pathname.split('/').filter(elem => elem !== '').join('/')}`
-        console.log(`path=${path}`)
         const imageSourceHash = this.currentItem ? this.sha256(this.currentItem['@id']).slice(0,8) : ''
         return `${this.contentSource.acct}/${this.contentSource.repo}/${this.contentSource.ref}${path ? '/'+path : ''}/${imageSourceHash}`
       }
@@ -233,8 +232,7 @@ module.exports = {
   },
   methods: {
     init() {
-      console.log(this.$options.name, this.viewerItems, this.viewerIsActive, this.width, this.height, this.selected, this.currentItme)
-      // console.log(`acct=${this.acct} repo=${this.repo} path=${this.path}`)
+      // console.log(this.$options.name, this.viewerItems, this.viewerIsActive, this.width, this.height, this.selected, this.currentItme)
       if (this.viewerIsActive) {
         this.initViewer()
         this.loadManifests(this.viewerItems)
@@ -316,7 +314,6 @@ module.exports = {
           })
 
           if (manifest && manifest.crop) {
-            console.log(`crop=${manifest.crop}`)
             let [x,y,w,h] = manifest.crop.split(',').map(v => parseInt(v))
             const osdRect = new OpenSeadragon.Rect(x,y,w,h)
             // const imgSize = e.item.getContentSize()
@@ -429,7 +426,7 @@ module.exports = {
     },
     initAnnotator() {
       if (!this.annotator) {
-        console.log(`initAnnotator: readonly=${!this.isAuthenticated}`)
+        // console.log(`initAnnotator: readonly=${!this.isAuthenticated}`)
         this.annotator = OpenSeadragon.Annotorious(this.viewer, { readOnly: !this.isAuthenticated })
         this.annotator.off()
         this.annotator.on('selectAnnotation', this.annotationSelected)
@@ -447,7 +444,7 @@ module.exports = {
         annosPath = `${this.mdDir}${this.currentItemSourceHash}.json`
       }
        
-      console.log(`loadAnnotations: path=${annosPath}`)
+      // console.log(`loadAnnotations: path=${annosPath}`)
       this.getFile(annosPath).then(annos => {
         if (annos && annos.content && annos.content.length > 0) {
           this.annotations = JSON.parse(annos.content)
@@ -459,7 +456,7 @@ module.exports = {
         }
         this.annoCursor = 0
         if (this.annotations.length > 0) this.showAnnotationsNavigator = true
-        console.log(`annotations=${this.annotations.length} show=${this.showAnnotationsNavigator}`)
+        // console.log(`annotations=${this.annotations.length} show=${this.showAnnotationsNavigator}`)
       })
     },
     saveAnnotations() {
@@ -468,7 +465,7 @@ module.exports = {
       this.putFile(`${this.mdDir}${this.currentItemSourceHash}.json`, JSON.stringify(this.annotations, null, 2))
     },
     annotationSelected(anno) {
-      console.log('annotationSelected', anno)
+      // console.log('annotationSelected', anno)
     },
     toggleAnnotatorEnabled() {
      this.annotatorEnabled = !this.annotatorEnabled
@@ -480,7 +477,6 @@ module.exports = {
       
     },
     setAnnotatorEnabled(enabled) {
-      console.log(`setAnnotatorEnabled=${enabled}`)
       const osdElem = document.getElementById('osd')
       this.annotator.readOnly = !this.isAuthenticated
       if (osdElem) {
@@ -492,12 +488,10 @@ module.exports = {
     openAnnotationsEditor() {
       // console.log('openAnnotationsEditor', this.currentItem)
       const url = `${this.annosTool}?manifest=${encodeURIComponent(this.currentItem['manifest'])}&target=${encodeURIComponent(this.target)}&jwt=${this.jwt}`
-      console.log('open annosEditor', url)
       if (this.annosEditor) { this.annosEditor.close() }
       this.annosEditor = window.open(url, '_blank', `toolbar=yes,location=yes,left=0,top=0,width=1400,height=1200,scrollbars=yes,status=yes`)
     },
     viewNextAnnotation() {
-      console.log(`viewNextAnnotation: hasNext=${this.hasNextAnnotation}`)
       this.gotoAnnotationSeq(this.hasNextAnnotation ? this.annoCursor + 1 : 0)
     },
     viewPreviousAnnotation() {
@@ -513,7 +507,6 @@ module.exports = {
     },
     gotoAnnotation(anno) {
       this.showAnnotationsNavigator = true
-      console.log(`gotoAnnotation "${anno.body[0].value}" ${anno.id.split('/').pop()}`)
       this.gotoRegion(anno.target.selector.value.split('=')[1])
     },
     gotoPage(page, region) {
@@ -523,7 +516,6 @@ module.exports = {
     gotoRegion(region) {
       this.viewer.viewport.zoomSpring.animationTime = 2
       let bounds = this.parseRegionString(region)
-      console.log(`gotoRegion=${region} bounds=${bounds}`)
       this.viewer.viewport.fitBounds(bounds)
       this.viewer.viewport.zoomSpring.animationTime = 1.2
     },
@@ -556,7 +548,6 @@ module.exports = {
       }
     },
     handleEssayAction({elem, event, action, value}) { // eslint-disable-line no-unused-vars
-      console.log(`handleEssayAction" event=${event} action=${action} value=${value}`)
       let region
       let anno = this.findAnnotation(value)
       if (!anno) region = value
@@ -569,7 +560,6 @@ module.exports = {
                   } else {
                     if (region == 'next'){
                       //go to next page
-                      console.log('this page', this.page)
                       if (this.page+1 <= this.manifests.length){
                         this.viewer.goToPage(this.page+1)
                       }
@@ -577,14 +567,12 @@ module.exports = {
                     }
                     else if (region == 'previous'){
                       //go to previous page
-                      console.log('this page', this.page)
                       if (this.page-1 > -1){
                         this.viewer.goToPage(this.page-1)
                       }
                     }
                     else if (!region.includes(',')){
                       let zoomtoPage = this.manifests.findIndex(obj => obj.ref === region)
-                      console.log('zoom to page', zoomtoPage);
                       if (zoomtoPage >= 0) {
                         this.page = zoomtoPage;
                         this.viewer.goToPage(zoomtoPage)
@@ -593,7 +581,6 @@ module.exports = {
                     else if (region.includes('|')) {
                       let [ zoomtoRef, zoomtoRegion ] = region.split('|')
                       let zoomtoPage = this.manifests.findIndex(obj => obj.ref === zoomtoRef)
-                      console.log(`zoomto ref=${zoomtoRef} page=${zoomtoPage} region=${zoomtoRegion}`);
                       if (zoomtoPage >= 0) {
                         this.page = zoomtoPage;
                         this.zoomtoRegion = zoomtoRegion
@@ -817,7 +804,6 @@ module.exports = {
       }
     },
     viewerItems (current, previous) {
-      console.log('viewerItems', current)
       /*
       let sorted = [...current].sort((a, b) => {
         let aIdx = parseInt(a.id.split('-').pop())
@@ -873,7 +859,6 @@ module.exports = {
       immediate: true
     },
     currentItem(current, previous) {
-      console.log('currentItem', current, previous)
       this.annotations = []
       this.annoCursor = 0
       this.loadAnnotations()
@@ -888,7 +873,9 @@ module.exports = {
       }
       */
     },
-    currentItemSourceHash() { console.log(`currentItemSource=${this.currentItemSource} hash=${this.currentItemSourceHash}`) },
+    currentItemSourceHash() { 
+      // console.log(`currentItemSource=${this.currentItemSource} hash=${this.currentItemSourceHash}`)
+    },
     mode() {
       if (this.viewer) this.initViewer()
     },
