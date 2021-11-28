@@ -232,7 +232,7 @@ module.exports = {
   },
   methods: {
     init() {
-      // console.log(this.$options.name, this.viewerItems, this.viewerIsActive, this.width, this.height, this.selected, this.currentItme)
+      // console.log(`${this.$options.name}.init`, this.viewerItems, this.viewerIsActive, this.width, this.height, this.selected, this.currentItme)
       if (this.viewerIsActive) {
         this.initViewer()
         this.loadManifests(this.viewerItems)
@@ -351,7 +351,6 @@ module.exports = {
     },
     */
     loadManifests(items) {
-      // ('loadManifests', items)
       let promises = items.map(item => {
         if (item.manifest) {
           return fetch(item.manifest).then(resp => resp.json())
@@ -437,27 +436,21 @@ module.exports = {
     },
     async loadAnnotations() {
       //let annosPath = `${this.mdDir}${this.currentItemSourceHash}.json`
-      let annosPath = `${this.mdDir}`
-      if (annosPath.length > 1){
-        annosPath = `${this.mdDir}/${this.currentItemSourceHash}.json`
-      } else {
-        annosPath = `${this.mdDir}${this.currentItemSourceHash}.json`
+      let annosFile = `${this.currentItemSourceHash}.json`
+      let files = await dir(this.mdDir, contentSource.repo ? contentSource : null)
+      if (files[annosFile]) {       
+        this.getFile(annosPath).then(annos => {
+          if (annos && annos.content && annos.content.length > 0) {
+            this.annotations = JSON.parse(annos.content)
+            if (!Array.isArray(this.annotations) && this.annotations.items) this.annotations = this.annotations.items
+            this.annotations.forEach(anno => this.annotator.addAnnotation(anno))
+          } else {
+            this.annotations = []
+          }
+          this.annoCursor = 0
+          if (this.annotations.length > 0) this.showAnnotationsNavigator = true
+        })
       }
-       
-      // console.log(`loadAnnotations: path=${annosPath}`)
-      this.getFile(annosPath).then(annos => {
-        if (annos && annos.content && annos.content.length > 0) {
-          this.annotations = JSON.parse(annos.content)
-          // console.log(this.annotations)
-          if (!Array.isArray(this.annotations) && this.annotations.items) this.annotations = this.annotations.items
-          this.annotations.forEach(anno => this.annotator.addAnnotation(anno))
-        } else {
-          this.annotations = []
-        }
-        this.annoCursor = 0
-        if (this.annotations.length > 0) this.showAnnotationsNavigator = true
-        // console.log(`annotations=${this.annotations.length} show=${this.showAnnotationsNavigator}`)
-      })
     },
     saveAnnotations() {
       this.annotations = this.annotator.getAnnotations()
@@ -797,11 +790,14 @@ module.exports = {
         })
       }
     },
-    viewerIsActive(isActive) {
-      if (isActive) {
-        if (!this.viewer) this.initViewer()
-        this.loadManifests(this.viewerItems)
-      }
+    viewerIsActive: {
+      handler: function (isActive) {
+        if (isActive) {
+          if (!this.viewer) this.initViewer()
+          this.loadManifests(this.viewerItems)
+        }
+      },
+      immediate: false
     },
     viewerItems (current, previous) {
       /*

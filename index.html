@@ -16,6 +16,7 @@
 <body>
 
   <div id="app" v-cloak ref="app" :class="layouts.join(' ')">
+    
     <div id="header" ref="header">            
       <component v-bind:is="headerComponent" :active="true" :scroll-top="scrollTop"
                  :site-config="siteConfig"
@@ -34,6 +35,7 @@
                  @logout="logout"
       ></component>
     </div>
+
     <div id="tabs-bar" ref="tabsBar">
       <span v-for="viewer in viewersEnabled" :key="`tab-${viewer}`" 
             :class="{'active-tab': selectedViewer === viewer}" 
@@ -42,6 +44,7 @@
         <i v-if="viewerData[viewer]" :class="viewerData[viewer].icon"></i>
       </span>
     </div>
+
     <div id="essay" ref="essay" @scroll="onScroll">
       <component v-bind:is="mainComponent"
         :html="html"
@@ -89,6 +92,7 @@
                  @set-hover-item="hoverItem = $event"
       ></component>
     </div>
+
     <div v-if="essayConfig && path === '/'" id="footer" ref="footer">            
       <component v-bind:is="footerComponent" :site-config="siteConfig" :content-source="contentSource"></component>
     </div>
@@ -399,7 +403,6 @@
           }
         })
       }
-        
       return config
     })
     .then(config => gcOauth())
@@ -425,27 +428,22 @@
       if (fontawesome) document.querySelector('body').appendChild(makeScriptTag(fontawesome, 'anonymous'))
 
       if (ENV === 'DEV') {
-        fetch(`/css`).then(resp => resp.ok ? resp.text() : '')
-          .then(html => {
-            let tmp = new DOMParser().parseFromString(html, 'text/html').children[0].children[1]
-            return Array.from(tmp.querySelectorAll('li a.file')).map(el => el.innerText)
+        dir('/css').then(files => {
+          return Promise.all([
+            ...[ files['main.css']
+              ? fetch(files['main.css']).then(resp => resp.text())
+              : getFile('jstor-labs', 'juncture', 'main', '/css/main.css')
+            ],
+            ...Object.keys(files).filter(file => file !== 'main.css').map(file => fetch(files[file]).then(resp => resp.text()))
+          ])
+        })
+        .then(styles => {
+          styles.forEach(css => {
+            let style = document.createElement('style')
+            style.innerHTML = css
+            document.querySelector('head').appendChild(style)
           })
-          .then(files => 
-            Promise.all([
-              ...[ files.indexOf('main.css') >= 0
-                ? fetch(`/css/main.css`).then(resp => resp.text())
-                : getFile('jstor-labs', 'juncture', 'main', '/css/main.css')
-              ],
-              ...files.filter(file => file !== 'main.css').map(file => fetch(`/css/${file}`).then(resp => resp.text()))
-            ])
-          )
-          .then(styles => {
-            styles.forEach(css => {
-              let style = document.createElement('style')
-              style.innerHTML = css
-              document.querySelector('head').appendChild(style)
-            })
-          })
+        })
       } else {
         getFile('jstor-labs', 'juncture', 'main', '/css/main.css').then(css => {
           let style = document.createElement('style')
@@ -454,8 +452,8 @@
         })
       }
       if (contentSource.repo) {
-        dirList(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${contentSource.hash}`, 'css', `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${contentSource.hash}`)
-        .then(cssUrls => {
+        dir('/css', contentSource).then(files => {
+          let cssUrls = Object.values(files)
           return cssUrls.length > 0
             ? Promise.all([cssUrls.map(url => fetch(url).then(resp => resp.text()))])
             : []
@@ -499,6 +497,7 @@
           markdownViewer: null,
           viewerHeight: 0,
           availableViewers,
+          viewersEnabled: [],
           selectedViewer: null,
           viewerData: {},
           scrollTop: 0,
@@ -537,10 +536,6 @@
             } 
           },
           isVerticalLayout() { return !this.forceHorizontalLayout && this.layouts.indexOf('vertical') >= 0 },
-          viewersEnabled() { 
-            let viewers = this.items.filter(item => this.availableViewers.indexOf(item.viewer) >= 0).map(item => item.viewer)
-            return viewers.filter((viewer, index) => viewers.indexOf(viewer) === index)
-          },
           loginsEnabled() { return this.oauthCredsFound && (!this.essayConfig || !this.essayConfig['logins-disabled']) }
         },
         mounted() {
@@ -550,7 +545,6 @@
             let anchor = window.location.href.split('#').pop()
             if (path) this.anchor = anchor
             else path = anchor
-            console.log(`path=${path} anchor=${anchor}`)
           }
           window.onpopstate = (e) => this.loadEssay(e.state.file, true) 
           const resizeObserver = new ResizeObserver(entries => { 
@@ -603,7 +597,6 @@
 
           // Handles menu actions from header
           async doAction(action, options) {
-            console.log(`doAction action=${action}`)
             if (action === 'sendmail') {
               this.doActionCallback = {status: 'processing', message: 'Processing request'}
               let resp = await sendmail(options)
@@ -725,6 +718,7 @@
 
           // Loads essay Markdown file
           async loadEssay(path, replace, anchor) {
+            this.viewersEnabled = []
             this.essayConfig = null
             path = path || window.location.pathname.slice(contentSource.basePath.length) || '/'
             if (path.slice(-1) !== '/') path += '/'
@@ -1117,9 +1111,28 @@
             }
           },
 
+          items: {
+            handler: function (items) {
+              let viewers = items.filter(item => this.availableViewers.indexOf(item.viewer) >= 0).map(item => item.viewer)
+              let enabled = viewers.filter((viewer, index) => viewers.indexOf(viewer) === index)
+              if (!arraysEqualIgnoreOrder(enabled, this.viewersEnabled)) this.viewersEnabled = enabled
+            },
+            immediate: true
+          },
+
+          availableViewers: {
+            handler: function (availableViewers) {
+              let viewers = this.items.filter(item => availableViewers.indexOf(item.viewer) >= 0).map(item => item.viewer)
+              let enabled = viewers.filter((viewer, index) => viewers.indexOf(viewer) === index)
+              if (!arraysEqualIgnoreOrder(enabled, this.viewersEnabled)) this.viewersEnabled = enabled
+            },
+            immediate: true
+          },
+          
           viewersEnabled: {
-            handler: function () {
-              this.selectedViewer = this.viewerIsOpen && this.viewersEnabled.length > 0 ? this.viewersEnabled[0] : null
+            handler: function (viewersEnabled) {
+              this.selectedViewer = this.viewerIsOpen && viewersEnabled.length > 0 ? viewersEnabled[0] : null
+              // console.log(`viewersEnabled: enabled=${viewersEnabled} selected=${this.selectedViewer}`)
             },
             immediate: true
           },
@@ -1132,9 +1145,7 @@
             immediate: true
           },
 
-          // logging watchers
           params (params) {
-            // console.log('params', params)
             // Load custom components declared in page markdown
             params
               .filter(param => param['ve-component'] !== undefined)
@@ -1148,7 +1159,6 @@
                 }
             })
           },
-          selectedItem (eid) { console.log(`selectedItem=${eid}`) },
           hoverItem (eid) {
             document.querySelectorAll('.hover').forEach(el => el.classList.remove('hover'))
             document.querySelectorAll(`[data-eid="${eid}"]`).forEach(el => el.classList.add('hover'))        
@@ -1237,7 +1247,7 @@
           ref = ref || this.contentSource.ref
           let ghToken = oauthAccessToken || ghUnscopedToken
           // console.log(`getFile: path=${path} acct=${acct} repo=${repo} ref=${ref} ghToken=${ghToken}`)
-          if (ENV === 'PROD' && acct) {
+          if (repo) {
             let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${ref}`
             let resp = await fetch(url, ghToken ? {headers: {Authorization:`Token ${ghToken}`}} : {})
             if (resp.ok) {
@@ -1315,8 +1325,17 @@
     function kebabToCamel(input) { return input.replace(/-([a-z])/g, function (g) {return g[1].toUpperCase()})}
     function isNumeric(arg) { return !isNaN(arg) }
     function isEntityID(arg) { return typeof arg === 'string' && arg.split(':').slice(-1).find(val => val.length > 1 && val[0] === 'Q' && isNumeric(val.slice(1))) !== undefined }
-    function attrsToObject(el) { return Object.fromEntries(Array.from(el.attributes).map(attr => 
-                      [attr.nodeName, attr.value === '' || attr.value === 'true' ? true : attr.value === 'false' ? false : attr.value] )) }
+    function attrsToObject(el) { return Object.fromEntries(Array.from(el.attributes).map(attr => [attr.nodeName, attr.value === '' || attr.value === 'true' ? true : attr.value === 'false' ? false : attr.value] )) }
+    function arraysEqualIgnoreOrder(a, b) {
+      if (a.length !== b.length) return false
+      const uniqueValues = new Set([...a, ...b])
+      for (const v of uniqueValues) {
+        const aCount = a.filter(e => e === v).length
+        const bCount = b.filter(e => e === v).length
+        if (aCount !== bCount) return false
+      }
+      return true
+    }
     function slugify(str) {
       str = str.replace(/^\s+|\s+$/g, '').toLowerCase()
       let from = "ÁÄÂÀÃÅČÇĆĎÉĚËÈÊẼĔȆÍÌÎÏŇÑÓÖÒÔÕØŘŔŠŤÚŮÜÙÛÝŸŽáäâàãåčçćďéěëèêẽĕȇíìîïňñóöòôõøðřŕšťúůüùûýÿžþÞĐđßÆa·/_,:;"
@@ -1429,10 +1448,10 @@
       return resp.ok ? await resp.json() : null
     }
 
-    async function dirList(url, root, baseUrl) {
-      baseUrl = baseUrl || url
-      let files = []
-      if (url.indexOf('api.github.com') > 0) {
+    async function dir(root, ghSource) {
+      let files = {}
+      if (ghSource) {
+        let url = `https://api.github.com/repos/${ghSource.acct}/${ghSource.repo}/git/trees/${ghSource.hash || ghSource.ref}`
         let ghToken = oauthAccessToken || ghUnscopedToken
         let pathElems = root.split('/').filter(pe => pe)
         let _dirList, found
@@ -1444,13 +1463,14 @@
         }
         if (url) {
           _dirList = await ghDirList(url, ghToken)
-          files = _dirList.tree.map(item => `${baseUrl}/${root}/${item.path}`)
+          files = Object.fromEntries(_dirList.tree.map(item => [item.path, `https://raw.githubusercontent.com/${ghSource.acct}/${ghSource.repo}/${ghSource.hash || ghSource.ref}${root}/${item.path}`]))
         }
       } else {
-        let resp = await fetch(`${url}/${root}`)
+        let rootUrl = `${contentSource.baseUrl}${root}`
+        let resp = await fetch(rootUrl)
         if (resp.ok) {
           let tmp = new DOMParser().parseFromString(await resp.text(), 'text/html').children[0].children[1]
-          files = Array.from(tmp.querySelectorAll('li a.file')).map(el => el.innerText).map(fname => `${baseUrl}/${componentsRoot}/${fname}`)
+          files = Object.fromEntries(Array.from(tmp.querySelectorAll('li a.file')).map(el => [el.innerText, `${rootUrl}/${el.innerText}`]))
         }
       }
       return files
@@ -1463,21 +1483,21 @@
       let ref = contentSource.acct === 'jstor-labs' && contentSource.repo === 'juncture' ? junctureVersionHash : contentSource.ref
 
       if (ENV === 'DEV') {
-        componentsList = await dirList(`${contentSource.baseUrl}${contentSource.isGhpSite ? contentSource.basePath : ''}`, 'components')
+        componentsList = Object.values(await dir('/components'))
       }
       
       if (contentSource.repo && (contentSource.repo !== 'juncture' || contentSource.acct !== 'jstor-labs')) {
         componentsList = [
           ...componentsList, 
-          ...await dirList(`https://api.github.com/repos/${contentSource.acct}/${contentSource.repo}/git/trees/${ref}`, 'components', `https://raw.githubusercontent.com/${contentSource.acct}/${contentSource.repo}/${ref}`)
-        ]
+          ...Object.values(await dir('/components', contentSource))
+       ]
       }
 
       componentsList = [
-        ...componentsList, 
-        ...await dirList(`https://api.github.com/repos/jstor-labs/juncture/git/trees/${junctureVersionHash}`, 'components', `https://raw.githubusercontent.com/jstor-labs/juncture/${junctureVersionHash}`)
+        ...componentsList,
+        ...Object.values(await dir('/components', {acct: 'jstor-labs', repo: 'juncture', hash: junctureVersionHash}))
       ]
-        
+      
       return componentsList
     }
   
