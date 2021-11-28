@@ -382,11 +382,11 @@
     })
     .then(config => {
       siteConfig = config
-      if (ENV !== 'DEV') {
+      if (ENV === 'PROD') {
         contentSource = {...contentSource, ...{
             acct: config.acct || contentSource.acct, 
             repo: config.repo || contentSource.repo, 
-            ref: qargs.ref || config.ref || contentSource.ref
+            ref: qargs.ref || config.ref || contentSource.ref || 'main'
         }}
       }
       if (gaPropertyID) ga('create', gaPropertyID, 'auto')
