@@ -409,7 +409,7 @@
     .then(resp => headRef('jstor-labs', 'juncture', junctureVersion, ghUnscopedToken))
     .then(hash => {
       junctureVersionHash = hash ? hash.slice(0,7) : null
-      console.log(`ENV=${ENV} junctureVersion=${junctureVersion} junctureVersionHash=${junctureVersionHash} referrer=${document.referrer}`)
+      // console.log(`ENV=${ENV} junctureVersion=${junctureVersion} junctureVersionHash=${junctureVersionHash} referrer=${document.referrer}`)
       return getComponentsList()
     })
     .then(clist => {
@@ -722,15 +722,22 @@
             this.essayConfig = null
             path = path || window.location.pathname.slice(contentSource.basePath.length) || '/'
             if (path.slice(-1) !== '/') path += '/'
-            this.path = path 
+            this.path = path
+
+            let _pathElems = path.split('/').filter(pe => pe)
+            let _mdDir = `/${_pathElems.slice(0,-1).join('/')}`
+            let _mdFile = `${_pathElems.pop()}.md`
+
+            let pathsToTry = (await dir(_mdDir, contentSource.repo ? contentSource : null))[_mdFile]
+              ? [`${path.slice(0,-1)}.md`, `${path}README.md`, ]
+              : [`${path}README.md`, `${path.slice(0,-1)}.md`]
+
             // console.log(`loadEssay: basePath=${contentSource.basePath} path=${path} anchor=${this.anchor}`)
-            // let pathsToTry = [`${path}index.md`, `${path}README.md`, `${path.slice(0,-1)}.md`]
-            let pathsToTry = [`${path}README.md`, `${path.slice(0,-1)}.md`]
             let markdown
             for (let i = 0; i < pathsToTry.length; i++) {
               markdown = await this.getMarkdown(pathsToTry[i])
               if (markdown) {
-                let pathElems = pathsToTry[i].split('/').filter(elem => elem !== '')
+                let pathElems = pathsToTry[i].split('/').filter(elem => elem)
                 let mdFile = pathElems.slice(-1)
                 this.mdDir = `/${pathElems.slice(0,-1).join('/')}`
                 this.mdPath = pathsToTry[i]
@@ -1168,8 +1175,7 @@
     })
 
     Vue.config.productionTip = false
-    // if (ENV === 'DEV') Vue.config.devtools = true
-    Vue.config.devtools = true
+    if (ENV === 'DEV') Vue.config.devtools = true
 
     // Vue components mixin that handles linking to external JS and CSS resources
     Vue.mixin({
@@ -1448,32 +1454,39 @@
       return resp.ok ? await resp.json() : null
     }
 
+    const dirCache = {}
+
     async function dir(root, ghSource) {
-      let files = {}
-      if (ghSource) {
-        let url = `https://api.github.com/repos/${ghSource.acct}/${ghSource.repo}/git/trees/${ghSource.hash || ghSource.ref}`
-        let ghToken = oauthAccessToken || ghUnscopedToken
-        let pathElems = root.split('/').filter(pe => pe)
-        let _dirList, found
-        for (let i = 0; i < pathElems.length; i++) {
-          _dirList = await ghDirList(url, ghToken)
-          found = _dirList ? _dirList.tree.find(item => item.path === pathElems[i]) : null
-          url = found ? found.url : null
-          if (!url) break
+      let cacheKey = ghSource ? `${ghSource.acct}/${ghSource.repo}/${ghSource.hash || ghSource.ref}${root}` : root
+      // console.log(`dir: root=${root} cacheKey=${cacheKey} inCache=${dirCache[cacheKey] !== undefined}`)
+      if (!dirCache[cacheKey]) {
+        let files = {}
+        if (ghSource) {
+          let url = `https://api.github.com/repos/${ghSource.acct}/${ghSource.repo}/git/trees/${ghSource.hash || ghSource.ref}`
+          let ghToken = oauthAccessToken || ghUnscopedToken
+          let pathElems = root.split('/').filter(pe => pe)
+          let _dirList, found
+          for (let i = 0; i < pathElems.length; i++) {
+            _dirList = await ghDirList(url, ghToken)
+            found = _dirList ? _dirList.tree.find(item => item.path === pathElems[i]) : null
+            url = found ? found.url : null
+            if (!url) break
+          }
+          if (url) {
+            _dirList = await ghDirList(url, ghToken)
+            files = Object.fromEntries(_dirList.tree.map(item => [item.path, `https://raw.githubusercontent.com/${ghSource.acct}/${ghSource.repo}/${ghSource.hash || ghSource.ref}${root}/${item.path}`]))
+          }
+        } else {
+          let rootUrl = `${contentSource.baseUrl}${root}`
+          let resp = await fetch(rootUrl)
+          if (resp.ok) {
+            let tmp = new DOMParser().parseFromString(await resp.text(), 'text/html').children[0].children[1]
+            files = Object.fromEntries(Array.from(tmp.querySelectorAll('li a.file')).map(el => [el.innerText, `${rootUrl}/${el.innerText}`]))
+          }
         }
-        if (url) {
-          _dirList = await ghDirList(url, ghToken)
-          files = Object.fromEntries(_dirList.tree.map(item => [item.path, `https://raw.githubusercontent.com/${ghSource.acct}/${ghSource.repo}/${ghSource.hash || ghSource.ref}${root}/${item.path}`]))
-        }
-      } else {
-        let rootUrl = `${contentSource.baseUrl}${root}`
-        let resp = await fetch(rootUrl)
-        if (resp.ok) {
-          let tmp = new DOMParser().parseFromString(await resp.text(), 'text/html').children[0].children[1]
-          files = Object.fromEntries(Array.from(tmp.querySelectorAll('li a.file')).map(el => [el.innerText, `${rootUrl}/${el.innerText}`]))
-        }
+        dirCache[cacheKey] = files
       }
-      return files
+      return dirCache[cacheKey]
     }
 
     // Gets a list of available components
