@@ -2,7 +2,7 @@
   <div class="osd" id="ps-osd" :style="containerStyle">
   
       <div class="citation">
-        <span v-if='title || itemLabel || description' v-html="title || itemLabel || description" class="image-label"></span><br>
+        <span v-if='title || label || description' v-html="title || label || description" class="image-label"></span><br>
         <span v-if="attribution" v-html="attribution" class="attribution"></span>
       </div>
 
