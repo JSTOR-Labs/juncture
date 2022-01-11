@@ -20,8 +20,10 @@ module.exports = {
   data: () => ({
     viewerLabel: 'Image Compare',
     viewerIcon: 'fas fa-images',
-    dependencies: ['https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js',
-                   'https://cuberis.github.io/openseadragon-curtain-sync/src/openseadragon-curtain-sync.min.js'],
+    dependencies: [
+      'https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js',
+      'https://jstor-labs.github.io/juncture/js/openseadragon-curtain-sync.min.js'
+    ],
     tileSources: [],
     viewer: null
   }),
