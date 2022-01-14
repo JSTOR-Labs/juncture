@@ -455,7 +455,7 @@ module.exports = {
     saveAnnotations() {
       this.annotations = this.annotator.getAnnotations()
       // console.log('saveAnnotations', this.annotations)
-      this.putFile(`${this.mdDir}${this.currentItemSourceHash}.json`, JSON.stringify(this.annotations, null, 2))
+      this.putFile(`${this.mdDir}/${this.currentItemSourceHash}.json`, JSON.stringify(this.annotations, null, 2))
     },
     annotationSelected(anno) {
       // console.log('annotationSelected', anno)
