@@ -858,6 +858,7 @@ module.exports = {
       this.annotations = []
       this.annoCursor = 0
       this.loadAnnotations()
+      this.displayInfoBox()
       /*
       if (this.viewer && current && (!previous || current['@id'] !== previous['@id'])) {
         this.loadAnnotations()
