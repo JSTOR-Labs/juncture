@@ -13,7 +13,7 @@
 
 const dependencies = [
   'https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js',
-  'https://cuberis.github.io/openseadragon-curtain-sync/src/openseadragon-curtain-sync.min.js'
+  'https://jstor-labs.github.io/juncture/js/openseadragon-curtain-sync.min.js'
 ]
 const iiifService = 'https://iiif.juncture-digital.org'
 const prefixUrl = 'https://openseadragon.github.io/openseadragon/images/'
