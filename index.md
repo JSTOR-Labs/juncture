@@ -66,6 +66,13 @@ The Dane John Gardens were created on common land by Alderman James Simmons in 1
 
 The Dane John Mound is a Roman cemetery in Canterbury.
 
+## Elizabeh Gould (Essay)
+
+![](https://upload.wikimedia.org/wikipedia/commons/e/e5/Elizabeth_Gould.jpg)
+
+    coords: 51.2038, 1.2415
+    eid: Q736439
+
 ## The House of Agnes (Now and Then)
 
     coords: 51.2824, 1.07365
