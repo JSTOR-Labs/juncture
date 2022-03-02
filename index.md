@@ -73,7 +73,7 @@ The Dane John Mound is a Roman cemetery in Canterbury.
 
 <!-- Hyperlink to the visual article -->
 <a href="pages/elizabeth-gould-essay.md">
-![](https://upload.wikimedia.org/wikipedia/commons/e/e5/Elizabeth_Gould.jpg>)
+![](https://upload.wikimedia.org/wikipedia/commons/e/e5/Elizabeth_Gould.jpg)
 
     coords: 51.2038, 1.2415
     eid: Q736439
