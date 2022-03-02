@@ -69,7 +69,7 @@ The Dane John Gardens were created on common land by Alderman James Simmons in 1
 
 The Dane John Mound is a Roman cemetery in Canterbury.
 
-## Elizabeh Gould (Essay)
+## Elizabeth Gould (Essay)
 
 <!-- Hyperlink to the visual article -->
 <a href="pages/elizabeth-gould-essay.md">
