@@ -2,7 +2,6 @@
 
 <param ve-config header="header" main="home">
 
-</head>
 
 # Kent Maps Online - Duke of Edinburgh award site
 
