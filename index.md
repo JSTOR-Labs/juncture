@@ -79,8 +79,6 @@ The Dane John Mound is a Roman cemetery in Canterbury.
     coords: 51.2038, 1.2415
     eid: Q736439
 	
-
-
 ## The House of Agnes (Now and Then)
 
     coords: 51.2824, 1.07365
@@ -116,6 +114,13 @@ St Martin's was the private chapel of Queen Bertha of Kent.
 coords: 51.280058, 1.078325
 
 The Old Weavers House is a half-timbered building on the River Stour at Canterbury.
+
+## The Spanish Armada (Essay)
+
+<!-- Hyperlink to the visual article -->
+<a href="https://github.com/kent-map/kent/blob/fe09e221b655b35090ec7f5a6d3ffa6c305fa20d/16c/16c-spanish-armada.md">
+![](<img src="https://iiif.juncture-digital.org/thumbnail?url=https://upload.wikimedia.org/wikipedia/commons/f/f1/A_Map_of_the_Beacons_in_Kent_%28BM_1872%2C0113.1137%29.jpg" alt="Spanish Armada">
+</a>
 
 ## The Sun Hotel
 
