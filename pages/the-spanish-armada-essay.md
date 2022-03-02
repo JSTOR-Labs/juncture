@@ -1,26 +1,6 @@
-<a href="https://dev.visual-essays.app"><img src="https://dev-visual-essays.netlify.app/images/ve-button.png"></a> 
-<param ve-config title="The Spanish Armada and Kent " author="Duke of Edinburgh Scheme Participants" layout="vtl" banner="https://upload.wikimedia.org/wikipedia/commons/0/08/La_batalla_de_Gravelinas%2C_por_Nicholas_Hilliard.jpg"> 
+## The Spanish Armada
 
-<param ve-entity eid="Q179224" aliases="Dover"> 
-<param title="Folkestone" eid="Q375314">
-<param title="Gravesend" eid="Q676689">
-<param ve-entity eid="Q1626044" aliases="Sittingbourne">
-<param ve-entity eid="Q29303" aliases="Canterbury">
-<param ve-entity eid="Q2551894" aliases="Walmer">
-<param ve-entity eid="Q1011096" aliases="Deal">
-<param ve-entity eid="Q7416497" aliases="Sandown">
-<param ve-entity eid="Q618045" aliases="Margate">
-<param ve-entity eid="Q1000312" aliases="Sandgate">
-<param ve-entity eid="Q7898392" aliases="Upnor">
-<param ve-entity eid="Q507517" aliases="Rochester">
-<param ve-entity eid="Q1434222" aliases="Medway">
-<param ve-entity eid="Q1500299" aliases="Sheppey">
-<param ve-entity eid="Q2796278" aliases="Dymchurch">
-<param ve-entity eid="Q2483544" aliases="Upchurch">
-<param ve-entity eid="Q2455830" aliases="Northbourne">
-<param ve-entity eid="Q590422" aliases="Thanet">
-
-#
+This article was researched by Arnav, Charlie, Conrad, Hannah, Lewis, Max, Niamh and Polina whilst undertaking volunteering on the Kent Maps as part of their Duke of Edinburgh Award. It was collated and written up by Eloise Lewis and Michelle Crowther.
 
 “I have placed my chiefest strength and safeguard in the loyal hearts and goodwill of my subjects, and therefore I am come amongst you, as you see, at this time, not for my recreation, but being resolved, in the midst and heat of the battle, to live or die amongst you all, to lay down for my God, and for my Kingdom and my People, my honour and my blood, even in the dust."[^ref1]
 <br><br>
