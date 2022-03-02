@@ -15,15 +15,13 @@ This site showcases the work completed by our Duke of Edinburgh participants at 
 
 ## Ancient Lavatory (Now and Then)
 
-<!-- Hyperlink to the visual article -->
-<a href="pages/ancient-lavatory-now-and-then.md">
-![](<img src= "https://upload.wikimedia.org/wikipedia/commons/1/13/Canterbury_Cathedral_cloister2.JPG" alt = "Ancient Lavatory">)
+![](https://upload.wikimedia.org/wikipedia/commons/1/13/Canterbury_Cathedral_cloister2.JPG)
 
     coords: 51.279811, 1.083001
     eid: Q29265
 
 The ancient lavatory at Canterbury Cathedral where the monks washed before and after eating.
-</a>
+
 
 
 ## St Augustine's Abbey (Now and Then)
@@ -75,7 +73,7 @@ The Dane John Mound is a Roman cemetery in Canterbury.
 
 <!-- Hyperlink to the visual article -->
 <a href="pages/elizabeth-gould-essay.md">
-![](<img src= "https://upload.wikimedia.org/wikipedia/commons/e/e5/Elizabeth_Gould.jpg" alt = "Elizabeth Gould">)
+![](https://upload.wikimedia.org/wikipedia/commons/e/e5/Elizabeth_Gould.jpg>)
 
     coords: 51.2038, 1.2415
     eid: Q736439
