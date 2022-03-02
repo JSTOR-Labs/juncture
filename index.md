@@ -2,6 +2,8 @@
 
 <param ve-config header="header" main="home">
 
+</head>
+
 # Kent Maps Online - Duke of Edinburgh award site
 
 This site showcases the work completed by our Duke of Edinburgh participants at all levels. Supported by student ambassadors from Canterbury Christ Church University, participants explore the extraordinary history of Kent and the people who have lived here, using words, images and innovative coding to bring their stories to life. 
@@ -14,12 +16,16 @@ This site showcases the work completed by our Duke of Edinburgh participants at 
 
 ## Ancient Lavatory (Now and Then)
 
-![](https://upload.wikimedia.org/wikipedia/commons/1/13/Canterbury_Cathedral_cloister2.JPG)
+<!-- Hyperlink to the visual article -->
+<a href="pages/ancient-lavatory-now-and-then.md">
+![](<img src= "https://upload.wikimedia.org/wikipedia/commons/1/13/Canterbury_Cathedral_cloister2.JPG" alt = "Ancient Lavatory">)
 
     coords: 51.279811, 1.083001
     eid: Q29265
 
 The ancient lavatory at Canterbury Cathedral where the monks washed before and after eating.
+</a>
+
 
 ## St Augustine's Abbey (Now and Then)
 
@@ -68,10 +74,14 @@ The Dane John Mound is a Roman cemetery in Canterbury.
 
 ## Elizabeh Gould (Essay)
 
-![](https://upload.wikimedia.org/wikipedia/commons/e/e5/Elizabeth_Gould.jpg)
+<!-- Hyperlink to the visual article -->
+<a href="pages/elizabeth-gould-essay.md">
+![](<img src= "https://upload.wikimedia.org/wikipedia/commons/e/e5/Elizabeth_Gould.jpg" alt = "Elizabeth Gould">)
 
     coords: 51.2038, 1.2415
     eid: Q736439
+	
+</a>
 
 ## The House of Agnes (Now and Then)
 
@@ -144,7 +154,6 @@ Built c.1379, the Westgate Towers are the last surviving gatehouse in Canterbury
 Yalding is situated six miles south west of Maidstone and was home to the poet Edmund Blunden.
 
 </param>
-
 
 
 
