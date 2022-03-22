@@ -510,8 +510,9 @@ section.footer {
 }
 
 .card .text {
-  text-align: center;
-  /* min-height: 300px;*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .card .media video {
