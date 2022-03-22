@@ -509,6 +509,11 @@ section.footer {
   /* min-height: 300px;*/
 }
 
+.card .text {
+  text-align: center;
+  /* min-height: 300px;*/
+}
+
 .card .media video {
   border-radius: 8px;
 }
