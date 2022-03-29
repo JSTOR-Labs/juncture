@@ -245,6 +245,31 @@ module.exports = {
     }
   }
 }
+function getDomPath(el) {
+  var stack = []
+  while ( el.parentNode != null ) {
+    let sibCount = 0
+    let sibIndex = 0
+    for ( var i = 0; i < el.parentNode.childNodes.length; i++ ) {
+      let sib = el.parentNode.childNodes[i];
+      if ( sib.nodeName == el.nodeName ) {
+        if ( sib === el ) {
+          sibIndex = sibCount;
+        }
+        sibCount++
+      }
+    }
+    if ( el.hasAttribute('id') && el.id != '' ) {
+      stack.unshift(el.nodeName.toLowerCase() + `#${el.id}`)
+    } else if ( sibCount > 1 ) {
+      stack.unshift(el.nodeName.toLowerCase() + (sibIndex > 0 ? `[${sibIndex}]` : ''))
+    } else {
+      stack.unshift(el.nodeName.toLowerCase())
+    }
+    el = el.parentNode
+  }
+  return stack
+}
 </script>
 
 <style scoped>
