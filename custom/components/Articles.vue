@@ -34,7 +34,7 @@
         <div v-if="article.content.length > 0" class="article-text">
           <div>
             <p v-for="(contentItem, ccidx) in article.content" :key="`${cidx}-${ccidx}`" :id="contentItem.id" 
-              :class="contentItem.classes.join(' ')"
+              :class="Array.from(contentItem.classes).join(' ')"
               v-html="contentItem.html"
             ></p>
           </div>
@@ -61,7 +61,7 @@
 <script>
 
 module.exports = {
-  name: 'Articles',
+  name: 've-articles',
   props: {
     locations: {type: Array, default: () => ([])},
   },

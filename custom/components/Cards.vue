@@ -30,7 +30,7 @@
     </p>
     <div class="cards clamp-10" id = "cards_container" @onload="sortCards()">
       <div v-for="(card, cidx) in locations" 
-        :key="`card-${cidx}`" :id="card.heading.charAt(0)" :class="card.classes.join(' ')"
+        :key="`card-${cidx}`" :id="card.heading.charAt(0)" :class="Array.from(card.classes).join(' ')"
       >
         <div v-if="card.media" class="media" v-html="card.media"></div>
         <h2 v-if="card.heading" v-html="card.heading" @click="cardSelected(card.slug)"></h2>
@@ -38,7 +38,7 @@
           <input type="checkbox" :id="`exp-${cidx}`">
           <div class="clamp-wrapper">
             <p v-for="(contentItem, ccidx) in card.content" :key="`${cidx}-${ccidx}`" :id="contentItem.id" 
-              :class="contentItem.classes.join(' ')"
+              :class="Array.from(contentItem.classes).join(' ')"
               v-html="contentItem.html"
             ></p>
           </div>
