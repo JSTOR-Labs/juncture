@@ -19,11 +19,11 @@
       </ul>
     </section>
 
-    <section>
-      <ve-map v-if="tab === 'map'" :locations="locations" @do-action="doAction"></ve-map>
-      <ve-cards v-if="tab === 'cards'" :locations="locations" @do-action="doAction"></ve-cards>
-      <ve-articles v-if="tab === 'articles'" :locations="locations" @do-action="doAction"></ve-articles>
-      <ve-reviews v-if="tab === 'reviews'" :locations="locations" @do-action="doAction"></ve-reviews>
+    <section v-if="locations.length > 0">
+      <ve1-map v-if="tab === 'map'" :locations="locations" @do-action="doAction"></ve1-map>
+      <ve1-cards v-if="tab === 'cards'" :locations="locations" @do-action="doAction"></ve1-cards>
+      <ve1-articles v-if="tab === 'articles'" :locations="locations" @do-action="doAction"></ve1-articles>
+      <ve1-reviews v-if="tab === 'reviews'" :locations="locations" @do-action="doAction"></ve-reviews>
     </section>
 
   </main>
@@ -147,7 +147,15 @@ module.exports = {
     }
   }
 }
-
+function slugify(str) {
+  str = str.replace(/^\s+|\s+$/g, '').toLowerCase()
+  let from = "ÁÄÂÀÃÅČÇĆĎÉĚËÈÊẼĔȆÍÌÎÏŇÑÓÖÒÔÕØŘŔŠŤÚŮÜÙÛÝŸŽáäâàãåčçćďéěëèêẽĕȇíìîïňñóöòôõøðřŕšťúůüùûýÿžþÞĐđßÆa·/_,:;"
+  var to   = "AAAAAACCCDEEEEEEEEIIIINNOOOOOORRSTUUUUUYYZaaaaaacccdeeeeeeeeiiiinnooooooorrstuuuuuyyzbBDdBAa------"
+  for (let i = 0, l = from.length; i < l; i++) {
+    str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i))
+  }
+  return str.replace(/[^a-z0-9 -]/g, '') .replace(/\s+/g, '-').replace(/-+/g, '-')
+}
 </script>
 
 <style>
