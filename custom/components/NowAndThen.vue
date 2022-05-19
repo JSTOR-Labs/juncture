@@ -46,6 +46,7 @@ module.exports = {
 
 #now-and-then {
   padding: 58px 3% 0 3%;
+  height: 100%;
 }
 
 #now-and-then > #para {
