@@ -1538,6 +1538,7 @@
         let componentsBaseDir = 
         componentsList = [
           ...componentsList, 
+          ...Object.values(await dir('/custom/components', contentSource)),
           ...Object.values(await dir('/components', contentSource))
        ]
       }
