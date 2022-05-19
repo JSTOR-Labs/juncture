@@ -6,7 +6,7 @@
     <button type="button" :class="{'active': this.mode === 'sync'}" class="toggle-mode" id="sync-mode" @click="mode = 'sync'">Sync</button>
     <p class = "mode-description">{{ mode_description }}</p>
     
-    <ve-image :compare="mode">
+    <ve-image :compare="mode" height="100%">
       <ul>
         <li v-for="(image, idx) in images" :key="idx">{{image.manifest || image.src}}{{image.region ? ' '+image.region : ''}}</li>
       </ul>
