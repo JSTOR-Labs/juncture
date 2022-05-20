@@ -2,8 +2,8 @@
 
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare url="https://stor.artstor.org/stor/04dc1444-cdd0-445b-8041-b2dd02ed0f58" label="Dane John Gardens, Canterbury (2021)" attribution="Calum Elliot and Emma Molford">
-<param ve-compare url="https://stor.artstor.org/stor/3cb447d3-c9cf-47a9-aac5-f019f2f745aa" label="Dane John Gardens, Canterbury - 1905 or earlier">
+<param ve-compare manifest="gh:kent-map/images/Dane_John_Gardens_2021.yaml" region="pct:0,10,90,85">
+<param ve-compare manifest="gh:kent-map/images/Dane_John_Gardens_1905.yaml" region="pct:0,14,86,100">
 
 # Dane John Gardens
 
