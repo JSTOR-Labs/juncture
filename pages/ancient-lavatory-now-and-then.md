@@ -2,8 +2,8 @@
 
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare manifest="gh:kent-map/images/Ancient_Lavatory_1905.yaml">
-<param ve-compare manifest="gh:kent-map/images/Ancient_Lavatory_2021.yaml" region="pct:0,0,100,100">
+<param ve-compare manifest="gh:kent-map/images/Ancient_Lavatory_1905.yaml" region="pct:0,8,70,92">
+<param ve-compare manifest="gh:kent-map/images/Ancient_Lavatory_2021.yaml" region="pct:0,15,70,95">
 
 # Ancient Lavatory
 
