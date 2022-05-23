@@ -2,8 +2,8 @@
 
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare url="https://stor.artstor.org/stor/f97caf20-bc43-4921-885a-5a9d53f6a48c" label="High Street, Canterbury (2021)" attribution="Calum Elliot and Emma Molford">
-<param ve-compare url="https://stor.artstor.org/stor/ff1bcfd6-b7c5-42fc-8d25-1aa2bf246cb2" label="High Street, Canterbury - Pre-1905 or earlier">
+<param ve-compare manifest="gh:kent-map/images/Canterbury_High_Street_circa_1905.yaml" region="pct:0,1,99,99">
+<param ve-compare manifest="gh:kent-map/images/Canterbury_High_Street_2021.yaml">
 
 # Canterbury High Street
 
