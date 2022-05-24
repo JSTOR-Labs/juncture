@@ -2,8 +2,8 @@
 
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare url="https://stor.artstor.org/stor/aaceb5d3-7946-4843-8443-d6663752501a" label="House of Agnes, Canterbury (2021)" attribution="Nat Lowden and Sara Gelencer">
-<param ve-compare url="https://stor.artstor.org/stor/d4255b03-4d19-411c-b6b5-cd6e7632fe73" label="House of Agnes, Canterbury (1905 or earlier)">
+<param ve-compare manifest="gh:kent-map/images/Canterbury_High_Street_circa_1905.yaml" region="pct:0,1,99,99">
+<param ve-compare manifest="gh:kent-map/images/Canterbury_High_Street_2021.yaml">
 
 # House of Agnes
 
