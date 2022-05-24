@@ -2,8 +2,8 @@
 
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare url="https://stor.artstor.org/stor/03c36042-0f0d-4c59-a878-112ad5124e29" label="The Old Weavers House, Canterbury (2021)" attribution="Judyta Socha and Megan Yeoman">
-<param ve-compare url="https://stor.artstor.org/stor/847f690e-39f1-4319-9119-412c68acf908" label="The Old Weavers House, Canterbury">
+<param ve-compare manifest="gh:kent-map/images/The_Old_Weavers_House_1905.yaml" region="pct:4,9,95,95">
+<param ve-compare manifest="gh:kent-map/images/The_Old_Weavers_House_2021.yaml" region="pct:0,1,99,99">
 
 # The Old Weavers House
 
