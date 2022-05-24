@@ -2,8 +2,8 @@
 
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare url="https://stor.artstor.org/stor/f4b4c004-85c4-4ab4-beeb-6939c4cab796" label="The Sun Hotel, Canterbury (2021)" attribution="Becca Miller, Charli Salter-Mclean, Chloe Bartolo">
-<param ve-compare url="https://stor.artstor.org/stor/540e3df7-9640-4a34-bdd0-0db1e789a285" label="The Sun Hotel, Canterbury (1905 or earlier)">
+<param ve-compare manifest="gh:kent-map/images/The_Sun_Hotel_1905.yaml" region="pct:2.5,5,66,70">
+<param ve-compare manifest="gh:kent-map/images/The_Sun_Hotel_2021.yaml" region="pct:28,8,62,75">
 
 # The Sun Hotel
 
