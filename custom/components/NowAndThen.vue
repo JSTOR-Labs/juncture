@@ -6,11 +6,13 @@
     <button type="button" :class="{'active': this.mode === 'sync'}" class="toggle-mode" id="sync-mode" @click="mode = 'sync'">Sync</button>
     <p class = "mode-description">{{ mode_description }}</p>
     
-    <ve-image :compare="mode" height="100%">
-      <ul>
-        <li v-for="(image, idx) in images" :key="idx">{{image.manifest || image.src}}{{image.region ? ' '+image.region : ''}}</li>
-      </ul>
-    </ve-image>
+    <div style="height:calc(100vh - 450px);width:100%;display:flex;justify-content:center;">
+      <ve-image height="100%" :compare="mode ">
+        <ul>
+          <li v-for="(image, idx) in images" :key="idx">{{image.manifest || image.src}}{{image.region ? ' '+image.region : ''}}</li>
+        </ul>
+      </ve-image>
+    </div>
 
   </div>
 </template>
