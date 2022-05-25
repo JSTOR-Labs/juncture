@@ -3,7 +3,7 @@
 <param ve-config header="header" main="now-and-then">
 
 <param ve-compare manifest="gh:kent-map/images/Canterbury_High_Street_circa_1905.yaml" region="pct:23,18,60,70">
-<param ve-compare manifest="gh:kent-map/images/Canterbury_High_Street_2021.yaml" region="0,7,85,90">
+<param ve-compare manifest="gh:kent-map/images/Canterbury_High_Street_2021.yaml" region="pct:0,7,85,90">
 
 # Canterbury High Street
 
