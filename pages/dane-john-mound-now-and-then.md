@@ -3,8 +3,8 @@
 
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare url="https://stor.artstor.org/stor/807b6fac-91b5-4633-91d8-57d47e1cdd9f" label="Dane John Mound, Canterbury (2021)" attribution="Michael Stubbs and Ethan Dudley">
-<param ve-compare url="https://stor.artstor.org/stor/f713d9aa-2c9b-4882-a3e6-dd7126e1cb2e" label="Dane John Mound, Canterbury - 1905 or earlier">
+<param ve-compare manifest="gh:kent-map/images/Dane_John_Mound_2021.yaml" region="pct:0,17,90,50">
+<param ve-compare manifest="gh:kent-map/images/Dane_John_Mound_1905.yaml" region="pct:15,7,90,60">
 
 # Dane John Mound
 
