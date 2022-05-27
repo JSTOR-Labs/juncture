@@ -59,7 +59,7 @@ const defaults = {
         maxZoom: 16,
     // Leaflet.TimeDimension options: see https://github.com/socib/Leaflet.TimeDimension
         timeDimension: false,
-        autoPlay: false,
+        autoPlay: true,
         loop: false,
         fps: 1,
         timeInterval: '/P1Y', // see https://en.wikipedia.org/wiki/ISO_8601#Time_intervals
