@@ -174,14 +174,16 @@
   <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase-auth.js"></script> 
   <script src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.73/dist/shoelace.js" type="module"></script>
-  <script src="https://unpkg.com/visual-essays/dist/visual-essays/visual-essays.esm.js" type="module"></script>
-  
+  <!-- <script src="https://unpkg.com/visual-essays/dist/visual-essays/visual-essays.esm.js" type="module"></script> -->
+  <script src="http://localhost:3333/build/visual-essays.esm.js" type="module"></script>
+
   <!-- This is used for deep linking of Single Page Apps when hosted with GitHub Pages -->
   <script type="text/javascript">
     (function(l) {
+      console.log(l)
       if (l.search[1] === '/' ) {
         let decoded = l.search.slice(1).split('&').map(s => s.replace(/~and~/g, '&')).join('?')
-        window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash)
+        // window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash)
       }
     }(window.location))
   </script>
