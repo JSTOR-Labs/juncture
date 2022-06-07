@@ -106,7 +106,7 @@ St Martin's was the private chapel of Queen Bertha of Kent.
 
 ## The Old Weavers House (Now and Then)
 
-![](https://upload.wikimedia.org/wikipedia/commons/7/7d/Weaver%27s_House%2C_Canterbury_JC_07.JPG)
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Weaver%27s_House%2C_Canterbury_JC_07.JPG/640px-Weaver%27s_House%2C_Canterbury_JC_07.JPG)
 
 coords: 51.280058, 1.078325
 
@@ -118,7 +118,7 @@ The Old Weavers House is a half-timbered building on the River Stour at Canterbu
 
 ## The Sun Hotel
 
-![](https://upload.wikimedia.org/wikipedia/commons/d/d7/Sun_Hotel%2C_Canterbury_-_geograph.org.uk_-_2080589.jpg)
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Sun_Hotel_8_Sun_Street_Canterbury_Kent_CT1_2HX.jpg/640px-Sun_Hotel_8_Sun_Street_Canterbury_Kent_CT1_2HX.jpg)
 
     coords: 51.279763, 1.08071
     eid: Q26535422
