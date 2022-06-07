@@ -114,10 +114,7 @@ The Old Weavers House is a half-timbered building on the River Stour at Canterbu
 
 ## The Spanish Armada (Essay)
 
-<!-- Hyperlink to the visual article -->
-<a href="https://github.com/kent-map/kent/blob/fe09e221b655b35090ec7f5a6d3ffa6c305fa20d/16c/16c-spanish-armada.md">
-![](<img src="https://iiif.juncture-digital.org/thumbnail?url=https://upload.wikimedia.org/wikipedia/commons/f/f1/A_Map_of_the_Beacons_in_Kent_%28BM_1872%2C0113.1137%29.jpg" alt="Spanish Armada">
-</a>
+![](https://upload.wikimedia.org/wikipedia/commons/f/f1/A_Map_of_the_Beacons_in_Kent_%28BM_1872%2C0113.1137%29.jpg)
 
 ## The Sun Hotel
 
