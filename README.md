@@ -15,7 +15,7 @@ This site showcases the work completed by our Duke of Edinburgh participants at 
 
 ## Ancient Lavatory (Now and Then)
 
-![](https://upload.wikimedia.org/wikipedia/commons/1/13/Canterbury_Cathedral_cloister2.JPG)
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Canterbury_-_lavatory_tower03b.jpg/318px-Canterbury_-_lavatory_tower03b.jpg)
 
     coords: 51.279811, 1.083001
     eid: Q29265
