@@ -127,7 +127,7 @@ Built in 1503, The Sun Hotel formerly known as The Little Inn was made famous by
 
 ## Umble Ome of Uriah Heep (Now and Then)
 
-![](https://upload.wikimedia.org/wikipedia/commons/8/87/Uriah_Heep_from_David_Copperfield_art_by_Frank_Reynolds.jpg)
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Uriah_Heep_from_David_Copperfield_art_by_Frank_Reynolds.jpg/447px-Uriah_Heep_from_David_Copperfield_art_by_Frank_Reynolds.jpg)
 
     coords: 51.276272, 1.087550
 
@@ -135,7 +135,7 @@ Umble Ome of Uriah Heep is the house belonging to a fictional character in the n
 
 ## Westgate Towers (Now and Then)
 
-![](https://upload.wikimedia.org/wikipedia/commons/1/10/Westgate_Towers%2C_Canterbury.jpg)
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Westgate_Towers%2C_Canterbury.jpg/640px-Westgate_Towers%2C_Canterbury.jpg)
 
     coords: 51.2814, 1.07583
     eid: Q104815065
