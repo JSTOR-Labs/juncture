@@ -35,7 +35,7 @@ St Augustine's Abbey was a Benedictine monastery in Canterbury, Kent, England. T
 
 ## Canterbury High Street (Now and Then)
 
-![](https://upload.wikimedia.org/wikipedia/commons/1/1a/High_Street%2C_Canterbury%2C_Kent.jpg)
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/High_Street%2C_Canterbury%2C_Kent.jpg/640px-High_Street%2C_Canterbury%2C_Kent.jpg)
 
     coords: 51.278333, 1.0775
     eid: Q29303
@@ -71,10 +71,7 @@ The Dane John Mound is a Roman cemetery in Canterbury.
 
 ## Elizabeth Gould (Essay)
 
-<!-- Hyperlink to the visual article -->
-<a href="pages/elizabeth-gould-essay.md">
-![](<img src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Elizabeth_Gould.jpg" alt= "Elizabeth Gould">)
-</a>
+![](https://upload.wikimedia.org/wikipedia/commons/e/e5/Elizabeth_Gould.jpg)
 
     coords: 51.2038, 1.2415
     eid: Q736439
@@ -84,7 +81,7 @@ The Dane John Mound is a Roman cemetery in Canterbury.
     coords: 51.2824, 1.07365
     eid: Q17557200
 
-![](https://upload.wikimedia.org/wikipedia/commons/e/e1/Canterbury_-_House_of_Agnes.jpg)
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Canterbury_-_House_of_Agnes.jpg/640px-Canterbury_-_House_of_Agnes.jpg)
 
 The House of Agnes is a half-timbered medieval coaching inn in the St Dunstans area of Canterbury dating from the 13th century. It takes its name from the character Agnes Wickfield, in Charles Dicken's David Copperfield.
 
