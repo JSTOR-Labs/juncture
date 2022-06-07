@@ -44,7 +44,7 @@ The first Archbishop of Canterbury, Augustine, arrived in Kent as a missionary i
 
 ## Canterbury Cathedral (Now and Then)
 
-![](https://upload.wikimedia.org/wikipedia/commons/e/eb/Canterbury_cathedral_20160901.jpg)
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Canterbury_cathedral_20160901.jpg/640px-Canterbury_cathedral_20160901.jpg)
 
     coords: 51.279811, 1.083001
     eid: Q29265
