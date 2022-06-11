@@ -21,7 +21,7 @@
 
 <script>
 module.exports = {  
-  name: 'Essay',
+  name: 've1-visual-essay',
   props: {
     html: { type: String, default: '' },
     path: String,

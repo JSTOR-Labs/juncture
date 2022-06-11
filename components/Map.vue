@@ -72,7 +72,7 @@ const defaults = {
 }
 
 module.exports = {
-    name: "ve-map",
+    name: "ve1-map",
     props: {
         items: { type: Array, default: () => ([]) },
         entities: { type: Object, default: () => ({}) },

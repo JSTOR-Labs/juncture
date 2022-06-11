@@ -95,7 +95,7 @@
   const defaultBanner = 'https://picsum.photos/id/403/1000/400?blur=1'
 
   module.exports = {
-    name: 've-header',
+    name: 've1-header',
     props: {
       viewerIsActive: { type: Boolean, default: true },
       path: { type: String, default: '/' },

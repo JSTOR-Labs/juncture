@@ -14,7 +14,7 @@
 <script>
 
 module.exports = {
-  name: 'TimelineViewer',
+  name: 've1-timeline-viewer',
   props: { 
     items: { type: Array, default: () => ([]) },
     viewerIsActive: Boolean
@@ -31,7 +31,7 @@ module.exports = {
       height: this.viewerIsActive ? '100%' : '0', 
       overflowY: 'auto !important' 
     }},
-    filteredItems() { return this.items.filter(item => item[this.componentName]) },
+    filteredItems() { return this.items.filter(item => item.viewer === this.$options.name) },
     item() { return this.filteredItems[0] }
   },
   mounted() { this.loadDependencies(this.dependencies, 0, this.init) },

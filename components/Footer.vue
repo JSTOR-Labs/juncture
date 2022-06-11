@@ -7,7 +7,7 @@
 <script>
 
   module.exports = {  
-    name: 'Footer',
+    name: 've1-footer',
     props: {
       siteConfig: { type: Object, default: function(){ return {}} },
       contentSource:  { type: Object, default: () => ({}) }

@@ -17,7 +17,7 @@ const viewerLabel = 'Graphic Viewer'
 const viewerIcon = 'fas fa-atom'
 
 module.exports = {
-    name: 've-graphic',
+    name: 've1-graphic',
     props: {
       items: Array,
       viewerIsActive: Boolean,
@@ -41,7 +41,7 @@ module.exports = {
                 overflowY: 'auto !important',
             }
         },
-        graphicItems() { return this.items.filter(item => item[this.componentName]) },
+        graphicItems() { return this.items.filter(item => item.viewer === this.$options.name) },
         input() { return this.graphicItems.length > 0 ? this.graphicItems[0].img || this.graphicItems[0].url || this.graphicItems[0].file : null },
         graphicStyle() {
             return {

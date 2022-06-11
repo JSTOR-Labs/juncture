@@ -144,7 +144,7 @@ const context = {
 }
 
 module.exports = {
-  name: 've-plant-specimen',
+  name: 've1-plant-specimen',
   props: {
     items: { type: Array, default: () => ([]) },
     viewerIsActive: Boolean
@@ -161,7 +161,7 @@ module.exports = {
       tileSources: []
   }),
   computed: {
-    specimenItems() { return this.items.filter(item => item[this.componentName]) },
+    specimenItems() { return this.items.filter(item => item.viewer === this.$options.name) },
     max() {
       let withMax = this.specimenItems.filter(item => item.max)
       return withMax.length > 0 ? parseInt(withMax[0].max) : 10

@@ -60,7 +60,7 @@ const dependencies = [
   ]
 
 module.exports = {
-  name: 've-video',
+  name: 've1-video',
   props: {
     items: { type: Array, default: () => ([]) },
     viewerIsActive: Boolean
@@ -81,7 +81,7 @@ module.exports = {
     playerWidth: 564
   }),
   computed: {
-    videoItems() { return this.items.filter(item => item[this.componentName]) },
+    videoItems() { return this.items.filter(item => item.viewer === this.$options.name) },
     videoId() { return this.videoItems.length > 0 ? this.videoItems[0].vid || this.videoItems[0].id : null },
     videoSource() {return this.videoItems.length > 0 ? this.videoItems[0].source : null },
     source() { return this.videoSource ? this.videoSource : 'https://www.youtube.com/embed/'+this.videoId},

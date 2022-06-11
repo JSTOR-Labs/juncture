@@ -9,7 +9,7 @@
 <script>
 
 module.exports = {
-  name: 'IFrame',
+  name: 've1-iframe',
   props: { 
     items: { type: Array, default: () => ([]) },
     viewerIsActive: Boolean
@@ -25,7 +25,7 @@ module.exports = {
       height: this.viewerIsActive ? '100%' : '0', 
       overflowY: 'auto !important' 
     }},
-    filteredItems() { return this.items.filter(item => item[this.componentName]) },
+    filteredItems() { return this.items.filter(item => item.viewer === this.$options.name) },
     item() { return this.filteredItems[0] },
     id() { return this.item.id || '' },
     name() { return this.item.name || '' },

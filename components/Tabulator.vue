@@ -15,7 +15,7 @@ const dependencies = [
 ]
 
 module.exports = {
-    name: 've-tabulator',
+    name: 've1-tabulator',
     props: {
       items: Array,
       viewerIsActive: Boolean,
@@ -29,7 +29,7 @@ module.exports = {
     }),
     computed: {
         containerStyle() { return { width: `${this.width}px`, height: this.viewerIsActive ? '100%' : '0'} },
-        filteredItems() { return this.items.filter(item => item[this.componentName]) },
+        filteredItems() { return this.items.filter(item => item.viewer === this.$options.name) },
         input() { return this.filteredItems[0].data || this.filteredItems[0].url }
     },
     mounted() {

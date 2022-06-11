@@ -20,7 +20,7 @@ const defaults = {
   popupOptions: { autoClose: false, closeButton: false, closeOnClick: false },
 };
 module.exports = {
-  name: "ve-vis-network",
+  name: "ve1-vis-network",
   props: {
     items: { type: Array, default: () => [] },
     viewerIsActive: Boolean,

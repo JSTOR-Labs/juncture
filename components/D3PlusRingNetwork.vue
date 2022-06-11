@@ -33,7 +33,7 @@ module.exports = {
     dependencies,
     }),
     computed: {
-      filteredItems() { return this.items.filter(item => item[this.componentName]) },
+      filteredItems() { return this.items.filter(item => item.viewer === this.$options.name) },
       item() { return this.filteredItems.length > 0 ? this.filteredItems[0] : {} },
       containerStyle() { return { 
           width: `${this.width}px`,

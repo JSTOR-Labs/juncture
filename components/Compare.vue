@@ -12,7 +12,7 @@ const iiifService = 'https://iiif.juncture-digital.org'
 const prefixUrl = 'https://openseadragon.github.io/openseadragon/images/'
 
 module.exports = {
-  name: 've-compare',
+  name: 've1-compare',
   props: {
     items: { type: Array, default: () => ([]) },
     viewerIsActive: Boolean
@@ -29,7 +29,7 @@ module.exports = {
   }),
   computed: {
     containerStyle() { return { height: this.viewerIsActive ? '100%' : '0' } },
-    compareItems() { return this.items.filter(item => item[this.$options.name]) },
+    compareItems() { return this.items.filter(item => item.viewer === this.$options.name) },
     mode() { let itemsWithMode = this.compareItems.filter(item => item.sync || item.curtain).map(item => item.sync ? 'sync' : 'curtain') 
              return itemsWithMode.length > 0 ? itemsWithMode[0] : 'curtain'
     },
