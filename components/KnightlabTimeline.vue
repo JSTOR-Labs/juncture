@@ -14,7 +14,7 @@
 <script>
 
 module.exports = {
-  name: 've1-timeline-viewer',
+  name: 've1-knightlab-timeline',
   props: { 
     items: { type: Array, default: () => ([]) },
     viewerIsActive: Boolean
