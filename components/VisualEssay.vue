@@ -79,7 +79,7 @@ module.exports = {
           let segments = []
           Array.from(card.querySelectorAll('.segment')).forEach(seg => {
             if (seg.textContent.trim() === '') {
-              // card.removeChild(seg)
+              card.removeChild(seg)
             } else {
               segments.push(seg)
             }
