@@ -1,0 +1,9 @@
+Dockerfile
+README.md
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+gcr-deploy.sh
+.venv
+*.cache
