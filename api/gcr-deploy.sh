@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GCP_PROJECT='juncture'
+GCP_PROJECT='juncture-digital'
 
 GCR_SERVICE=${1:-api}
 MIN_INSTANCE_LIMIT=1

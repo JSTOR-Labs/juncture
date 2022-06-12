@@ -16,8 +16,6 @@ from hashlib import sha256
 from mdrender.gh import has_gh_repo_prefix, get_gh_file, put_gh_file
 from mdrender.google_cloud_storage import Bucket
 
-test_annos = json.load(open(f'./test_annotations.json', 'r'))
-
 class Annotations(object):
 
   def __init__(self, **kwargs):
