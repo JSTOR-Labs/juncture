@@ -29,7 +29,7 @@
 
             <li @click="doMenuAction({action:'user-guide'})"><i class="far fa-file-alt"></i>Juncture User Guide</li>
 
-            <template v-if="isAuthenticated">
+            <template>
               <li @click="doMenuAction({action:'view-markdown'})"><i class="fas fa-file-code"></i>View page markdown</li>
               <!--
               <li v-if="((contentSource.acct !== 'jstor-labs' && contentSource.repo !== 'juncture') || isAdmin)" @click="doMenuAction({action:'edit-page'})">
