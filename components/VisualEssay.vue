@@ -53,7 +53,6 @@ module.exports = {
       // this.$emit('set-entities', this.entities)
       this.$nextTick(() => {
         this.addPopups(this.entities)
-        this.convertLinks(essayElem)
         let segments = [...essayElem.querySelectorAll('.segment')]
         if (this.anchor) {
           let anchorElem = document.getElementById(this.anchor)

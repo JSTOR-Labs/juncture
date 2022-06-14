@@ -53,6 +53,19 @@ def convert_urls(soup, base_url, md_source):
       elem.attrs['src'] = f'https://raw.githubusercontent.com/{md_source.acct}/{md_source.repo}/{md_source.ref}/{gh_path}'
     elif elem.attrs['src'].startswith('/'):
       elem.attrs['src'] = f'{base_url}{elem.attrs["src"][1:]}'
+  
+  for elem in soup.find_all('param'):
+    for fld in ('url', 'banner'):
+      if fld in elem.attrs and not elem.attrs[fld].startswith('http'):
+        gh_path = elem.attrs[fld]
+        if not gh_path.startswith('/'):
+          base_url_path_elems = [elem for elem in base_url.split('/') if elem][:-1]
+          src_elems = re.sub(r'^\.\/', '', gh_path).split('/')
+          up = src_elems.count('..')
+          gh_path = '/' + '/'.join(base_url_path_elems[:len(base_url_path_elems)-up] + src_elems[up:])
+        elem.attrs[fld] = f'https://raw.githubusercontent.com/{md_source.acct}/{md_source.repo}/{md_source.ref}{gh_path}'
+        logger.debug(f'orig={gh_path} new={elem.attrs[fld]}')
+
   return soup
 
 def get_gcs_markdown(path):
@@ -178,7 +191,6 @@ def to_html(md_source, base_url, web_components_source, **kwargs):
       }
     }
   )
-  print(html)
   #html = re.sub(r'(\S)<em>', r'\1_', html)
   #html = re.sub(r'<\/em>(\S)', r'_\1', html)
   
@@ -272,5 +284,5 @@ def get_html(path=None, url=None, markdown=None, prefix=None, ref=None, **kwargs
       md_source = get_gh_markdown(_path, ref) if _source == 'gh' else get_gcs_markdown(_path)
   
   html = to_html(md_source, path=_path, **kwargs) if md_source else None
-  logger.info(f'get_html: path={path} url={url} base_url={kwargs.get("base_url")} prefix={prefix} markdown={markdown is not None} elapsed={round(now()-start,3)}')
+  logger.info(f'get_html: path={path} url={url} source={md_source.source if md_source else None} base_url={kwargs.get("base_url")} prefix={prefix} markdown={markdown is not None} elapsed={round(now()-start,3)}')
   return html

@@ -1,6 +1,6 @@
 '''
 Flask app for Visual Essays site.
-Dependencies: bs4 Flask Flask-Cors html5lib requests
+Dependencies: bs4 Flask Flask-Cors html5lib PyYAML requests
 '''
 
 import logging
@@ -9,10 +9,14 @@ logging.basicConfig(format='%(asctime)s : %(filename)s : \
 logger = logging.getLogger()
 
 import os
+SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
+
 from time import time as now
 from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from bs4 import BeautifulSoup
+
+import yaml
 
 import requests
 logging.getLogger('requests').setLevel(logging.WARNING)
@@ -20,12 +24,15 @@ logging.getLogger('requests').setLevel(logging.WARNING)
 app = Flask(__name__)
 CORS(app)
 
+config = yaml.load(open(f'{SCRIPT_DIR}/config.yaml', 'r').read(), Loader=yaml.FullLoader) if os.path.exists(f'{SCRIPT_DIR}/config.yaml') else {}
+logger.info(config)
+
 def api_endpoint():
   return 'http://localhost:8000' if request.host.startswith('localhost') or request.host.startswith('192.168') else f'https://api.{".".join(request.host.split(".")[-2:])}'
 
 # Prefix for site content
-# prefix = 'visual-essays/content'
-prefix = 'a3b51252'
+prefix = config.get('prefix','a3b51252')
+default_ref = config.get('ref')
 
 def _add_link(soup, href, attrs=None):
   link = soup.new_tag('link')
@@ -60,7 +67,7 @@ def _customize_response(html):
   # _set_style(soup)
   return str(soup)
 
-def _get_html(path, base_url, ref=None, **kwargs):
+def _get_html(path, base_url, ref=default_ref, **kwargs):
   api_url = f'{api_endpoint()}/html{path}?prefix={prefix}&base={base_url}'
   if ref: api_url += f'&ref={ref}'
   resp = requests.get(api_url)
