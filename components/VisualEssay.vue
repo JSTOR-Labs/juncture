@@ -157,27 +157,27 @@ module.exports = {
         scope.push(el)
         el = el.id !== 'essay-component' ? el.parentElement : null
       }
-      console.log(scope)
       scope.forEach(elemInScope => {
         let domPathElems = getDomPath(elemInScope)
-        console.log(domPathElems)
         let elemPath = domPathElems.slice(domPathElems.indexOf('div#essay-component')+1).join('>')
+        console.log(elemPath, this.params)
         paramTags = [...paramTags, ...this.params.filter(param => param.path === elemPath)]
         })
+      console.log(elemPath, this.params)
+      console.log(paramTags)
       return paramTags
     },
     // Finds words/phrases in content paragraphs that match labels or aliases for entities in scope
     // Matched text is wrapped with a span tag for reacting to hover and click actions
     tagEntities(root) {
-      console.log(root)
       Array.from(root.querySelectorAll('.segment p')).forEach(para => {
-        console.log(para)
         let paraHTML = para.innerHTML
         this.paramsInScope(para, this.params)
           .filter(param => param['ve-entity'] !== undefined || param.eid !== undefined)
           .map(param => param.id)
           .forEach(id => {
             let entity = this.entities[id]
+            console.log(entity)
             if (entity) {
               let toMatch = [...[entity.label], ...Array.from(entity.aliases).filter(alias => alias.length > 2)]
               for (let i = 0; i < toMatch.length; i++) {
