@@ -33,9 +33,9 @@ def convert_urls(soup, base_url, md_source):
   # logger.info(f'convert_urls: source={md_source}')
   
   # remove Github badges
-  for elem in soup.find_all(href=True):
-    if 'mdrender' in elem.attrs['href']:
-      elem.decompose()
+  for img in soup.find_all('img'):
+    if 've-button.png' in img.attrs['src']:
+      img.parent.decompose()
   
   # convert absolute links
   for elem in soup.find_all(href=True):
@@ -157,8 +157,7 @@ def set_entities(soup):
   if 'entities' in soup.body.attrs:
     del soup.body.attrs['entities']
 
-def to_html(md_source, path, base_url, **kwargs):
-  start = now()
+def to_html(md_source, base_url, web_components_source, **kwargs):
   html = markdown.markdown(
     md_source.markdown,
     extensions=[
@@ -179,20 +178,14 @@ def to_html(md_source, path, base_url, **kwargs):
       }
     }
   )
+  print(html)
   #html = re.sub(r'(\S)<em>', r'\1_', html)
   #html = re.sub(r'<\/em>(\S)', r'_\1', html)
   
   soup = BeautifulSoup(html, 'html5lib')
-  soup.insert(0, Doctype('html'))
-  soup.html.attrs['lang'] = 'en'
 
   set_entities(soup)
   convert_urls(soup, base_url, md_source)
-
-  # for Juncture compatibility
-  # if path: convert_tags (soup, path)
-
-    
 
   # insert a 'main' wrapper element around the essay content
   main = soup.html.body
@@ -207,38 +200,54 @@ def to_html(md_source, path, base_url, **kwargs):
     footnotes.name = 'section'
     contents.append(footnotes)
 
-  base = soup.new_tag('base')
-  base.attrs['href'] = base_url
-  soup.head.insert(0, base)
+  is_v1 = soup.find('param') is not None
+  if is_v1:
+    template = BeautifulSoup(open(f'{SCRIPT_DIR}/templates/v1.html', 'r').read(), 'html5lib')
+    for el in template.find_all('component'):
+      if 'v-bind:is' in el.attrs and el.attrs['v-bind:is'] == 'mainComponent':
+        el.append(contents)
+        break
 
-  add_meta(soup, {'name': 'viewport', 'content': 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0'})
+    css = open(f'{SCRIPT_DIR}/templates/v1.css', 'r').read()    
+
+  else:
+    template = BeautifulSoup(open(f'{SCRIPT_DIR}/templates/v2.html', 'r').read(), 'html5lib')
+    template.find('base').attrs['href'] = base_url
+    if 'localhost' in web_components_source:
+      template.find('script', src='https://unpkg.com/visual-essays/dist/visual-essays/visual-essays.esm.js').attrs['src'] = 'http://localhost:3333/build/visual-essays.esm.js'
+    template.body.insert(0, contents)
+
+    css = '\n' +  open(f'{SCRIPT_DIR}/templates/main.css', 'r').read()
+    style = soup.find('ve-style')
+    if style and 'theme' in style.attrs:
+      add_link(template, style.attrs['theme'], {'rel': 'stylesheet'})
+    else:
+      css += '\n' + open(f'{SCRIPT_DIR}/templates/default-theme.css', 'r').read()
+    if style and 'layout' in style.attrs:
+      add_link(soup, style.attrs['layout'], {'rel': 'stylesheet'})
+    else:
+      css += '\n' + open(f'{SCRIPT_DIR}/templates/default-layout.css', 'r').read()
+    if style:
+      style.decompose()
+
+  style = soup.new_tag('style')
+  style.string = css
+  template.head.append(style)
+
   meta = soup.find('ve-meta')
   if meta:
     for name in meta.attrs:
       if name == 'title':
         title = soup.new_tag('title')
         title.string = meta.attrs['title']
-        soup.head.append(title)
+        template.head.append(title)
       else:
-        add_meta(soup, {'name': name, 'content': meta.attrs[name]})
+        add_meta(template, {'name': name, 'content': meta.attrs[name]})
     meta.decompose()
   else:
-    add_meta(soup, {'name': 'robots', 'content': 'noindex'})
+    add_meta(template, {'name': 'robots', 'content': 'noindex'})
 
-  add_shoelace(soup)
-  add_link(soup, '/static/css/main.css', {'rel': 'stylesheet'})
-  style = soup.find('ve-style')
-  if style:
-    add_link(soup, style.attrs['layout'] if 'layout' in style.attrs else '/static/css/default-layout.css', {'rel': 'stylesheet'})
-    add_link(soup, style.attrs['theme'] if 'theme' in style.attrs else '/static/css/default-theme.css', {'rel': 'stylesheet'})
-    style.decompose()
-  else:
-    add_link(soup, '/static/css/default-layout.css', {'rel': 'stylesheet'})
-    add_link(soup, '/static/css/default-theme.css', {'rel': 'stylesheet'})
-
-  add_script(soup, kwargs['web_components_source'], {'type': 'module'})
-
-  html = str(soup)
+  html = str(template)
   html = re.sub(r'\s+<p>\s+<\/p>', '', html) # removes empty paragraphs
   return html
 

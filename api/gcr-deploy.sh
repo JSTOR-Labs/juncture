@@ -5,6 +5,8 @@ GCP_PROJECT='juncture-digital'
 GCR_SERVICE=${1:-api}
 MIN_INSTANCE_LIMIT=1
 
+gcloud config configurations activate juncture
+# gcloud config configurations list
 gcloud config set project ${GCP_PROJECT}
 gcloud config set compute/region us-central1
 gcloud config set run/region us-central1

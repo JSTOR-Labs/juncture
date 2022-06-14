@@ -22,6 +22,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from starlette.responses import RedirectResponse
 
+from search import SearchClient
+search_client = SearchClient()
+
 from mdrender import get_markdown, get_html
 from image_info import ImageInfo
 from annotations import Annotations as AnnotationsClient
@@ -69,9 +72,34 @@ class ResultsDoc(BaseModel):
   rights: Optional[str] = None
   weight: Optional[int] = 1
 
+class SearchResults(BaseModel):
+  total: int
+  qtime: Optional[float] = None
+  docs: List[ResultsDoc] = []
+
 @app.get('/')
 def main():
   return RedirectResponse(url='/docs/')
+
+@app.get('/search/{qid}/', response_model=SearchResults, response_model_exclude_unset=True)
+def search(
+    qid: str,
+    source: Optional[str] = 'commons,jstor',
+    offset: Optional[int] = 0,
+    limit: Optional[int] = 10,
+    language: Optional[str] = 'en',
+    refresh: Optional[bool] = False,
+  ):
+  
+  logger.info(f'search: qid={qid} source={source} limit={limit} language={language}')
+  return search_client.search(
+    qid=qid,
+    source=source,
+    offset=offset,
+    limit=limit,
+    language=language,
+    refresh=refresh
+  )
 
 @app.get('/markdown/{path:path}/')
 @app.get('/markdown/')

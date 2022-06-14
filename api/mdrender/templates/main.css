@@ -1,0 +1,28 @@
+* { box-sizing: border-box; }
+
+body {
+  font-family: Roboto, sans-serif;
+  font-size: 1.3rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/*
+Provide anchor offset for fixed headed
+Source - https://www.wikitechy.com/tutorials/javascript/offsetting-an-html-anchor-to-adjust-for-fixed-header
+*/
+:target:before {
+  content: "";
+  display: block;
+  height: 150px; /* fixed header height*/
+  margin: -150px 0 0; /* negative fixed header height */
+}
+
+section.no-offset:target:before {
+  display: none;
+}
+
+ve-header ul,
+ve-image-grid ul {
+  display: none;
+}

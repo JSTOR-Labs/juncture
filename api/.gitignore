@@ -1,0 +1,6 @@
+__pycache__
+*.pyc
+*.cache
+gcreds.json
+creds.yaml
+.venv
