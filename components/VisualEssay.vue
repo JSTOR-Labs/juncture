@@ -157,8 +157,10 @@ module.exports = {
         scope.push(el)
         el = el.id !== 'essay-component' ? el.parentElement : null
       }
+      console.log(scope)
       scope.forEach(elemInScope => {
         let domPathElems = getDomPath(elemInScope)
+        console.log(domPathElems)
         let elemPath = domPathElems.slice(domPathElems.indexOf('div#essay-component')+1).join('>')
         paramTags = [...paramTags, ...this.params.filter(param => param.path === elemPath)]
         })
