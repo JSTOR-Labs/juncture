@@ -45,7 +45,6 @@ module.exports = {
   },
   methods: {
     async essayLoaded() {
-      console.log(this.entities)
       this.active = null
       let essayElem = document.getElementById('essay')
       essayElem.querySelectorAll('.seg-link').forEach(el => el.addEventListener('click', () => navigator.clipboard.writeText(el.dataset.anchor)))
@@ -160,10 +159,8 @@ module.exports = {
       scope.forEach(elemInScope => {
         let domPathElems = getDomPath(elemInScope)
         let elemPath = domPathElems.slice(domPathElems.indexOf('div#essay-component')+1).join('>')
-        console.log(elemPath, this.params)
         paramTags = [...paramTags, ...this.params.filter(param => param.path === elemPath)]
         })
-      console.log(paramTags)
       return paramTags
     },
     // Finds words/phrases in content paragraphs that match labels or aliases for entities in scope
@@ -176,7 +173,6 @@ module.exports = {
           .map(param => param.eid)
           .forEach(id => {
             let entity = this.entities[id]
-            console.log(entity)
             if (entity) {
               let toMatch = [...[entity.label], ...Array.from(entity.aliases).filter(alias => alias.length > 2)]
               for (let i = 0; i < toMatch.length; i++) {
