@@ -172,6 +172,7 @@ module.exports = {
           .filter(param => param['ve-entity'] !== undefined || param.eid !== undefined)
           .map(param => param.id)
           .forEach(id => {
+            console.log(id, this.entities[id])
             let entity = this.entities[id]
             if (entity) {
               let toMatch = [...[entity.label], ...Array.from(entity.aliases).filter(alias => alias.length > 2)]
