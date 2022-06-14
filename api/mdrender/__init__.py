@@ -29,8 +29,8 @@ from mdrender.google_cloud_storage import Bucket
 # https://shoelace.style/
 shoelace_version = '2.0.0-beta.73'
 
-def convert_urls(soup, base_url, md_source):
-  # logger.info(f'convert_urls: source={md_source}')
+def convert_urls(soup, base_url, md_source, ref=None):
+  # logger.info(f'convert_urls: md_source.ref={md_source.ref} ref={ref}')
   
   # remove Github badges
   for img in soup.find_all('img'):
@@ -40,7 +40,8 @@ def convert_urls(soup, base_url, md_source):
   # convert absolute links
   for elem in soup.find_all(href=True):
     if elem.attrs['href'].startswith('/'):
-      elem.attrs['href'] = f'/{elem.attrs["href"][1:]}'
+      if md_source.source == 'github':
+         elem.attrs['href'] = elem.attrs['href'][1:] + (f'?ref={ref}' if ref else '')
   
   # convert image URLs
   for elem in soup.find_all(src=True):
@@ -57,14 +58,15 @@ def convert_urls(soup, base_url, md_source):
   for elem in soup.find_all('param'):
     for fld in ('url', 'banner'):
       if fld in elem.attrs and not elem.attrs[fld].startswith('http'):
+        orig = elem.attrs[fld]
         gh_path = elem.attrs[fld]
-        if not gh_path.startswith('/'):
-          base_url_path_elems = [elem for elem in base_url.split('/') if elem][:-1]
-          src_elems = re.sub(r'^\.\/', '', gh_path).split('/')
-          up = src_elems.count('..')
-          gh_path = '/' + '/'.join(base_url_path_elems[:len(base_url_path_elems)-up] + src_elems[up:])
-        elem.attrs[fld] = f'https://raw.githubusercontent.com/{md_source.acct}/{md_source.repo}/{md_source.ref}{gh_path}'
-        logger.debug(f'orig={gh_path} new={elem.attrs[fld]}')
+        base = f'/{md_source.acct}/{md_source.repo}/{md_source.ref}'
+        if gh_path.startswith('/'):
+          gh_path = f'{base}{gh_path}'
+        else:
+          gh_path = f'{base}/' + '/'.join([elem for elem in base_url.split('/') if elem][2:-1]) + gh_path
+        elem.attrs[fld] = f'https://raw.githubusercontent.com{gh_path}'
+        logger.info(f'orig={orig} base_url={base_url} new={elem.attrs[fld]}')
 
   return soup
 
@@ -170,7 +172,7 @@ def set_entities(soup):
   if 'entities' in soup.body.attrs:
     del soup.body.attrs['entities']
 
-def to_html(md_source, base_url, web_components_source, **kwargs):
+def to_html(md_source, prefix, ref, base_url, web_components_source, **kwargs):
   html = markdown.markdown(
     md_source.markdown,
     extensions=[
@@ -197,7 +199,7 @@ def to_html(md_source, base_url, web_components_source, **kwargs):
   soup = BeautifulSoup(html, 'html5lib')
 
   set_entities(soup)
-  convert_urls(soup, base_url, md_source)
+  convert_urls(soup, base_url, md_source, ref)
 
   # insert a 'main' wrapper element around the essay content
   main = soup.html.body
@@ -214,7 +216,10 @@ def to_html(md_source, base_url, web_components_source, **kwargs):
 
   is_v1 = soup.find('param') is not None
   if is_v1:
-    template = BeautifulSoup(open(f'{SCRIPT_DIR}/templates/v1.html', 'r').read(), 'html5lib')
+    template = open(f'{SCRIPT_DIR}/templates/v1.html', 'r').read()
+    if prefix: template = template.replace('const PREFIX = null', f"const PREFIX = '{prefix}'")
+    if ref: template = template.replace('const REF = null', f"const REF = '{ref}'")
+    template = BeautifulSoup(template, 'html5lib')
     for el in template.find_all('component'):
       if 'v-bind:is' in el.attrs and el.attrs['v-bind:is'] == 'mainComponent':
         el.append(contents)
@@ -224,7 +229,6 @@ def to_html(md_source, base_url, web_components_source, **kwargs):
 
   else:
     template = BeautifulSoup(open(f'{SCRIPT_DIR}/templates/v2.html', 'r').read(), 'html5lib')
-    template.find('base').attrs['href'] = base_url
     if 'localhost' in web_components_source:
       template.find('script', src='https://unpkg.com/visual-essays/dist/visual-essays/visual-essays.esm.js').attrs['src'] = 'http://localhost:3333/build/visual-essays.esm.js'
     template.body.insert(0, contents)
@@ -242,6 +246,7 @@ def to_html(md_source, base_url, web_components_source, **kwargs):
     if style:
       style.decompose()
 
+  template.find('base').attrs['href'] = base_url
   style = soup.new_tag('style')
   style.string = css
   template.head.append(style)
@@ -283,6 +288,6 @@ def get_html(path=None, url=None, markdown=None, prefix=None, ref=None, **kwargs
     else:
       md_source = get_gh_markdown(_path, ref) if _source == 'gh' else get_gcs_markdown(_path)
   
-  html = to_html(md_source, path=_path, **kwargs) if md_source else None
+  html = to_html(md_source, prefix, ref, path=_path, **kwargs) if md_source else None
   logger.info(f'get_html: path={path} url={url} source={md_source.source if md_source else None} base_url={kwargs.get("base_url")} prefix={prefix} markdown={markdown is not None} elapsed={round(now()-start,3)}')
   return html

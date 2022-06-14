@@ -28,7 +28,16 @@ config = yaml.load(open(f'{SCRIPT_DIR}/config.yaml', 'r').read(), Loader=yaml.Fu
 logger.info(config)
 
 def api_endpoint():
-  return 'http://localhost:8000' if request.host.startswith('localhost') or request.host.startswith('192.168') else f'https://api.{".".join(request.host.split(".")[-2:])}'
+  '''Selects API endpoint to use'''
+  if request.host.startswith('localhost'):
+    endpoint = 'http://localhost:8000'
+  else:
+    domain = '.'.join(request.host.split('.')[-2:])
+    if domain in ('visual-essays.net',):
+      endpoint = f'https://api.{domain}'
+    else:
+      endpoint = 'https://api.juncture-digital.org'
+  return endpoint
 
 # Prefix for site content
 prefix = config.get('prefix','a3b51252')
