@@ -45,12 +45,12 @@ module.exports = {
   },
   methods: {
     async essayLoaded() {
+      console.log(this.entities)
       this.active = null
       let essayElem = document.getElementById('essay')
       essayElem.querySelectorAll('.seg-link').forEach(el => el.addEventListener('click', () => navigator.clipboard.writeText(el.dataset.anchor)))
       Array.from(essayElem.querySelectorAll('.collapsible')).forEach(el =>el.addEventListener('click', this.toggleExpandCollapse))
       this.tagEntities(essayElem)
-      console.log(this.entities)
       // this.$emit('set-entities', this.entities)
       this.$nextTick(() => {
         this.addPopups(this.entities)
@@ -167,13 +167,14 @@ module.exports = {
     // Finds words/phrases in content paragraphs that match labels or aliases for entities in scope
     // Matched text is wrapped with a span tag for reacting to hover and click actions
     tagEntities(root) {
+      console.log(root)
       Array.from(root.querySelectorAll('.segment p')).forEach(para => {
+        console.log(para)
         let paraHTML = para.innerHTML
         this.paramsInScope(para, this.params)
           .filter(param => param['ve-entity'] !== undefined || param.eid !== undefined)
           .map(param => param.id)
           .forEach(id => {
-            console.log(id, this.entities[id])
             let entity = this.entities[id]
             if (entity) {
               let toMatch = [...[entity.label], ...Array.from(entity.aliases).filter(alias => alias.length > 2)]
