@@ -163,7 +163,6 @@ module.exports = {
         console.log(elemPath, this.params)
         paramTags = [...paramTags, ...this.params.filter(param => param.path === elemPath)]
         })
-      console.log(elemPath, this.params)
       console.log(paramTags)
       return paramTags
     },
@@ -174,7 +173,7 @@ module.exports = {
         let paraHTML = para.innerHTML
         this.paramsInScope(para, this.params)
           .filter(param => param['ve-entity'] !== undefined || param.eid !== undefined)
-          .map(param => param.id)
+          .map(param => param.eid)
           .forEach(id => {
             let entity = this.entities[id]
             console.log(entity)
