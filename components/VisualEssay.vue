@@ -50,7 +50,8 @@ module.exports = {
       essayElem.querySelectorAll('.seg-link').forEach(el => el.addEventListener('click', () => navigator.clipboard.writeText(el.dataset.anchor)))
       Array.from(essayElem.querySelectorAll('.collapsible')).forEach(el =>el.addEventListener('click', this.toggleExpandCollapse))
       this.tagEntities(essayElem)
-      this.$emit('set-entities', this.entities)
+      console.log(this.entities)
+      // this.$emit('set-entities', this.entities)
       this.$nextTick(() => {
         this.addPopups(this.entities)
         this.convertLinks(essayElem)
