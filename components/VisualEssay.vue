@@ -104,7 +104,7 @@ module.exports = {
         allowHTML: true,
         interactive: true,
         appendTo: document.body,
-        delay: [null, 10000000],
+        delay: [null, null],
         placement: 'right',
         theme: 'light-border',
         onShow: async (instance) => {
