@@ -2,8 +2,8 @@
 
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare url="https://forum.jstor.org/#/projects/75476/edit/31638690?query=fire&filter=[]&sort=id&dir=DESC&start=0&limit=100" label="Barrets Fire, Canterbury (2021)" attribution="Michael Stubbs and Ethan Dudley">
-<param ve-compare url="https://forum.jstor.org/#/projects/75476/edit/30256204?query=fire&filter=[]&sort=id&dir=DESC&start=0&limit=100" label="Barrets Fire, Canterbury -  unknown">
+<param ve-compare manifest="gh:kent-map/images/Barrets_Fire_2021.yaml" region="pct:9,13,99,99">
+<param ve-compare manifest="gh:kent-map/images/Barrets_Fire_past.yaml" region="">
 
 # Barretts Fire
 
