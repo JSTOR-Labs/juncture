@@ -226,7 +226,8 @@
           if (path) this.anchor = anchor
           else path = anchor
         } else {
-          path = window.location.pathname.slice(contentSource.basePath?.length) || '/'
+          // path = window.location.pathname.slice(contentSource.basePath?.length) || '/'
+          path = window.location.pathname
           path = path.length > 1 && path.slice(-1) === '/' ? path.slice(0,-1) : path
         }
         this.path = path
@@ -613,13 +614,14 @@
 
         // Watcher that updates various data elements when the active paragraph changes
         active(current, prior) {
-          let activeSegment = this.$refs.app.querySelector(`[data-id="${current}"]`)
+          let app = document.getElementById('app')
+          let activeSegment = app ? app.querySelector(`[data-id="${current}"]`) : null
           if (activeSegment) {
             if (this.$refs.tabsBar) activeSegment.appendChild(this.$refs.tabsBar)
             this.addItemEventHandlers(activeSegment)
             this.addInteractionHandlers(activeSegment)
           }
-          let priorSegment = this.$refs.app.querySelector(`[data-id="${prior}"]`)
+          let priorSegment = app ? app.querySelector(`[data-id="${prior}"]`) : null
           if (priorSegment) {
             this.removeItemEventHandlers(priorSegment)
             this.removeInteractionHandlers(priorSegment)
@@ -661,8 +663,11 @@
         },
 
         hoverItem (eid) {
-          this.$refs.app.querySelectorAll('.hover').forEach(el => el.classList.remove('hover'))
-          this.$refs.app.querySelectorAll(`[data-eid="${eid}"]`).forEach(el => el.classList.add('hover'))        
+          let app = document.getElementById('app')
+          if (app) {
+            app.querySelectorAll('.hover').forEach(el => el.classList.remove('hover'))
+            app.querySelectorAll(`[data-eid="${eid}"]`).forEach(el => el.classList.add('hover'))
+          }
         }
       }
     })
@@ -807,7 +812,6 @@
           branch = branch || this.contentSource.ref
           message = message || 'API Commit'
           if (acct) {
-            // let ghToken = oauthAccessToken || ghUnscopedToken
             let existing = await this.getFile(path, acct, repo, branch)
             let payload = { message, branch, content: btoa(content) }
             if (existing) payload.sha = existing.sha
@@ -986,12 +990,13 @@
       return stack
     }
     function setMetaDescription(description) {
-      let existing = Array.from(this.$refs.app.querySelectorAll('meta[name=description]')).find(item => item)
+      let app = document.getElementById('app')
+      let existing = app ? Array.from(app.querySelectorAll('meta[name=description]')).find(item => item) : null
       if (existing) existing.parentElement.removeChild(existing)
       let el = document.createElement('meta')
       el.name = 'description'
       el.content = description
-      this.$refs.app.querySelector('head').appendChild(el)
+      if (app) app.querySelector('head').appendChild(el)
     }
     function camelToKebab(input) { return input.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}
     function isNumeric(arg) { return !isNaN(arg) }

@@ -133,6 +133,10 @@
     mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
     methods: {
 
+      init() {
+        console.log(`header.init: path=${this.path}`)
+      },
+
       doMenuAction(options) {
         document.querySelector('#menuToggle input').checked = false
         if (options.action === 'load-page') {

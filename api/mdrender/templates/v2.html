@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
   <link href="/static/images/favicon.svg" rel="icon" type="image/svg+xml" />
-  <link href="/static/images/favicon.ico" rel="icon" type="image/png" />
+  <link href="/static/images/favicon.png" rel="icon" type="image/png" />
   <title>Document</title>
   <link href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.73/dist/themes/light.css" rel="stylesheet" />
 </head>
@@ -15,44 +15,15 @@
   <script src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.73/dist/shoelace.js" type="module"></script>
   <script src="https://unpkg.com/visual-essays/dist/visual-essays/visual-essays.esm.js" type="module"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.7/ScrollMagic.min.js" type="text/javascript"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.7/plugins/debug.addIndicators.min.js" type="text/javascript"></script>
+  <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.7/plugins/debug.addIndicators.min.js" type="text/javascript"></script> -->
   <script>
-    console.log('here')
     window.isMobile = ('ontouchstart' in document.documentElement && /mobi/i.test(navigator.userAgent) )
     window.isEditor = location.port === '5555' || location.hostname.indexOf('editor') == 0
-    console.log(`main.js: isMobile=${window.isMobile} height=${window.innerHeight}`)
-
-    /*
-    Array.from(document.querySelectorAll('p'))
-      .forEach(el => {
-        const observer = new IntersectionObserver ( 
-          ([e]) => {
-            console.log(e.boundingClientRect.top)
-            console.log(e.intersectionRatio)
-            if (e.isIntersecting) {
-              console.log('VISIBLE')
-              // e.target.classList.add('active')
-              //return
-            }
-            if (e.boundingClientRect.top > 0) {
-              console.log("BELOW")
-            } else {
-              console.log("ABOVE")
-            }
-            // e.target.classList.remove('active')
-          },
-          { root: null, threshold: [0,1], rootMargin: '800px' }
-        )
-        console.log(el)
-        observer.observe(el)
-      })
-    */
 
     // Use ScrollMagic to set paragraphs as 'active'
     if (window.controller)  window.controller.destroy(true)
     window.controller = new ScrollMagic.Controller({globalSceneOptions: {}})
     window.triggerHook = window.isMobile ? 0.6 : (window.isEditor ? 300 : 200)/window.innerHeight
-    console.log(`triggerHook=${window.triggerHook}`)
     Array.from(document.querySelectorAll('p')).forEach(p => {  // build scenes
       new ScrollMagic.Scene({
             triggerElement: p,

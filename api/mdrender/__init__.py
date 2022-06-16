@@ -64,7 +64,8 @@ def convert_urls(soup, base_url, md_source, ref=None):
         if gh_path.startswith('/'):
           gh_path = f'{base}{gh_path}'
         else:
-          gh_path = f'{base}/' + '/'.join([elem for elem in base_url.split('/') if elem][2:-1]) + gh_path
+          elems = [elem for elem in base_url.split('/') if elem][2:-1]
+          gh_path = f'{base}/' + '/'.join(elems) + ('/' if elems else '') + gh_path
         elem.attrs[fld] = f'https://raw.githubusercontent.com{gh_path}'
         logger.info(f'orig={orig} base_url={base_url} new={elem.attrs[fld]}')
 
@@ -229,8 +230,8 @@ def to_html(md_source, prefix, ref, base_url, web_components_source, **kwargs):
 
   else:
     template = BeautifulSoup(open(f'{SCRIPT_DIR}/templates/v2.html', 'r').read(), 'html5lib')
-    if 'localhost' in web_components_source:
-      template.find('script', src='https://unpkg.com/visual-essays/dist/visual-essays/visual-essays.esm.js').attrs['src'] = 'http://localhost:3333/build/visual-essays.esm.js'
+    #if 'localhost' in web_components_source:
+    #  template.find('script', src='https://unpkg.com/visual-essays/dist/visual-essays/visual-essays.esm.js').attrs['src'] = 'http://localhost:3333/build/visual-essays.esm.js'
     template.body.insert(0, contents)
 
     css = '\n' +  open(f'{SCRIPT_DIR}/templates/main.css', 'r').read()
@@ -248,6 +249,7 @@ def to_html(md_source, prefix, ref, base_url, web_components_source, **kwargs):
 
   template.find('base').attrs['href'] = base_url
   style = soup.new_tag('style')
+  style.attrs['data-id'] = 'default'
   style.string = css
   template.head.append(style)
 
