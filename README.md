@@ -150,6 +150,10 @@ Built c.1379, the Westgate Towers are the last surviving gatehouse in Canterbury
 
 Yalding is situated six miles south west of Maidstone and was home to the poet Edmund Blunden.
 
+## Mercery Lane
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Mercery_Lane_Canterbury_Geograph-3228428-by-Helmut-Zozmann.jpg/450px-Mercery_Lane_Canterbury_Geograph-3228428-by-Helmut-Zozmann.jpg)
+
 </param>
 
 
