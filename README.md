@@ -154,6 +154,10 @@ Yalding is situated six miles south west of Maidstone and was home to the poet E
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Mercery_Lane_Canterbury_Geograph-3228428-by-Helmut-Zozmann.jpg/450px-Mercery_Lane_Canterbury_Geograph-3228428-by-Helmut-Zozmann.jpg)
 
+## Barret's Fire (Now and Then)
+
+![](https://stor.artstor.org/stor/cd790d83-8b41-4b53-a497-4d691528174f)
+
 </param>
 
 
