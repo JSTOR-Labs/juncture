@@ -162,6 +162,10 @@ Yalding is situated six miles south west of Maidstone and was home to the poet E
 
 ![](https://stor.artstor.org/stor/53ab0dbd-6c38-4418-bfcb-8b7003287465)
 
+## The Cattle Market
+
+![](https://stor.artstor.org/stor/646bc4bc-c25e-4964-851f-cc3af489b030)
+
 </param>
 
 
