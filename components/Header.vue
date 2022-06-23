@@ -129,22 +129,24 @@
       title() { return this.essayConfig !== null ? this.essayConfig.title || this.siteConfig.title : 'Juncture'},
       tagline() { return this.essayConfig !== null ? this.siteConfig.tagline : null },
       author() { return this.essayConfig !== null ? this.essayConfig.author : null },
+      isGHP() { return location.hostname.indexOf('github.io') > 0 },
+      baseUrl() { return this.isGHP ? `/${location.pathname.split('/')[1]}` : '' }
     },
     mounted() { this.loadDependencies(this.dependencies, 0, this.init) },
     methods: {
 
       init() {
-        console.log(`header.init: path=${this.path}`)
+        console.log(`header.init: path=${this.path} baseUrl=${this.baseUrl}`)
       },
 
       doMenuAction(options) {
         document.querySelector('#menuToggle input').checked = false
         if (options.action === 'load-page') {
-          this.$emit('do-action', 'load-page', options.path)
+          this.$emit('do-action', 'load-page', `${this.baseUrl}${options.path}`)
         } else if (options.action === 'contact-us') {
           this.showForm('contact-form')
         } else {
-          this.$emit('do-action', options.action, options.path)
+          this.$emit('do-action', options.action, `${this.baseUrl}${options.path}`)
         }
       },
 
