@@ -164,7 +164,7 @@ Yalding is situated six miles south west of Maidstone and was home to the poet E
 
 ## The Cattle Market
 
-![](https://stor.artstor.org/stor/646bc4bc-c25e-4964-851f-cc3af489b030)
+![](https://www.google.com/imgres?imgurl=https%3A%2F%2Fi2-prod.devonlive.com%2Fincoming%2Farticle297560.ece%2FALTERNATES%2Fs615b%2Flivestock-market-3PNG.png&imgrefurl=https%3A%2F%2Fwww.devonlive.com%2Fnews%2Fdevon-news%2F800-year-old-cattle-market-297224&tbnid=fBRcPkoT77aEjM&vet=12ahUKEwiZh-eG08X4AhX1X_EDHa-5CJkQxiAoAXoECAAQGQ..i&docid=IbO7O3c0WzS3iM&w=615&h=395&itg=1&q=st%20george%27s%20gate%20canterbury%20the%20cattle%20market&ved=2ahUKEwiZh-eG08X4AhX1X_EDHa-5CJkQxiAoAXoECAAQGQ#imgrc=fBRcPkoT77aEjM&imgdii=WeunD9JVilin6M)
 
 </param>
 
