@@ -3,7 +3,7 @@
 <param ve-config header="header" main="now-and-then">
 
 <param ve-compare manifest="gh:kent-map/images/Cattle_Market_1905.yaml">
-<param ve-compare manifest="gh:kent-map/images/Cattle_Market_past.yaml">
+<param ve-compare manifest="gh:kent-map/images/Cattle_Market_2021.yaml">
 
 # The Cattle Market
 
