@@ -227,9 +227,17 @@ module.exports = {
         },
         addTimeDimension() {
             // console.log(`timeDimension: timeInterval=${this.timeInterval} period=${this.period} loop=${this.loop} autoPlay=${this.autoPlay} transitionTime=${1000/this.fps}`)
+            let mapTimeInterval = this.timeInterval
+            if (this.timeInterval !== '/P1Y'){
+                const startTime = new Date(this.timeInterval.split('/')[0], 0)
+                const endTime = new Date(this.timeInterval.split('/')[1], 1)
+                //console.log('start and end string', startTime.toString(), endTime.toString());
+                mapTimeInterval = startTime.toISOString() + '/' + endTime.toISOString();
+            }
+            
             let timeDimension = new L.TimeDimension({
                 // times: [],
-                timeInterval: this.timeInterval,
+                timeInterval: mapTimeInterval,
                 timeDimensionControl: true,
                 period: this.period,
                 // validTimeRange: undefined,
