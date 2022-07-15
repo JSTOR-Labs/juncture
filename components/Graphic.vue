@@ -67,6 +67,11 @@ module.exports = {
             }
            
         },
+    },
+    watch: {
+        items() {
+            this.init()
+        }
     }
   }
 </script>
