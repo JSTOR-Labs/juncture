@@ -58,7 +58,7 @@
       methods: {
 
         loadPage() {
-          let url = `https://api.visual-essays.net/html/${this.prefix}/${this.path}${this.path === '' ? '' : '/'}?base=${this.baseQarg}&prefix=${this.prefix}&inline=true`
+          let url = `https://api.juncture-digital.org/html/${this.prefix}/${this.path}${this.path === '' ? '' : '/'}?base=${this.baseQarg}&prefix=${this.prefix}&inline=true`
           if (this.ref) url += `&ref=${this.ref}`
           fetch(url).then(resp => resp.text())
           .then(html => {
