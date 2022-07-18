@@ -2,8 +2,8 @@
 
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare manifest="gh:kent-map/images/then-and-now/Pound_Lane_Flood_2021.yaml">
-<param ve-compare manifest="gh:kent-map/images/then-and-now/Pound_Lane_Flood_past.yaml">
+<param ve-compare manifest="https://iiif.juncture-digital.org/gh:kent-map/images/then-and-now/Pound_Lane_Flood_2021/manifest.json">
+<param ve-compare manifest="https://iiif.juncture-digital.org/gh:kent-map/images/then-and-now/Pound_Lane_Flood_past/manifest.json">
 
 # Pound Lane Flood
 

@@ -2,8 +2,8 @@
 
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare manifest="gh:kent-map/images/then-and-now/House_of_Agnes_1905.yaml" region="pct:0,1,99,99">
-<param ve-compare manifest="gh:kent-map/images/then-and-now/House_of_Agnes_2021.yaml">
+<param ve-compare manifest="https://iiif.juncture-digital.org/gh:kent-map/images/then-and-now/House_of_Agnes_1905/manifest.json" region="pct:0,1,99,99">
+<param ve-compare manifest="https://iiif.juncture-digital.org/gh:kent-map/images/then-and-now/House_of_Agnes_2021/manifest.json">
 
 # House of Agnes
 

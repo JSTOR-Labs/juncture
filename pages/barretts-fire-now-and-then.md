@@ -2,8 +2,8 @@
 
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare manifest="gh:kent-map/images/then-and-now/Barrets_Fire_2021.yaml" region="pct:9,13,99,99">
-<param ve-compare manifest="gh:kent-map/images/then-and-now/Barrets_Fire_past.yaml" region="">
+<param ve-compare manifest="https://iiif.juncture-digital.org/gh:kent-map/images/then-and-now/Barrets_Fire_2021/manifest.json" region="pct:9,13,99,99">
+<param ve-compare manifest="https://iiif.juncture-digital.org/gh:kent-map/images/then-and-now/Barrets_Fire_past/manifest.json" region="">
 
 # Barretts Fire
 

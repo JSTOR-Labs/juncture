@@ -2,8 +2,8 @@
 
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare manifest="gh:kent-map/images/then-and-now/Dane_John_Gardens_2021.yaml" region="pct:0,10,90,85">
-<param ve-compare manifest="gh:kent-map/images/then-and-now/Dane_John_Gardens_1905.yaml" region="pct:0,14,86,100">
+<param ve-compare manifest="https://iiif.juncture-digital.org/gh:kent-map/images/then-and-now/Dane_John_Gardens_2021/manifest.json" region="pct:0,10,90,85">
+<param ve-compare manifest="https://iiif.juncture-digital.org/gh:kent-map/images/then-and-now/Dane_John_Gardens_1905/manifest.json" region="pct:0,14,86,100">
 
 # Dane John Gardens
 
