@@ -1,7 +1,7 @@
 <param ve-config header="header" main="now-and-then">
 
-<param ve-compare manifest="gh:kent-map/images/Canterbury_Cathedral_circa_1905.yaml">
-<param ve-compare manifest="gh:kent-map/images/Canterbury_Cathedral_2021.yaml" region="pct:0,11,90,80">
+<param ve-compare manifest="gh:kent-map/images/then-and-now/Canterbury_Cathedral_circa_1905.yaml">
+<param ve-compare manifest="gh:kent-map/images/then-and-now/Canterbury_Cathedral_2021.yaml" region="pct:0,11,90,80">
 
 # Canterbury Cathedral
 
