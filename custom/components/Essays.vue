@@ -87,7 +87,7 @@ module.exports = {
   methods: {
     cardSelected(slug) {
       console.log(`cardSelected: slug=${slug}`)
-      this.$emit('do-action', {action: 'load-page', path: `/reviews/${slug}`})
+      this.$emit('do-action', {action: 'load-page', path: `/essays/${slug}`})
     },
   },
   watch: {}
