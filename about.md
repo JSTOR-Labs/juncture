@@ -1,7 +1,7 @@
-<param ve-config 
-       title="Kent Maps DofE: About"
-       layout="index">
+.ve-header logo=https://dofe.kent-maps.online/images/dofe-logo.png height=60 sticky=true
+	- [Home](/)
+	- [Contact Us](/)
 
 # About
 
-More to come...
+TODO
