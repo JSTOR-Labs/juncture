@@ -63,6 +63,8 @@
           fetch(url).then(resp => resp.text())
           .then(html => {
             let [head, body] = new DOMParser().parseFromString(html, 'text/html').children[0].children
+            let titleEl = head.querySelector('title')
+            if (titleEl) document.querySelector('title').innerText = titleEl.innerText
             this.html = (body.querySelector(':scope > #app') || body).innerHTML
             // Loads stylesheets and scripts used by loaded page
             this.loadDependencies(head.querySelectorAll('link[rel="stylesheet"]'), 0, () => this.loadDependencies(head.querySelectorAll('style'), 0))
