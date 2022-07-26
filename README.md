@@ -6,7 +6,7 @@
 # Kent Maps Online - Duke of Edinburgh award site
 This site showcases the work completed by our Duke of Edinburgh participants at all levels. Supported by student ambassadors from Canterbury Christ Church University, participants explore the extraordinary history of Kent and the people who have lived here, using words, images and innovative coding to bring their stories to life.
 
-<sl-button  variant="primary" href="">Main Site</sl-button>
+<sl-button variant="primary" href="https://kent-maps.online">Main Site</sl-button>
 
 ## Tabs {.tabs}
 
