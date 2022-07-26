@@ -1,6 +1,8 @@
-<param ve-config 
-       title="Kent Maps DofE: How to"
-       layout="index">
+.ve-header logo=https://dofe.kent-maps.online/images/dofe-logo.png height=60 sticky=true
+	- [Home](/)
+	- [About](/about)
+	- [How to Use Site](/howto)
+	- Contact Us
 
 # How to use this site
 
