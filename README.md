@@ -166,7 +166,7 @@ Barretts of Canterbury was a family business selling cars and bicycles in Canter
 
 ![](https://iiif.juncture-digital.org/thumbnail/gh:kent-map/images/then-and-now/Pound_Lane_Flood_past)
 
-Rapid snow melt and the river Stour bursting its banks led to a flood.
+Rapid snow melt and the river Stour bursting its banks led to a flood in 1909.
 
 #### The Cattle Market {href=pages/the-cattle-market}
 
