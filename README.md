@@ -28,7 +28,7 @@ The ancient lavatory at Canterbury Cathedral where the monks washed before and a
 - coords: 51.278128, 1.088206
 - eid: Q334303
 
-St Augustine's Abbey was a Benedictine monastery in Canterbury, Kent, England. The abbey was founded in 598 and functioned as a monastery until its dissolution in 1538 during the English Reformation. After the abbey's dissolution, it underwent dismantlement until 1848. Since 1848, part of the site has been used for educational purposes and the abbey ruins have been preserved for their historical value.
+St Augustine's Abbey was a Benedictine monastery in Canterbury. The abbey was founded in 598.
 
 #### Canterbury High Street (Now and Then) {href=pages/canterbury-high-street-now-and-then}
 
@@ -37,7 +37,7 @@ St Augustine's Abbey was a Benedictine monastery in Canterbury, Kent, England. T
 - coords: 51.278333,1.0775
 - eid: Q29303
 
-The first Archbishop of Canterbury, Augustine, arrived in Kent as a missionary in 597AD. The ruins of St Augustine's Abbey are still open to visitors, on the edge of the modern city. Augustine's original cathedral is beneath the Nave of the building we know today and in which a later Archbishop, Thomas Becket, was murdered in 1170.
+The first Archbishop of Canterbury, Augustine, arrived in Kent as a missionary in 597AD. 
 
 #### Canterbury Cathedral (Now and Then) {href=pages/canterbury-cathedral-now-and-then}
 
@@ -73,7 +73,7 @@ The Dane John Mound is a Roman cemetery in Canterbury.
 - coords: 51.2038, 1.2415
 - eid: Q736439
 
-Elizabeth Gould, born in 1804 in Ramsgate, was a wonderfully skilled artist and ornithologist, and the often-forgotten half of a partnership with her husband John Gould.
+Elizabeth Gould, born in 1804 in Ramsgate, was a wonderfully skilled artist and ornithologist.
 	
 #### The House of Agnes (Now and Then) {href=pages/the-house-of-agnes-now-and-then}
 
@@ -82,7 +82,7 @@ Elizabeth Gould, born in 1804 in Ramsgate, was a wonderfully skilled artist and 
 
 ![](https://iiif.juncture-digital.org/thumbnail/wc:Canterbury_-_House_of_Agnes.jpg)
 
-The House of Agnes is a half-timbered medieval coaching inn in the St Dunstans area of Canterbury dating from the 13th century. It takes its name from the character Agnes Wickfield, in Charles Dicken's David Copperfield.
+The House of Agnes is a half-timbered medieval coaching inn in the St Dunstans area of Canterbury dating from the 13th century. 
 
 #### The Christchurch Gateway (Now and Then) {href=pages/the-christchurch-gateway}
 
@@ -114,7 +114,7 @@ The Old Weavers House is a half-timbered building on the River Stour at Canterbu
 
 ![](https://iiif.juncture-digital.org/thumbnail/wc:A_Map_of_the_Beacons_in_Kent_%28BM_1872%2C0113.1137%29.jpg)
 
-The Spanish Armada took place on 20th July 1588. The English troops made preparations and the Spanish were bombarded by cannons fired from English ships on the coast.
+The Spanish Armada took place on 20th July 1588. 
 
 #### The Sun Hotel {href=pages/the-sun-hotel-now-and-then}
 
@@ -154,26 +154,25 @@ Yalding is situated six miles south west of Maidstone and was home to the poet E
 
 ![](https://iiif.juncture-digital.org/thumbnail/wc:Mercery_Lane_Canterbury_Geograph-3228428-by-Helmut-Zozmann.jpg)
 
-Mercery Lane is on the north side of Canterbury High Street and is home to some of the oldest buildings in the city. It was once named Le Mercerie after the mercery-stalls that would provide pilgrims with memorable items from their travels.
+Mercery Lane is on the north side of Canterbury High Street and is home to some of the oldest buildings in the city. 
 
 #### Barrett's Fire (Now and Then) {href=pages/barretts-fire-now-and-then}
 
 ![](https://iiif.juncture-digital.org/thumbnail/gh:kent-map/images/then-and-now/Barretts_fire_St_Peters_Street_Canterbury_1937)
 
-Barretts of Canterbury was a family business selling cars and bicycles in Canterbury for over a century, and in 1937 a catastrophic fire destroyed their premises on St Peter’s Street and it had to be rebuilt.
+Barretts of Canterbury was a family business selling cars and bicycles in Canterbury for over a century.
 
 #### Pound Lane Flood (Now and Then) {href=pages/pound-lane-flood-now-and-then}
 
 ![](https://iiif.juncture-digital.org/thumbnail/gh:kent-map/images/then-and-now/Pound_Lane_Flood_past)
 
-Rapid snow melt and the river Stour bursting its banks led to a flood in 1795 that submerged several of the ground floors of houses on Pound Lane (among other lanes) under water.
+Rapid snow melt and the river Stour bursting its banks led to a flood.
 
 #### The Cattle Market {href=pages/the-cattle-market}
 
 ![](https://iiif.juncture-digital.org/thumbnail/gh:kent-map/images/then-and-now/Cattle_Market_1905)
 
-The Cattle Market was built to sell stock, complete with toll boxes, and a market was held weekly on the site of an ancient city moat. It was moved in 1955 and the area is now a bus terminal.
-
+The Cattle Market was built to sell stock, complete with toll boxes, and a market was held weekly on the site of an ancient city moat. 
 ### Map {icon=icon}
 
 .ve-map Q29303 15 style=width:100% cards=data
