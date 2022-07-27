@@ -3,7 +3,6 @@
 	- [Home](/)
 	- [About](/about)
 	- [How to Use Site](/howto)
-	- Contact Us
 
 # Dane John Mound
 

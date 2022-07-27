@@ -1,4 +1,4 @@
-.ve-header logo=https://dofe.kent-maps.online/images/dofe-logo.png height=60 sticky=true contact=ron@snyderjr.com
+.ve-header logo=https://dofe.kent-maps.online/images/dofe-logo.png height=60 sticky=true contact=carolyn.oulton@canterbury.ac.uk
 	- [About](/about)
 	- [How to Use Site](/howto)
 	- Contact Us

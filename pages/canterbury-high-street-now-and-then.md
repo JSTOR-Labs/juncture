@@ -2,7 +2,6 @@
 	- [Home](/)
 	- [About](/about)
 	- [How to Use Site](/howto)
-	- Contact Us
 
 # Canterbury High Street {style=height:80vh}
 
