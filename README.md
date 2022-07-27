@@ -72,6 +72,8 @@ The Dane John Mound is a Roman cemetery in Canterbury.
 
 - coords: 51.2038, 1.2415
 - eid: Q736439
+
+Elizabeth Gould, born in 1804 in Ramsgate, was a wonderfully skilled artist and ornithologist, and the often-forgotten half of a partnership with her husband John Gould.
 	
 #### The House of Agnes (Now and Then) {href=pages/the-house-of-agnes-now-and-then}
 
@@ -112,6 +114,8 @@ The Old Weavers House is a half-timbered building on the River Stour at Canterbu
 
 ![](https://iiif.juncture-digital.org/thumbnail/wc:A_Map_of_the_Beacons_in_Kent_%28BM_1872%2C0113.1137%29.jpg)
 
+The Spanish Armada took place on 20th July 1588. The English troops made preparations and the Spanish were bombarded by cannons fired from English ships on the coast.
+
 #### The Sun Hotel {href=pages/the-sun-hotel-now-and-then}
 
 ![](https://iiif.juncture-digital.org/thumbnail/wc:Sun_Hotel_8_Sun_Street_Canterbury_Kent_CT1_2HX.jpg)
@@ -150,17 +154,25 @@ Yalding is situated six miles south west of Maidstone and was home to the poet E
 
 ![](https://iiif.juncture-digital.org/thumbnail/wc:Mercery_Lane_Canterbury_Geograph-3228428-by-Helmut-Zozmann.jpg)
 
+Mercery Lane is on the north side of Canterbury High Street and is home to some of the oldest buildings in the city. It was once named Le Mercerie after the mercery-stalls that would provide pilgrims with memorable items from their travels.
+
 #### Barrett's Fire (Now and Then) {href=pages/barretts-fire-now-and-then}
 
 ![](https://iiif.juncture-digital.org/thumbnail/gh:kent-map/images/then-and-now/Barretts_fire_St_Peters_Street_Canterbury_1937)
+
+Barretts of Canterbury was a family business selling cars and bicycles in Canterbury for over a century, and in 1937 a catastrophic fire destroyed their premises on St Peter’s Street and it had to be rebuilt.
 
 #### Pound Lane Flood (Now and Then) {href=pages/pound-lane-flood-now-and-then}
 
 ![](https://iiif.juncture-digital.org/thumbnail/gh:kent-map/images/then-and-now/Pound_Lane_Flood_past)
 
+Rapid snow melt and the river Stour bursting its banks led to a flood in 1795 that submerged several of the ground floors of houses on Pound Lane (among other lanes) under water.
+
 #### The Cattle Market {href=pages/the-cattle-market}
 
 ![](https://iiif.juncture-digital.org/thumbnail/gh:kent-map/images/then-and-now/Cattle_Market_1905)
+
+The Cattle Market was built to sell stock, complete with toll boxes, and a market was held weekly on the site of an ancient city moat. It was moved in 1955 and the area is now a bus terminal.
 
 ### Map {icon=icon}
 
