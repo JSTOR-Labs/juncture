@@ -105,8 +105,8 @@ module.exports = {
        },
         layout: {
           randomSeed: undefined,
-          improvedLayout: true,
-          clusterThreshold: 150,
+          improvedLayout: false,
+          clusterThreshold: 250,
           hierarchical: this.items[0].layout === "hierarchy" ? true : false,
         },
         edges: {
