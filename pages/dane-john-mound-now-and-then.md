@@ -1,5 +1,5 @@
 
-.ve-header logo=https://dofe.kent-maps.online/images/dofe-logo.png height=60 sticky=true
+.ve-header logo=https://dofe.kent-maps.online/images/dofe-logo.png background=#555 sticky=true
 	- [Home](/)
 	- [About](/about)
 	- [How to Use Site](/howto)
