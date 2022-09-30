@@ -122,10 +122,10 @@ if __name__ == '__main__':
   parser.add_argument('--port', help='Port', type=int, default=9000)
   parser.add_argument('--api', help='API Endpoint', default=API_ENDPOINT)
   parser.add_argument('--prefix', help='Content URL prefix', default=PREFIX)
-  parser.add_argument('--root', help='Local content root', default=None)
+  parser.add_argument('--content', help='Local content root', default=None)
   args = parser.parse_args()
   API_ENDPOINT = args.api
   PREFIX = args.prefix
-  CONTENT_ROOT = os.path.abspath(args.root) if args.root else None
+  CONTENT_ROOT = os.path.abspath(args.content) if args.content else None
   logger.info(f'CONTENT_ROOT={CONTENT_ROOT}')
   app.run(debug=True, host='0.0.0.0', port=args.port)

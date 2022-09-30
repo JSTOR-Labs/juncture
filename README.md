@@ -1,4 +1,4 @@
-.ve-header logo=https://dofe.kent-maps.online/images/dofe-logo.png height=60 sticky=true contact=carolyn.oulton@canterbury.ac.uk
+.ve-header logo=https://dofe.kent-maps.online/images/dofe-logo.png sticky=true contact=carolyn.oulton@canterbury.ac.uk
 	- [About](/about)
 	- [How to Use Site](/howto)
 	- Contact Us
@@ -173,7 +173,8 @@ Rapid snow melt and the river Stour bursting its banks led to a flood in 1909.
 ![](https://iiif.juncture-digital.org/thumbnail/gh:kent-map/images/then-and-now/Cattle_Market_1905)
 
 The Cattle Market was built to sell stock, complete with toll boxes, and a market was held weekly on the site of an ancient city moat. 
-### Map {icon=icon}
+
+### Map {icon=icon style=height:60vh}
 
 .ve-map Q29303 15 style=width:100% cards=data
 
