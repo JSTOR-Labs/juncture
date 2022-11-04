@@ -286,8 +286,8 @@ module.exports = {
         syncTileLayers() {
             const mapDefs = {}
             this.layers
-                .filter(layerDef => layerDef.mapwarper || layerDef.heatmap)
-                .forEach(layerDef => mapDefs[layerDef['mapwarper-id'] || 'heatmap'] = layerDef)
+                .filter(layerDef => layerDef.mapwarper || layerDef.allmaps || layerDef.heatmap)
+                .forEach(layerDef => mapDefs[layerDef['mapwarper-id'] || layerDef['allmaps-id'] || 'heatmap'] = layerDef)
             
             const next = []
             if (this.tileLayers.length > 0 && this.tileLayers[0].id === this.basemap) {
@@ -313,6 +313,13 @@ module.exports = {
                 if (!exists) {
                     if (layerId === 'heatmap') {
                         this.addHeatmap(layerDef)
+                    } else if (layerId === 'allmaps') {
+                        const layer = L.tileLayer(`https://allmaps.xyz/maps/${layerDef['allmaps-id']}/{z}/{x}/{y}.png`, { maxZoom: 19, attribution: 'Allmaps' })
+                        next.push({id: layerId, label: layerDef.label || layerDef.title, layer})
+                        layer.options.id = layerDef.id
+                        layer.options.label = layerDef.label || layerDef.title
+                        layer.options.type = 'allmaps'
+                        if (layerDef.active) layer.addTo(this.map)
                     } else {
                         const layer = L.tileLayer(`https://mapwarper.net/maps/tile/${layerDef['mapwarper-id']}/{z}/{x}/{y}.png`)
                         next.push({id: layerId, label: layerDef.label || layerDef.title, layer})
