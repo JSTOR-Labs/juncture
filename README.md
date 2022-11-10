@@ -8,7 +8,7 @@ This site showcases the work completed by our Duke of Edinburgh participants at 
 
 <sl-button variant="primary" href="https://kent-maps.online">Main Site</sl-button>
 
-## Tabs {.tabs}
+## {.tabs style=height:100vh}
 
 ### Places {#data .cards icon=icon}
 
@@ -180,11 +180,4 @@ The Cattle Market was built to sell stock, complete with toll boxes, and a marke
 
 ### Articles {icon=icon}
 
-- Item 1
-- Item 2
-- Item 3
-- Item 4
-
 ### Reviews {icon=icon}
-
-.ve-footer
