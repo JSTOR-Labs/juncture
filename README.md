@@ -176,7 +176,7 @@ The Cattle Market was built to sell stock, complete with toll boxes, and a marke
 
 ### Map {icon=icon style=height:60vh}
 
-.ve-map Q29303 15 style=width:100% cards=data
+.ve-map Q29303 15 cards=data
 
 ### Articles {icon=icon}
 
