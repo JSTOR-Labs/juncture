@@ -111,11 +111,13 @@ module.exports = {
           if (!this.hoverEntity.summary) {
             let label, summary
             if (this.hoverEntity.article) {
-              let resp = await fetch(this.hoverEntity.article)
-              let articleMarkdown = await resp.text()
-              let tmp = new DOMParser().parseFromString(md.render(articleMarkdown), 'text/html').children[0].children[1]
-              label = tmp.querySelector('h1, h2, h3, h4, h5, h6').innerHTML
-              summary = Array.from(tmp.querySelectorAll('p')).map(p => p.outerHTML).join('')
+              let resp = await fetch(`https://api.juncture-digital.org/html/?url=${this.hoverEntity.article}`)
+              if (resp.ok) {
+                let articleHTML = await resp.text()
+                let tmp = new DOMParser().parseFromString(articleHTML, 'text/html').children[0].children[1]
+                label = tmp.querySelector('h1, h2, h3, h4, h5, h6').innerHTML
+                summary = Array.from(tmp.querySelectorAll('p')).map(p => p.outerHTML).join('')
+              }
             } else if (this.hoverEntity.mwPage) {
               let page = this.hoverEntity.mwPage.replace(/\/w\//, '/wiki/').split('/wiki/').pop()
               let resp = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${page}`)
