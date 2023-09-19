@@ -436,6 +436,11 @@ module.exports = {
       }
     },
 
+    async ghDirList(url, ghToken) {
+      let resp = await fetch(url, ghToken ? { headers: {Authorization: `Token ${ghToken}`}} : {} )
+      return resp.ok ? await resp.json() : null
+    },
+
     async dir(root, ghSource) {
       let cacheKey = ghSource ? `${ghSource.acct}/${ghSource.repo}/${ghSource.hash || ghSource.ref}${root}` : root
       // console.log(`dir: root=${root} cacheKey=${cacheKey} inCache=${this.dirCache[cacheKey] !== undefined}`)
@@ -446,13 +451,13 @@ module.exports = {
           let pathElems = root.split('/').filter(pe => pe)
           let _dirList, found
           for (let i = 0; i < pathElems.length; i++) {
-            _dirList = await ghDirList(url, this.ghToken)
+            _dirList = await this.ghDirList(url, this.ghToken)
             found = _dirList ? _dirList.tree.find(item => item.path === pathElems[i]) : null
             url = found ? found.url : null
             if (!url) break
           }
           if (url) {
-            _dirList = await ghDirList(url, this.ghToken)
+            _dirList = await this.ghDirList(url, this.ghToken)
             files = Object.fromEntries(_dirList.tree.map(item => [item.path, `https://raw.githubusercontent.com/${ghSource.acct}/${ghSource.repo}/${ghSource.hash || ghSource.ref}${root}/${item.path}`]))
           }
         } else {
