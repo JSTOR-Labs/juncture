@@ -95,7 +95,7 @@ module.exports = {
     contentSource:  { type: Object, default: () => ({}) },
     mdDir: String,
     isAuthenticated: { type: Boolean, default: false },
-
+    ghToken: String,
     // actions: { type: Array, default: () => ([]) },
     actionSources: { type: Array, default: () => ([]) },
     siteInfo: { type: Object, default: () => ({}) },
@@ -443,17 +443,16 @@ module.exports = {
         let files = {}
         if (ghSource) {
           let url = `https://api.github.com/repos/${ghSource.acct}/${ghSource.repo}/git/trees/${ghSource.hash || ghSource.ref}`
-          let ghToken = oauthAccessToken || ghUnscopedToken
           let pathElems = root.split('/').filter(pe => pe)
           let _dirList, found
           for (let i = 0; i < pathElems.length; i++) {
-            _dirList = await ghDirList(url, ghToken)
+            _dirList = await ghDirList(url, this.ghToken)
             found = _dirList ? _dirList.tree.find(item => item.path === pathElems[i]) : null
             url = found ? found.url : null
             if (!url) break
           }
           if (url) {
-            _dirList = await ghDirList(url, ghToken)
+            _dirList = await ghDirList(url, this.ghToken)
             files = Object.fromEntries(_dirList.tree.map(item => [item.path, `https://raw.githubusercontent.com/${ghSource.acct}/${ghSource.repo}/${ghSource.hash || ghSource.ref}${root}/${item.path}`]))
           }
         } else {
