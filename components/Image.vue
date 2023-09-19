@@ -139,6 +139,7 @@ module.exports = {
     imageInfo: null,
     showTippy: false,
     annotatorEnabled: false,
+    dirCache: {}
   }),
   computed: {
     osdContainerStyle() {
@@ -434,12 +435,46 @@ module.exports = {
         this.annotator.on('deleteAnnotation', this.saveAnnotations)
       }
     },
+
+    async dir(root, ghSource) {
+      let cacheKey = ghSource ? `${ghSource.acct}/${ghSource.repo}/${ghSource.hash || ghSource.ref}${root}` : root
+      // console.log(`dir: root=${root} cacheKey=${cacheKey} inCache=${this.dirCache[cacheKey] !== undefined}`)
+      if (!this.dirCache[cacheKey]) {
+        let files = {}
+        if (ghSource) {
+          let url = `https://api.github.com/repos/${ghSource.acct}/${ghSource.repo}/git/trees/${ghSource.hash || ghSource.ref}`
+          let ghToken = oauthAccessToken || ghUnscopedToken
+          let pathElems = root.split('/').filter(pe => pe)
+          let _dirList, found
+          for (let i = 0; i < pathElems.length; i++) {
+            _dirList = await ghDirList(url, ghToken)
+            found = _dirList ? _dirList.tree.find(item => item.path === pathElems[i]) : null
+            url = found ? found.url : null
+            if (!url) break
+          }
+          if (url) {
+            _dirList = await ghDirList(url, ghToken)
+            files = Object.fromEntries(_dirList.tree.map(item => [item.path, `https://raw.githubusercontent.com/${ghSource.acct}/${ghSource.repo}/${ghSource.hash || ghSource.ref}${root}/${item.path}`]))
+          }
+        } else {
+          let rootUrl = `${this.contentSource.baseUrl}${root}`
+          let resp = await fetch(rootUrl)
+          if (resp.ok) {
+            let tmp = new DOMParser().parseFromString(await resp.text(), 'text/html').children[0].children[1]
+            files = Object.fromEntries(Array.from(tmp.querySelectorAll('li a.file')).map(el => [el.innerText, `${rootUrl}/${el.innerText}`]))
+          }
+        }
+        this.dirCache[cacheKey] = files
+      }
+      return this.dirCache[cacheKey]
+    },
+
     async loadAnnotations() {
       let annosFile = `${this.currentItemSourceHash}.json`
-      let files = await dir(this.mdDir, contentSource.repo ? contentSource : null)
+      let files = await this.dir(this.mdDir, this.contentSource.repo ? this.contentSource : null)
       if (files[annosFile]) {  
         let path = `${this.mdDir}/${annosFile}`
-        this.getFile(path, contentSource.acct, contentSource.repo, contentSource.ref).then(annos => {
+        this.getFile(path, this.contentSource.acct, this.contentSource.repo, this.contentSource.ref).then(annos => {
           if (annos && annos.content && annos.content.length > 0) {
             this.annotations = JSON.parse(annos.content)
             if (!Array.isArray(this.annotations) && this.annotations.items) this.annotations = this.annotations.items
