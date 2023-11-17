@@ -169,7 +169,11 @@ module.exports = {
           : this.currentItem.url
       : null
     },
-    currentItemSourceHash() { return this.currentItemSource ? this.sha256(this.currentItemSource).slice(0,8) : '' },
+    currentItemSourceHash() {
+      let hash = this.currentItemSource ? this.sha256(this.currentItemSource).slice(0,8) : ''
+      console.log(`currentItemSource=${this.currentItemSource} hash=${hash}`)
+      return hash
+    },
     annosUrl() { return `${this.contentSource.assetsBaseUrl || this.contentSource.baseUrl}/${this.mdDir}${this.currentItemSourceHash}.json` },
     target() {
       if (this.currentItem.target) {
