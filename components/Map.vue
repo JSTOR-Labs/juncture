@@ -304,12 +304,12 @@ module.exports = {
                     if (mapDefs[layer.id]) {
                         next.push(layer)
                     } else {
-                        this.map.removeLayer(layer.layer)
+                        this.map.removeLayer(layer)
                     }
                 })
             } else {
                 this.tileLayers.forEach(layer => {
-                    this.map.removeLayer(layer.layer)
+                    this.map.removeLayer(layer)
                 })
                 const baseLayer = L.tileLayer(...baseLayers[this.basemap])
                 this.map.addLayer(baseLayer)
