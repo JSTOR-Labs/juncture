@@ -450,15 +450,15 @@ module.exports = {
       }
     },
     async putFile(path, content, acct, repo, branch, message) {
-      acct = acct || window.config?.github?.owner_name, 
-      repo = repo || window.config?.github?.repository_name
-      branch = branch || window.config?.github?.source?.branch
+      acct = acct || this.contentSource.acct || window.config?.github?.owner_name
+      repo = repo || this.contentSource.repo || window.config?.github?.repository_name
+      branch = branch || this.contentSource.ref || window.config?.github?.source?.branch
       message = message || 'API Commit'
       if (acct) {
         let existing = await this.getFile(path, acct, repo, branch)
         let payload = { message, branch, content: btoa(content) }
         if (existing) payload.sha = existing.sha
-        // console.log(`putFile: acct=${acct} repo=${repo} branch=${branch} path='${path} sha=${existing ? existing.sha : ''} content='${content}'`)
+        console.log(`putFile: acct=${acct} repo=${repo} branch=${branch} path='${path} sha=${existing ? existing.sha : ''} content='${content}'`)
         let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${branch}`
         let resp = await fetch(url, { method: 'PUT', body: JSON.stringify(payload), headers: {Authorization: `Token ${this.ghToken}`} })
         resp = await resp.json()
