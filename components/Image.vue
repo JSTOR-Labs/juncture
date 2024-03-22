@@ -458,7 +458,7 @@ module.exports = {
         let existing = await this.getFile(path, acct, repo, branch)
         let payload = { message, branch, content: btoa(content) }
         if (existing) payload.sha = existing.sha
-        console.log(`putFile: acct=${acct} repo=${repo} branch=${branch} path='${path} sha=${existing ? existing.sha : ''} content='${content}'`)
+        // console.log(`putFile: acct=${acct} repo=${repo} branch=${branch} path='${path} sha=${existing ? existing.sha : ''}`)
         let url = `https://api.github.com/repos/${acct}/${repo}/contents${path}?ref=${branch}`
         let resp = await fetch(url, { method: 'PUT', body: JSON.stringify(payload), headers: {Authorization: `Token ${this.ghToken}`} })
         resp = await resp.json()
